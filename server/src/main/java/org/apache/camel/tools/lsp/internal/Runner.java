@@ -21,20 +21,17 @@ package org.apache.camel.tools.lsp.internal;
  */
 public class Runner {
 
-	private static long clientID = 1977;
-	
 	/**
 	 * @param args
 	 */
 	public static void main(String[] args) {
 		CamelLanguageServer server = new CamelLanguageServer();
-		server.startServer();
+		server.startServer(); 
 		try {
 			Thread.sleep(10000);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
-		server.setParentProcessId(clientID);
 		server.shutdown();
 	}
 }
