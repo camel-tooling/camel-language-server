@@ -27,11 +27,5 @@ public class Runner {
 	public static void main(String[] args) {
 		CamelLanguageServer server = new CamelLanguageServer();
 		server.startServer(); 
-		try {
-			Thread.sleep(10000);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
-		server.shutdown();
 	}
 }

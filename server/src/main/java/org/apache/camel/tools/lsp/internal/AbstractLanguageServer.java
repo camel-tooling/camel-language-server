@@ -57,7 +57,7 @@ public abstract class AbstractLanguageServer {
 						LOGGER.error(e.getMessage(), e);
 					}
 				}
-				LOGGER.info("Camel Language Server Parent vanished...");				
+				LOGGER.info("Camel Language Server - Client vanished...");				
 			}
 		}, "Camel Language Client Watcher");
 		runner.start();
@@ -74,7 +74,11 @@ public abstract class AbstractLanguageServer {
 		// Wait until parent process id is available
 		long parentProcessId = getParentProcessId();
 		
-		LOGGER.info("Looking for parent process pid: " + parentProcessId);
+		if (parentProcessId == 0) {
+			LOGGER.info("Waiting for a client connection...");
+		} else {
+			LOGGER.info("Checking for client process pid: " + parentProcessId);
+		}
 		
 		if (parentProcessId == 0) return true;
 
@@ -125,7 +129,7 @@ public abstract class AbstractLanguageServer {
 	 * @param processId
 	 */
 	protected synchronized void setParentProcessId(long processId) {
-		LOGGER.info("Setting pid to " + processId);
+		LOGGER.info("Setting client pid to " + processId);
 		parentProcessId = processId;
 	}
 	
