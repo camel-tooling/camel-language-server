@@ -8,7 +8,7 @@ camel-language-server is a server implementation that provides Camel DSL smartne
 The server adheres to the [language server protocol](https://github.com/Microsoft/language-server-protocol)
 and can be used with any editor that supports the protocol.  The server utilizes [Apache Camel](http://camel.apache.org/) and [M2Eclipse](http://www.eclipse.org/m2e/).
 
-Features
+Features (planned)
 --------------
 * As you type reporting of parsing and compilation errors
 * Code completion
@@ -51,7 +51,6 @@ Feedback
 ---------
 
 * File a bug in [GitHub Issues](https://github.com/lhein/camel-language-server/issues).
-* [Tweet](https://twitter.com/lhein77) us with other feedback.
 
 
 License
