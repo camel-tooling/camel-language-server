@@ -49,6 +49,19 @@
 							</goals>
 							<phase>validate</phase>
 						</execution>
+						<execution>
+            				<id>copy-dependencies</id>
+							<phase>prepare-package</phase>
+        					<goals>
+                				<goal>copy-dependencies</goal>
+            				</goals>
+            				<configuration>
+                				<outputDirectory>${project.build.directory}/libs</outputDirectory>
+                				<overWriteReleases>false</overWriteReleases>
+                				<overWriteSnapshots>false</overWriteSnapshots>
+                				<overWriteIfNewer>true</overWriteIfNewer>
+            				</configuration>
+        				</execution>
 					</executions>
 					<configuration>
 						<skip>false</skip>

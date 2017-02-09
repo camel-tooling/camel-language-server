@@ -76,6 +76,19 @@
 					</artifactItems>
 				</configuration>
 			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<configuration>
+					<archive>
+						<manifest>
+							<addClasspath>true</addClasspath>
+							<classpathPrefix>${project.build.directory}/libs/</classpathPrefix>
+							<mainClass>org.apache.camel.tools.lsp.internal.Runner</mainClass>
+            					</manifest>
+					</archive>
+				</configuration>
+			</plugin>
 		</plugins>
 	</build>
 	<dependencies>
