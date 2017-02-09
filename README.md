@@ -1,5 +1,3 @@
-[![Build Status](https://travis-ci.com/lhein/camel-language-server.svg?branch=master)](https://travis-ci.com/lhein/camel-language-server)
-
 This repository contains only the server implementation for now.
 =========================
 
