@@ -43,7 +43,7 @@ Building from command line
 
 1. Install [Apache Maven](https://maven.apache.org/)
 
-2. This command will build the server into `/org.apache.camel.tools.lsp.product/target/repository` folder:
+2. This command will build the server:
 ```bash    
     $ mvn clean verify
 ````
