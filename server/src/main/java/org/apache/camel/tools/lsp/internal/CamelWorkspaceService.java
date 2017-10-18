@@ -22,6 +22,7 @@ import java.util.concurrent.CompletableFuture;
 
 import org.eclipse.lsp4j.DidChangeConfigurationParams;
 import org.eclipse.lsp4j.DidChangeWatchedFilesParams;
+import org.eclipse.lsp4j.FileEvent;
 import org.eclipse.lsp4j.SymbolInformation;
 import org.eclipse.lsp4j.WorkspaceSymbolParams;
 import org.eclipse.lsp4j.services.WorkspaceService;
@@ -35,30 +36,21 @@ public class CamelWorkspaceService implements WorkspaceService {
 	
 	private static final Logger LOGGER = LoggerFactory.getLogger(CamelWorkspaceService.class);
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.lsp4j.services.WorkspaceService#symbol(org.eclipse.lsp4j.WorkspaceSymbolParams)
-	 */
 	@Override
 	public CompletableFuture<List<? extends SymbolInformation>> symbol(WorkspaceSymbolParams params) {
 		LOGGER.info("SERVER: symbolQuery: " + params.getQuery());
-		return CompletableFuture.completedFuture(Collections.EMPTY_LIST);
+		return CompletableFuture.completedFuture(Collections.emptyList());
 	}
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.lsp4j.services.WorkspaceService#didChangeConfiguration(org.eclipse.lsp4j.DidChangeConfigurationParams)
-	 */
 	@Override
 	public void didChangeConfiguration(DidChangeConfigurationParams params) {
 		Object settings = params.getSettings();
-		LOGGER.info("SERVER: changeConfig: settings -> " + settings);
+		LOGGER.info("SERVER: changeConfig: settings -> {0}", settings);
 	}
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.lsp4j.services.WorkspaceService#didChangeWatchedFiles(org.eclipse.lsp4j.DidChangeWatchedFilesParams)
-	 */
 	@Override
 	public void didChangeWatchedFiles(DidChangeWatchedFilesParams params) {
-		Object settings = params.getChanges();
-		LOGGER.info("SERVER: changeWatchedFiles: size -> " + params.getChanges().size());
+		List<FileEvent> settings = params.getChanges();
+		LOGGER.info("SERVER: changeWatchedFiles: size -> {0}", settings.size());
 	}
 }

@@ -29,8 +29,23 @@ import org.slf4j.LoggerFactory;
 public abstract class AbstractLanguageServer {
 	
 	private static final String OS = System.getProperty("os.name").toLowerCase();
-	private static final String ARCH = System.getProperty("os.arch").toLowerCase();
 	
+	private final class CamelServerRunnable implements Runnable {
+		@Override
+		public void run() {
+			LOGGER.info("Starting Camel Language Server...");
+			while (!shutdown && parentProcessStillRunning()) {
+				try {
+					Thread.sleep(1000);
+				} catch (InterruptedException e) {
+					LOGGER.error(e.getMessage(), e);
+					Thread.currentThread().interrupt();
+				}
+			}
+			LOGGER.info("Camel Language Server - Client vanished...");				
+		}
+	}
+
 	private static final Logger LOGGER = LoggerFactory.getLogger(AbstractLanguageServer.class);
 	
 	private Thread runner;
@@ -45,21 +60,7 @@ public abstract class AbstractLanguageServer {
 	 * @return	the exit code of the process
 	 */
 	public int startServer() {
-		runner = new Thread(new Runnable() {
-			@Override
-			public void run() {
-				LOGGER.info("Starting Camel Language Server...");
-				while (!shutdown && parentProcessStillRunning()) {
-					try {
-						Thread.sleep(1000);
-					} catch (InterruptedException e) {
-						// Not expected. Continue.
-						LOGGER.error(e.getMessage(), e);
-					}
-				}
-				LOGGER.info("Camel Language Server - Client vanished...");				
-			}
-		}, "Camel Language Client Watcher");
+		runner = new Thread(new CamelServerRunnable(), "Camel Language Client Watcher");
 		runner.start();
 		return 0;
 	}
@@ -72,12 +73,11 @@ public abstract class AbstractLanguageServer {
 	 */
 	protected boolean parentProcessStillRunning() {
 		// Wait until parent process id is available
-		long parentProcessId = getParentProcessId();
 		
 		if (parentProcessId == 0) {
 			LOGGER.info("Waiting for a client connection...");
 		} else {
-			LOGGER.info("Checking for client process pid: " + parentProcessId);
+			LOGGER.info("Checking for client process pid: {0}", parentProcessId);
 		}
 		
 		if (parentProcessId == 0) return true;
@@ -103,6 +103,7 @@ public abstract class AbstractLanguageServer {
 	 */
 	public void stopServer() {
 		LOGGER.info("Stopping language server");
+		runner.interrupt();
 	}
 
 	/**
@@ -128,7 +129,7 @@ public abstract class AbstractLanguageServer {
 	 * @param processId
 	 */
 	protected synchronized void setParentProcessId(long processId) {
-		LOGGER.info("Setting client pid to " + processId);
+		LOGGER.info("Setting client pid to {0}", processId);
 		parentProcessId = processId;
 	}
 	

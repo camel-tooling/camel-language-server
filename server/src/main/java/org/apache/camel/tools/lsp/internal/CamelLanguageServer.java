@@ -30,7 +30,6 @@ import org.eclipse.lsp4j.TextDocumentSyncKind;
 import org.eclipse.lsp4j.services.LanguageClient;
 import org.eclipse.lsp4j.services.LanguageClientAware;
 import org.eclipse.lsp4j.services.LanguageServer;
-import org.eclipse.lsp4j.services.TextDocumentService;
 import org.eclipse.lsp4j.services.WorkspaceService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,9 +46,6 @@ public class CamelLanguageServer extends AbstractLanguageServer implements Langu
 	
 	private LanguageClient client;
 	
-	/**
-	 * 
-	 */
 	public CamelLanguageServer() {
 		super.setTextDocumentService(new CamelTextDocumentService());
 		super.setWorkspaceService(new CamelWorkspaceService());
@@ -107,14 +103,6 @@ public class CamelLanguageServer extends AbstractLanguageServer implements Langu
 	public CompletableFuture<Object> shutdown() {
 		super.shutdownServer();
 		return CompletableFuture.completedFuture(new Object());
-	}
-	
-	/* (non-Javadoc)
-	 * @see org.apache.camel.tools.lsp.internal.AbstractLanguageServer#getTextDocumentService()
-	 */
-	@Override
-	public TextDocumentService getTextDocumentService() {
-		return super.getTextDocumentService();
 	}
 	
 	/* (non-Javadoc)
