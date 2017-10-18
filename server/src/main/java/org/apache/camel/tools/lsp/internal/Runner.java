@@ -26,6 +26,6 @@ public class Runner {
 	 */
 	public static void main(String[] args) {
 		CamelLanguageServer server = new CamelLanguageServer();
-		server.startServer(); 
+		server.startServer();
 	}
 }

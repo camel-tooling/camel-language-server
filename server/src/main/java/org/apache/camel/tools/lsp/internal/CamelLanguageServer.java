@@ -43,35 +43,28 @@ public class CamelLanguageServer extends AbstractLanguageServer implements Langu
 	
 	/** The usual Logger. */
 	private static final Logger LOGGER = LoggerFactory.getLogger(CamelLanguageServer.class);
+	public static final String LANGUAGE_ID = "LANGUAGE_ID_APACHE_CAMEL";
 	
 	private LanguageClient client;
 	
 	public CamelLanguageServer() {
 		super.setTextDocumentService(new CamelTextDocumentService());
 		super.setWorkspaceService(new CamelWorkspaceService());
+		
 	}
 	
-	/* (non-Javadoc)
-	 * @see org.eclipse.lsp4j.services.LanguageClientAware#connect(org.eclipse.lsp4j.services.LanguageClient)
-	 */
 	@Override
 	public void connect(LanguageClient client) {
 		this.client = client;
 		sendLogMessageNotification(MessageType.Info, "Connected to Language Server...");
 	}
 	
-	/* (non-Javadoc)
-	 * @see org.eclipse.lsp4j.services.LanguageServer#exit()
-	 */
 	@Override
 	public void exit() {
 		super.stopServer();
 		System.exit(0);
 	}
 	
-	/* (non-Javadoc)
-	 * @see org.eclipse.lsp4j.services.LanguageServer#initialize(org.eclipse.lsp4j.InitializeParams)
-	 */
 	@Override
 	public CompletableFuture<InitializeResult> initialize(InitializeParams params) {
 		LOGGER.info("Initializing capabilities of the server...");
@@ -82,32 +75,26 @@ public class CamelLanguageServer extends AbstractLanguageServer implements Langu
 		ServerCapabilities capabilities = new ServerCapabilities();
 		capabilities.setTextDocumentSync(TextDocumentSyncKind.Incremental);
 		capabilities.setCompletionProvider(new CompletionOptions(Boolean.TRUE, Arrays.asList(".","?","&")));
-		capabilities.setHoverProvider(Boolean.TRUE);
-		capabilities.setDefinitionProvider(Boolean.TRUE);
-		capabilities.setDocumentSymbolProvider(Boolean.TRUE);
-		capabilities.setWorkspaceSymbolProvider(Boolean.TRUE);
-		capabilities.setReferencesProvider(Boolean.TRUE);
-		capabilities.setDocumentHighlightProvider(Boolean.TRUE);
-		capabilities.setDocumentFormattingProvider(Boolean.TRUE);
-		capabilities.setDocumentRangeFormattingProvider(Boolean.TRUE);
-		capabilities.setCodeLensProvider(new CodeLensOptions(Boolean.TRUE));
+		capabilities.setHoverProvider(Boolean.FALSE);
+		capabilities.setDefinitionProvider(Boolean.FALSE);
+		capabilities.setDocumentSymbolProvider(Boolean.FALSE);
+		capabilities.setWorkspaceSymbolProvider(Boolean.FALSE);
+		capabilities.setReferencesProvider(Boolean.FALSE);
+		capabilities.setDocumentHighlightProvider(Boolean.FALSE);
+		capabilities.setDocumentFormattingProvider(Boolean.FALSE);
+		capabilities.setDocumentRangeFormattingProvider(Boolean.FALSE);
+		capabilities.setCodeLensProvider(new CodeLensOptions(Boolean.FALSE));
 		
 		result.setCapabilities(capabilities);
 		return CompletableFuture.completedFuture(result);
 	}
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.lsp4j.services.LanguageServer#shutdown()
-	 */
 	@Override
 	public CompletableFuture<Object> shutdown() {
 		super.shutdownServer();
 		return CompletableFuture.completedFuture(new Object());
 	}
 	
-	/* (non-Javadoc)
-	 * @see org.apache.camel.tools.lsp.internal.AbstractLanguageServer#getWorkspaceService()
-	 */
 	@Override
 	public WorkspaceService getWorkspaceService() {
 		return super.getWorkspaceService();
