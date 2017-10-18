@@ -28,8 +28,8 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class AbstractLanguageServer {
 	
-	private static String OS = System.getProperty("os.name").toLowerCase();
-	private static String ARCH = System.getProperty("os.arch").toLowerCase();
+	private static final String OS = System.getProperty("os.name").toLowerCase();
+	private static final String ARCH = System.getProperty("os.arch").toLowerCase();
 	
 	private static final Logger LOGGER = LoggerFactory.getLogger(AbstractLanguageServer.class);
 	
@@ -93,7 +93,6 @@ public abstract class AbstractLanguageServer {
 			int processResult = process.waitFor();
 			return processResult == 0;
 		} catch (IOException | InterruptedException e) {
-			// TODO Auto-generated catch block
 			LOGGER.error(e.getMessage(), e);
 			return true;
 		}

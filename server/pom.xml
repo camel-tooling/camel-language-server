@@ -9,7 +9,7 @@
 	<artifactId>server</artifactId>
 	<name>${base.name} :: Server Implementation</name>
 	<properties>
-		<lsp4j.version>0.2.0-SNAPSHOT</lsp4j.version>
+		<lsp4j.version>0.3.0</lsp4j.version>
 	</properties>
 	<build>
 		<plugins>
@@ -86,7 +86,7 @@
 							<addClasspath>true</addClasspath>
 							<classpathPrefix>${project.build.directory}/libs/</classpathPrefix>
 							<mainClass>org.apache.camel.tools.lsp.internal.Runner</mainClass>
-            					</manifest>
+            			</manifest>
 					</archive>
 				</configuration>
 			</plugin>
