@@ -13,12 +13,47 @@
     	<!-- compiler settings -->
     	<maven.compiler.source>1.8</maven.compiler.source>
     	<maven.compiler.target>1.8</maven.compiler.target>
+    	<!-- sonar properties -->
+		<sonar.code.codeCoveragePlugin>jacoco</sonar.code.codeCoveragePlugin>
+		<sonar.dynamicAnalysis>reuseReports</sonar.dynamicAnalysis>
+		<!-- points to the target folder of the global parent project -->
+		<sonar.jacoco.reportPaths>../target/jacoco.exec</sonar.jacoco.reportPaths>
 	</properties>
 	<modules>
 		<module>server</module>
 		<module>clients</module>
 	</modules>
 	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.jacoco</groupId>
+				<artifactId>jacoco-maven-plugin</artifactId>
+				<version>0.7.9</version>
+				<configuration>
+					<append>true</append>
+					<includes>org.apache.camel.tools.lsp.*</includes>
+				</configuration>
+				<executions>
+					<execution>
+						<id>agent-for-ut</id>
+						<goals>
+							<goal>prepare-agent</goal>
+						</goals>
+						<configuration>
+							<destFile>${sonar.jacoco.reportPaths}</destFile>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<version>2.20.1</version>
+				<configuration>
+					<argLine>${argLine}</argLine>
+				</configuration>
+			</plugin>
+		</plugins>
+	
 		<pluginManagement>
 			<plugins>
 				<plugin>
@@ -29,15 +64,6 @@
 						<source>${maven.compiler.source}</source>
 						<target>${maven.compiler.target}</target>
 					</configuration>
-					<executions>
-						<execution>
-							<id>compiletests</id>
-							<phase>test-compile</phase>
-							<goals>
-								<goal>testCompile</goal>
-							</goals>
-						</execution>
-					</executions>
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
