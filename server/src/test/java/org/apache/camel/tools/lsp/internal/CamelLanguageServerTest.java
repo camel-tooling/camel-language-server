@@ -24,13 +24,16 @@ import java.nio.file.Paths;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 import org.eclipse.lsp4j.CompletionItem;
 import org.eclipse.lsp4j.CompletionList;
+import org.eclipse.lsp4j.DidOpenTextDocumentParams;
 import org.eclipse.lsp4j.InitializeParams;
 import org.eclipse.lsp4j.InitializeResult;
 import org.eclipse.lsp4j.Position;
 import org.eclipse.lsp4j.TextDocumentIdentifier;
+import org.eclipse.lsp4j.TextDocumentItem;
 import org.eclipse.lsp4j.TextDocumentPositionParams;
 import org.eclipse.lsp4j.jsonrpc.messages.Either;
 import org.eclipse.lsp4j.services.TextDocumentService;
@@ -40,7 +43,34 @@ import org.junit.Test;
 public class CamelLanguageServerTest {
 	
 	@Test
-	public void testProvideDummyCompletion() throws Exception {
+	public void testProvideDummyCompletionForCamelBlueprintNamespace() throws Exception {
+		CamelLanguageServer camelLanguageServer = initializeLanguageServer("<from uri=\"\" xmlns=\"http://camel.apache.org/schema/blueprint\"></from>\n");
+		
+		CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = getCompletionFor(camelLanguageServer, new Position(1, 13));
+		
+		assertThat(completions.get().getLeft()).contains(new CompletionItem("dummyCamelCompletion"));
+	}
+	
+	@Test
+	public void testProvideDummyCompletionForCamelSpringNamespace() throws Exception {
+		CamelLanguageServer camelLanguageServer = initializeLanguageServer("<from uri=\"\" xmlns=\"http://camel.apache.org/schema/spring\"></from>\n");
+		
+		CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = getCompletionFor(camelLanguageServer, new Position(1, 11));
+		
+		assertThat(completions.get().getLeft()).contains(new CompletionItem("dummyCamelCompletion"));
+	}
+
+	@Test
+	public void testDONTProvideDummyCompletionForNotCamelnamespace() throws Exception {
+		CamelLanguageServer camelLanguageServer = initializeLanguageServer("<from uri=\"\"></from>\n");
+		
+		CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = getCompletionFor(camelLanguageServer, new Position(1, 11));
+		
+		assertThat(completions.get().getLeft()).isEmpty();
+		assertThat(completions.get().getRight()).isNull();
+	}
+
+	private CamelLanguageServer initializeLanguageServer(String text) throws URISyntaxException, InterruptedException, ExecutionException {
 		InitializeParams params = new InitializeParams();
 		params.setProcessId(new Random().nextInt());
 		params.setRootUri(getTestResource("/workspace/").toURI().toString());
@@ -50,14 +80,22 @@ public class CamelLanguageServerTest {
 		assertThat(initialize).isCompleted();
 		assertThat(initialize.get().getCapabilities().getCompletionProvider().getResolveProvider()).isTrue();
 		
-		TextDocumentService textDocumentService = camelLanguageServer.getTextDocumentService();
+		camelLanguageServer.getTextDocumentService().didOpen(new DidOpenTextDocumentParams(createTestTextDocument(text)));
 		
-		TextDocumentPositionParams dummyCompletionPositionRequest = new TextDocumentPositionParams(new TextDocumentIdentifier("dummy"), new Position(0, 0));
-		CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = textDocumentService.completion(dummyCompletionPositionRequest);
-		
-		assertThat(completions.get().getLeft()).contains(new CompletionItem("dummyCamelCompletion"));
+		return camelLanguageServer;
+	}
+
+	private TextDocumentItem createTestTextDocument(String text) {
+		return new TextDocumentItem("dummyUri", CamelLanguageServer.LANGUAGE_ID, 0, text);
 	}
 	
+	private CompletableFuture<Either<List<CompletionItem>, CompletionList>> getCompletionFor(CamelLanguageServer camelLanguageServer, Position position) {
+		TextDocumentService textDocumentService = camelLanguageServer.getTextDocumentService();
+		
+		TextDocumentPositionParams dummyCompletionPositionRequest = new TextDocumentPositionParams(new TextDocumentIdentifier("dummyUri"), position);
+		CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = textDocumentService.completion(dummyCompletionPositionRequest);
+		return completions;
+	}
 	
 	public File getTestResource(String name) throws URISyntaxException {
 		return Paths.get(CamelLanguageServerTest.class.getResource(name).toURI()).toFile();
