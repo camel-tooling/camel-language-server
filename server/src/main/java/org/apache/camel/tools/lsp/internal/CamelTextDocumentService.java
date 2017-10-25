@@ -16,8 +16,9 @@
  */
 package org.apache.camel.tools.lsp.internal;
 
-import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 import org.eclipse.lsp4j.CodeActionParams;
@@ -41,6 +42,7 @@ import org.eclipse.lsp4j.ReferenceParams;
 import org.eclipse.lsp4j.RenameParams;
 import org.eclipse.lsp4j.SignatureHelp;
 import org.eclipse.lsp4j.SymbolInformation;
+import org.eclipse.lsp4j.TextDocumentItem;
 import org.eclipse.lsp4j.TextDocumentPositionParams;
 import org.eclipse.lsp4j.TextEdit;
 import org.eclipse.lsp4j.WorkspaceEdit;
@@ -55,12 +57,13 @@ import org.slf4j.LoggerFactory;
 public class CamelTextDocumentService implements TextDocumentService {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(CamelTextDocumentService.class);
+	private Map<String, TextDocumentItem> openedDocuments = new HashMap<>();
 	
 	@Override
-	public CompletableFuture<Either<List<CompletionItem>, CompletionList>> completion(
-			TextDocumentPositionParams position) {
-		LOGGER.info("completion: " + position.getTextDocument().getUri());
-		return CompletableFuture.completedFuture(Either.forLeft(Arrays.asList(new CompletionItem("dummyCamelCompletion"))));
+	public CompletableFuture<Either<List<CompletionItem>, CompletionList>> completion(TextDocumentPositionParams completionRequest) {
+		LOGGER.info("completion: " + completionRequest.getTextDocument().getUri());
+		TextDocumentItem textDocumentItem = openedDocuments.get(completionRequest.getTextDocument().getUri());
+		return new CamelEndpointCompletionProcessor(textDocumentItem).getCompletions();
 	}
 
 	@Override
@@ -149,7 +152,9 @@ public class CamelTextDocumentService implements TextDocumentService {
 
 	@Override
 	public void didOpen(DidOpenTextDocumentParams params) {
-		LOGGER.info("didOpen: " + params.getTextDocument());
+		TextDocumentItem textDocument = params.getTextDocument();
+		LOGGER.info("didOpen: {0}", textDocument);
+		openedDocuments.put(textDocument.getUri(), textDocument);
 	}
 
 	@Override
@@ -160,10 +165,12 @@ public class CamelTextDocumentService implements TextDocumentService {
 	@Override
 	public void didClose(DidCloseTextDocumentParams params) {
 		LOGGER.info("didClose: " + params.getTextDocument());
+		openedDocuments.remove(params.getTextDocument().getUri());
 	}
 
 	@Override
 	public void didSave(DidSaveTextDocumentParams params) {
 		LOGGER.info("didSave: " + params.getTextDocument());
 	}
+
 }
