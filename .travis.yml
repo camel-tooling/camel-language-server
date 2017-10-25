@@ -2,11 +2,16 @@ language: java
 sudo: false
 script: 
 - 'mvn clean verify'
-# - 'if [[ $TRAVIS_PULL_REQUEST == "false" && $TRAVIS_BRANCH == "master" ]]; then mvn sonar:sonar -Dsonar.login=${SONAR_TOKEN}; fi'
+- 'if [[ $TRAVIS_PULL_REQUEST == "false" && $TRAVIS_BRANCH == "master" ]]; then mvn sonar:sonar -Dsonar.login=${SONAR_TOKEN}; fi'
 jdk:
 - oraclejdk8
 addons:
-  sonarqube: false
+  sonarcloud:
+#    organization: "default"
+    token:
+      secure: 305b710aa5901c856919aec4a16c9e5334cc2766
+    branches:
+      - master
 cache:
   directories:
   - $HOME/.m2
