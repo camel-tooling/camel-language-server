@@ -1,8 +1,5 @@
 [![Build Status](https://travis-ci.org/lhein/camel-language-server.svg?branch=master)](https://travis-ci.org/lhein/camel-language-server)
 
-This repository contains only the server implementation for now.
-=========================
-
 camel-language-server
 =====================
 
@@ -25,9 +22,9 @@ Features (planned)
 First Time Setup
 --------------
 0. Fork and clone the repository
-1. Install Eclipse [Neon Java EE](http://www.eclipse.org/downloads/packages/eclipse-ide-java-ee-developers/neonr)
+1. Install Eclipse [Oxygen Java EE](http://www.eclipse.org/downloads/packages/eclipse-ide-java-ee-developers/oxygenr)
 that will have most needed already installed. Alternately,
-you can get the [Eclipse IDE for Java developers](http://www.eclipse.org/downloads/packages/eclipse-ide-java-developers/neonr)
+you can get the [Eclipse IDE for Java developers](http://www.eclipse.org/downloads/packages/eclipse-ide-java-developers/oxygenr)
 and just install Eclipse PDE from marketplace.
 
 2. Once installed use `File > Open Projects from File System...` and
