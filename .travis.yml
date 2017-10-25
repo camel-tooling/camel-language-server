@@ -8,8 +8,6 @@ jdk:
 addons:
   sonarcloud:
     organization: "default"
-    token:
-      secure: 305b710aa5901c856919aec4a16c9e5334cc2766
     branches:
       - master
 cache:
