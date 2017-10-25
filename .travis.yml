@@ -7,7 +7,7 @@ jdk:
 - oraclejdk8
 addons:
   sonarcloud:
-    organization: "default"
+    organization: "lhein-github"
     branches:
       - master
 cache:
