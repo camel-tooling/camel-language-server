@@ -6,7 +6,7 @@
 		<artifactId>parent</artifactId>
 		<version>1.0.0-SNAPSHOT</version>
 	</parent>
-	<artifactId>server</artifactId>
+	<artifactId>camel-lsp-server</artifactId>
 	<name>${base.name} :: Server Implementation</name>
 	<properties>
 		<lsp4j.version>0.3.0</lsp4j.version>
