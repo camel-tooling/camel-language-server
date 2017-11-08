@@ -14,101 +14,20 @@
 	<build>
 		<plugins>
 			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-dependency-plugin</artifactId>
-				<configuration>
-					<artifactItems>
-						<artifactItem>
-							<groupId>com.kotcrab.remark</groupId>
-							<artifactId>remark</artifactId>
-							<version>1.0.0</version>
-						</artifactItem>
-						<artifactItem>
-							<groupId>org.jsoup</groupId>
-							<artifactId>jsoup</artifactId>
-							<version>1.9.2</version>
-						</artifactItem>
-						<artifactItem>
-							<groupId>org.eclipse.lsp4j</groupId>
-							<artifactId>org.eclipse.lsp4j</artifactId>
-							<version>${lsp4j.version}</version>
-						</artifactItem>
-						<artifactItem>
-							<groupId>org.eclipse.lsp4j</groupId>
-							<artifactId>org.eclipse.lsp4j.jsonrpc</artifactId>
-							<version>${lsp4j.version}</version>
-						</artifactItem>
-						<artifactItem>
-							<groupId>com.kohlschutter.junixsocket</groupId>
-							<artifactId>junixsocket-native-common</artifactId>
-							<version>2.0.4</version>
-						</artifactItem>
-						<artifactItem>
-							<groupId>com.kohlschutter.junixsocket</groupId>
-							<artifactId>junixsocket-common</artifactId>
-							<version>2.0.4</version>
-						</artifactItem>
-						<artifactItem>
-							<groupId>org.scijava</groupId>
-							<artifactId>native-lib-loader</artifactId>
-							<version>2.0.2</version>
-						</artifactItem>
-						<artifactItem>
-							<groupId>org.eclipse.xtend</groupId>
-							<artifactId>org.eclipse.xtend.lib</artifactId>
-							<version>2.10.0</version>
-						</artifactItem>
-						<artifactItem>
-							<groupId>org.eclipse.xtext</groupId>
-							<artifactId>org.eclipse.xtext.xbase.lib</artifactId>
-							<version>2.10.0</version>
-						</artifactItem>
-						<artifactItem>
-							<groupId>org.slf4j</groupId>
-							<artifactId>slf4j-api</artifactId>
-							<version>1.7.6</version>
-						</artifactItem>
-						<artifactItem>
-							<groupId>org.slf4j</groupId>
-							<artifactId>slf4j-log4j12</artifactId>
-							<version>1.7.6</version>
-						</artifactItem>
-					</artifactItems>
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-jar-plugin</artifactId>
-				<version>3.0.2</version>
-				<configuration>
-					<archive>
-						<manifest>
-							<addClasspath>true</addClasspath>
-							<classpathPrefix>${project.build.directory}/libs/</classpathPrefix>
-							<mainClass>org.apache.camel.tools.lsp.internal.Runner</mainClass>
-            			</manifest>
-					</archive>
-				</configuration>
-			</plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <version>1.4.0.RELEASE</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>repackage</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
 		</plugins>
 	</build>
 	<dependencies>
-		<dependency>
-			<groupId>com.kohlschutter.junixsocket</groupId>
-			<artifactId>junixsocket-common</artifactId>
-			<version>2.0.4</version>
-		</dependency>
-		<dependency>
-			<groupId>com.kohlschutter.junixsocket</groupId>
-			<artifactId>junixsocket-native-common</artifactId>
-			<version>2.0.4</version>
-		</dependency>
-		<!-- https://mvnrepository.com/artifact/com.google.code.gson/gson -->
-		<dependency>
-			<groupId>com.google.code.gson</groupId>
-			<artifactId>gson</artifactId>
-			<version>2.7</version>
-		</dependency>
 		<dependency>
 			<groupId>org.eclipse.lsp4j</groupId>
 			<artifactId>org.eclipse.lsp4j.jsonrpc</artifactId>
