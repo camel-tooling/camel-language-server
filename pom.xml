@@ -1,6 +1,6 @@
-<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
-	xmlns="http://maven.apache.org/POM/4.0.0"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<project
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
+	xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.apache.camel.tools.lsp</groupId>
 	<artifactId>parent</artifactId>
@@ -10,14 +10,16 @@
 	<properties>
 		<base.name>Apache Camel Language Server</base.name>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    	<!-- compiler settings -->
-    	<maven.compiler.source>1.8</maven.compiler.source>
-    	<maven.compiler.target>1.8</maven.compiler.target>
-    	<!-- sonar properties -->
+		<!-- compiler settings -->
+		<maven.compiler.source>1.8</maven.compiler.source>
+		<maven.compiler.target>1.8</maven.compiler.target>
+		<!-- sonar properties -->
 		<sonar.code.codeCoveragePlugin>jacoco</sonar.code.codeCoveragePlugin>
 		<sonar.dynamicAnalysis>reuseReports</sonar.dynamicAnalysis>
 		<!-- points to the target folder of the global parent project -->
-		<sonar.jacoco.reportPaths>../target/jacoco.exec</sonar.jacoco.reportPaths>
+		<sonar.jacoco.reportPath>../target/jacoco.exec</sonar.jacoco.reportPath>
+		<sonar.jacoco.itReportPath>../../../target/jacoco-it.exec</sonar.jacoco.itReportPath>
+		<sonar.jacoco.reportPaths>${sonar.jacoco.reportPath},${sonar.jacoco.itReportPath}</sonar.jacoco.reportPaths>
 	</properties>
 	<modules>
 		<module>server</module>
@@ -31,7 +33,7 @@
 				<version>0.7.9</version>
 				<configuration>
 					<append>true</append>
-					<includes>org.apache.camel.tools.lsp.*</includes>
+					<includes>org.apache.camel.tools.lsp.*,org.apache.camel.lsp.*</includes>
 				</configuration>
 				<executions>
 					<execution>
@@ -41,6 +43,15 @@
 						</goals>
 						<configuration>
 							<destFile>${sonar.jacoco.reportPaths}</destFile>
+						</configuration>
+					</execution>
+					<execution>
+						<id>agent-for-it</id>
+						<goals>
+							<goal>prepare-agent-integration</goal>
+						</goals>
+						<configuration>
+							<destFile>${sonar.jacoco.itReportPath}</destFile>
 						</configuration>
 					</execution>
 				</executions>
@@ -53,7 +64,7 @@
 				</configuration>
 			</plugin>
 		</plugins>
-	
+
 		<pluginManagement>
 			<plugins>
 				<plugin>
@@ -77,23 +88,23 @@
 							<phase>validate</phase>
 						</execution>
 						<execution>
-            				<id>copy-dependencies</id>
+							<id>copy-dependencies</id>
 							<phase>prepare-package</phase>
-        					<goals>
-                				<goal>copy-dependencies</goal>
-            				</goals>
-            				<configuration>
-                				<outputDirectory>${project.build.directory}/libs</outputDirectory>
-                				<overWriteReleases>false</overWriteReleases>
-                				<overWriteSnapshots>false</overWriteSnapshots>
-                				<overWriteIfNewer>true</overWriteIfNewer>
-            				</configuration>
-        				</execution>
+							<goals>
+								<goal>copy-dependencies</goal>
+							</goals>
+							<configuration>
+								<outputDirectory>${project.build.directory}/libs</outputDirectory>
+								<overWriteReleases>false</overWriteReleases>
+								<overWriteSnapshots>false</overWriteSnapshots>
+								<overWriteIfNewer>true</overWriteIfNewer>
+							</configuration>
+						</execution>
 					</executions>
 					<configuration>
 						<skip>false</skip>
 						<outputDirectory>${basedir}/libs/</outputDirectory>
-						<!-- baseVersion is to avoid SNAPSHOT dependencies being copied with
+						<!-- baseVersion is to avoid SNAPSHOT dependencies being copied with 
 							ever daily changing timestamp -->
 						<useBaseVersion>true</useBaseVersion>
 					</configuration>

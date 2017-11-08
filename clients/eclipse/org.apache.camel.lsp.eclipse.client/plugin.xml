@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         point="org.eclipse.lsp4e.languageServer">
+      <contentTypeMapping
+            contentType="org.eclipse.core.runtime.xml"
+            id="Camel LSP Server"
+            languageId="LANGUAGE_ID_APACHE_CAMEL">
+      </contentTypeMapping>
+      <server
+            class="org.apache.camel.lsp.eclipse.client.CamelLSPStreamConnectionProvider"
+            id="Camel LSP Server"
+            label="Camel LSP Server">
+      </server>
+   </extension>
+
+</plugin>
