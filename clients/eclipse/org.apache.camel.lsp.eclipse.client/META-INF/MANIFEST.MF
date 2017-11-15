@@ -10,3 +10,4 @@ Require-Bundle: org.eclipse.lsp4e;bundle-version="0.3.0",
  org.eclipse.core.runtime
 Export-Package: org.apache.camel.lsp.eclipse.client;x-friends:="org.apache.camel.lsp.eclipse.client.tests.integration"
 Eclipse-BundleShape: dir
+Bundle-Activator: org.apache.camel.lsp.eclipse.client.ActivatorCamelLspClient
