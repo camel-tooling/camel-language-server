@@ -23,7 +23,9 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import org.eclipse.core.runtime.FileLocator;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.lsp4e.server.ProcessStreamConnectionProvider;
 import org.osgi.framework.Bundle;
 
@@ -41,15 +43,13 @@ public class CamelLSPStreamConnectionProvider extends ProcessStreamConnectionPro
 		List<String> commands = new ArrayList<>();
 		commands.add("java");
 		commands.add("-jar");
-		Bundle bundle = Platform.getBundle("org.apache.camel.lsp.eclipse.client");
-		//TODO: avoid hardcoding the version
-		URL fileURL = bundle.getEntry("libs/camel-lsp-server-1.0.0-SNAPSHOT.jar");
+		Bundle bundle = Platform.getBundle(ActivatorCamelLspClient.ID);
+		URL fileURL = bundle.findEntries("/libs", "camel-lsp-server-*.jar", false).nextElement();
 		try {
 		    File file = new File(FileLocator.resolve(fileURL).toURI());
 		    commands.add("\"" + file.getAbsolutePath() + "\"");
-		} catch (URISyntaxException | IOException e1) {
-			//TODO: implement a logger
-		    e1.printStackTrace();
+		} catch (URISyntaxException | IOException exception) {
+		    ActivatorCamelLspClient.getInstance().getLog().log(new Status(IStatus.ERROR, ActivatorCamelLspClient.ID, "Cannot get the Camel LSP Server jar.", exception)); //$NON-NLS-1$
 		}
 		return commands;
 	}
