@@ -16,16 +16,18 @@
  */
 package org.apache.camel.tools.lsp.internal;
 
+import org.eclipse.lsp4j.jsonrpc.Launcher;
+import org.eclipse.lsp4j.services.LanguageClient;
+
 /**
  * @author lhein
  */
 public class Runner {
 
-	/**
-	 * @param args
-	 */
 	public static void main(String[] args) {
 		CamelLanguageServer server = new CamelLanguageServer();
-		server.startServer();
+		Launcher<LanguageClient> launcher = Launcher.createLauncher(server, LanguageClient.class, System.in, System.out);
+		server.connect(launcher.getRemoteProxy());
+		launcher.startListening();
 	}
 }
