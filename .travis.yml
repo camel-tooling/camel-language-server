@@ -1,8 +1,7 @@
 language: java
 before_install:
 - sudo apt-get -qq update
-- sudo apt-get install -y dbus-x11
-- "dbus-launch"
+- sudo apt-get install -y ubuntu-desktop
 - "export DISPLAY=:99.0"
 - "sh -e /etc/init.d/xvfb start"
 env: DISPLAY=:99
