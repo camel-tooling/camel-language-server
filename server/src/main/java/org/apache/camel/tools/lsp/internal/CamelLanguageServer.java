@@ -21,6 +21,7 @@ import java.util.concurrent.CompletableFuture;
 
 import org.eclipse.lsp4j.CodeLensOptions;
 import org.eclipse.lsp4j.CompletionOptions;
+import org.eclipse.lsp4j.DocumentLinkOptions;
 import org.eclipse.lsp4j.InitializeParams;
 import org.eclipse.lsp4j.InitializeResult;
 import org.eclipse.lsp4j.MessageParams;
@@ -50,7 +51,6 @@ public class CamelLanguageServer extends AbstractLanguageServer implements Langu
 	public CamelLanguageServer() {
 		super.setTextDocumentService(new CamelTextDocumentService());
 		super.setWorkspaceService(new CamelWorkspaceService());
-		
 	}
 	
 	@Override
@@ -68,7 +68,13 @@ public class CamelLanguageServer extends AbstractLanguageServer implements Langu
 	@Override
 	public CompletableFuture<InitializeResult> initialize(InitializeParams params) {
 		LOGGER.info("Initializing capabilities of the server...");
-		setParentProcessId(params.getProcessId().longValue());
+		Integer processId = params.getProcessId();
+		if(processId != null) {
+			setParentProcessId(processId.longValue());
+		} else {
+			LOGGER.error("Missing Parent process ID!!");
+			setParentProcessId(0);
+		}
 		
 		InitializeResult result = new InitializeResult();
 		
@@ -83,6 +89,7 @@ public class CamelLanguageServer extends AbstractLanguageServer implements Langu
 		capabilities.setDocumentHighlightProvider(Boolean.FALSE);
 		capabilities.setDocumentFormattingProvider(Boolean.FALSE);
 		capabilities.setDocumentRangeFormattingProvider(Boolean.FALSE);
+		capabilities.setDocumentLinkProvider(new DocumentLinkOptions(Boolean.FALSE));
 		capabilities.setCodeLensProvider(new CodeLensOptions(Boolean.FALSE));
 		
 		result.setCapabilities(capabilities);
