@@ -21,8 +21,8 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
+
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Platform;
@@ -54,7 +54,11 @@ public class CamelLSPStreamConnectionProvider extends ProcessStreamConnectionPro
 		URL fileURL = bundle.findEntries("/libs", "camel-lsp-server-*.jar", false).nextElement();
 		try {
 		    File file = new File(FileLocator.resolve(fileURL).toURI());
-		    camelLanguageServerJarPath = "\"" + file.getAbsolutePath() + "\"";
+		    if(Platform.OS_WIN32.equals(Platform.getOS())) {
+		    	camelLanguageServerJarPath = "\"" + file.getAbsolutePath() + "\"";
+		    } else {
+		    	camelLanguageServerJarPath = file.getAbsolutePath();
+		    }
 		} catch (URISyntaxException | IOException exception) {
 		    ActivatorCamelLspClient.getInstance().getLog().log(new Status(IStatus.ERROR, ActivatorCamelLspClient.ID, "Cannot get the Camel LSP Server jar.", exception)); //$NON-NLS-1$
 		}
