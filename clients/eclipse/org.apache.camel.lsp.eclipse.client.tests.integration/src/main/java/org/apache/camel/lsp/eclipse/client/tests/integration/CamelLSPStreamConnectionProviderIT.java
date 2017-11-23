@@ -33,10 +33,14 @@ public class CamelLSPStreamConnectionProviderIT {
 		InputStream inputStream = provider.getInputStream();
 		assertThat(inputStream).isNotNull();
 		byte[] buffer = new byte[1024];
-		assertThat(inputStream.read(buffer)).isNotEqualTo(-1);
-		assertThat(new String(buffer)).contains("Connected to Language Server...");
-		
+		boolean isConnected = false;
+		int time = 0;
+		while (!isConnected && time  < 10000 && inputStream.read(buffer) != -1) {
+			isConnected = new String(buffer).contains("Connected to Language Server...");
+			time += 1000;
+		}
 		provider.stop();
+		assertThat(isConnected).isTrue();
 	}
 	
 }
