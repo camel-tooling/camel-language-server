@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
+import org.apache.camel.tools.lsp.internal.completion.CamelEndpointCompletionProcessor;
 import org.eclipse.lsp4j.CodeActionParams;
 import org.eclipse.lsp4j.CodeLens;
 import org.eclipse.lsp4j.CodeLensParams;
@@ -63,7 +64,7 @@ public class CamelTextDocumentService implements TextDocumentService {
 	public CompletableFuture<Either<List<CompletionItem>, CompletionList>> completion(TextDocumentPositionParams completionRequest) {
 		LOGGER.info("completion: " + completionRequest.getTextDocument().getUri());
 		TextDocumentItem textDocumentItem = openedDocuments.get(completionRequest.getTextDocument().getUri());
-		return new CamelEndpointCompletionProcessor(textDocumentItem).getCompletions();
+		return new CamelEndpointCompletionProcessor(textDocumentItem).getCompletions(completionRequest.getPosition()).thenApply(Either::forLeft);
 	}
 
 	@Override
