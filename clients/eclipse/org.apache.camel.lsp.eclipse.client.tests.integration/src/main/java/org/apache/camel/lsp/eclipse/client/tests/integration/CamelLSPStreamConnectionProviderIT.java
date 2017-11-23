@@ -34,7 +34,7 @@ public class CamelLSPStreamConnectionProviderIT {
 		assertThat(inputStream).isNotNull();
 		byte[] buffer = new byte[1024];
 		assertThat(inputStream.read(buffer)).isNotEqualTo(-1);
-		assertThat(new String(buffer)).contains("Starting Camel Language Server...");
+		assertThat(new String(buffer)).contains("Connected to Language Server...");
 		
 		provider.stop();
 	}

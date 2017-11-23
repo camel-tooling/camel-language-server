@@ -19,9 +19,7 @@ package org.apache.camel.tools.lsp.internal;
 import java.util.Arrays;
 import java.util.concurrent.CompletableFuture;
 
-import org.eclipse.lsp4j.CodeLensOptions;
 import org.eclipse.lsp4j.CompletionOptions;
-import org.eclipse.lsp4j.DocumentLinkOptions;
 import org.eclipse.lsp4j.InitializeParams;
 import org.eclipse.lsp4j.InitializeResult;
 import org.eclipse.lsp4j.MessageParams;
@@ -67,12 +65,12 @@ public class CamelLanguageServer extends AbstractLanguageServer implements Langu
 	
 	@Override
 	public CompletableFuture<InitializeResult> initialize(InitializeParams params) {
-		LOGGER.info("Initializing capabilities of the server...");
+		sendLogMessageNotification(MessageType.Info, "Initializing capabilities of the server...");
 		Integer processId = params.getProcessId();
 		if(processId != null) {
 			setParentProcessId(processId.longValue());
 		} else {
-			LOGGER.error("Missing Parent process ID!!");
+			sendLogMessageNotification(MessageType.Info, "Missing Parent process ID!!");
 			setParentProcessId(0);
 		}
 		
@@ -81,16 +79,6 @@ public class CamelLanguageServer extends AbstractLanguageServer implements Langu
 		ServerCapabilities capabilities = new ServerCapabilities();
 		capabilities.setTextDocumentSync(TextDocumentSyncKind.Incremental);
 		capabilities.setCompletionProvider(new CompletionOptions(Boolean.TRUE, Arrays.asList(".","?","&")));
-		capabilities.setHoverProvider(Boolean.FALSE);
-		capabilities.setDefinitionProvider(Boolean.FALSE);
-		capabilities.setDocumentSymbolProvider(Boolean.FALSE);
-		capabilities.setWorkspaceSymbolProvider(Boolean.FALSE);
-		capabilities.setReferencesProvider(Boolean.FALSE);
-		capabilities.setDocumentHighlightProvider(Boolean.FALSE);
-		capabilities.setDocumentFormattingProvider(Boolean.FALSE);
-		capabilities.setDocumentRangeFormattingProvider(Boolean.FALSE);
-		capabilities.setDocumentLinkProvider(new DocumentLinkOptions(Boolean.FALSE));
-		capabilities.setCodeLensProvider(new CodeLensOptions(Boolean.FALSE));
 		
 		result.setCapabilities(capabilities);
 		return CompletableFuture.completedFuture(result);
