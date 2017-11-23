@@ -31,17 +31,45 @@ import org.eclipse.lsp4j.CompletionList;
 import org.eclipse.lsp4j.DidOpenTextDocumentParams;
 import org.eclipse.lsp4j.InitializeParams;
 import org.eclipse.lsp4j.InitializeResult;
+import org.eclipse.lsp4j.MessageActionItem;
+import org.eclipse.lsp4j.MessageParams;
 import org.eclipse.lsp4j.Position;
+import org.eclipse.lsp4j.PublishDiagnosticsParams;
+import org.eclipse.lsp4j.ShowMessageRequestParams;
 import org.eclipse.lsp4j.TextDocumentIdentifier;
 import org.eclipse.lsp4j.TextDocumentItem;
 import org.eclipse.lsp4j.TextDocumentPositionParams;
 import org.eclipse.lsp4j.jsonrpc.messages.Either;
+import org.eclipse.lsp4j.services.LanguageClient;
 import org.eclipse.lsp4j.services.TextDocumentService;
 import org.junit.Test;
 
 
 public class CamelLanguageServerTest {
 	
+	private final class DummyLanguageClient implements LanguageClient {
+		@Override
+		public void telemetryEvent(Object object) {
+		}
+
+		@Override
+		public CompletableFuture<MessageActionItem> showMessageRequest(ShowMessageRequestParams requestParams) {
+			return null;
+		}
+
+		@Override
+		public void showMessage(MessageParams messageParams) {
+		}
+
+		@Override
+		public void publishDiagnostics(PublishDiagnosticsParams diagnostics) {
+		}
+
+		@Override
+		public void logMessage(MessageParams message) {
+		}
+	}
+
 	@Test
 	public void testProvideDummyCompletionForCamelBlueprintNamespace() throws Exception {
 		CamelLanguageServer camelLanguageServer = initializeLanguageServer("<from uri=\"\" xmlns=\"http://camel.apache.org/schema/blueprint\"></from>\n");
@@ -75,6 +103,7 @@ public class CamelLanguageServerTest {
 		params.setProcessId(new Random().nextInt());
 		params.setRootUri(getTestResource("/workspace/").toURI().toString());
 		CamelLanguageServer camelLanguageServer = new CamelLanguageServer();
+		camelLanguageServer.connect(new DummyLanguageClient());
 		CompletableFuture<InitializeResult> initialize = camelLanguageServer.initialize(params);
 		
 		assertThat(initialize).isCompleted();
