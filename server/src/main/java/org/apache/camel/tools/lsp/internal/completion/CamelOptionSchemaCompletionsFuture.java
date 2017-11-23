@@ -19,20 +19,31 @@ package org.apache.camel.tools.lsp.internal.completion;
 import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.apache.camel.catalog.CamelCatalog;
-import org.apache.camel.tools.lsp.internal.model.ComponentModel;
+import org.apache.camel.tools.lsp.internal.model.EndpointOptionModel;
 import org.apache.camel.tools.lsp.internal.model.util.ModelHelper;
+import org.apache.camel.tools.lsp.internal.model.util.StringUtils;
 import org.eclipse.lsp4j.CompletionItem;
 
-final class CompletionsFuture implements Function<CamelCatalog, List<CompletionItem>> {
+public class CamelOptionSchemaCompletionsFuture implements Function<CamelCatalog, List<CompletionItem>>  {
+
+	private String camelComponentUri;
+
+	public CamelOptionSchemaCompletionsFuture(String camelComponentUri) {
+		this.camelComponentUri = camelComponentUri;
+	}
+
 	@Override
 	public List<CompletionItem> apply(CamelCatalog catalog) {
-		return catalog.findComponentNames().stream()
-				.map(componentName -> {
-					ComponentModel componentModel = ModelHelper.generateComponentModel(catalog.componentJSonSchema(componentName), true);
-					return componentModel.getSyntax();
-				})
-				.map(CompletionItem::new).collect(Collectors.toList());
+		String componentName = StringUtils.asComponentName(camelComponentUri);
+		Stream<EndpointOptionModel> endpointOptions = ModelHelper.generateComponentModel(catalog.componentJSonSchema(componentName), true).getEndpointOptions().stream();
+		return endpointOptions
+				.filter(endpoint -> "parameter".equals(endpoint.getKind()))
+				.map(EndpointOptionModel::getName)
+				.map(CompletionItem::new)
+				.collect(Collectors.toList());
 	}
+
 }

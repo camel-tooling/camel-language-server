@@ -58,8 +58,13 @@ public class CamelEndpointCompletionProcessor {
 	public CompletableFuture<List<CompletionItem>> getCompletions(Position position) {
 		if(textDocumentItem != null) {
 			try {
-				if(getCorrespondingCamelNodeForCompletion(textDocumentItem) != null && isBetweenUriQuote(textDocumentItem, position)) {
-					return camelCatalog.thenApply(new CompletionsFuture());
+				if(getCorrespondingCamelNodeForCompletion(textDocumentItem) != null) {
+					String line = getLine(textDocumentItem, position);
+					if(isBetweenUriQuoteAndInSchemePart(line, position)) {
+						return camelCatalog.thenApply(new CamelComponentSchemaCompletionsFuture());
+					} else {
+						return camelCatalog.thenApply(new CamelOptionSchemaCompletionsFuture(getCamelComponentUri(line)));
+					}
 				}
 			} catch (Exception e) {
 				LOGGER.error("Error searching for corresponding node elements", e);
@@ -68,18 +73,43 @@ public class CamelEndpointCompletionProcessor {
 		return CompletableFuture.completedFuture(Collections.emptyList());
 	}
 
-	private boolean isBetweenUriQuote(TextDocumentItem textDocumentItem, Position position) {
-		String text = textDocumentItem.getText();
-		String[] lines = text.split("\r?\n", position.getLine());
-		if(lines.length == position.getLine() + 1) {
-			String line = lines[position.getLine()];
+	private String getCamelComponentUri(String line) {
+		int uriAttribute = line.indexOf("uri=\"");
+		if(uriAttribute != -1) {
+			int nextQuote = line.indexOf('\"', uriAttribute + 5);
+			return line.substring(uriAttribute + 5, nextQuote);
+		}
+		return null;
+	}
+
+	private boolean isBetweenUriQuoteAndInSchemePart(String line, Position position) {
+		if (line != null) {
 			int uriAttribute = line.indexOf("uri=\"");
 			if(uriAttribute != -1) {
 				int nextQuote = line.indexOf('\"', uriAttribute +5);
-				return nextQuote != -1 && position.getCharacter() <= nextQuote && position.getCharacter() >= uriAttribute + 5;
+				int nextQuestionMark = line.indexOf('?', uriAttribute +5);
+				boolean hasQuestionMarkBeforeNextQuote = nextQuestionMark != -1;
+				if(hasQuestionMarkBeforeNextQuote) {
+					return isBetween(position.getCharacter(), uriAttribute + 5, Math.min(nextQuote, nextQuestionMark));
+				} else {
+					return isBetween(position.getCharacter(), uriAttribute + 5, nextQuote);
+				}
 			}
 		}
 		return false;
+	}
+	
+	private String getLine(TextDocumentItem textDocumentItem, Position position) {
+		String text = textDocumentItem.getText();
+		String[] lines = text.split("\r?\n", position.getLine());
+		if(lines.length == position.getLine() + 1) {
+			return lines[position.getLine()];
+		}
+		return null;
+	}
+
+	private boolean isBetween(int position, int start, int end) {
+		return end != -1 && position <= end && position >= start;
 	}
 
 	/**
