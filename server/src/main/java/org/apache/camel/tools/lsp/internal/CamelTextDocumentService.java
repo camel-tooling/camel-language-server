@@ -16,6 +16,7 @@
  */
 package org.apache.camel.tools.lsp.internal;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -88,37 +89,37 @@ public class CamelTextDocumentService implements TextDocumentService {
 	@Override
 	public CompletableFuture<List<? extends Location>> definition(TextDocumentPositionParams position) {
 		LOGGER.info("definition: " + position.getTextDocument());
-		return CompletableFuture.completedFuture(null);
+		return CompletableFuture.completedFuture(Collections.emptyList());
 	}
 
 	@Override
 	public CompletableFuture<List<? extends Location>> references(ReferenceParams params) {
 		LOGGER.info("references: " + params.getTextDocument());
-		return CompletableFuture.completedFuture(null);
+		return CompletableFuture.completedFuture(Collections.emptyList());
 	}
 
 	@Override
 	public CompletableFuture<List<? extends DocumentHighlight>> documentHighlight(TextDocumentPositionParams position) {
 		LOGGER.info("documentHighlight: " + position.getTextDocument());
-		return CompletableFuture.completedFuture(null);
+		return CompletableFuture.completedFuture(Collections.emptyList());
 	}
 
 	@Override
 	public CompletableFuture<List<? extends SymbolInformation>> documentSymbol(DocumentSymbolParams params) {
 		LOGGER.info("documentSymbol: " + params.getTextDocument());
-		return CompletableFuture.completedFuture(null);
+		return CompletableFuture.completedFuture(Collections.emptyList());
 	}
 
 	@Override
 	public CompletableFuture<List<? extends Command>> codeAction(CodeActionParams params) {
 		LOGGER.info("codeAction: " + params.getTextDocument());
-		return CompletableFuture.completedFuture(null);
+		return CompletableFuture.completedFuture(Collections.emptyList());
 	}
 
 	@Override
 	public CompletableFuture<List<? extends CodeLens>> codeLens(CodeLensParams params) {
 		LOGGER.info("codeLens: " + params.getTextDocument());
-		return CompletableFuture.completedFuture(null);
+		return CompletableFuture.completedFuture(Collections.emptyList());
 	}
 
 	@Override
@@ -130,19 +131,19 @@ public class CamelTextDocumentService implements TextDocumentService {
 	@Override
 	public CompletableFuture<List<? extends TextEdit>> formatting(DocumentFormattingParams params) {
 		LOGGER.info("formatting: " + params.getTextDocument());
-		return CompletableFuture.completedFuture(null);
+		return CompletableFuture.completedFuture(Collections.emptyList());
 	}
 
 	@Override
 	public CompletableFuture<List<? extends TextEdit>> rangeFormatting(DocumentRangeFormattingParams params) {
 		LOGGER.info("rangeFormatting: " + params.getTextDocument());
-		return CompletableFuture.completedFuture(null);
+		return CompletableFuture.completedFuture(Collections.emptyList());
 	}
 
 	@Override
 	public CompletableFuture<List<? extends TextEdit>> onTypeFormatting(DocumentOnTypeFormattingParams params) {
 		LOGGER.info("onTypeFormatting: " + params.getTextDocument());
-		return CompletableFuture.completedFuture(null);
+		return CompletableFuture.completedFuture(Collections.emptyList());
 	}
 
 	@Override
