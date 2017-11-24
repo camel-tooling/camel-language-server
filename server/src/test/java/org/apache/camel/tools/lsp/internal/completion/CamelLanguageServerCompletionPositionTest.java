@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.camel.tools.lsp.internal;
+package org.apache.camel.tools.lsp.internal.completion;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -23,6 +23,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
+import org.apache.camel.tools.lsp.internal.AbstractCamelLanguageServerTest;
+import org.apache.camel.tools.lsp.internal.CamelLanguageServer;
 import org.eclipse.lsp4j.CompletionItem;
 import org.eclipse.lsp4j.CompletionList;
 import org.eclipse.lsp4j.Position;
@@ -61,7 +63,18 @@ public class CamelLanguageServerCompletionPositionTest extends AbstractCamelLang
     		{ "<from uri=\"ahc\" xmlns=\"http://camel.apache.org/schema/blueprint\"></from>\n", 0, 12, true, "Uri with some value" },
     		{ "<from uri=\"ahc\" xmlns=\"http://camel.apache.org/schema/blueprint\"></from>\n", 0, 13, true, "Uri with some value" },
     		{ "<from uri=\"ahc\" xmlns=\"http://camel.apache.org/schema/blueprint\"></from>\n", 0, 14, true, "Uri with some value" },
-    		{ "<from uri=\"ahc\" xmlns=\"http://camel.apache.org/schema/blueprint\"></from>\n", 0, 15, false, "Uri with some value" }
+    		{ "<from uri=\"ahc\" xmlns=\"http://camel.apache.org/schema/blueprint\"></from>\n", 0, 15, false, "Uri with some value" },
+    		
+    		{ "<from uri=\"ahc:httpUri?anOption=aValue\" xmlns=\"http://camel.apache.org/schema/blueprint\"></from>\n", 0, 14, true, "Uri with a syntax provided" },
+    		{ "<from uri=\"ahc:httpUri?anOption=aValue\" xmlns=\"http://camel.apache.org/schema/blueprint\"></from>\n", 0, 16, true, "Uri with a syntax provided" },
+    		{ "<from uri=\"ahc:httpUri?anOption=aValue\" xmlns=\"http://camel.apache.org/schema/blueprint\"></from>\n", 0, 17, true, "Uri with a syntax provided" },
+    		{ "<from uri=\"ahc:httpUri?anOption=aValue\" xmlns=\"http://camel.apache.org/schema/blueprint\"></from>\n", 0, 18, true, "Uri with a syntax provided" },
+    		{ "<from uri=\"ahc:httpUri?anOption=aValue\" xmlns=\"http://camel.apache.org/schema/blueprint\"></from>\n", 0, 19, true, "Uri with a syntax provided" },
+    		{ "<from uri=\"ahc:httpUri?anOption=aValue\" xmlns=\"http://camel.apache.org/schema/blueprint\"></from>\n", 0, 20, true, "Uri with a syntax provided" },
+    		{ "<from uri=\"ahc:httpUri?anOption=aValue\" xmlns=\"http://camel.apache.org/schema/blueprint\"></from>\n", 0, 21, true, "Uri with a syntax provided" },
+    		{ "<from uri=\"ahc:httpUri?anOption=aValue\" xmlns=\"http://camel.apache.org/schema/blueprint\"></from>\n", 0, 22, true, "Uri with a syntax provided" },
+    		{ "<from uri=\"ahc:httpUri?anOption=aValue\" xmlns=\"http://camel.apache.org/schema/blueprint\"></from>\n", 0, 23, false, "Uri with a syntax provided" },
+    		{ "<from uri=\"ahc:httpUri?anOption=aValue\" xmlns=\"http://camel.apache.org/schema/blueprint\"></from>\n", 0, 24, false, "Uri with a syntax provided" },
     	});
     }
     
@@ -85,7 +98,7 @@ public class CamelLanguageServerCompletionPositionTest extends AbstractCamelLang
 		if(shoudlHaveCompletion) {
 			assertThat(completions.get().getLeft()).contains(new CompletionItem("ahc:httpUri"));
 		} else {
-			assertThat(completions.get().getLeft()).isEmpty();
+			assertThat(completions.get().getLeft()).doesNotContain(new CompletionItem("ahc:httpUri"));
 			assertThat(completions.get().getRight()).isNull();
 		}
 	}
