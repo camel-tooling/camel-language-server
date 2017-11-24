@@ -30,8 +30,6 @@ import org.eclipse.lsp4j.services.LanguageClient;
 import org.eclipse.lsp4j.services.LanguageClientAware;
 import org.eclipse.lsp4j.services.LanguageServer;
 import org.eclipse.lsp4j.services.WorkspaceService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * this is the actual server implementation
@@ -40,8 +38,6 @@ import org.slf4j.LoggerFactory;
  */
 public class CamelLanguageServer extends AbstractLanguageServer implements LanguageServer, LanguageClientAware {
 	
-	/** The usual Logger. */
-	private static final Logger LOGGER = LoggerFactory.getLogger(CamelLanguageServer.class);
 	public static final String LANGUAGE_ID = "LANGUAGE_ID_APACHE_CAMEL";
 	
 	private LanguageClient client;
@@ -77,8 +73,8 @@ public class CamelLanguageServer extends AbstractLanguageServer implements Langu
 		InitializeResult result = new InitializeResult();
 		
 		ServerCapabilities capabilities = new ServerCapabilities();
-		capabilities.setTextDocumentSync(TextDocumentSyncKind.Incremental);
-		capabilities.setCompletionProvider(new CompletionOptions(Boolean.TRUE, Arrays.asList(".","?","&")));
+		capabilities.setTextDocumentSync(TextDocumentSyncKind.Full);
+		capabilities.setCompletionProvider(new CompletionOptions(Boolean.TRUE, Arrays.asList(".","?","&", "\"")));
 		
 		result.setCapabilities(capabilities);
 		return CompletableFuture.completedFuture(result);
