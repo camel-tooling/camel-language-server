@@ -29,8 +29,12 @@ import org.eclipse.lsp4j.services.TextDocumentService;
 
 public abstract class AbstractCamelLanguageServerTest {
 
+	protected CompletionItem expectedAhcCompletioncompletionItem;
+
 	public AbstractCamelLanguageServerTest() {
 		super();
+		expectedAhcCompletioncompletionItem = new CompletionItem("ahc:httpUri");
+		expectedAhcCompletioncompletionItem.setDocumentation("To call external HTTP services using Async Http Client.");
 	}
 	
 	final class DummyLanguageClient implements LanguageClient {

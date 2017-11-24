@@ -36,7 +36,7 @@ public class CamelLanguageServerTest extends AbstractCamelLanguageServerTest {
 		
 		CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = getCompletionFor(camelLanguageServer, new Position(0, 11));
 		
-		assertThat(completions.get().getLeft()).contains(new CompletionItem("ahc:httpUri"));
+		assertThat(completions.get().getLeft()).contains(expectedAhcCompletioncompletionItem);
 	}
 	
 	@Test
@@ -45,7 +45,7 @@ public class CamelLanguageServerTest extends AbstractCamelLanguageServerTest {
 		
 		CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = getCompletionFor(camelLanguageServer, new Position(0, 9));
 		
-		assertThat(completions.get().getLeft()).contains(new CompletionItem("ahc:httpUri"));
+		assertThat(completions.get().getLeft()).contains(expectedAhcCompletioncompletionItem);
 	}
 	
 	@Test
@@ -54,7 +54,7 @@ public class CamelLanguageServerTest extends AbstractCamelLanguageServerTest {
 		
 		CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = getCompletionFor(camelLanguageServer, new Position(0, 11));
 		
-		assertThat(completions.get().getLeft()).contains(new CompletionItem("ahc:httpUri"));
+		assertThat(completions.get().getLeft()).contains(expectedAhcCompletioncompletionItem);
 	}
 
 	@Test

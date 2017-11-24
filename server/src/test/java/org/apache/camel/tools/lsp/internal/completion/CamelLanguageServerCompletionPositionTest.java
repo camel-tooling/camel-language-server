@@ -96,9 +96,9 @@ public class CamelLanguageServerCompletionPositionTest extends AbstractCamelLang
 		CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = getCompletionFor(camelLanguageServer, new Position(line, character));
 		
 		if(shoudlHaveCompletion) {
-			assertThat(completions.get().getLeft()).contains(new CompletionItem("ahc:httpUri"));
+			assertThat(completions.get().getLeft()).contains(expectedAhcCompletioncompletionItem);
 		} else {
-			assertThat(completions.get().getLeft()).doesNotContain(new CompletionItem("ahc:httpUri"));
+			assertThat(completions.get().getLeft()).doesNotContain(expectedAhcCompletioncompletionItem);
 			assertThat(completions.get().getRight()).isNull();
 		}
 	}
