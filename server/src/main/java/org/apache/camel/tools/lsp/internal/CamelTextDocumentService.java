@@ -44,6 +44,7 @@ import org.eclipse.lsp4j.ReferenceParams;
 import org.eclipse.lsp4j.RenameParams;
 import org.eclipse.lsp4j.SignatureHelp;
 import org.eclipse.lsp4j.SymbolInformation;
+import org.eclipse.lsp4j.TextDocumentContentChangeEvent;
 import org.eclipse.lsp4j.TextDocumentItem;
 import org.eclipse.lsp4j.TextDocumentPositionParams;
 import org.eclipse.lsp4j.TextEdit;
@@ -162,6 +163,11 @@ public class CamelTextDocumentService implements TextDocumentService {
 	@Override
 	public void didChange(DidChangeTextDocumentParams params) {
 		LOGGER.info("didChange: " + params.getTextDocument());
+		List<TextDocumentContentChangeEvent> contentChanges = params.getContentChanges();
+		TextDocumentItem textDocumentItem = openedDocuments.get(params.getTextDocument().getUri());
+		if (!contentChanges.isEmpty()) {
+			textDocumentItem.setText(contentChanges.get(0).getText());
+		}
 	}
 
 	@Override

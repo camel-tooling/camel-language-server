@@ -29,6 +29,7 @@ import org.eclipse.lsp4j.services.TextDocumentService;
 
 public abstract class AbstractCamelLanguageServerTest {
 
+	protected static final String DUMMY_URI = "dummyUri";
 	protected CompletionItem expectedAhcCompletioncompletionItem;
 
 	public AbstractCamelLanguageServerTest() {
@@ -78,13 +79,13 @@ public abstract class AbstractCamelLanguageServerTest {
 			}
 
 	private TextDocumentItem createTestTextDocument(String text) {
-		return new TextDocumentItem("dummyUri", CamelLanguageServer.LANGUAGE_ID, 0, text);
+		return new TextDocumentItem(DUMMY_URI, CamelLanguageServer.LANGUAGE_ID, 0, text);
 	}
 
 	protected CompletableFuture<Either<List<CompletionItem>, CompletionList>> getCompletionFor(CamelLanguageServer camelLanguageServer, Position position) {
 		TextDocumentService textDocumentService = camelLanguageServer.getTextDocumentService();
 		
-		TextDocumentPositionParams dummyCompletionPositionRequest = new TextDocumentPositionParams(new TextDocumentIdentifier("dummyUri"), position);
+		TextDocumentPositionParams dummyCompletionPositionRequest = new TextDocumentPositionParams(new TextDocumentIdentifier(DUMMY_URI), position);
 		CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = textDocumentService.completion(dummyCompletionPositionRequest);
 		return completions;
 	}
