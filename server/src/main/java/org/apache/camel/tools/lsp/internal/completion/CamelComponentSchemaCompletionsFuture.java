@@ -21,7 +21,6 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.apache.camel.catalog.CamelCatalog;
-import org.apache.camel.tools.lsp.internal.model.ComponentModel;
 import org.apache.camel.tools.lsp.internal.model.util.ModelHelper;
 import org.eclipse.lsp4j.CompletionItem;
 
@@ -29,10 +28,11 @@ final class CamelComponentSchemaCompletionsFuture implements Function<CamelCatal
 	@Override
 	public List<CompletionItem> apply(CamelCatalog catalog) {
 		return catalog.findComponentNames().stream()
-				.map(componentName -> {
-					ComponentModel componentModel = ModelHelper.generateComponentModel(catalog.componentJSonSchema(componentName), true);
-					return componentModel.getSyntax();
-				})
-				.map(CompletionItem::new).collect(Collectors.toList());
+				.map(componentName -> ModelHelper.generateComponentModel(catalog.componentJSonSchema(componentName), true))
+				.map(componentModel -> {
+					CompletionItem completionItem = new CompletionItem(componentModel.getSyntax());
+					completionItem.setDocumentation(componentModel.getDescription());
+					return completionItem;
+				}).collect(Collectors.toList());
 	}
 }
