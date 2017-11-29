@@ -74,7 +74,8 @@ public class CamelLanguageServerCompletionPositionTest extends AbstractCamelLang
     		{ "<from uri=\"ahc:httpUri?anOption=aValue\" xmlns=\"http://camel.apache.org/schema/blueprint\"></from>\n", 0, 21, true, "Uri with a syntax provided" },
     		{ "<from uri=\"ahc:httpUri?anOption=aValue\" xmlns=\"http://camel.apache.org/schema/blueprint\"></from>\n", 0, 22, true, "Uri with a syntax provided" },
     		{ "<from uri=\"ahc:httpUri?anOption=aValue\" xmlns=\"http://camel.apache.org/schema/blueprint\"></from>\n", 0, 23, false, "Uri with a syntax provided" },
-    		{ "<from uri=\"ahc:httpUri?anOption=aValue\" xmlns=\"http://camel.apache.org/schema/blueprint\"></from>\n", 0, 24, false, "Uri with a syntax provided" },
+    		{ "<from uri=\"ahc:httpUri?anOption=aValue\" xmlns=\"http://camel.apache.org/schema/blueprint\"></from>\n", 0, 24, false, "Uri with a syntax provided" }
+    		
     	});
     }
     

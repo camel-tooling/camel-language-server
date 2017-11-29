@@ -41,8 +41,15 @@ public class CamelOptionSchemaCompletionsFuture implements Function<CamelCatalog
 		Stream<EndpointOptionModel> endpointOptions = ModelHelper.generateComponentModel(catalog.componentJSonSchema(componentName), true).getEndpointOptions().stream();
 		return endpointOptions
 				.filter(endpoint -> "parameter".equals(endpoint.getKind()))
-				.map(EndpointOptionModel::getName)
-				.map(CompletionItem::new)
+				.map(parameter -> {
+					CompletionItem completionItem = new CompletionItem(parameter.getName());
+					String insertText = parameter.getName() + "=";
+					if(parameter.getDefaultValue() != null) {
+						insertText += parameter.getDefaultValue();
+					}
+					completionItem.setInsertText(insertText);
+					return completionItem;
+				})
 				.collect(Collectors.toList());
 	}
 
