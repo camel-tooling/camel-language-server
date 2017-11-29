@@ -18,8 +18,10 @@ package org.apache.camel.tools.lsp.internal.completion;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.net.URISyntaxException;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 import org.apache.camel.tools.lsp.internal.AbstractCamelLanguageServerTest;
 import org.apache.camel.tools.lsp.internal.CamelLanguageServer;
@@ -33,11 +35,22 @@ public class CamelComponentOptionsCompletionsTest extends AbstractCamelLanguageS
 	
     @Test
 	public void testProvideCamelOptions() throws Exception {
-		CamelLanguageServer camelLanguageServer = initializeLanguageServer("<from uri=\"ahc:httpUri?\" xmlns=\"http://camel.apache.org/schema/blueprint\"></from>\n");
-		
-		CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = getCompletionFor(camelLanguageServer, new Position(0, 23));
-		
-		assertThat(completions.get().getLeft()).contains(new CompletionItem("bridgeEndpoint"));
+		testProvideCamelOptions("<from uri=\"ahc:httpUri?\" xmlns=\"http://camel.apache.org/schema/blueprint\"></from>\n", 0, 23);
 	}
+    
+    @Test
+   	public void testProvideCamelOptionsWhenAlreadyContainOptions() throws Exception {
+    	testProvideCamelOptions("<from uri=\"ahc:httpUri?anOption=aValue&amp;\" xmlns=\"http://camel.apache.org/schema/blueprint\"></from>\n", 0, 43);
+   	}
+    
+    private void testProvideCamelOptions(String textTotest, int line, int character) throws URISyntaxException, InterruptedException, ExecutionException {
+    	CamelLanguageServer camelLanguageServer = initializeLanguageServer(textTotest);
+    	
+    	CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = getCompletionFor(camelLanguageServer, new Position(line, character));
+    	
+    	CompletionItem completionItem = new CompletionItem("bridgeEndpoint");
+    	completionItem.setInsertText("bridgeEndpoint=false");
+    	assertThat(completions.get().getLeft()).contains(completionItem);
+    }
     
 }
