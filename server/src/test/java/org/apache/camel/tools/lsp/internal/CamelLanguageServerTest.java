@@ -56,6 +56,18 @@ public class CamelLanguageServerTest extends AbstractCamelLanguageServerTest {
 		
 		assertThat(completions.get().getLeft()).contains(expectedAhcCompletioncompletionItem);
 	}
+	
+	@Test
+	public void testProvideCompletionforMultiline() throws Exception {
+		CamelLanguageServer camelLanguageServer = initializeLanguageServer(
+				"<camelContext xmlns=\"http://camel.apache.org/schema/spring\">\n" + 
+				"<to uri=\"\" ></to>\n" + 
+				"</camelContext>");
+		
+		CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = getCompletionFor(camelLanguageServer, new Position(1, 9));
+		
+		assertThat(completions.get().getLeft()).contains(expectedAhcCompletioncompletionItem);
+	}
 
 	@Test
 	public void testDONTProvideCompletionForNotCamelnamespace() throws Exception {
