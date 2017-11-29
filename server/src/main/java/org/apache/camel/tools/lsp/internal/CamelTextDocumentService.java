@@ -22,7 +22,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
+import org.apache.camel.catalog.CamelCatalog;
+import org.apache.camel.catalog.DefaultCamelCatalog;
 import org.apache.camel.tools.lsp.internal.completion.CamelEndpointCompletionProcessor;
+import org.apache.camel.tools.lsp.internal.hover.HoverProcessor;
 import org.eclipse.lsp4j.CodeActionParams;
 import org.eclipse.lsp4j.CodeLens;
 import org.eclipse.lsp4j.CodeLensParams;
@@ -61,12 +64,21 @@ public class CamelTextDocumentService implements TextDocumentService {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(CamelTextDocumentService.class);
 	private Map<String, TextDocumentItem> openedDocuments = new HashMap<>();
+	private CompletableFuture<CamelCatalog> camelCatalog;
+	
+	public CamelTextDocumentService() {
+		camelCatalog = CompletableFuture.supplyAsync(() -> {
+			DefaultCamelCatalog res = new DefaultCamelCatalog(true);
+			res.loadVersion("2.20.1");
+			return res;
+		});
+	}
 	
 	@Override
 	public CompletableFuture<Either<List<CompletionItem>, CompletionList>> completion(TextDocumentPositionParams completionRequest) {
 		LOGGER.info("completion: " + completionRequest.getTextDocument().getUri());
 		TextDocumentItem textDocumentItem = openedDocuments.get(completionRequest.getTextDocument().getUri());
-		return new CamelEndpointCompletionProcessor(textDocumentItem).getCompletions(completionRequest.getPosition()).thenApply(Either::forLeft);
+		return new CamelEndpointCompletionProcessor(textDocumentItem, camelCatalog).getCompletions(completionRequest.getPosition()).thenApply(Either::forLeft);
 	}
 
 	@Override
@@ -78,7 +90,8 @@ public class CamelTextDocumentService implements TextDocumentService {
 	@Override
 	public CompletableFuture<Hover> hover(TextDocumentPositionParams position) {
 		LOGGER.info("hover: " + position.getTextDocument());
-		return CompletableFuture.completedFuture(null);
+		TextDocumentItem textDocumentItem = openedDocuments.get(position.getTextDocument().getUri());
+		return new HoverProcessor(textDocumentItem, camelCatalog).getHover(position.getPosition());
 	}
 
 	@Override

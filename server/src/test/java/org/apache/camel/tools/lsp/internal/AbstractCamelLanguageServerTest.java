@@ -29,13 +29,14 @@ import org.eclipse.lsp4j.services.TextDocumentService;
 
 public abstract class AbstractCamelLanguageServerTest {
 
+	protected static final String AHC_DOCUMENTATION = "To call external HTTP services using Async Http Client.";
 	protected static final String DUMMY_URI = "dummyUri";
 	protected CompletionItem expectedAhcCompletioncompletionItem;
 
 	public AbstractCamelLanguageServerTest() {
 		super();
 		expectedAhcCompletioncompletionItem = new CompletionItem("ahc:httpUri");
-		expectedAhcCompletioncompletionItem.setDocumentation("To call external HTTP services using Async Http Client.");
+		expectedAhcCompletioncompletionItem.setDocumentation(AHC_DOCUMENTATION);
 	}
 	
 	final class DummyLanguageClient implements LanguageClient {

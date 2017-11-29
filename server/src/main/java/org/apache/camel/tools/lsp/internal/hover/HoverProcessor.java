@@ -14,48 +14,48 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.camel.tools.lsp.internal.completion;
+package org.apache.camel.tools.lsp.internal.hover;
 
-import java.util.Collections;
-import java.util.List;
+import java.io.IOException;
 import java.util.concurrent.CompletableFuture;
 
+import javax.xml.parsers.ParserConfigurationException;
+
 import org.apache.camel.catalog.CamelCatalog;
+import org.apache.camel.tools.lsp.internal.model.util.StringUtils;
 import org.apache.camel.tools.lsp.internal.parser.ParserFileHelper;
-import org.eclipse.lsp4j.CompletionItem;
+import org.eclipse.lsp4j.Hover;
 import org.eclipse.lsp4j.Position;
 import org.eclipse.lsp4j.TextDocumentItem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.xml.sax.SAXException;
 
-public class CamelEndpointCompletionProcessor {
-
-	private static final Logger LOGGER = LoggerFactory.getLogger(CamelEndpointCompletionProcessor.class);
+public class HoverProcessor {
+	
+	private static final Logger LOGGER = LoggerFactory.getLogger(HoverProcessor.class);
 	private TextDocumentItem textDocumentItem;
-	private ParserFileHelper parserFileHelper = new ParserFileHelper();
 	private CompletableFuture<CamelCatalog> camelCatalog;
 
-	public CamelEndpointCompletionProcessor(TextDocumentItem textDocumentItem, CompletableFuture<CamelCatalog> camelCatalog) {
+	public HoverProcessor(TextDocumentItem textDocumentItem, CompletableFuture<CamelCatalog> camelCatalog) {
 		this.textDocumentItem = textDocumentItem;
 		this.camelCatalog = camelCatalog;
 	}
 
-	public CompletableFuture<List<CompletionItem>> getCompletions(Position position) {
-		if(textDocumentItem != null) {
-			try {
-				if(parserFileHelper.getCorrespondingCamelNodeForCompletion(textDocumentItem) != null) {
-					String line = parserFileHelper.getLine(textDocumentItem, position);
-					if(parserFileHelper.isBetweenUriQuoteAndInSchemePart(line, position)) {
-						return camelCatalog.thenApply(new CamelComponentSchemaCompletionsFuture());
-					} else {
-						return camelCatalog.thenApply(new CamelOptionSchemaCompletionsFuture(parserFileHelper.getCamelComponentUri(line, position.getCharacter())));
-					}
+	public CompletableFuture<Hover> getHover(Position position) {
+		try {
+			ParserFileHelper parserFileHelper = new ParserFileHelper();
+			if(parserFileHelper.getCorrespondingCamelNodeForCompletion(textDocumentItem) != null){
+				String camelComponentUri = parserFileHelper.getCamelComponentUri(textDocumentItem, position);
+				String componentName = StringUtils.asComponentName(camelComponentUri);
+				if (componentName != null) {
+					return camelCatalog.thenApply(new HoverFuture(componentName));
 				}
-			} catch (Exception e) {
-				LOGGER.error("Error searching for corresponding node elements", e);
 			}
+		} catch (SAXException | IOException | ParserConfigurationException e) {
+			LOGGER.error("Error searching hover", e);
 		}
-		return CompletableFuture.completedFuture(Collections.emptyList());
+		return CompletableFuture.completedFuture(null);
 	}
 
 }
