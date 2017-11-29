@@ -101,8 +101,8 @@ public class CamelEndpointCompletionProcessor {
 	
 	private String getLine(TextDocumentItem textDocumentItem, Position position) {
 		String text = textDocumentItem.getText();
-		String[] lines = text.split("\r?\n", position.getLine());
-		if(lines.length == position.getLine() + 1) {
+		String[] lines = text.split("\\r?\\n", position.getLine() + 2);
+		if(lines.length >= position.getLine() + 1) {
 			return lines[position.getLine()];
 		}
 		return null;
