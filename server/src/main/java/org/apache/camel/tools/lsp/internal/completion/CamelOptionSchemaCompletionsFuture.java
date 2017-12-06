@@ -24,21 +24,19 @@ import java.util.stream.Stream;
 import org.apache.camel.catalog.CamelCatalog;
 import org.apache.camel.tools.lsp.internal.model.EndpointOptionModel;
 import org.apache.camel.tools.lsp.internal.model.util.ModelHelper;
-import org.apache.camel.tools.lsp.internal.model.util.StringUtils;
 import org.eclipse.lsp4j.CompletionItem;
 
 public class CamelOptionSchemaCompletionsFuture implements Function<CamelCatalog, List<CompletionItem>>  {
 
-	private String camelComponentUri;
+	private String camelComponentName;
 
-	public CamelOptionSchemaCompletionsFuture(String camelComponentUri) {
-		this.camelComponentUri = camelComponentUri;
+	public CamelOptionSchemaCompletionsFuture(String camelComponentName) {
+		this.camelComponentName = camelComponentName;
 	}
 
 	@Override
 	public List<CompletionItem> apply(CamelCatalog catalog) {
-		String componentName = StringUtils.asComponentName(camelComponentUri);
-		Stream<EndpointOptionModel> endpointOptions = ModelHelper.generateComponentModel(catalog.componentJSonSchema(componentName), true).getEndpointOptions().stream();
+		Stream<EndpointOptionModel> endpointOptions = ModelHelper.generateComponentModel(catalog.componentJSonSchema(camelComponentName), true).getEndpointOptions().stream();
 		return endpointOptions
 				.filter(endpoint -> "parameter".equals(endpoint.getKind()))
 				.map(parameter -> {

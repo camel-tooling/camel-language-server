@@ -14,25 +14,31 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.camel.tools.lsp.internal.completion;
+package org.apache.camel.tools.lsp.internal.parser;
 
 import java.util.List;
-import java.util.function.Function;
-import java.util.stream.Collectors;
+import java.util.concurrent.CompletableFuture;
 
 import org.apache.camel.catalog.CamelCatalog;
-import org.apache.camel.tools.lsp.internal.model.util.ModelHelper;
+import org.apache.camel.tools.lsp.internal.completion.CamelComponentSchemaCompletionsFuture;
 import org.eclipse.lsp4j.CompletionItem;
 
-public final class CamelComponentSchemaCompletionsFuture implements Function<CamelCatalog, List<CompletionItem>> {
-	@Override
-	public List<CompletionItem> apply(CamelCatalog catalog) {
-		return catalog.findComponentNames().stream()
-				.map(componentName -> ModelHelper.generateComponentModel(catalog.componentJSonSchema(componentName), true))
-				.map(componentModel -> {
-					CompletionItem completionItem = new CompletionItem(componentModel.getSyntax());
-					completionItem.setDocumentation(componentModel.getDescription());
-					return completionItem;
-				}).collect(Collectors.toList());
+public class CamelComponentURIInstance extends CamelUriElementInstance {
+	
+	private String componentName;
+
+	public CamelComponentURIInstance(String componentName, int endPosition) {
+		super(0, endPosition);
+		this.componentName = componentName;
 	}
+
+	public String getComponentName() {
+		return componentName;
+	}
+
+	@Override
+	public CompletableFuture<List<CompletionItem>> getCompletions(CompletableFuture<CamelCatalog> camelCatalog, int positionInCamelUri) {
+		return camelCatalog.thenApply(new CamelComponentSchemaCompletionsFuture());
+	}
+
 }
