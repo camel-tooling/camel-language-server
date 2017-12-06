@@ -1,8 +1,10 @@
 out
 server
 node_modules
+jars
 *.vsix
 .DS_Store
 .vscode-test
+package-lock.json
 undefined
 target

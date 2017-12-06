@@ -1,4 +1,3 @@
-
 'use strict';
 
 import * as path from 'path';
@@ -8,7 +7,6 @@ import { LanguageClient, LanguageClientOptions, StreamInfo, Position as LSPositi
 var os = require('os');
 var glob = require('glob');
 import { StatusNotification,ClassFileContentsRequest,ProjectConfigurationUpdateRequest,MessageType,ActionableNotification,FeatureStatus } from './protocol';
-
 
 var storagePath;
 var oldConfig;
@@ -22,14 +20,14 @@ export function activate(context: ExtensionContext) {
 		wordPattern: /(-?\d*\.\d\w*)|([^\`\~\!\@\#\%\^\&\*\(\)\-\=\+\[\{\]\}\\\|\;\:\'\"\,\.\<\>\/\?\s]+)/g,
 	});
 
-
 	storagePath = context.storagePath;
 	if (!storagePath) {
 		storagePath = getTempWorkspace();
 	}
+
 	let serverOptions: Executable = {
 		command: 'java',
-		args: [ "-jar", "C:\\git\\camel-language-server\\server\\target\\camel-lsp-server-1.0.0-SNAPSHOT.jar" ],
+		args: [ "-jar", "jars/language-server.jar" ],
 		options: {stdio:"pipe"}
 	};
 
