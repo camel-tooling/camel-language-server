@@ -40,14 +40,6 @@ public abstract class CamelUriElementInstance {
 		return endPosition;
 	}
 
-	public void setStartPosition(int startPosition) {
-		this.startPosition = startPosition;
-	}
-
-	public void setEndPosition(int endPosition) {
-		this.endPosition = endPosition;
-	}
-	
 	public boolean isInRange(int position) {
 		return startPosition <= position && position <= endPosition;
 	}

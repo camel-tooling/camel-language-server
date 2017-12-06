@@ -59,23 +59,6 @@ public class ParserFileHelper {
 		return getCamelComponentUri(getLine(textDocumentItem, position), position.getCharacter());
 	}
 	
-	public boolean isBetweenUriQuoteAndInSchemePart(String line, Position position) {
-		if (line != null) {
-			int uriAttribute = line.indexOf("uri=\"");
-			if(uriAttribute != -1) {
-				int nextQuote = line.indexOf('\"', uriAttribute +5);
-				int nextQuestionMark = line.indexOf('?', uriAttribute +5);
-				boolean hasQuestionMarkBeforeNextQuote = nextQuestionMark != -1;
-				if(hasQuestionMarkBeforeNextQuote) {
-					return isBetween(position.getCharacter(), uriAttribute + 5, Math.min(nextQuote, nextQuestionMark));
-				} else {
-					return isBetween(position.getCharacter(), uriAttribute + 5, nextQuote);
-				}
-			}
-		}
-		return false;
-	}
-
 	private boolean isBetween(int position, int start, int end) {
 		return end != -1 && position <= end && position >= start;
 	}
