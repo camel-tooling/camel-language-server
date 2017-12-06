@@ -21,6 +21,8 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 import org.apache.camel.catalog.CamelCatalog;
+import org.apache.camel.tools.lsp.internal.parser.CamelURIInstance;
+import org.apache.camel.tools.lsp.internal.parser.CamelUriElementInstance;
 import org.apache.camel.tools.lsp.internal.parser.ParserFileHelper;
 import org.eclipse.lsp4j.CompletionItem;
 import org.eclipse.lsp4j.Position;
@@ -45,11 +47,11 @@ public class CamelEndpointCompletionProcessor {
 			try {
 				if(parserFileHelper.getCorrespondingCamelNodeForCompletion(textDocumentItem) != null) {
 					String line = parserFileHelper.getLine(textDocumentItem, position);
-					if(parserFileHelper.isBetweenUriQuoteAndInSchemePart(line, position)) {
-						return camelCatalog.thenApply(new CamelComponentSchemaCompletionsFuture());
-					} else {
-						return camelCatalog.thenApply(new CamelOptionSchemaCompletionsFuture(parserFileHelper.getCamelComponentUri(line, position.getCharacter())));
-					}
+					String camelComponentUri = parserFileHelper.getCamelComponentUri(textDocumentItem, position);
+					CamelURIInstance camelURIInstance = new CamelURIInstance(camelComponentUri);
+					int positionInCamelUri = position.getCharacter() - line.indexOf("uri=") - 5;
+					CamelUriElementInstance camelUriElementInstance = camelURIInstance.getSpecificElement(positionInCamelUri);
+					return camelUriElementInstance.getCompletions(camelCatalog, positionInCamelUri);
 				}
 			} catch (Exception e) {
 				LOGGER.error("Error searching for corresponding node elements", e);

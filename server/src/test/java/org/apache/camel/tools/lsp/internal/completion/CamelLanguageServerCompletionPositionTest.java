@@ -86,7 +86,7 @@ public class CamelLanguageServerCompletionPositionTest extends AbstractCamelLang
     @Parameter(2)
     public int character;
     @Parameter(3)
-    public boolean shoudlHaveCompletion;
+    public boolean shouldHaveCompletion;
     @Parameter(4)
     public String testNameQualification;
 	
@@ -96,7 +96,7 @@ public class CamelLanguageServerCompletionPositionTest extends AbstractCamelLang
 		
 		CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = getCompletionFor(camelLanguageServer, new Position(line, character));
 		
-		if(shoudlHaveCompletion) {
+		if(shouldHaveCompletion) {
 			assertThat(completions.get().getLeft()).contains(expectedAhcCompletioncompletionItem);
 		} else {
 			assertThat(completions.get().getLeft()).doesNotContain(expectedAhcCompletioncompletionItem);
