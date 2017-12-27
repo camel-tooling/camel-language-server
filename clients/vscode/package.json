@@ -4,7 +4,7 @@
 	"description": "Language Support for Apache Camel",
 	"author": "Aurélien Pupier",
 	"icon": "icons/icon128.png",
-	"license": "ASLv2",
+	"license": "Apache-2.0",
 	"version": "0.0.1",
 	"preview": true,
 	"publisher": "Aurélien Pupier",
