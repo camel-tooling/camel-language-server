@@ -17,6 +17,7 @@
 package org.apache.camel.tools.lsp.internal.completion;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -28,33 +29,45 @@ import org.apache.camel.tools.lsp.internal.model.util.ModelHelper;
 import org.apache.camel.tools.lsp.internal.parser.OptionParamValueURIInstance;
 import org.eclipse.lsp4j.CompletionItem;
 
-public class CamelOptionEnumValuesCompletionsFuture implements Function<CamelCatalog, List<CompletionItem>> {
+public class CamelOptionValuesCompletionsFuture implements Function<CamelCatalog, List<CompletionItem>> {
 
+	private static final String BOOLEAN_TYPE = "boolean";
 	private OptionParamValueURIInstance optionParamValueURIInstance;
 
-	public CamelOptionEnumValuesCompletionsFuture(OptionParamValueURIInstance optionParamValueURIInstance) {
+	public CamelOptionValuesCompletionsFuture(OptionParamValueURIInstance optionParamValueURIInstance) {
 		this.optionParamValueURIInstance = optionParamValueURIInstance;
 	}
 
 	@Override
 	public List<CompletionItem> apply(CamelCatalog camelCatalog) {
-		String componentName = optionParamValueURIInstance.getOptionParamURIInstance().getComponentName();
-		String keyName = optionParamValueURIInstance.getOptionParamURIInstance().getKey().getKeyName();
-		List<EndpointOptionModel> endpointOptions = ModelHelper.generateComponentModel(camelCatalog.componentJSonSchema(componentName), true).getEndpointOptions();
-		Optional<EndpointOptionModel> endpointModel = endpointOptions.stream()
-				.filter(endpoint -> keyName.equals(endpoint.getName()))
-				.findAny();
+		Optional<EndpointOptionModel> endpointModel = retrieveEndpointOptionModel(camelCatalog);
 		if(endpointModel.isPresent()) {
-			String enums = endpointModel.get().getEnums();
-			if(enums != null) {
-				List<CompletionItem> completionItems = new ArrayList<>();
-				for(String enumValue : enums.split(",")) {
-					completionItems.add(new CompletionItem(enumValue));
-				}
-				return completionItems;
+			EndpointOptionModel endpointOptionModel = endpointModel.get();
+			String enums = endpointOptionModel.getEnums();
+			if (enums != null && !enums.isEmpty()) {
+				return computeCompletionForEnums(enums);
+			} else if(BOOLEAN_TYPE.equals(endpointOptionModel.getType())) {
+				return Arrays.asList(new CompletionItem(Boolean.TRUE.toString()), new CompletionItem(Boolean.FALSE.toString()));
 			}
 		}
 		return Collections.emptyList();
+	}
+
+	private List<CompletionItem> computeCompletionForEnums(String enums) {
+		List<CompletionItem> completionItems = new ArrayList<>();
+		for(String enumValue : enums.split(",")) {
+			completionItems.add(new CompletionItem(enumValue));
+		}
+		return completionItems;
+	}
+
+	private Optional<EndpointOptionModel> retrieveEndpointOptionModel(CamelCatalog camelCatalog) {
+		String componentName = optionParamValueURIInstance.getOptionParamURIInstance().getComponentName();
+		String keyName = optionParamValueURIInstance.getOptionParamURIInstance().getKey().getKeyName();
+		List<EndpointOptionModel> endpointOptions = ModelHelper.generateComponentModel(camelCatalog.componentJSonSchema(componentName), true).getEndpointOptions();
+		return endpointOptions.stream()
+				.filter(endpoint -> keyName.equals(endpoint.getName()))
+				.findAny();
 	}
 
 }

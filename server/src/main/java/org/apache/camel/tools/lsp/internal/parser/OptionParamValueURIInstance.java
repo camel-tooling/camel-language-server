@@ -20,7 +20,7 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 import org.apache.camel.catalog.CamelCatalog;
-import org.apache.camel.tools.lsp.internal.completion.CamelOptionEnumValuesCompletionsFuture;
+import org.apache.camel.tools.lsp.internal.completion.CamelOptionValuesCompletionsFuture;
 import org.eclipse.lsp4j.CompletionItem;
 
 public class OptionParamValueURIInstance extends CamelUriElementInstance {
@@ -40,7 +40,7 @@ public class OptionParamValueURIInstance extends CamelUriElementInstance {
 
 	@Override
 	public CompletableFuture<List<CompletionItem>> getCompletions(CompletableFuture<CamelCatalog> camelCatalog, int positionInCamelUri) {
-		return camelCatalog.thenApply(new CamelOptionEnumValuesCompletionsFuture(this));
+		return camelCatalog.thenApply(new CamelOptionValuesCompletionsFuture(this));
 	}
 
 	public OptionParamURIInstance getOptionParamURIInstance() {
