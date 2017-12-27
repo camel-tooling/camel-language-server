@@ -27,8 +27,8 @@ export function activate(context: ExtensionContext) {
 
 	let serverOptions: Executable = {
 		command: 'java',
-		args: [ "-jar", "jars/language-server.jar" ],
-		options: {stdio:"pipe"}
+		args: [ '-jar', 'jars/language-server.jar'],
+		options: {stdio:'pipe'}
 	};
 
 	// Options to control the language client
