@@ -1,0 +1,1 @@
+Keep this folder, it will be used to download during preinstall of the Apache Camel Language Server Jar

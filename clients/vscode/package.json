@@ -34,7 +34,7 @@
 	"scripts": {
 		"vscode:prepublish": "tsc -p ./",
 		"compile": "tsc -watch -p ./",
-		"preinstall": "./scripts/preinstall.sh",
+		"preinstall": "node ./scripts/preinstall.js",
 		"postinstall": "node ./node_modules/vscode/bin/install",
 		"test": "node ./node_modules/vscode/bin/test",
 		"tslint": "gulp tslint"
@@ -60,6 +60,7 @@
 		"progress-stream": "^1.2.0",
 		"path-exists": "^3.0.0",
 		"expand-home-dir": "^0.0.3",
-		"glob": "^7.1.1"
+		"glob": "^7.1.1",
+		"download": "^6.2.5"
 	}
 }

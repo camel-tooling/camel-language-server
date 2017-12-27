@@ -25,9 +25,12 @@ export function activate(context: ExtensionContext) {
 		storagePath = getTempWorkspace();
 	}
 
+	var path = require('path');
+	var camelLanguageServerPath = path.resolve(path.resolve(__dirname)+'/../../jars/language-server.jar');
+
 	let serverOptions: Executable = {
 		command: 'java',
-		args: [ '-jar', 'jars/language-server.jar'],
+		args: [ '-jar', camelLanguageServerPath],
 		options: {stdio:'pipe'}
 	};
 
@@ -70,6 +73,7 @@ export function activate(context: ExtensionContext) {
 	});
 	languageClient.onNotification(ActionableNotification.type, (notification) => {
 		let show = null;
+		console.log(notification.message);
 		switch (notification.severity) {
 			case MessageType.Log:
 				show = logNotification;
