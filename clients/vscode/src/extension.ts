@@ -37,7 +37,7 @@ export function activate(context: ExtensionContext) {
 		documentSelector: ['xml'],
 		synchronize: {
 			configurationSection: 'xml',
-			// Notify the server about file changes to .java files contain in the workspace
+			// Notify the server about file changes to .xml files contain in the workspace
 			fileEvents: [
 				workspace.createFileSystemWatcher('**/*.xml'),
 			],
@@ -118,7 +118,7 @@ export function activate(context: ExtensionContext) {
 	};
 	workspace.registerTextDocumentContentProvider('xml', provider);
 
-	item.text = 'Starting Toulouse Language Server...';
+	item.text = 'Starting Apache Camel Language Server...';
 	toggleItem(window.activeTextEditor, item);
 	let disposable = languageClient.start();
 	// Push the disposable to the context's subscriptions so that the
