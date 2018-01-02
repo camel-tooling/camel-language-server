@@ -21,6 +21,7 @@
 		<module>camel-lsp-target-platform</module>
 		<module>org.apache.camel.lsp.eclipse.client</module>
 		<module>org.apache.camel.lsp.eclipse.client.tests.integration</module>
+		<module>org.apache.camel.lsp.eclipse.updatesite</module>
 	</modules>
 	
 	<build>
