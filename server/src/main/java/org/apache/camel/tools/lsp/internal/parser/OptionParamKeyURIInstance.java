@@ -40,7 +40,7 @@ public class OptionParamKeyURIInstance extends CamelUriElementInstance {
 	
 	@Override
 	public CompletableFuture<List<CompletionItem>> getCompletions(CompletableFuture<CamelCatalog> camelCatalog, int positionInCamelUri) {
-		return camelCatalog.thenApply(new CamelOptionSchemaCompletionsFuture(getComponentName()));
+		return camelCatalog.thenApply(new CamelOptionSchemaCompletionsFuture(getComponentName(), optionParamURIInstance.isProducer()));
 	}
 	
 	public String getComponentName() {

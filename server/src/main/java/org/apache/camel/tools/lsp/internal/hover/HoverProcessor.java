@@ -16,10 +16,7 @@
  */
 package org.apache.camel.tools.lsp.internal.hover;
 
-import java.io.IOException;
 import java.util.concurrent.CompletableFuture;
-
-import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.camel.catalog.CamelCatalog;
 import org.apache.camel.tools.lsp.internal.model.util.StringUtils;
@@ -29,7 +26,6 @@ import org.eclipse.lsp4j.Position;
 import org.eclipse.lsp4j.TextDocumentItem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.xml.sax.SAXException;
 
 public class HoverProcessor {
 	
@@ -45,14 +41,14 @@ public class HoverProcessor {
 	public CompletableFuture<Hover> getHover(Position position) {
 		try {
 			ParserFileHelper parserFileHelper = new ParserFileHelper();
-			if(parserFileHelper.getCorrespondingCamelNodeForCompletion(textDocumentItem) != null){
+			if(parserFileHelper.getCorrespondingCamelNodeForCompletion(textDocumentItem, position.getLine()) != null){
 				String camelComponentUri = parserFileHelper.getCamelComponentUri(textDocumentItem, position);
 				String componentName = StringUtils.asComponentName(camelComponentUri);
 				if (componentName != null) {
 					return camelCatalog.thenApply(new HoverFuture(componentName));
 				}
 			}
-		} catch (SAXException | IOException | ParserConfigurationException e) {
+		} catch (Exception e) {
 			LOGGER.error("Error searching hover", e);
 		}
 		return CompletableFuture.completedFuture(null);

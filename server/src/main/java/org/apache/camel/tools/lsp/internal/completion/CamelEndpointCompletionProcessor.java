@@ -29,6 +29,7 @@ import org.eclipse.lsp4j.Position;
 import org.eclipse.lsp4j.TextDocumentItem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.w3c.dom.Node;
 
 public class CamelEndpointCompletionProcessor {
 
@@ -45,10 +46,11 @@ public class CamelEndpointCompletionProcessor {
 	public CompletableFuture<List<CompletionItem>> getCompletions(Position position) {
 		if(textDocumentItem != null) {
 			try {
-				if(parserFileHelper.getCorrespondingCamelNodeForCompletion(textDocumentItem) != null) {
+				Node correspondingCamelNode = parserFileHelper.getCorrespondingCamelNodeForCompletion(textDocumentItem, position.getLine());
+				if (correspondingCamelNode != null) {
 					String line = parserFileHelper.getLine(textDocumentItem, position);
 					String camelComponentUri = parserFileHelper.getCamelComponentUri(textDocumentItem, position);
-					CamelURIInstance camelURIInstance = new CamelURIInstance(camelComponentUri);
+					CamelURIInstance camelURIInstance = new CamelURIInstance(camelComponentUri, correspondingCamelNode);
 					int positionInCamelUri = position.getCharacter() - line.indexOf("uri=") - 5;
 					CamelUriElementInstance camelUriElementInstance = camelURIInstance.getSpecificElement(positionInCamelUri);
 					return camelUriElementInstance.getCompletions(camelCatalog, positionInCamelUri);

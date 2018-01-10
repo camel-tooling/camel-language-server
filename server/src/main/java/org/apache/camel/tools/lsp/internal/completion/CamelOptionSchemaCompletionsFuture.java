@@ -29,9 +29,11 @@ import org.eclipse.lsp4j.CompletionItem;
 public class CamelOptionSchemaCompletionsFuture implements Function<CamelCatalog, List<CompletionItem>>  {
 
 	private String camelComponentName;
+	private boolean isProducer;
 
-	public CamelOptionSchemaCompletionsFuture(String camelComponentName) {
+	public CamelOptionSchemaCompletionsFuture(String camelComponentName, boolean isProducer) {
 		this.camelComponentName = camelComponentName;
+		this.isProducer = isProducer;
 	}
 
 	@Override
@@ -39,6 +41,14 @@ public class CamelOptionSchemaCompletionsFuture implements Function<CamelCatalog
 		Stream<EndpointOptionModel> endpointOptions = ModelHelper.generateComponentModel(catalog.componentJSonSchema(camelComponentName), true).getEndpointOptions().stream();
 		return endpointOptions
 				.filter(endpoint -> "parameter".equals(endpoint.getKind()))
+				.filter(endpoint -> {
+					String group = endpoint.getGroup();
+					if (isProducer) {
+						return !"consumer".equals(group);
+					} else {
+						return !"producer".equals(group);
+					}
+				})
 				.map(parameter -> {
 					CompletionItem completionItem = new CompletionItem(parameter.getName());
 					String insertText = parameter.getName() + "=";

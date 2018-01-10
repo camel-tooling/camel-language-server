@@ -35,22 +35,40 @@ public class CamelComponentOptionsCompletionsTest extends AbstractCamelLanguageS
 	
     @Test
 	public void testProvideCamelOptions() throws Exception {
-		testProvideCamelOptions("<from uri=\"ahc:httpUri?\" xmlns=\"http://camel.apache.org/schema/blueprint\"></from>\n", 0, 23);
+		testProvideCamelOptions("<to uri=\"ahc:httpUri?\" xmlns=\"http://camel.apache.org/schema/blueprint\"></to>\n", 0, 21, getBridgeEndpointExpectedCompletionItem());
+	}
+    
+    @Test
+	public void testProvideCamelOptionsForConsumerOnly() throws Exception {
+    	CompletionItem completionItem = new CompletionItem("bridgeErrorHandler");
+    	completionItem.setInsertText("bridgeErrorHandler=false");
+		testProvideCamelOptions("<from uri=\"timer:timerName?\" xmlns=\"http://camel.apache.org/schema/blueprint\"></from>\n", 0, 27, completionItem);
+	}
+    
+    @Test
+	public void testProvideCamelOptionsForConsumerOrProducer() throws Exception {
+    	CompletionItem completionItem = new CompletionItem("clientConfigOptions");
+    	completionItem.setInsertText("clientConfigOptions=");
+		testProvideCamelOptions("<from uri=\"ahc:httpUri?\" xmlns=\"http://camel.apache.org/schema/blueprint\"></from>\n", 0, 23, completionItem);
 	}
     
     @Test
    	public void testProvideCamelOptionsWhenAlreadyContainOptions() throws Exception {
-    	testProvideCamelOptions("<from uri=\"ahc:httpUri?anOption=aValue&amp;\" xmlns=\"http://camel.apache.org/schema/blueprint\"></from>\n", 0, 43);
+    	testProvideCamelOptions("<to uri=\"ahc:httpUri?anOption=aValue&amp;\" xmlns=\"http://camel.apache.org/schema/blueprint\"></to>\n", 0, 41, getBridgeEndpointExpectedCompletionItem());
    	}
     
-    private void testProvideCamelOptions(String textTotest, int line, int character) throws URISyntaxException, InterruptedException, ExecutionException {
+    private void testProvideCamelOptions(String textTotest, int line, int character, CompletionItem completionItemExpected) throws URISyntaxException, InterruptedException, ExecutionException {
     	CamelLanguageServer camelLanguageServer = initializeLanguageServer(textTotest);
     	
     	CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = getCompletionFor(camelLanguageServer, new Position(line, character));
     	
-    	CompletionItem completionItem = new CompletionItem("bridgeEndpoint");
-    	completionItem.setInsertText("bridgeEndpoint=false");
-    	assertThat(completions.get().getLeft()).contains(completionItem);
+    	assertThat(completions.get().getLeft()).contains(completionItemExpected);
     }
+
+	private CompletionItem getBridgeEndpointExpectedCompletionItem() {
+		CompletionItem completionItem = new CompletionItem("bridgeEndpoint");
+    	completionItem.setInsertText("bridgeEndpoint=false");
+		return completionItem;
+	}
     
 }

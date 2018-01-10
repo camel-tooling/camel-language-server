@@ -16,6 +16,7 @@
  */
 package org.apache.camel.tools.lsp.internal.parser;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -25,17 +26,25 @@ import java.util.concurrent.CompletableFuture;
 import org.apache.camel.catalog.CamelCatalog;
 import org.apache.camel.tools.lsp.internal.completion.CamelComponentSchemaCompletionsFuture;
 import org.eclipse.lsp4j.CompletionItem;
+import org.w3c.dom.Node;
 
 public class CamelURIInstance extends CamelUriElementInstance {
 	
 	private static final String CAMEL_PATH_SEPARATOR_REGEX = ":|/";
 	private static final String PARAMETERS_SEPARATOR = "&amp;";
+	private static final List<String> PRODUCER_NODE_TAG = Arrays.asList("to", "interceptSendToEndpoint", "wireTap", "deadLetterChanel");
 	private CamelComponentURIInstance component;
 	private Set<PathParamURIInstance> pathParams = new HashSet<>();
 	private Set<OptionParamURIInstance> optionParams = new HashSet<>();
-
+	private Node node;
+	
 	public CamelURIInstance(String uriToParse) {
+		this(uriToParse, null);
+	}
+	
+	public CamelURIInstance(String uriToParse, Node node) {
 		super(0, uriToParse != null ? uriToParse.length() : 0);
+		this.node = node;
 		if(uriToParse != null && !uriToParse.isEmpty()) {
 			int posDoubleDot = uriToParse.indexOf(':');
 			if (posDoubleDot > 0) {
@@ -119,5 +128,9 @@ public class CamelURIInstance extends CamelUriElementInstance {
 			return CompletableFuture.completedFuture(Collections.emptyList());
 		}
 	}
-
+	
+	public boolean isProducer() {
+		return PRODUCER_NODE_TAG.contains(node.getNodeName());
+	}
+	
 }
