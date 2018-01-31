@@ -46,7 +46,7 @@ matrix:
         provider: releases
         api_key:  ${DEPLOY_TOKEN}
         file:
-          - "clients/vscode/vscode-apache-camel-0.0.1.vsix"
+          - "vscode-apache-camel-0.0.1.vsix"
         skip_cleanup: true
         overwrite: true
         on:
