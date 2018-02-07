@@ -2,10 +2,9 @@
 
 import * as path from 'path';
 import { workspace, ExtensionContext, window, StatusBarAlignment, commands, ViewColumn, Uri, CancellationToken, TextDocumentContentProvider, TextEditor, WorkspaceConfiguration, languages, IndentAction } from 'vscode';
-import { LanguageClient, LanguageClientOptions, StreamInfo, Position as LSPosition, Location as LSLocation, Protocol2Code, ServerOptions, TransportKind, Executable } from 'vscode-languageclient';
+import { LanguageClient, LanguageClientOptions, Executable } from 'vscode-languageclient';
 
 var os = require('os');
-var glob = require('glob');
 import { StatusNotification,ClassFileContentsRequest,ProjectConfigurationUpdateRequest,MessageType,ActionableNotification,FeatureStatus } from './protocol';
 
 var storagePath;
@@ -52,6 +51,7 @@ export function activate(context: ExtensionContext) {
     oldConfig = getServerConfiguration();
 	// Create the language client and start the client.
 	let languageClient = new LanguageClient('xml','Language Support for Apache Camel', serverOptions, clientOptions);
+	languageClient.onReady().then(() => {
 	languageClient.onNotification(StatusNotification.type, (report) => {
 		console.log(report.message);
 		switch (report.type) {
@@ -125,6 +125,7 @@ export function activate(context: ExtensionContext) {
 
 	item.text = 'Starting Apache Camel Language Server...';
 	toggleItem(window.activeTextEditor, item);
+});
 	let disposable = languageClient.start();
 	// Push the disposable to the context's subscriptions so that the
 	// client can be deactivated on extension deactivation
