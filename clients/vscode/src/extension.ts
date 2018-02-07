@@ -26,7 +26,8 @@ export function activate(context: ExtensionContext) {
 	}
 
 	var path = require('path');
-	var camelLanguageServerPath = path.resolve(path.resolve(__dirname)+'/../../jars/language-server.jar');
+	var camelLanguageServerPath = context.asAbsolutePath(path.join('jars','language-server.jar'));
+	console.log(camelLanguageServerPath);
 
 	let serverOptions: Executable = {
 		command: 'java',
