@@ -47,7 +47,17 @@ public class CamelLanguageServerHoverTest extends AbstractCamelLanguageServerTes
 		TextDocumentPositionParams position = new TextDocumentPositionParams(new TextDocumentIdentifier(DUMMY_URI), new Position(0, 4));
 		CompletableFuture<Hover> hover = camelLanguageServer.getTextDocumentService().hover(position);
 		
-		assertThat(hover.get()).isNull();
+		assertThat(hover.get().getContents()).isEmpty();
+	}
+	
+	@Test
+	public void testDontProvideDocumentationOnHoverWhenEndingWithAnd() throws Exception {
+		CamelLanguageServer camelLanguageServer = initializeLanguageServer("<from uri=\"ahc:httpUri?test=test&\" xmlns=\"http://camel.apache.org/schema/spring\"></from>\n");
+		
+		TextDocumentPositionParams position = new TextDocumentPositionParams(new TextDocumentIdentifier(DUMMY_URI), new Position(0, 15));
+		CompletableFuture<Hover> hover = camelLanguageServer.getTextDocumentService().hover(position);
+		
+		assertThat(hover.get().getContents()).isEmpty();
 	}
 
 }
