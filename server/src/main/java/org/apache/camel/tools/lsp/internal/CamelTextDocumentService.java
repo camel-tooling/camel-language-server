@@ -84,7 +84,7 @@ public class CamelTextDocumentService implements TextDocumentService {
 	@Override
 	public CompletableFuture<CompletionItem> resolveCompletionItem(CompletionItem unresolved) {
 		LOGGER.info("resolveCompletionItem: " + unresolved.getDetail());
-		return CompletableFuture.completedFuture(null);
+		return CompletableFuture.completedFuture(unresolved);
 	}
 
 	@Override
