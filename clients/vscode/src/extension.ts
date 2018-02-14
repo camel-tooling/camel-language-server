@@ -12,6 +12,8 @@ var oldConfig;
 
 var lastStatus;
 
+const LANGUAGE_CLIENT_ID = 'LANGUAGE_ID_APACHE_CAMEL';
+
 export function activate(context: ExtensionContext) {
 	// Let's enable Javadoc symbols autocompletion, shamelessly copied from MIT licensed code at
 	// https://github.com/Microsoft/vscode/blob/9d611d4dfd5a4a101b5201b8c9e21af97f06e7a7/extensions/typescript/src/typescriptMain.ts#L186
@@ -50,7 +52,7 @@ export function activate(context: ExtensionContext) {
 	let item = window.createStatusBarItem(StatusBarAlignment.Right, Number.MIN_VALUE);
     oldConfig = getServerConfiguration();
 	// Create the language client and start the client.
-	let languageClient = new LanguageClient('xml','Language Support for Apache Camel', serverOptions, clientOptions);
+	let languageClient = new LanguageClient(LANGUAGE_CLIENT_ID,'Language Support for Apache Camel', serverOptions, clientOptions);
 	languageClient.onReady().then(() => {
 	languageClient.onNotification(StatusNotification.type, (report) => {
 		console.log(report.message);
