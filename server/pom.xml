@@ -10,7 +10,7 @@
 	<name>${base.name} :: Server Implementation</name>
 	<properties>
 		<lsp4j.version>0.3.0</lsp4j.version>
-		<camel.version>2.20.1</camel.version>
+		<camel.version>2.20.2</camel.version>
 	</properties>
 	<build>
 		<plugins>
