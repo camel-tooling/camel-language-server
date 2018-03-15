@@ -1,0 +1,10 @@
+target
+*.iml
+*.ipr
+*.iws
+.DS_Store
+bin
+.metadata
+.idea
+libs/
+
