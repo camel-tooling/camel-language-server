@@ -61,6 +61,6 @@ matrix:
 env: DISPLAY=:99
 addons:
   sonarcloud:
-    organization: "lhein-github"
+    organization: "apupier-github"
     branches:
       - master

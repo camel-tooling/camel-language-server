@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/lhein/camel-language-server.svg?branch=master)](https://travis-ci.org/lhein/camel-language-server)
+[![Build Status](https://travis-ci.org/apupier/camel-language-server.svg?branch=master)](https://travis-ci.org/apupier/camel-language-server)
 
 camel-language-server
 =====================

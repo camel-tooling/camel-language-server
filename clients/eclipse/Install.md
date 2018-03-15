@@ -2,7 +2,7 @@ How to Install
 --------------
 
 * Install Eclipse
-* Go to latest release page https://github.com/lhein/camel-language-server/releases/latest/
+* Go to latest release page https://github.com/apupier/camel-language-server/releases/latest/
 * Download zipped update site named org.apache.camel.lsp.eclipse.updatesite-1.0.0-SNAPSHOT.zip
 * In Eclipse, Help -> Install New Software...
 * Click Add...
