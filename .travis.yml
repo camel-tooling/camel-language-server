@@ -7,60 +7,17 @@ matrix:
         - "sh -e /etc/init.d/xvfb start"
       script:
         - 'mvn clean verify'
-        - 'if [[ $TRAVIS_PULL_REQUEST == "false" && $TRAVIS_BRANCH == "master" ]]; then mvn sonar:sonar -Dsonar.login=${SONAR_TOKEN}; fi'
+        - 'if [[ $TRAVIS_PULL_REQUEST == "false" && $TRAVIS_BRANCH == "master" ]]; then mvn sonar:sonar -Dsonar.login=${SONAR_TOKEN} -Dsonar.projectKey="camel-lsp-server" -Dsonar.projectName="Camel LSP Server"; fi'
       jdk: oraclejdk8
-      deploy:
-        provider: releases
-        api_key:  ${DEPLOY_TOKEN}
-        file:
-          - "server/target/camel-lsp-server-1.0.0-SNAPSHOT.jar"
-          - "clients/eclipse/org.apache.camel.lsp.eclipse.updatesite/target/org.apache.camel.lsp.eclipse.updatesite-1.0.0-SNAPSHOT.zip"
-        skip_cleanup: true
-        overwrite: true
-        on:
-          branch:  master
-          # tags: true
-        branches:
-          only:
-            - master
       cache:
         directories:
           - $HOME/.m2
           - $HOME/.sonar/cache
           - $HOME/.gradle/
-    - language: node_js
-      node_js: "8"
-      before_install:
-        - "export DISPLAY=:99.0"
-        - "sh -e /etc/init.d/xvfb start"
-        - 'cd clients/vscode'
-        - 'export PATH=./node_modules/.bin:$PATH'
-        - 'npm install -g typescript'
-      install:
-        - 'npm install --ignore-scripts'
-        - 'npm install'
-        - 'npm run vscode:prepublish'
-        - 'npm install -g vsce'
-        - 'vsce package'
-      deploy:
-        provider: releases
-        api_key:  ${DEPLOY_TOKEN}
-        file:
-          - "vscode-apache-camel-0.0.1.vsix"
-        skip_cleanup: true
-        overwrite: true
-        on:
-          branch:  master
-          # tags: true
-        branches:
-          only:
-            - master
-      cache:
-        directories:
-          - "clients/vscode/node_modules"  
 env: DISPLAY=:99
 addons:
   sonarcloud:
-    organization: "apupier-github"
+    organization: "camel-tooling"
     branches:
       - master
+  
