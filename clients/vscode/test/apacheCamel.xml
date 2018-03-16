@@ -1,1 +1,0 @@
-<from uri="timer:timerName?delay=1000&amp;exceptionHandler=plop" xmlns="http://camel.apache.org/schema/blueprint"></from>

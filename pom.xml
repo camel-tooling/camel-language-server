@@ -1,12 +1,12 @@
-<project
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
-	xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
+
 	<groupId>org.apache.camel.tools.lsp</groupId>
-	<artifactId>parent</artifactId>
+	<artifactId>camel-lsp-server</artifactId>
 	<version>1.0.0-SNAPSHOT</version>
-	<packaging>pom</packaging>
-	<name>${base.name} :: Parent</name>
+	<name>${base.name} :: Server Implementation</name>
+
 	<properties>
 		<base.name>Apache Camel Language Server</base.name>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -18,14 +18,17 @@
 		<sonar.dynamicAnalysis>reuseReports</sonar.dynamicAnalysis>
 		<sonar.test.inclusions>**/*Test.*,**/test/**/*,**/*IT.*</sonar.test.inclusions>
 		<!-- points to the target folder of the global parent project -->
-		<sonar.jacoco.reportPath>../target/jacoco.exec</sonar.jacoco.reportPath>
-		<sonar.jacoco.itReportPath>../../../target/jacoco-it.exec</sonar.jacoco.itReportPath>
+		<sonar.jacoco.reportPath>target/jacoco.exec</sonar.jacoco.reportPath>
+		<sonar.jacoco.itReportPath>target/jacoco-it.exec</sonar.jacoco.itReportPath>
 		<sonar.jacoco.reportPaths>${sonar.jacoco.reportPath},${sonar.jacoco.itReportPath}</sonar.jacoco.reportPaths>
+
+		<lsp4j.version>0.3.0</lsp4j.version>
+		<slf4j.version>1.7.6</slf4j.version>
+		<junit.version>4.12</junit.version>
+		<assertj.version>3.8.0</assertj.version>
+		<camel.version>2.20.1</camel.version>
 	</properties>
-	<modules>
-		<module>server</module>
-		<module>clients</module>
-	</modules>
+
 	<build>
 		<plugins>
 			<plugin>
@@ -64,6 +67,18 @@
 					<argLine>${argLine}</argLine>
 				</configuration>
 			</plugin>
+			<plugin>
+		                <groupId>org.springframework.boot</groupId>
+		                <artifactId>spring-boot-maven-plugin</artifactId>
+                		<version>1.4.0.RELEASE</version>
+		                <executions>
+		                    <execution>
+		                        <goals>
+		                            <goal>repackage</goal>
+		                        </goals>
+		                    </execution>
+		                </executions>
+			</plugin>
 		</plugins>
 
 		<pluginManagement>
@@ -93,4 +108,49 @@
 			</plugins>
 		</pluginManagement>
 	</build>
+
+	<dependencies>
+		<dependency>
+			<groupId>org.eclipse.lsp4j</groupId>
+			<artifactId>org.eclipse.lsp4j.jsonrpc</artifactId>
+			<version>${lsp4j.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.lsp4j</groupId>
+			<artifactId>org.eclipse.lsp4j</artifactId>
+			<version>${lsp4j.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+			<version>${slf4j.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-log4j12</artifactId>
+			<version>${slf4j.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.camel</groupId>
+			<artifactId>camel-catalog</artifactId>
+			<version>${camel.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.camel</groupId>
+			<artifactId>camel-route-parser</artifactId>
+			<version>${camel.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>${junit.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.assertj</groupId>
+			<artifactId>assertj-core</artifactId>
+			<version>${assertj.version}</version>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
 </project>
