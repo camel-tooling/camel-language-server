@@ -21,12 +21,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.util.concurrent.CompletableFuture;
 
 import org.apache.camel.tools.lsp.internal.AbstractCamelLanguageServerTest;
-import org.apache.camel.tools.lsp.internal.CamelLanguageServer;
 import org.eclipse.lsp4j.Hover;
 import org.eclipse.lsp4j.Position;
 import org.eclipse.lsp4j.TextDocumentIdentifier;
 import org.eclipse.lsp4j.TextDocumentPositionParams;
 import org.junit.Test;
+
+import com.github.cameltooling.lsp.internal.CamelLanguageServer;
 
 public class CamelLanguageServerHoverTest extends AbstractCamelLanguageServerTest {
 	

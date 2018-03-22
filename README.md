@@ -1,5 +1,6 @@
-[![GitHub tag](https://img.shields.io/github/tag/camel-idea-plugin/camel-language-server.svg?style=plastic)]()
-[![Build Status](https://travis-ci.org/camel-idea-plugin/camel-language-server.svg?branch=master)](https://travis-ci.org/camel-idea-plugin/camel-language-server)
+[![Central](https://img.shields.io/maven-central/v/org.apache.maven/apache-maven.svg?style=plastic)]()
+[![GitHub tag](https://img.shields.io/github/tag/camel-tooling/camel-language-server.svg?style=plastic)]()
+[![Build Status](https://travis-ci.org/camel-tooling/camel-language-server.svg?branch=master)](https://travis-ci.org/camel-tooling/camel-language-server)
 [![Sonar](https://sonarcloud.io/api/project_badges/measure?project=camel-lsp-server&metric=alert_status)](https://sonarcloud.io/dashboard?id=camel-lsp-server)
 [![License](https://img.shields.io/badge/license-Apache%202-blue.svg)]()
 [![Gitter](https://img.shields.io/gitter/room/camel-tooling/Lobby.js.svg)](https://gitter.im/camel-tooling/Lobby)
@@ -29,7 +30,7 @@ Features planned
 
 Feedback
 ---------
-* File a bug in [GitHub Issues](https://github.com/camel-idea-plugin/camel-language-server/issues).
+* File a bug in [GitHub Issues](https://github.com/camel-tooling/camel-language-server/issues).
 
 
 License

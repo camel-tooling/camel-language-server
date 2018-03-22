@@ -24,12 +24,13 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
 import org.apache.camel.tools.lsp.internal.AbstractCamelLanguageServerTest;
-import org.apache.camel.tools.lsp.internal.CamelLanguageServer;
 import org.eclipse.lsp4j.CompletionItem;
 import org.eclipse.lsp4j.CompletionList;
 import org.eclipse.lsp4j.Position;
 import org.eclipse.lsp4j.jsonrpc.messages.Either;
 import org.junit.Test;
+
+import com.github.cameltooling.lsp.internal.CamelLanguageServer;
 
 public class CamelComponentOptionEnumerationValuesTest extends AbstractCamelLanguageServerTest {
 
