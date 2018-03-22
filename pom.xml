@@ -2,13 +2,43 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
-	<groupId>org.apache.camel.tools.lsp</groupId>
+	<groupId>com.github.camel-tooling</groupId>
 	<artifactId>camel-lsp-server</artifactId>
 	<version>1.0.0-SNAPSHOT</version>
-	<name>${base.name} :: Server Implementation</name>
+	
+	<name>Camel Language Server Protocol :: Server Implementation</name>
+	<description>Server Implementation of the Language Server Protocol for Apache Camel</description>
+	<url>https://github.com/camel-tooling/camel-language-server</url>
+	
+	<licenses>
+    	<license>
+			<name>The Apache License, Version 2.0</name>
+    		<url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+    	</license>
+	</licenses>
+
+	<scm>
+  		<connection>scm:git:git://github.com/camel-tooling/camel-language-server.git</connection>
+  		<developerConnection>scm:git:ssh://github.com:camel-tooling/camel-language-server.git</developerConnection>
+  		<url>http://github.com/camel-tooling/camel-language-server/tree/master</url>
+	</scm>
+
+	<developers>
+    	<developer>
+      		<name>Aurelien Pupier</name>
+      		<email>aurelien.pupier@gmail.com</email>
+      		<organization>Red Hat</organization>
+      		<organizationUrl>http://www.redhat.com</organizationUrl>
+    	</developer>
+    	<developer>
+      		<name>Lars Heinemann</name>
+      		<email>lhein.smx@gmail.com</email>
+      		<organization>Red Hat</organization>
+      		<organizationUrl>http://www.redhat.com</organizationUrl>
+    	</developer>
+  	</developers>
 
 	<properties>
-		<base.name>Apache Camel Language Server</base.name>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<!-- compiler settings -->
 		<maven.compiler.source>1.8</maven.compiler.source>
@@ -26,18 +56,111 @@
 		<slf4j.version>1.7.6</slf4j.version>
 		<junit.version>4.12</junit.version>
 		<assertj.version>3.8.0</assertj.version>
-		<camel.version>2.20.1</camel.version>
+		<camel.version>2.21.0</camel.version>
 	</properties>
+
+	<distributionManagement>
+  		<snapshotRepository>
+    		<id>ossrh</id>
+    		<url>https://oss.sonatype.org/content/repositories/snapshots</url>
+  		</snapshotRepository>
+  		<repository>
+  			<id>ossrh</id>
+  			<url>https://oss.sonatype.org/service/local/staging/deploy/maven2</url>
+  		</repository>
+	</distributionManagement>
+
+	<profiles>
+		
+		<!-- GPG -->
+		<profile>
+			<id>sign</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-gpg-plugin</artifactId>
+						<version>1.5</version>
+						<executions>
+							<execution>
+								<id>sign-artifacts</id>
+								<phase>verify</phase>
+								<goals>
+									<goal>sign</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+
+		<!-- build sources and javadoc -->
+		<profile>
+			<id>build-extras</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
+			<build>
+				<plugins>
+					<!-- provide sources -->
+		    		<plugin>
+		      			<groupId>org.apache.maven.plugins</groupId>
+		      			<artifactId>maven-source-plugin</artifactId>
+		      			<version>2.2.1</version>
+		      			<executions>
+		        			<execution>
+		          				<id>attach-sources</id>
+		          				<goals>
+		            				<goal>jar-no-fork</goal>
+		          				</goals>
+		        			</execution>
+		      			</executions>
+		    		</plugin>
+		    		
+		    		<!-- provide javadoc -->
+		    		<plugin>
+		      			<groupId>org.apache.maven.plugins</groupId>
+		      			<artifactId>maven-javadoc-plugin</artifactId>
+		      			<version>2.9.1</version>
+		      			<executions>
+		        			<execution>
+		          				<id>attach-javadocs</id>
+		          				<goals>
+		            				<goal>jar</goal>
+		          				</goals>
+		        			</execution>
+		      			</executions>
+		    		</plugin>
+				</plugins>
+			</build>
+		</profile>		
+		
+	</profiles>
 
 	<build>
 		<plugins>
+			<!-- deployment to Central -->
+			<plugin>
+      			<groupId>org.sonatype.plugins</groupId>
+      			<artifactId>nexus-staging-maven-plugin</artifactId>
+      			<version>1.6.7</version>
+      			<extensions>true</extensions>
+      			<configuration>
+        			<serverId>ossrh</serverId>
+        			<nexusUrl>https://oss.sonatype.org/</nexusUrl>
+        			<autoReleaseAfterClose>true</autoReleaseAfterClose>
+      			</configuration>
+    		</plugin>
+		
+			<!-- Jacoco -->
 			<plugin>
 				<groupId>org.jacoco</groupId>
 				<artifactId>jacoco-maven-plugin</artifactId>
 				<version>0.7.9</version>
 				<configuration>
 					<append>true</append>
-					<includes>org.apache.camel.tools.lsp.*,org.apache.camel.lsp.*</includes>
+					<includes>com.github.cameltooling.*</includes>
 				</configuration>
 				<executions>
 					<execution>
@@ -60,6 +183,8 @@
 					</execution>
 				</executions>
 			</plugin>
+			
+			<!-- SureFire -->
 			<plugin>
 				<artifactId>maven-surefire-plugin</artifactId>
 				<version>2.20.1</version>
@@ -67,18 +192,20 @@
 					<argLine>${argLine}</argLine>
 				</configuration>
 			</plugin>
+			
 			<plugin>
-		                <groupId>org.springframework.boot</groupId>
-		                <artifactId>spring-boot-maven-plugin</artifactId>
-                		<version>1.4.0.RELEASE</version>
-		                <executions>
-		                    <execution>
-		                        <goals>
-		                            <goal>repackage</goal>
-		                        </goals>
-		                    </execution>
-		                </executions>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+				<version>1.4.0.RELEASE</version>
+				<executions>
+					<execution>
+						<goals>
+							<goal>repackage</goal>
+						</goals>
+					</execution>
+				</executions>
 			</plugin>
+			
 		</plugins>
 
 		<pluginManagement>

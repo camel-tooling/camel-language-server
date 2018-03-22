@@ -24,7 +24,6 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 import org.apache.camel.tools.lsp.internal.AbstractCamelLanguageServerTest;
-import org.apache.camel.tools.lsp.internal.CamelLanguageServer;
 import org.eclipse.lsp4j.CompletionItem;
 import org.eclipse.lsp4j.CompletionList;
 import org.eclipse.lsp4j.Position;
@@ -34,6 +33,8 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameter;
 import org.junit.runners.Parameterized.Parameters;
+
+import com.github.cameltooling.lsp.internal.CamelLanguageServer;
 
 @RunWith(Parameterized.class)
 public class CamelLanguageServerCompletionPositionTest extends AbstractCamelLanguageServerTest {

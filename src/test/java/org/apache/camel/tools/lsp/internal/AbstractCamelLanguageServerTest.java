@@ -27,6 +27,8 @@ import org.eclipse.lsp4j.jsonrpc.messages.Either;
 import org.eclipse.lsp4j.services.LanguageClient;
 import org.eclipse.lsp4j.services.TextDocumentService;
 
+import com.github.cameltooling.lsp.internal.CamelLanguageServer;
+
 public abstract class AbstractCamelLanguageServerTest {
 
 	protected static final String AHC_DOCUMENTATION = "To call external HTTP services using Async Http Client.";

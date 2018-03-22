@@ -31,6 +31,8 @@ import org.eclipse.lsp4j.VersionedTextDocumentIdentifier;
 import org.eclipse.lsp4j.jsonrpc.messages.Either;
 import org.junit.Test;
 
+import com.github.cameltooling.lsp.internal.CamelLanguageServer;
+
 public class CamelTextDocumentServiceTest extends AbstractCamelLanguageServerTest {
 	
 	@Test

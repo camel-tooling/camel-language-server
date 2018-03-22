@@ -27,6 +27,9 @@ matrix:
           - $HOME/.m2
           - $HOME/.sonar/cache
           - $HOME/.gradle/
+#      after_success:
+#	  - ./cd/before-deploy.sh
+#	  - ./cd/deploy.sh
 env: DISPLAY=:99
 addons:
   sonarcloud:
