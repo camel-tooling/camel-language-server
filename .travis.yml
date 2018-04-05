@@ -22,10 +22,6 @@ install:
     apt-get install -y gcc-$CC_VER g++-$CC_VER"
 script: 
 - docker exec -t ubuntu-test bash -c "cd /travis;
-    cmake -DCMAKE_C_COMPILER=gcc-$CC_VER -DCMAKE_CXX_COMPILER=g++-$CC_VER . &&
-    make &&
-    chmod +x travis &&
-    ./travis && 
     mvn install -P !build-extras -DskipTests=true -Dmaven.javadoc.skip=true -B -V &&
     mvn test -P !build-extras -B "
 jdk:
