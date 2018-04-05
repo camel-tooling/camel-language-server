@@ -1,5 +1,4 @@
-s: linux
-dist: artful
+dist: xenial
 language: java
 env:
   global:
