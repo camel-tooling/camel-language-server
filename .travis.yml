@@ -18,6 +18,7 @@ install:
     apt-get update;
     apt-get install -y openssl;
     apt-get install -y gnupg;
+    apt-get install -y maven;
     apt-get install -y gcc-$CC_VER g++-$CC_VER;
     mvn install -P !build-extras -DskipTests=true -Dmaven.javadoc.skip=true -B -V"
 script: 
