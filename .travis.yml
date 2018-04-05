@@ -1,3 +1,5 @@
+s: linux
+dist: artful
 language: java
 env:
   global:
