@@ -9,4 +9,6 @@
 *.jpg binary
 *.gif binary
 *.jar binary
+*.asc.enc binary
+*.enc binary
 
