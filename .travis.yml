@@ -14,8 +14,10 @@ install:
 - docker exec -t ubuntu-test bash -c "apt-get update;
     apt-get install -y software-properties-common python-software-properties;
     apt-get install -y build-essential cmake libboost-thread-dev libboost-date-time-dev;
+    apt-add-repository -y ppa:webupd8team/java;
     add-apt-repository -y ppa:ubuntu-toolchain-r/test;
     apt-get update;
+    apt-get install -y oracle-java8-installer;
     apt-get install -y openssl;
     apt-get install -y gnupg;
     apt-get install -y maven;
