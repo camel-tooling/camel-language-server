@@ -17,7 +17,7 @@ install:
     apt-add-repository -y ppa:webupd8team/java;
     add-apt-repository -y ppa:ubuntu-toolchain-r/test;
     apt-get update;
-    apt-get install -y oracle-java8-installer;
+    apt-get install -y openjdk-8-jre openjdk-8-jdk;
     apt-get install -y openssl;
     apt-get install -y gnupg;
     apt-get install -y maven;
