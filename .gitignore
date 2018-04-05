@@ -3,6 +3,7 @@ target
 *.ipr
 *.iws
 *.out
+*.asc
 .DS_Store
 bin
 .metadata
