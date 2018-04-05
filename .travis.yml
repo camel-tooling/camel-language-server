@@ -1,21 +1,16 @@
-matrix:
-  include:
-  - language: java
-    sudo: false
-    before_install:
-    - export DISPLAY=:99.0
-    - sh -e /etc/init.d/xvfb start
-    script:
-    - mvn clean verify
-    - if [[ $TRAVIS_PULL_REQUEST == "false" && $TRAVIS_BRANCH == "master" ]]; then
-      mvn sonar:sonar -Dsonar.login=${SONAR_TOKEN} -Dsonar.projectKey="camel-lsp-server"
-      -Dsonar.projectName="Camel LSP Server"; fi
-    jdk: oraclejdk8
-    deploy:
-      provider: releases
-      api_key: "${DEPLOY_TOKEN}"
-      file:
-      - target/camel-lsp-server-1.0.0-SNAPSHOT.jar
+language: JAVA
+sudo: false
+before_install:
+  - export DISPLAY=:99.0
+  - sh -e /etc/init.d/xvfb start
+script: mvn clean verify
+jdk:
+  - oraclejdk8
+deploy:
+  provider: releases
+  api_key: "${DEPLOY_TOKEN}"
+  file:
+    - target/camel-lsp-server-1.0.0-SNAPSHOT.jar
       skip_cleanup: true
       overwrite: true
       on:
@@ -23,22 +18,27 @@ matrix:
       branches:
         only:
         - master
-    cache:
-      directories:
-      - "$HOME/.m2"
-      - "$HOME/.sonar/cache"
-      - "$HOME/.gradle/"
-    after_success:
-      - ./cd/before-deploy.sh
-      - ./cd/deploy.sh
+cache:
+    directories:
+    - "$HOME/.m2"
+    - "$HOME/.sonar/cache"
+    - "$HOME/.gradle/"
+after_success:
+    - if [[ $TRAVIS_PULL_REQUEST == "false" && $TRAVIS_BRANCH == "master" ]]; then
+      mvn sonar:sonar -Dsonar.login=${SONAR_TOKEN} -Dsonar.projectKey="camel-lsp-server" -Dsonar.projectName="Camel LSP Server";
+      ./cd/before-deploy.sh;
+      ./cd/deploy.sh; fi
 env:
-  matrix:
   - DISPLAY=:99
   global:
   - secure: F9vg7J7rrSzgNM31AkhpcazyDTR8R7f36WXauJiXJpTA3AXk0/Iq9ntYoD8OZX1eYKWKkEL/k03Iq9DuxEj0Tk7kRXlAv1k7gxLN9cSW0Q7wRO1TcGo0gPt4a1IdDwTpvTGfu7wniRt9qmxVhr0Vox3QBVnIE2KNHVcFiFioGTczlwKdr3oa3NPXdij6XcucHutTmThy3VOpeNhScqUyEFGaimKORGgCdCBouALp9jQJ8nVUzSCnj543z+/AXm+ZM7SYcQWQt3Fymyeg33ouE3Kz4XLS8MJLIOuELwBSKXwOuqm141uNEPGhBLALIME2xjYQdf3NROka5freFYGjshWb1Kz79wk4DlIYxkQLuw8XOQk74f82Q0Nag60dMTnyCwUXE4iWygzW4rhbzbvUOlpVTl3R2wcepO/wEJQElQw2aqscDiJuqEXINLCMRueLOCgbN3Ztvbjdg+Xt+2zMeG5/0a2ADp48rOd/jE9yXoxyai6XnSLl8ujj7AwKhy+YHhdtqRMax34ExIjMY2/HJfXYywZfyie0BliX7+iFMeugCk7+3X3ejQx8TfEI/0ExPeWVYcS+uuTEqVSF84sfvS4+sN7dv2YOoTg59IUPU9esKr+e79xDHHq3F2CcZjIDqPbdjlOoHA5csD60WxkmQ8FT9en4hKVFzbw1JniMgAE=
+  - # ^^ OSSRH_JIRA_USERNAME
   - secure: IPZlvFkre4d31/qoUQTUP7GquISyMtKjfkth+XmB9Y6/iHwF3H+81Q+L0+lYOg2epgCnw1VfH0eqawrLME86kfCy2BI5lgH0EnFi/jXp/7jl8hBRN3JajS2HfPR6d8yrvHEI2Nnj/aVVL7daIfxs1fo6xrPlmIaDXr+3lgYm63GaKnMH93WLBXCs3jQB4xUV8b2b8kFztj/o9Eo+wUAeVhIlPxxypOAGCXoY/BItZZYTF3VL+AAns/42OWdWClzDRFPSWFmqJ9fAFcLpkCtZoa9X5P/fy70dNdvD7GpfoYMpV8noAHFZ99SVPw5/Xxu0g9OTWzffXcHWFroiSmS3PySMQCS2/EtVR2qbGm395zzoSFR5c24acig/GOreumrrBhqkr7NqDgfke/z6FgdVu6Dopd+/nKYE4m1NexseWqmw4+HDoJ6n4NVMx6vQA91gRTPYLzWXbw7gv5rUR71LvPIdDu+I4f+d1zBstXz60vtdDN5amKBL9Gg4jN12VBHVQFiPsY3ie5WGUsPR1UFmegmhsPyL7cz3SpUrEv+Cax4cwe6EYx7X9MszC25JHPnFUZKa0quKrV5KIZbJ7+BxH6EtFzmDVQwuWcWDgcOTBKfhyfEnD8I2wkvctEeaYj8o5VyKuMcti705y3/ciUA0bblMvMvw91mUCUPV1n6IMS4=
+  - # ^^ OSSRH_JIRA_PASSWORD
   - secure: xfNczOH399oBDgp8xlcusi578+94WhMn2NxKPxHYb9V9mRuS383EeAeyPk19r8v4XL7sMysrxT4niOHy1xY4d4tfumM054eBgXyMrTYVdE3Ib6FTuzIZJykMU31mmxoZcjzczXMWvg++qjcqZCDAFpUqIaI9eEbsWengQ/cFGandbiYb75FCX+wlIDIpXyFU1hIh31/tsW738bZj7vV+4mW37FJIbOXExNB3eIfWdKaG4ZhwyX3NF3X2TYoncDPqL1kf4IEe3emzrsxXX6uxz8DJwzOY6uJsJ0VLBmjJ8GO+ReFjuoneWxvlfbTdvdX/8tMQAya6S5rzURFkGMxLj7bi8RVS4Jum7I7Wg391I85UC8/ogPc7rPA3HpcLyaHIg2I/mcVQEDsp11cY0zp7R5JPt+9dg/dC7+U4KzwBf6DnfbQrCxIbk7EKTuWKytz0cL6saBMIo3I5niA9xNklSxrqLN4+JdJep0nldgmLXtv/ZHjHRpyk9B2baU5hZzj5KpLny5IIunyV/H9sqs7Jw1h4me/4rohVUy5mAB/TjRkErgeM9czOVtmcyK91QvXw/hhqdta9MlIWS2TNurvgMTcze7WpXIZx0NhkO93MO0OAz89L/O3t303FQKEZH6RL7K+vyY+eyyewwz+QS0i2zCSwxQ9foN1QFe1GiQ1tefA=
+  - # ^^ GPG_KEY_NAME
   - secure: qkO7AwBcoHbwUXGWuSE2AHezQTaNQGZNocYe3R+S/4kyV5s7xLpNO8RwWtAPep63jjHZ7c9R9mv5MU6EXMBYiVWjKwQdFfGkXu1mpkkeFe94mXnLI3hWzYbVzYM2gvBvqit+X/yYcqzXTQAc4oY0kXhWjTgHWhz1+HjfxFYpzSZlb0DRBu04DI9hFM35q78Ykjkxt8UL26ebO1Yy5trZHR4cOpDfGvK/VLAui7/hWiQRW8Rb/ktdx1t5A28L6Qp9WAfkxHkNeJCS82d7vMwc47Vc7F8upOSSoPR1oB3pJeFcCB50mirULqLPM0+vfUCszN8FxFsVPJIiMJLj4Lij6NDCGahph0SAoKehUqmGkJ23hVgBQ5UjKs+3YQZkovaIZTsdrDPk1FdEJW5qZlvX2gdfa7fclJw73AKAQg52dLyCgBVgqVSsm/fCQOjk6UCx8OtHB1+CF5zE6Z/nPOjXNSeJHZJpnfowjYHclzWuuH4hC5TVsFLHbJCPQsTxLwQncmaMtWDgKeJukaMwNNHoZ2AVsc4OMigiAwENKHuM9jvDelPArjxEj4YrqO5JyFMt0gd2k4n7ebf5cH1XTrldMM8Ceh08kMexOKVYPekIMEvxtxzg2WIK2OispEDLhuY41XOGXNz3qQFUAkBwpU0jYrRuHxK56KhWwmqq/JrCav4=
+  - # ^^ GPG_PASSPHRASE
 addons:
   sonarcloud:
     organization: camel-tooling
