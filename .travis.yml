@@ -1,31 +1,12 @@
-sudo: required
-services:
-  - docker
 language: java
 env:
   global:
   - DISPLAY=:99
 before_install:
-- docker run -d --name ubuntu-test -v $(pwd):/travis ubuntu:latest tail -f /dev/null
-- docker ps
 - export DISPLAY=:99.0
 - sh -e /etc/init.d/xvfb start
-install:   
-- docker exec -t ubuntu-test bash -c "apt-get update;
-    apt-get install -y software-properties-common python-software-properties;
-    apt-get install -y build-essential cmake libboost-thread-dev libboost-date-time-dev;
-    apt-add-repository -y ppa:webupd8team/java;
-    add-apt-repository -y ppa:ubuntu-toolchain-r/test;
-    apt-get update;
-    apt-get install -y openjdk-8-jre openjdk-8-jdk;
-    apt-get install -y openssl;
-    apt-get install -y gnupg;
-    apt-get install -y maven;
-    apt-get install -y gcc-$CC_VER g++-$CC_VER"
-script: 
-- docker exec -t ubuntu-test bash -c "cd /travis;
-    mvn install -P !build-extras -DskipTests=true -Dmaven.javadoc.skip=true -B -V &&
-    mvn test -P !build-extras -B "
+install: mvn install -P !build-extras -DskipTests=true -Dmaven.javadoc.skip=true -B -V
+script: mvn test -P !build-extras -B
 jdk:
 - oraclejdk8
 cache:
