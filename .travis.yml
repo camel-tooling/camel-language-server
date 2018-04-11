@@ -1,5 +1,6 @@
 language: java
-install: mvn install -P !build-extras -DskipTests=true -Dmaven.javadoc.skip=true -B -V
+install: 
+- mvn install -P !build-extras -DskipTests=true -Dmaven.javadoc.skip=true -B -V
 script: mvn test -P !build-extras -B
 jdk:
 - oraclejdk8
@@ -7,11 +8,22 @@ cache:
   directories:
   - "$HOME/.m2"
   - "$HOME/.sonar/cache"
+env:
+  global:
+  - GPG_DIR="`pwd`/cd"
+  # GPG_KEYNAME
+  - secure: rCgvNDrL7DoONZvusCTFhQ/5knViLUzdcRc2UjUQBpJq3m5yFbP4vubhiquHtV5dqSVjO6cAG9LXuJjoeyu+LsVidqqJq+aVfsSR0gPdOLumWLqDSY8/Z6IWDR9ekJDX5Zp7pPLZCxb+yCDtwnq0GevSyVP8c8fuWuHMtzftH/+W3gYab3339wekG7PtgAsIv2s6KQOg4moZAdAIzWOTde3xoxXkYMOrRH45ixP0iOLQZYTqxrrMa/xXobSa638OwiSTpBd6n6ApQPLYbQmXFQEUIKQU+DD607pHxPZ0XbqPY2JAm1pnAV4bfy+2r/k2u5FJ5wzsg7r0OBqNKUn+CaFWovh7wuTzaKezz7E5ElKXcPpXlPSVayEPoitmTq7d0QT342bnIYEWIa7NJsl9Kbm8QMh9ud6NS4AFbRdcjLlfpzip5a5sxRhubGaV3JBJFI9o2Kz7XvcQAehqCjxtNrOf23D3S7cBwIPY02qQ8gk9Js7am0lQVDIh/0rc/ovLTDUbWjO9/+cJ4KU+lekOAR7pXY21D9pK3vX/4L+dn+cxnDL8VQWyh9s6fMNL48TV3lbiOJrt+3jDomLN29ZLfP80hRzuAt8yMhO+QQOJMWavEdEnesKBiUQlnz6Ho7WmLkPMEPGNrBQ4X5VFo3lPeVPOWi/BxdLvxF/a0SnnkgE=
+  # GPG_PASSPHRASE
+  - secure: VR4StD5wLvyAyDBw6RsYZ5DH0FdJ9RD69yfsoqmwj3wa2Fq8HkKFcZP9jzrgsMYiyBmLSlfdxPZS5qH5F4SDNYh8jJe+x0/EDNvwJKImFBFfwrMoa/Eo4dl5gUXz9adGUYaSaiK5yb99Rtdzpgqkix+Zoisq9OPkqJon+7rZo0CPPECj/Mo/VGpI38g7wdQZl87+Kd5lGmRNR12602/0N+l2kJCa/egb+6wB3grQFYRMnYqClEDNOHMQ3/0TnIUh2MwMMHpL0wSmO2WvWGwmYwygzU79AvFSXLKgLE8/OKlUNNRSpcZRbIe+xJAx46wi/f20V0Q93FE2JVlzJo1ipVVM8Yc/tRpOn3tl9kXROicjLJpsx8PCtPIohMj3Tn9vVIWvBc8lm9SEOjNszKq3qpYMexYgI2hD5x6YbmzF2Nbk8cOLeM7Z/7j0mgtR8Uq1qS5BaUqPgtKItna3on5uEhl/sMC3D7JZ8v9JPLaShZ6jE9MJM60dcv1F3gBYFielalxD6pbk1HtqK5ZQHdcigq1of9cJMA7OrfqQLi+N5uDSrmYHCypgpeix4vi1nwFPoa07yZW2+B2uWHTycX59wP3bTUyevIbq+e9rXYYJN1kj3YfRxcHhnDo3+Z4dw6MVJQzi30JmIaMMb0yof4XGmF3uy90Y1MgL1ePi4iK2fbc=
+  # OSSRH_JIRA_USERNAME
+  - secure: h7vD9Uw8MhvP6JPul5v1V8ziN7BtPA8YhxQ0WLUwLC7yYfv1Py9LsFxf9WhqqOBq2rQ+zgCTK3insnZjR+uNxjyBUYwYqUmg/LcPo+w2LK5ln484JGxpkXNybaH1TAqdHUcOJsvXGs8gf2UDZXQNAzgm/BueRv8P6d6UWpjcRO68+dCY7IONLw4n8mFeCsnRqB3+wxc2GUnWzq1bz4hBW9AC8FgFZZmYvZ5LGFy9QEQQAS7QLjO9EIh5u9woGoWJAhGXUX/dX2Ll2oCDwK9KQt8Osk0Qk5fiE/gx7Zt0j7fVTbNPXWMrzIwH8iTZD9g1p37yrDYfK8pZs9PhGLCTc8mzzpJfPVkkFHeDdZ/9mA/LNHqmii3Zb5ZmQ9+wR9BXFg30njRsJW8802P/zagf3T/l3Ok1zv17bDhWtdAqYSUdldeZWBkzOUoJbyUdsVdP8JkXaqBqt++y+bRr3Vfne25DaXGK3KFbxdlyU3r109dT7zb6yj5hcVBxtwGX0ATvKnpVgVsKAM79jmrbk0ceX37k8H8B1aEGSxfF6vW+Sl3a4VtPmt6sv7kbtmLpid3sBMqstf4DqIkhaGrcm1uxy0sBw8b3thToj2wC6jbsd567ifbMBBy6ANTbbvZIiCtlTM5X5pGmhw9+ByuYECdJdvMnZfudFhXRNNIZyVv06Sc=
+  # OSSRH_JIRA_PASSWORD
+  - secure: Ks873wLe2PYZiBTGo9qJblhNkaLisqUdBG56kNGvmyJtsuNfG1TrrrV8WO0/rR2gDpGxb3Fp8AYhx+uqgsE6UcdS+t1Q24LoFdA67l/4Elzrbe0CUthkq4RCB5XubwEgBxMwUzTHsI196oKwI3MX5/Zmbi32Qb3lnALPeoSu4Pde9OBnacL7Tz0RZzbz5iFlq+5MDsyJawp1NyQbFyVmksIcYhIAGt2SOsNvKXAK419ilgATuul8AoBD9T5mTCs8URjFDVG4uHSZoGJHut/mBw/q8d/AmbJqY0T7sSkUrZ01SlcS+gfOniWFqBss3S7E6sYfWEeGKOfTvPD5UeFCCvB07GP/sGOVVmil12EmMbL/blMogJ+ONN9Z0+8gqtsWlZOWznPKTnaSZnFZu23EU2OCvNWKBi05c5Hg6xdJgGdTz33mz4kD//Jy/urHoc/0aDPdvgcYZlQQJn7KBfgKJgGzHvqj9Y5tzBamfXwSKr4vicgIdogIq4vuw8/5tb8XUkmlqDR5ziQFvYi3+6jRj/AYij4AVcKskPZTHdO1SS5hT85XFdkS7WfatQs6gtW0+KKr0eQsmgUJerPZv3dEcqIn5QHEho8O5J0hMUwpYou8hUUcFYSAumdyGDPU7FitfzPR+i6XzwUKIQZYQuoZu3lUdVNj7SXXi2hZ7urDAb0=
 after_success:
+- ./cd/before-deploy.sh "${DEC_TOKEN}"
 - if [[ $TRAVIS_PULL_REQUEST == "false" && $TRAVIS_BRANCH == "master" ]]; then mvn
-  sonar:sonar -Dsonar.login=${SONAR_TOKEN} -Dsonar.organization="camel-tooling" -Dsonar.projectKey="camel-lsp-server" -Dsonar.projectName="Camel LSP Server"; 
-  ./cd/before-deploy.sh;
-  ./cd/deploy.sh; fi
+  sonar:sonar -Dsonar.login=${SONAR_TOKEN} -Dsonar.organization="camel-tooling" -Dsonar.projectKey="camel-lsp-server"
+  -Dsonar.projectName="Camel LSP Server"; ./cd/deploy.sh; fi
 deploy:
   provider: releases
   api_key: "${DEPLOY_TOKEN}"
@@ -23,3 +35,4 @@ deploy:
 addons:
   sonarcloud:
     organization: camel-tooling
+
