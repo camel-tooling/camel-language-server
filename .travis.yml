@@ -1,10 +1,4 @@
 language: java
-env:
-  global:
-  - DISPLAY=:99
-before_install:
-- export DISPLAY=:99.0
-- sh -e /etc/init.d/xvfb start
 install: mvn install -P !build-extras -DskipTests=true -Dmaven.javadoc.skip=true -B -V
 script: mvn test -P !build-extras -B
 jdk:
@@ -13,11 +7,10 @@ cache:
   directories:
   - "$HOME/.m2"
   - "$HOME/.sonar/cache"
-  - "$HOME/.gradle/"
 after_success:
 - if [[ $TRAVIS_PULL_REQUEST == "false" && $TRAVIS_BRANCH == "master" ]]; then mvn
   sonar:sonar -Dsonar.login=${SONAR_TOKEN} -Dsonar.organization="camel-tooling" -Dsonar.projectKey="camel-lsp-server" -Dsonar.projectName="Camel LSP Server"; 
-  ./cd/before-deploy.sh; 
+  ./cd/before-deploy.sh;
   ./cd/deploy.sh; fi
 deploy:
   provider: releases
