@@ -20,10 +20,11 @@ env:
   # OSSRH_JIRA_PASSWORD
   - secure: Ks873wLe2PYZiBTGo9qJblhNkaLisqUdBG56kNGvmyJtsuNfG1TrrrV8WO0/rR2gDpGxb3Fp8AYhx+uqgsE6UcdS+t1Q24LoFdA67l/4Elzrbe0CUthkq4RCB5XubwEgBxMwUzTHsI196oKwI3MX5/Zmbi32Qb3lnALPeoSu4Pde9OBnacL7Tz0RZzbz5iFlq+5MDsyJawp1NyQbFyVmksIcYhIAGt2SOsNvKXAK419ilgATuul8AoBD9T5mTCs8URjFDVG4uHSZoGJHut/mBw/q8d/AmbJqY0T7sSkUrZ01SlcS+gfOniWFqBss3S7E6sYfWEeGKOfTvPD5UeFCCvB07GP/sGOVVmil12EmMbL/blMogJ+ONN9Z0+8gqtsWlZOWznPKTnaSZnFZu23EU2OCvNWKBi05c5Hg6xdJgGdTz33mz4kD//Jy/urHoc/0aDPdvgcYZlQQJn7KBfgKJgGzHvqj9Y5tzBamfXwSKr4vicgIdogIq4vuw8/5tb8XUkmlqDR5ziQFvYi3+6jRj/AYij4AVcKskPZTHdO1SS5hT85XFdkS7WfatQs6gtW0+KKr0eQsmgUJerPZv3dEcqIn5QHEho8O5J0hMUwpYou8hUUcFYSAumdyGDPU7FitfzPR+i6XzwUKIQZYQuoZu3lUdVNj7SXXi2hZ7urDAb0=
 after_success:
-- ./cd/before-deploy.sh "${DEC_TOKEN}"
-- if [[ $TRAVIS_PULL_REQUEST == "false" && $TRAVIS_BRANCH == "master" ]]; then mvn
-  sonar:sonar -Dsonar.login=${SONAR_TOKEN} -Dsonar.organization="camel-tooling" -Dsonar.projectKey="camel-lsp-server"
-  -Dsonar.projectName="Camel LSP Server"; ./cd/deploy.sh; fi
+- if [[ $TRAVIS_PULL_REQUEST == "false" && $TRAVIS_BRANCH == "master" ]]; then 
+  mvn sonar:sonar -Dsonar.login=${SONAR_TOKEN} -Dsonar.organization="camel-tooling" -Dsonar.projectKey="camel-lsp-server" -Dsonar.projectName="Camel LSP Server"; 
+  ./cd/before-deploy.sh "${DEC_TOKEN}";
+  ./cd/deploy.sh;
+  fi
 deploy:
   provider: releases
   api_key: "${DEPLOY_TOKEN}"
