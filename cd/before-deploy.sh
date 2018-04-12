@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
-if [ "$TRAVIS_BRANCH" = 'master' ] && [ "$TRAVIS_PULL_REQUEST" == 'false' ]; then
-    openssl aes-256-ecb -k $PP -in cd/codesigning.asc.enc -out cd/codesigning.asc -d -v
-    gpg --fast-import cd/codesigning.asc
-fi
+export DEC_TOKEN=$1
+openssl enc -aes-256-cbc -d -in cd/pubring.gpg.enc -out cd/pubring.gpg -k $DEC_TOKEN
+openssl enc -aes-256-cbc -d -in cd/secring.gpg.enc -out cd/secring.gpg -k $DEC_TOKEN
+#openssl aes-256-cbc -k $OPENSSLPASS -in $GPG_DIR/pubring.gpg.enc -out $GPG_DIR/pubring.gpg -d -v
+#openssl aes-256-cbc -k $OPENSSLPASS -in $GPG_DIR/secring.gpg.enc -out $GPG_DIR/secring.gpg -d -v
 
