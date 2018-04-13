@@ -23,7 +23,7 @@ import java.util.stream.Collectors;
 import org.apache.camel.catalog.CamelCatalog;
 import org.eclipse.lsp4j.CompletionItem;
 
-import com.github.cameltooling.lsp.internal.model.util.ModelHelper;
+import com.github.cameltooling.model.util.ModelHelper;
 
 public final class CamelComponentSchemaCompletionsFuture implements Function<CamelCatalog, List<CompletionItem>> {
 	@Override
