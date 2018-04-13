@@ -23,8 +23,8 @@ import org.apache.camel.catalog.CamelCatalog;
 import org.eclipse.lsp4j.Hover;
 import org.eclipse.lsp4j.jsonrpc.messages.Either;
 
-import com.github.cameltooling.lsp.internal.model.ComponentModel;
-import com.github.cameltooling.lsp.internal.model.util.ModelHelper;
+import com.github.cameltooling.model.ComponentModel;
+import com.github.cameltooling.model.util.ModelHelper;
 
 public class HoverFuture implements Function<CamelCatalog, Hover> {
 	
@@ -41,6 +41,5 @@ public class HoverFuture implements Function<CamelCatalog, Hover> {
 		hover.setContents(Collections.singletonList((Either.forLeft(componentModel.getDescription()))));
 		return hover;
 	}
-
 
 }

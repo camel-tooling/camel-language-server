@@ -26,8 +26,8 @@ import org.eclipse.lsp4j.TextDocumentItem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.github.cameltooling.lsp.internal.model.util.StringUtils;
 import com.github.cameltooling.lsp.internal.parser.ParserFileHelper;
+import com.github.cameltooling.model.util.StringUtils;
 
 public class HoverProcessor {
 	

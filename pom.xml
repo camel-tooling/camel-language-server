@@ -57,6 +57,7 @@
 		<junit.version>4.12</junit.version>
 		<assertj.version>3.9.1</assertj.version>
 		<camel.version>2.21.0</camel.version>
+		<camel.tooling.common.version>0.0.1-SNAPSHOT</camel.tooling.common.version>
 	</properties>
 
 	<distributionManagement>
@@ -258,6 +259,11 @@
 			<version>${slf4j.version}</version>
 		</dependency>
 		<dependency>
+			<groupId>com.github.camel-tooling</groupId>
+			<artifactId>camel-tooling-common</artifactId>
+			<version>${camel.tooling.common.version}</version>
+		</dependency>
+		<dependency>
 			<groupId>org.apache.camel</groupId>
 			<artifactId>camel-catalog</artifactId>
 			<version>${camel.version}</version>
@@ -280,4 +286,11 @@
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
+	
+	<repositories>
+		<repository>
+			<id>oss-snapshot</id>
+			<url>https://oss.sonatype.org/content/repositories/snapshots</url>
+		</repository>
+	</repositories>
 </project>
