@@ -77,106 +77,106 @@ public class CamelTextDocumentService implements TextDocumentService {
 	
 	@Override
 	public CompletableFuture<Either<List<CompletionItem>, CompletionList>> completion(TextDocumentPositionParams completionRequest) {
-		LOGGER.info("completion: " + completionRequest.getTextDocument().getUri());
+		LOGGER.info("completion: {}", completionRequest.getTextDocument().getUri());
 		TextDocumentItem textDocumentItem = openedDocuments.get(completionRequest.getTextDocument().getUri());
 		return new CamelEndpointCompletionProcessor(textDocumentItem, camelCatalog).getCompletions(completionRequest.getPosition()).thenApply(Either::forLeft);
 	}
 
 	@Override
 	public CompletableFuture<CompletionItem> resolveCompletionItem(CompletionItem unresolved) {
-		LOGGER.info("resolveCompletionItem: " + unresolved.getDetail());
+		LOGGER.info("resolveCompletionItem: {}", unresolved.getDetail());
 		return CompletableFuture.completedFuture(unresolved);
 	}
 
 	@Override
 	public CompletableFuture<Hover> hover(TextDocumentPositionParams position) {
-		LOGGER.info("hover: " + position.getTextDocument());
+		LOGGER.info("hover: {}", position.getTextDocument());
 		TextDocumentItem textDocumentItem = openedDocuments.get(position.getTextDocument().getUri());
 		return new HoverProcessor(textDocumentItem, camelCatalog).getHover(position.getPosition());
 	}
 
 	@Override
 	public CompletableFuture<SignatureHelp> signatureHelp(TextDocumentPositionParams position) {
-		LOGGER.info("signatureHelp: " + position.getTextDocument());
+		LOGGER.info("signatureHelp: {}", position.getTextDocument());
 		return CompletableFuture.completedFuture(null);
 	}
 
 	@Override
 	public CompletableFuture<List<? extends Location>> definition(TextDocumentPositionParams position) {
-		LOGGER.info("definition: " + position.getTextDocument());
+		LOGGER.info("definition: {}", position.getTextDocument());
 		return CompletableFuture.completedFuture(Collections.emptyList());
 	}
 
 	@Override
 	public CompletableFuture<List<? extends Location>> references(ReferenceParams params) {
-		LOGGER.info("references: " + params.getTextDocument());
+		LOGGER.info("references: {}", params.getTextDocument());
 		return CompletableFuture.completedFuture(Collections.emptyList());
 	}
 
 	@Override
 	public CompletableFuture<List<? extends DocumentHighlight>> documentHighlight(TextDocumentPositionParams position) {
-		LOGGER.info("documentHighlight: " + position.getTextDocument());
+		LOGGER.info("documentHighlight: {}", position.getTextDocument());
 		return CompletableFuture.completedFuture(Collections.emptyList());
 	}
 
 	@Override
 	public CompletableFuture<List<? extends SymbolInformation>> documentSymbol(DocumentSymbolParams params) {
-		LOGGER.info("documentSymbol: " + params.getTextDocument());
+		LOGGER.info("documentSymbol: {}", params.getTextDocument());
 		return CompletableFuture.completedFuture(Collections.emptyList());
 	}
 
 	@Override
 	public CompletableFuture<List<? extends Command>> codeAction(CodeActionParams params) {
-		LOGGER.info("codeAction: " + params.getTextDocument());
+		LOGGER.info("codeAction: {}", params.getTextDocument());
 		return CompletableFuture.completedFuture(Collections.emptyList());
 	}
 
 	@Override
 	public CompletableFuture<List<? extends CodeLens>> codeLens(CodeLensParams params) {
-		LOGGER.info("codeLens: " + params.getTextDocument());
+		LOGGER.info("codeLens: {}", params.getTextDocument());
 		return CompletableFuture.completedFuture(Collections.emptyList());
 	}
 
 	@Override
 	public CompletableFuture<CodeLens> resolveCodeLens(CodeLens unresolved) {
-		LOGGER.info("resolveCodeLens: " + unresolved.getCommand().getCommand());
+		LOGGER.info("resolveCodeLens: {}", unresolved.getCommand().getCommand());
 		return CompletableFuture.completedFuture(null);
 	}
 
 	@Override
 	public CompletableFuture<List<? extends TextEdit>> formatting(DocumentFormattingParams params) {
-		LOGGER.info("formatting: " + params.getTextDocument());
+		LOGGER.info("formatting: {}", params.getTextDocument());
 		return CompletableFuture.completedFuture(Collections.emptyList());
 	}
 
 	@Override
 	public CompletableFuture<List<? extends TextEdit>> rangeFormatting(DocumentRangeFormattingParams params) {
-		LOGGER.info("rangeFormatting: " + params.getTextDocument());
+		LOGGER.info("rangeFormatting: {}", params.getTextDocument());
 		return CompletableFuture.completedFuture(Collections.emptyList());
 	}
 
 	@Override
 	public CompletableFuture<List<? extends TextEdit>> onTypeFormatting(DocumentOnTypeFormattingParams params) {
-		LOGGER.info("onTypeFormatting: " + params.getTextDocument());
+		LOGGER.info("onTypeFormatting: {}", params.getTextDocument());
 		return CompletableFuture.completedFuture(Collections.emptyList());
 	}
 
 	@Override
 	public CompletableFuture<WorkspaceEdit> rename(RenameParams params) {
-		LOGGER.info("rename: " + params.getTextDocument());
+		LOGGER.info("rename: {}", params.getTextDocument());
 		return CompletableFuture.completedFuture(null);
 	}
 
 	@Override
 	public void didOpen(DidOpenTextDocumentParams params) {
 		TextDocumentItem textDocument = params.getTextDocument();
-		LOGGER.info("didOpen: {0}", textDocument);
+		LOGGER.info("didOpen: {}", textDocument);
 		openedDocuments.put(textDocument.getUri(), textDocument);
 	}
 
 	@Override
 	public void didChange(DidChangeTextDocumentParams params) {
-		LOGGER.info("didChange: " + params.getTextDocument());
+		LOGGER.info("didChange: {}", params.getTextDocument());
 		List<TextDocumentContentChangeEvent> contentChanges = params.getContentChanges();
 		TextDocumentItem textDocumentItem = openedDocuments.get(params.getTextDocument().getUri());
 		if (!contentChanges.isEmpty()) {
@@ -186,13 +186,13 @@ public class CamelTextDocumentService implements TextDocumentService {
 
 	@Override
 	public void didClose(DidCloseTextDocumentParams params) {
-		LOGGER.info("didClose: " + params.getTextDocument());
+		LOGGER.info("didClose: {}", params.getTextDocument());
 		openedDocuments.remove(params.getTextDocument().getUri());
 	}
 
 	@Override
 	public void didSave(DidSaveTextDocumentParams params) {
-		LOGGER.info("didSave: " + params.getTextDocument());
+		LOGGER.info("didSave: {}", params.getTextDocument());
 	}
 
 }
