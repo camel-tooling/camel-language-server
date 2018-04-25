@@ -38,19 +38,19 @@ public class CamelWorkspaceService implements WorkspaceService {
 
 	@Override
 	public CompletableFuture<List<? extends SymbolInformation>> symbol(WorkspaceSymbolParams params) {
-		LOGGER.info("SERVER: symbolQuery: " + params.getQuery());
+		LOGGER.info("SERVER: symbolQuery: {}", params.getQuery());
 		return CompletableFuture.completedFuture(Collections.emptyList());
 	}
 
 	@Override
 	public void didChangeConfiguration(DidChangeConfigurationParams params) {
 		Object settings = params.getSettings();
-		LOGGER.info("SERVER: changeConfig: settings -> {0}", settings);
+		LOGGER.info("SERVER: changeConfig: settings -> {}", settings);
 	}
 
 	@Override
 	public void didChangeWatchedFiles(DidChangeWatchedFilesParams params) {
 		List<FileEvent> settings = params.getChanges();
-		LOGGER.info("SERVER: changeWatchedFiles: size -> {0}", settings.size());
+		LOGGER.info("SERVER: changeWatchedFiles: size -> {}", settings.size());
 	}
 }

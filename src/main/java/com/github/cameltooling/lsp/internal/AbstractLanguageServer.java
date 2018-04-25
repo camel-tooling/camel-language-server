@@ -77,7 +77,7 @@ public abstract class AbstractLanguageServer {
 		if (parentProcessId == 0) {
 			LOGGER.info("Waiting for a client connection...");
 		} else {
-			LOGGER.info("Checking for client process pid: {0}", parentProcessId);
+			LOGGER.info("Checking for client process pid: {}", parentProcessId);
 		}
 		
 		if (parentProcessId == 0) return true;
@@ -129,7 +129,7 @@ public abstract class AbstractLanguageServer {
 	 * @param processId	the process id
 	 */
 	protected synchronized void setParentProcessId(long processId) {
-		LOGGER.info("Setting client pid to {0}", processId);
+		LOGGER.info("Setting client pid to {}", processId);
 		parentProcessId = processId;
 	}
 	
