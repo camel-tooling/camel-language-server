@@ -16,6 +16,7 @@
  */
 package com.github.cameltooling.lsp.internal.instancemodel;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
@@ -45,13 +46,27 @@ public class OptionParamValueURIInstance extends CamelUriElementInstance {
 
 	@Override
 	public CompletableFuture<List<CompletionItem>> getCompletions(CompletableFuture<CamelCatalog> camelCatalog, int positionInCamelUri) {
-		return camelCatalog.thenApply(new CamelOptionValuesCompletionsFuture(this));
+		if(getStartPosition() <= positionInCamelUri && positionInCamelUri <= getEndPosition()) {
+			return camelCatalog.thenApply(new CamelOptionValuesCompletionsFuture(this, getFilter(positionInCamelUri)));
+		} else {
+			return CompletableFuture.completedFuture(Collections.emptyList());
+		}
 	}
 
 	public OptionParamURIInstance getOptionParamURIInstance() {
 		return optionParamURIInstance;
 	}
 	
-	
-
+	/**
+	 * returns the filter string to be applied on the list of all completions
+	 * 
+	 * @return	the filter string or null if not to be filtered
+	 */
+	private String getFilter(int positionInUri) { 
+		int len = positionInUri-getStartPosition();
+		if (valueName != null && valueName.trim().length()>0 && getStartPosition()!=positionInUri) {
+			return valueName.length()>len ? valueName.substring(getStartPosition(), positionInUri-1) : valueName;
+		}
+		return null;
+	}
 }

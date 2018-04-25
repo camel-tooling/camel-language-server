@@ -27,20 +27,23 @@ import org.eclipse.lsp4j.CompletionItem;
 import com.github.cameltooling.model.EndpointOptionModel;
 import com.github.cameltooling.model.util.ModelHelper;
 
-public class CamelOptionSchemaCompletionsFuture implements Function<CamelCatalog, List<CompletionItem>>  {
+public class CamelOptionNamesCompletionsFuture implements Function<CamelCatalog, List<CompletionItem>>  {
 
 	private String camelComponentName;
 	private boolean isProducer;
+	private String filterString;
 
-	public CamelOptionSchemaCompletionsFuture(String camelComponentName, boolean isProducer) {
+	public CamelOptionNamesCompletionsFuture(String camelComponentName, boolean isProducer, String filterText) {
 		this.camelComponentName = camelComponentName;
 		this.isProducer = isProducer;
+		this.filterString = filterText;
 	}
 
 	@Override
 	public List<CompletionItem> apply(CamelCatalog catalog) {
 		Stream<EndpointOptionModel> endpointOptions = ModelHelper.generateComponentModel(catalog.componentJSonSchema(camelComponentName), true).getEndpointOptions().stream();
 		return endpointOptions
+				.filter(FilterPredicateUtils.matchesEndpointOptionFilter(filterString))
 				.filter(endpoint -> "parameter".equals(endpoint.getKind()))
 				.filter(endpoint -> {
 					String group = endpoint.getGroup();

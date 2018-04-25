@@ -24,7 +24,7 @@ import java.util.concurrent.CompletableFuture;
 import org.apache.camel.catalog.CamelCatalog;
 import org.eclipse.lsp4j.CompletionItem;
 
-import com.github.cameltooling.lsp.internal.completion.CamelComponentSchemaCompletionsFuture;
+import com.github.cameltooling.lsp.internal.completion.CamelComponentSchemesCompletionsFuture;
 
 /**
  * For a Camel URI "timer:timerName?delay=10s", it represents "timerName"
@@ -32,10 +32,12 @@ import com.github.cameltooling.lsp.internal.completion.CamelComponentSchemaCompl
  */
 public class PathParamURIInstance extends CamelUriElementInstance {
 
+	private CamelURIInstance uriInstance;
 	private String value;
 
-	public PathParamURIInstance(String value, int startPosition, int endPosition) {
+	public PathParamURIInstance(CamelURIInstance uriInstance, String value, int startPosition, int endPosition) {
 		super(startPosition, endPosition);
+		this.uriInstance = uriInstance;
 		this.value = value;
 	}
 
@@ -46,7 +48,7 @@ public class PathParamURIInstance extends CamelUriElementInstance {
 	@Override
 	public CompletableFuture<List<CompletionItem>> getCompletions(CompletableFuture<CamelCatalog> camelCatalog, int positionInCamelUri) {
 		if(getStartPosition() <= positionInCamelUri && positionInCamelUri <= getEndPosition()) {
-			return camelCatalog.thenApply(new CamelComponentSchemaCompletionsFuture());
+			return camelCatalog.thenApply(new CamelComponentSchemesCompletionsFuture(getFilter()));
 		} else {
 			return CompletableFuture.completedFuture(Collections.emptyList());
 		}
@@ -72,4 +74,16 @@ public class PathParamURIInstance extends CamelUriElementInstance {
 		return "Value: "+value+" start position:"+getStartPosition()+ " end position:"+getEndPosition();
 	}
 	
+	/**
+	 * returns the filter string to be applied on the list of all completions
+	 * 
+	 * @return	the filter string or null if not to be filtered
+	 */
+	private String getFilter() { 
+		String filter = String.format("%s:", uriInstance.getComponent().getComponentName());
+		if (value != null && value.trim().length()>0) {
+			filter = String.format("%s%s", filter, value);
+		}
+		return filter;
+	}
 }

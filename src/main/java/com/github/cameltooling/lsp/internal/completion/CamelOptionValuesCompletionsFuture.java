@@ -17,11 +17,12 @@
 package com.github.cameltooling.lsp.internal.completion;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.apache.camel.catalog.CamelCatalog;
 import org.eclipse.lsp4j.CompletionItem;
@@ -34,9 +35,11 @@ public class CamelOptionValuesCompletionsFuture implements Function<CamelCatalog
 
 	private static final String BOOLEAN_TYPE = "boolean";
 	private OptionParamValueURIInstance optionParamValueURIInstance;
+	private String filterString;
 
-	public CamelOptionValuesCompletionsFuture(OptionParamValueURIInstance optionParamValueURIInstance) {
+	public CamelOptionValuesCompletionsFuture(OptionParamValueURIInstance optionParamValueURIInstance, String filterText) {
 		this.optionParamValueURIInstance = optionParamValueURIInstance;
+		this.filterString = filterText;
 	}
 
 	@Override
@@ -48,7 +51,8 @@ public class CamelOptionValuesCompletionsFuture implements Function<CamelCatalog
 			if (enums != null && !enums.isEmpty()) {
 				return computeCompletionForEnums(enums);
 			} else if(BOOLEAN_TYPE.equals(endpointOptionModel.getType())) {
-				return Arrays.asList(new CompletionItem(Boolean.TRUE.toString()), new CompletionItem(Boolean.FALSE.toString()));
+				Stream<CompletionItem> values = Stream.of(new CompletionItem(Boolean.TRUE.toString()), new CompletionItem(Boolean.FALSE.toString()));
+				return values.filter(FilterPredicateUtils.matchesCompletionFilter(filterString)).collect(Collectors.toList());
 			}
 		}
 		return Collections.emptyList();
@@ -59,7 +63,7 @@ public class CamelOptionValuesCompletionsFuture implements Function<CamelCatalog
 		for(String enumValue : enums.split(",")) {
 			completionItems.add(new CompletionItem(enumValue));
 		}
-		return completionItems;
+		return completionItems.stream().filter(FilterPredicateUtils.matchesCompletionFilter(filterString)).collect(Collectors.toList());
 	}
 
 	private Optional<EndpointOptionModel> retrieveEndpointOptionModel(CamelCatalog camelCatalog) {
@@ -70,5 +74,4 @@ public class CamelOptionValuesCompletionsFuture implements Function<CamelCatalog
 				.filter(endpoint -> keyName.equals(endpoint.getName()))
 				.findAny();
 	}
-
 }
