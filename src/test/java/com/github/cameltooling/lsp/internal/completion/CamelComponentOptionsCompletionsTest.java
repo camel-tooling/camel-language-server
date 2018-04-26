@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.camel.tools.lsp.internal.completion;
+package com.github.cameltooling.lsp.internal.completion;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -23,13 +23,13 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
-import org.apache.camel.tools.lsp.internal.AbstractCamelLanguageServerTest;
 import org.eclipse.lsp4j.CompletionItem;
 import org.eclipse.lsp4j.CompletionList;
 import org.eclipse.lsp4j.Position;
 import org.eclipse.lsp4j.jsonrpc.messages.Either;
 import org.junit.Test;
 
+import com.github.cameltooling.lsp.internal.AbstractCamelLanguageServerTest;
 import com.github.cameltooling.lsp.internal.CamelLanguageServer;
 
 public class CamelComponentOptionsCompletionsTest extends AbstractCamelLanguageServerTest {
