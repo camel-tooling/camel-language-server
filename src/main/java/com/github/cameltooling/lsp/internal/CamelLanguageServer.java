@@ -70,15 +70,17 @@ public class CamelLanguageServer extends AbstractLanguageServer implements Langu
 			setParentProcessId(0);
 		}
 		
-		InitializeResult result = new InitializeResult();
-		
+		ServerCapabilities capabilities = createServerCapabilities();
+		InitializeResult result = new InitializeResult(capabilities);
+		return CompletableFuture.completedFuture(result);
+	}
+
+	private ServerCapabilities createServerCapabilities() {
 		ServerCapabilities capabilities = new ServerCapabilities();
 		capabilities.setTextDocumentSync(TextDocumentSyncKind.Full);
 		capabilities.setCompletionProvider(new CompletionOptions(Boolean.TRUE, Arrays.asList(".","?","&", "\"", "=")));
 		capabilities.setHoverProvider(Boolean.TRUE);
-		
-		result.setCapabilities(capabilities);
-		return CompletableFuture.completedFuture(result);
+		return capabilities;
 	}
 
 	@Override

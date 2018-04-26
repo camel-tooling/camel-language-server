@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.cameltooling.lsp.internal.parser;
+package com.github.cameltooling.lsp.internal.instancemodel;
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;

@@ -23,9 +23,9 @@ import java.util.Iterator;
 
 import org.junit.Test;
 
-import com.github.cameltooling.lsp.internal.parser.CamelURIInstance;
-import com.github.cameltooling.lsp.internal.parser.OptionParamURIInstance;
-import com.github.cameltooling.lsp.internal.parser.PathParamURIInstance;
+import com.github.cameltooling.lsp.internal.instancemodel.CamelURIInstance;
+import com.github.cameltooling.lsp.internal.instancemodel.OptionParamURIInstance;
+import com.github.cameltooling.lsp.internal.instancemodel.PathParamURIInstance;
 
 public class CamelURIInstanceTest {
 	

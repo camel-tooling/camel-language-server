@@ -28,8 +28,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Node;
 
-import com.github.cameltooling.lsp.internal.parser.CamelURIInstance;
-import com.github.cameltooling.lsp.internal.parser.CamelUriElementInstance;
+import com.github.cameltooling.lsp.internal.instancemodel.CamelURIInstance;
+import com.github.cameltooling.lsp.internal.instancemodel.CamelUriElementInstance;
 import com.github.cameltooling.lsp.internal.parser.ParserFileHelper;
 
 public class CamelEndpointCompletionProcessor {
