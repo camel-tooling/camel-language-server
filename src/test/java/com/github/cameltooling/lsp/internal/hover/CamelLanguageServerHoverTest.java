@@ -14,19 +14,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.camel.tools.lsp.internal.hover;
+package com.github.cameltooling.lsp.internal.hover;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.concurrent.CompletableFuture;
 
-import org.apache.camel.tools.lsp.internal.AbstractCamelLanguageServerTest;
 import org.eclipse.lsp4j.Hover;
 import org.eclipse.lsp4j.Position;
 import org.eclipse.lsp4j.TextDocumentIdentifier;
 import org.eclipse.lsp4j.TextDocumentPositionParams;
 import org.junit.Test;
 
+import com.github.cameltooling.lsp.internal.AbstractCamelLanguageServerTest;
 import com.github.cameltooling.lsp.internal.CamelLanguageServer;
 
 public class CamelLanguageServerHoverTest extends AbstractCamelLanguageServerTest {

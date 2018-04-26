@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.camel.tools.lsp.internal;
+package com.github.cameltooling.lsp.internal;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
