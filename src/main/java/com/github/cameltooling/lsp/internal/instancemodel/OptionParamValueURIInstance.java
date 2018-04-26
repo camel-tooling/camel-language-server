@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.cameltooling.lsp.internal.parser;
+package com.github.cameltooling.lsp.internal.instancemodel;
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -22,24 +22,32 @@ import java.util.concurrent.CompletableFuture;
 import org.apache.camel.catalog.CamelCatalog;
 import org.eclipse.lsp4j.CompletionItem;
 
-import com.github.cameltooling.lsp.internal.completion.CamelComponentSchemaCompletionsFuture;
+import com.github.cameltooling.lsp.internal.completion.CamelOptionValuesCompletionsFuture;
 
-public class CamelComponentURIInstance extends CamelUriElementInstance {
+public class OptionParamValueURIInstance extends CamelUriElementInstance {
 	
-	private String componentName;
+	private String valueName;
+	private OptionParamURIInstance optionParamURIInstance;
 
-	public CamelComponentURIInstance(String componentName, int endPosition) {
-		super(0, endPosition);
-		this.componentName = componentName;
+	public OptionParamValueURIInstance(OptionParamURIInstance optionParamURIInstance, String value, int startPosition, int endPosition) {
+		super(startPosition, endPosition);
+		this.optionParamURIInstance = optionParamURIInstance;
+		this.valueName = value;
 	}
 
-	public String getComponentName() {
-		return componentName;
+	public String getValueName() {
+		return valueName;
 	}
 
 	@Override
 	public CompletableFuture<List<CompletionItem>> getCompletions(CompletableFuture<CamelCatalog> camelCatalog, int positionInCamelUri) {
-		return camelCatalog.thenApply(new CamelComponentSchemaCompletionsFuture());
+		return camelCatalog.thenApply(new CamelOptionValuesCompletionsFuture(this));
 	}
+
+	public OptionParamURIInstance getOptionParamURIInstance() {
+		return optionParamURIInstance;
+	}
+	
+	
 
 }
