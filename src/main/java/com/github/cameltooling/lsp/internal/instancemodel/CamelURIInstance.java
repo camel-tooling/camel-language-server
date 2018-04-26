@@ -29,6 +29,10 @@ import org.w3c.dom.Node;
 
 import com.github.cameltooling.lsp.internal.completion.CamelComponentSchemaCompletionsFuture;
 
+/**
+ * represents the whole Camel URI
+ *
+ */
 public class CamelURIInstance extends CamelUriElementInstance {
 	
 	private static final String CAMEL_PATH_SEPARATOR_REGEX = ":|/";

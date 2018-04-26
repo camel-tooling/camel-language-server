@@ -24,6 +24,10 @@ import org.eclipse.lsp4j.CompletionItem;
 
 import com.github.cameltooling.lsp.internal.completion.CamelComponentSchemaCompletionsFuture;
 
+/**
+ * For a Camel URI "timer:timerName?delay=10s", it represents "timer"
+ *
+ */
 public class CamelComponentURIInstance extends CamelUriElementInstance {
 	
 	private String componentName;
