@@ -27,11 +27,13 @@ import org.apache.camel.catalog.CamelCatalog;
 import org.eclipse.lsp4j.CompletionItem;
 import org.w3c.dom.Node;
 
-import com.github.cameltooling.lsp.internal.completion.CamelComponentSchemaCompletionsFuture;
+import com.github.cameltooling.lsp.internal.completion.CamelComponentSchemesCompletionsFuture;
 
 /**
  * represents the whole Camel URI
- *
+ * this class will provide code completions if the uri is empty
+ * 
+ * @author apupier
  */
 public class CamelURIInstance extends CamelUriElementInstance {
 	
@@ -81,7 +83,7 @@ public class CamelURIInstance extends CamelUriElementInstance {
 		String[] allPathParams = uriToParse.substring(posDoubleDot + 1, posEndofPathParams).split(CAMEL_PATH_SEPARATOR_REGEX);
 		int currentPosition = posDoubleDot + 1;
 		for (String pathParam : allPathParams) {
-			pathParams.add(new PathParamURIInstance(pathParam, currentPosition, currentPosition+pathParam.length()));
+			pathParams.add(new PathParamURIInstance(this, pathParam, currentPosition, currentPosition+pathParam.length()));
 			currentPosition += pathParam.length() + 1;
 		}
 	}
@@ -128,14 +130,25 @@ public class CamelURIInstance extends CamelUriElementInstance {
 	@Override
 	public CompletableFuture<List<CompletionItem>> getCompletions(CompletableFuture<CamelCatalog> camelCatalog, int positionInCamelUri) {
 		if(getStartPosition() <= positionInCamelUri && positionInCamelUri <= getEndPosition()) {
-			return camelCatalog.thenApply(new CamelComponentSchemaCompletionsFuture());
+			return camelCatalog.thenApply(new CamelComponentSchemesCompletionsFuture(getFilter()));
 		} else {
 			return CompletableFuture.completedFuture(Collections.emptyList());
 		}
 	}
 	
+	/**
+	 * returns the filter string to be applied on the list of all completions
+	 * 
+	 * @return	the filter string or null if not to be filtered
+	 */
+	private String getFilter() { 
+		if (component != null) {
+			return String.format("%s:", component.getComponentName());
+		}
+		return null;
+	}
+	
 	public boolean isProducer() {
 		return PRODUCER_NODE_TAG.contains(node.getNodeName());
 	}
-	
 }

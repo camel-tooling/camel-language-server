@@ -64,24 +64,24 @@ public class CamelURIInstanceTest {
 	public void testMultiplePathParam() throws Exception {
 		CamelURIInstance camelURIInstance = new CamelURIInstance("amqp:destinationType:destinationName");
 		assertThat(camelURIInstance.getPathParams()).containsOnly(
-				new PathParamURIInstance("destinationType", 5, 20),
-				new PathParamURIInstance("destinationName", 21, 36));
+				new PathParamURIInstance(camelURIInstance, "destinationType", 5, 20),
+				new PathParamURIInstance(camelURIInstance, "destinationName", 21, 36));
 	}
 	
 	@Test
 	public void testMultiplePathParamWithSomethingElseInUri() throws Exception {
 		CamelURIInstance camelURIInstance = new CamelURIInstance("amqp:destinationType:destinationName?anOption");
 		assertThat(camelURIInstance.getPathParams()).containsOnly(
-				new PathParamURIInstance("destinationType", 5, 20),
-				new PathParamURIInstance("destinationName", 21, 36));
+				new PathParamURIInstance(camelURIInstance, "destinationType", 5, 20),
+				new PathParamURIInstance(camelURIInstance, "destinationName", 21, 36));
 	}
 	
 	@Test
 	public void testMultiplePathParamWithSlashDelimiter() throws Exception {
 		CamelURIInstance camelURIInstance = new CamelURIInstance("atmos:name/operation");
 		assertThat(camelURIInstance.getPathParams()).containsOnly(
-				new PathParamURIInstance("name", 6, 10),
-				new PathParamURIInstance("operation", 11, 20));
+				new PathParamURIInstance(camelURIInstance, "name", 6, 10),
+				new PathParamURIInstance(camelURIInstance, "operation", 11, 20));
 	}
 	
 	@Test

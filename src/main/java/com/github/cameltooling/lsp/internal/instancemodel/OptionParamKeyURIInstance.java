@@ -16,13 +16,14 @@
  */
 package com.github.cameltooling.lsp.internal.instancemodel;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 import org.apache.camel.catalog.CamelCatalog;
 import org.eclipse.lsp4j.CompletionItem;
 
-import com.github.cameltooling.lsp.internal.completion.CamelOptionSchemaCompletionsFuture;
+import com.github.cameltooling.lsp.internal.completion.CamelOptionNamesCompletionsFuture;
 
 /**
  * For a Camel URI "timer:timerName?delay=10s", it represents "delay"
@@ -45,11 +46,28 @@ public class OptionParamKeyURIInstance extends CamelUriElementInstance {
 	
 	@Override
 	public CompletableFuture<List<CompletionItem>> getCompletions(CompletableFuture<CamelCatalog> camelCatalog, int positionInCamelUri) {
-		return camelCatalog.thenApply(new CamelOptionSchemaCompletionsFuture(getComponentName(), optionParamURIInstance.isProducer()));
+		if(getStartPosition() <= positionInCamelUri && positionInCamelUri <= getEndPosition()) {
+			return camelCatalog.thenApply(new CamelOptionNamesCompletionsFuture(getComponentName(), optionParamURIInstance.isProducer(), getFilter(positionInCamelUri)));
+		} else {
+			return CompletableFuture.completedFuture(Collections.emptyList());
+		}
 	}
 	
 	public String getComponentName() {
 		return optionParamURIInstance.getComponentName();
 	}
-
+	
+	/**
+	 * returns the filter string to be applied on the list of all completions
+	 * 
+	 * @param position the positionInUri
+	 * @return	the filter string or null if not to be filtered
+	 */
+	private String getFilter(int positionInUri) { 
+		int len = positionInUri-getStartPosition();
+		if (keyName != null && keyName.trim().length()>0 && getStartPosition() != positionInUri) {
+			return keyName.length()>len ? keyName.substring(getStartPosition(), positionInUri-1) : keyName;
+		}
+		return null;
+	}
 }

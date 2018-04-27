@@ -25,7 +25,14 @@ import org.eclipse.lsp4j.CompletionItem;
 
 import com.github.cameltooling.model.util.ModelHelper;
 
-public final class CamelComponentSchemaCompletionsFuture implements Function<CamelCatalog, List<CompletionItem>> {
+public final class CamelComponentSchemesCompletionsFuture implements Function<CamelCatalog, List<CompletionItem>> {
+	
+	private String filterString;
+	
+	public CamelComponentSchemesCompletionsFuture(String filterText) {
+		this.filterString = filterText;
+	}
+	
 	@Override
 	public List<CompletionItem> apply(CamelCatalog catalog) {
 		return catalog.findComponentNames().stream()
@@ -34,6 +41,8 @@ public final class CamelComponentSchemaCompletionsFuture implements Function<Cam
 					CompletionItem completionItem = new CompletionItem(componentModel.getSyntax());
 					completionItem.setDocumentation(componentModel.getDescription());
 					return completionItem;
-				}).collect(Collectors.toList());
+				})
+				.filter(FilterPredicateUtils.matchesCompletionFilter(filterString))
+				.collect(Collectors.toList());
 	}
 }
