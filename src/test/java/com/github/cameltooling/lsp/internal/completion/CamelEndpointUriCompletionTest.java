@@ -37,19 +37,19 @@ import com.github.cameltooling.lsp.internal.AbstractCamelLanguageServerTest;
 import com.github.cameltooling.lsp.internal.CamelLanguageServer;
 
 @RunWith(Parameterized.class)
-public class CamelComponentCompletionTest extends AbstractCamelLanguageServerTest {
+public class CamelEndpointUriCompletionTest extends AbstractCamelLanguageServerTest {
 	
 	@Parameters(name="{4} - Position ({1},{2})")
     public static Collection<Object[]> data() {
     	return Arrays.asList(new Object[][] {
     		
     		// test the component schemes
-    		{ "<from uri=\"\" xmlns=\"http://camel.apache.org/schema/blueprint\"></from>\n", 		0, 11, "Empty component scheme",			null,	100},
-    		{ "<from uri=\"f\" xmlns=\"http://camel.apache.org/schema/blueprint\"></from>\n", 		0, 12, "URI with component scheme f", 		"f",	1},
+    		{ "<from uri=\"\" xmlns=\"http://camel.apache.org/schema/blueprint\"></from>\n", 		0, 11, "Empty component scheme",			null,	300},
+    		{ "<from uri=\"f\" xmlns=\"http://camel.apache.org/schema/blueprint\"></from>\n", 		0, 12, "URI with component scheme f", 		"f",	8},
     		{ "<from uri=\"fi\" xmlns=\"http://camel.apache.org/schema/blueprint\"></from>\n", 		0, 13, "URI with component scheme fi",		"fi",	1},
     		{ "<from uri=\"fil\" xmlns=\"http://camel.apache.org/schema/blueprint\"></from>\n", 	0, 14, "URI with component scheme fil", 	"fil",  1},
     		{ "<from uri=\"file\" xmlns=\"http://camel.apache.org/schema/blueprint\"></from>\n", 	0, 15, "URI with component scheme file", 	"file", 1},
-    		{ "<from uri=\"file\" xmlns=\"http://camel.apache.org/schema/blueprint\"></from>\n", 	0, 11, "URI with component scheme file", 	null,   100},
+    		{ "<from uri=\"file\" xmlns=\"http://camel.apache.org/schema/blueprint\"></from>\n", 	0, 11, "URI with component scheme file", 	null,   300},
     		
     		// test the path params
     		{ "<from uri=\"ahc:\" xmlns=\"http://camel.apache.org/schema/blueprint\"></from>\n", 		0, 15, "Empty path param", 			"ahc:",     1},
@@ -60,7 +60,7 @@ public class CamelComponentCompletionTest extends AbstractCamelLanguageServerTes
     		{ "<from uri=\"ahc:httpUri\" xmlns=\"http://camel.apache.org/schema/blueprint\"></from>\n", 0, 15, "URI with path param http", 	null,		1},
     		
     		// test the uri options
-    		{ "<from uri=\"file:bla?\" xmlns=\"http://camel.apache.org/schema/blueprint\"></from>\n", 		0, 20, "Empty option",			null,		10},
+    		{ "<from uri=\"file:bla?\" xmlns=\"http://camel.apache.org/schema/blueprint\"></from>\n", 		0, 20, "Empty option",			null,		70},
     		{ "<from uri=\"file:bla?n\" xmlns=\"http://camel.apache.org/schema/blueprint\"></from>\n", 		0, 21, "URI with option n", 	"n",		1},
     		{ "<from uri=\"file:bla?no\" xmlns=\"http://camel.apache.org/schema/blueprint\"></from>\n", 	0, 22, "URI with option no",	"no",		1},
     		{ "<from uri=\"file:bla?noo\" xmlns=\"http://camel.apache.org/schema/blueprint\"></from>\n", 	0, 23, "URI with option noo", 	"noo",		1},
