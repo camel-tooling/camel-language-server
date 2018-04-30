@@ -70,6 +70,8 @@ public class CamelEndpointUriCompletionTest extends AbstractCamelLanguageServerT
     		{ "<from uri=\"file:bla?noop=f\" xmlns=\"http://camel.apache.org/schema/blueprint\"></from>\n", 	0, 26, "URI with option noop", 	"f",	1},
     		{ "<from uri=\"file:bla?noop=t\" xmlns=\"http://camel.apache.org/schema/blueprint\"></from>\n", 	0, 26, "URI with option noop", 	"t",	1},
     		{ "<from uri=\"file:bla?noop=false\" xmlns=\"http://camel.apache.org/schema/blueprint\"></from>\n", 	0, 25, "URI with option noop", 	null,	2},
+    		{ "<from uri=\"file:bla?noop=false\" xmlns=\"http://camel.apache.org/schema/blueprint\"/>\n",	0, 21, "Param Key Completion",	"n",		1},
+    		{ "<from uri=\"file:bla?noop=false\" xmlns=\"http://camel.apache.org/schema/blueprint\"/>\n",	0, 22, "Param Key Completion",	"no",		1},
     		
     	});
     }

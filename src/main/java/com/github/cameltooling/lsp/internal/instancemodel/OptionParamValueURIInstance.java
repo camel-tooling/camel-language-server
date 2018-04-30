@@ -63,9 +63,9 @@ public class OptionParamValueURIInstance extends CamelUriElementInstance {
 	 * @return	the filter string or null if not to be filtered
 	 */
 	private String getFilter(int positionInUri) { 
-		int len = positionInUri-getStartPosition();
+		int len = positionInUri-getStartPosition() -1;
 		if (valueName != null && valueName.trim().length()>0 && getStartPosition()!=positionInUri) {
-			return valueName.length()>len ? valueName.substring(getStartPosition(), positionInUri-1) : valueName;
+			return valueName.length()>len ? valueName.substring(0, Math.max(1, len)) : valueName;
 		}
 		return null;
 	}

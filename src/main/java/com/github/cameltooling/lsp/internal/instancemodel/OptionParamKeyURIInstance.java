@@ -18,6 +18,7 @@ package com.github.cameltooling.lsp.internal.instancemodel;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 
 import org.apache.camel.catalog.CamelCatalog;
@@ -47,7 +48,7 @@ public class OptionParamKeyURIInstance extends CamelUriElementInstance {
 	@Override
 	public CompletableFuture<List<CompletionItem>> getCompletions(CompletableFuture<CamelCatalog> camelCatalog, int positionInCamelUri) {
 		if(getStartPosition() <= positionInCamelUri && positionInCamelUri <= getEndPosition()) {
-			return camelCatalog.thenApply(new CamelOptionNamesCompletionsFuture(getComponentName(), optionParamURIInstance.isProducer(), getFilter(positionInCamelUri)));
+			return camelCatalog.thenApply(new CamelOptionNamesCompletionsFuture(getComponentName(), optionParamURIInstance.isProducer(), getFilter(positionInCamelUri), positionInCamelUri, getAlreadyDefinedUriOptions()));
 		} else {
 			return CompletableFuture.completedFuture(Collections.emptyList());
 		}
@@ -64,10 +65,14 @@ public class OptionParamKeyURIInstance extends CamelUriElementInstance {
 	 * @return	the filter string or null if not to be filtered
 	 */
 	private String getFilter(int positionInUri) { 
-		int len = positionInUri-getStartPosition();
+		int len = positionInUri-getStartPosition()-1;
 		if (keyName != null && keyName.trim().length()>0 && getStartPosition() != positionInUri) {
-			return keyName.length()>len ? keyName.substring(getStartPosition(), positionInUri-1) : keyName;
+			return keyName.length()>len ? keyName.substring(0, Math.max(1, len)) : keyName;
 		}
 		return null;
+	}
+	
+	private Set<OptionParamURIInstance> getAlreadyDefinedUriOptions() {
+		return optionParamURIInstance.getCamelUriInstance().getOptionParams();
 	}
 }
