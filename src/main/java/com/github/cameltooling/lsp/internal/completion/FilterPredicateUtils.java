@@ -33,8 +33,8 @@ public class FilterPredicateUtils {
 	/**
 	 * ensures that only completions are displayed which start with the text the user typed already
 	 * 
-	 * @param filterString
-	 * @return
+	 * @param filterString	the filter string
+	 * @return	the predicate
 	 */
 	public static Predicate<CompletionItem> matchesCompletionFilter(String filterString) {
         return item -> filterString != null && filterString.trim().length() > 0 ? item.getLabel().startsWith(filterString) : true;
@@ -43,8 +43,8 @@ public class FilterPredicateUtils {
 	/**
 	 * ensures that only completions are displayed which start with the text the user typed already 
 	 * 
-	 * @param filterString
-	 * @return
+	 * @param filterString	the filter string
+	 * @return	the predicate
 	 */
 	public static Predicate<EndpointOptionModel> matchesEndpointOptionFilter(String filterString) {
         return item -> filterString != null && filterString.trim().length()>0 ? item.getName().startsWith(filterString) : true;
@@ -55,7 +55,7 @@ public class FilterPredicateUtils {
 	 * 
 	 * @param alreadyDefinedOptions	a set of already defined options
 	 * @param positionInCamelURI	the position inside the camel uri
-	 * @return
+	 * @return	the predicate
 	 */
 	public static Predicate<CompletionItem> removeDuplicatedOptions(Set<OptionParamURIInstance> alreadyDefinedOptions, int positionInCamelURI) {
 		return uriOption -> {
@@ -74,8 +74,8 @@ public class FilterPredicateUtils {
 	 * ensures that only items with the correct group (either consumer or producer) are
 	 * in the list of possible completion items
 	 * 
-	 * @param isProducer
-	 * @return
+	 * @param isProducer	flag if endpoint is producer endpoint or not
+	 * @return	the predicate
 	 */
 	public static Predicate<EndpointOptionModel> matchesProducerConsumerGroups(boolean isProducer) {
 		return endpoint -> {
