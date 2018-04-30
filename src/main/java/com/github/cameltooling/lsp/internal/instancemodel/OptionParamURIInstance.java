@@ -74,4 +74,8 @@ public class OptionParamURIInstance extends CamelUriElementInstance {
 	public boolean isProducer() {
 		return camelURIInstance.isProducer();
 	}
+	
+	protected CamelURIInstance getCamelUriInstance() {
+		return camelURIInstance;
+	}
 }

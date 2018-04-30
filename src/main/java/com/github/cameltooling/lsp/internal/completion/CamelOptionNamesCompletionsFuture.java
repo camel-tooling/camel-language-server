@@ -17,6 +17,7 @@
 package com.github.cameltooling.lsp.internal.completion;
 
 import java.util.List;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -24,6 +25,7 @@ import java.util.stream.Stream;
 import org.apache.camel.catalog.CamelCatalog;
 import org.eclipse.lsp4j.CompletionItem;
 
+import com.github.cameltooling.lsp.internal.instancemodel.OptionParamURIInstance;
 import com.github.cameltooling.model.EndpointOptionModel;
 import com.github.cameltooling.model.util.ModelHelper;
 
@@ -32,27 +34,24 @@ public class CamelOptionNamesCompletionsFuture implements Function<CamelCatalog,
 	private String camelComponentName;
 	private boolean isProducer;
 	private String filterString;
+	private int positionInCamelURI;
+	private Set<OptionParamURIInstance> alreadyDefinedOptions;
 
-	public CamelOptionNamesCompletionsFuture(String camelComponentName, boolean isProducer, String filterText) {
+	public CamelOptionNamesCompletionsFuture(String camelComponentName, boolean isProducer, String filterText, int positionInCamelURI, Set<OptionParamURIInstance> alreadyDefinedOptions) {
 		this.camelComponentName = camelComponentName;
 		this.isProducer = isProducer;
 		this.filterString = filterText;
+		this.positionInCamelURI = positionInCamelURI;
+		this.alreadyDefinedOptions = alreadyDefinedOptions;
 	}
 
 	@Override
 	public List<CompletionItem> apply(CamelCatalog catalog) {
 		Stream<EndpointOptionModel> endpointOptions = ModelHelper.generateComponentModel(catalog.componentJSonSchema(camelComponentName), true).getEndpointOptions().stream();
 		return endpointOptions
-				.filter(FilterPredicateUtils.matchesEndpointOptionFilter(filterString))
 				.filter(endpoint -> "parameter".equals(endpoint.getKind()))
-				.filter(endpoint -> {
-					String group = endpoint.getGroup();
-					if (isProducer) {
-						return !"consumer".equals(group);
-					} else {
-						return !"producer".equals(group);
-					}
-				})
+				// filter wrong option groups
+				.filter(FilterPredicateUtils.matchesProducerConsumerGroups(isProducer))
 				.map(parameter -> {
 					CompletionItem completionItem = new CompletionItem(parameter.getName());
 					String insertText = parameter.getName() + "=";
@@ -62,6 +61,9 @@ public class CamelOptionNamesCompletionsFuture implements Function<CamelCatalog,
 					completionItem.setInsertText(insertText);
 					return completionItem;
 				})
+				// filter duplicated uri options
+				.filter(FilterPredicateUtils.removeDuplicatedOptions(alreadyDefinedOptions, positionInCamelURI))
+				.filter(FilterPredicateUtils.matchesCompletionFilter(filterString))
 				.collect(Collectors.toList());
 	}
 

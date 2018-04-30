@@ -16,10 +16,12 @@
  */
 package com.github.cameltooling.lsp.internal.completion;
 
+import java.util.Set;
 import java.util.function.Predicate;
 
 import org.eclipse.lsp4j.CompletionItem;
 
+import com.github.cameltooling.lsp.internal.instancemodel.OptionParamURIInstance;
 import com.github.cameltooling.model.EndpointOptionModel;
 
 public class FilterPredicateUtils {
@@ -28,11 +30,61 @@ public class FilterPredicateUtils {
 		// util class
 	}
 	
+	/**
+	 * ensures that only completions are displayed which start with the text the user typed already
+	 * 
+	 * @param filterString
+	 * @return
+	 */
 	public static Predicate<CompletionItem> matchesCompletionFilter(String filterString) {
         return item -> filterString != null && filterString.trim().length() > 0 ? item.getLabel().startsWith(filterString) : true;
     }
 	
+	/**
+	 * ensures that only completions are displayed which start with the text the user typed already 
+	 * 
+	 * @param filterString
+	 * @return
+	 */
 	public static Predicate<EndpointOptionModel> matchesEndpointOptionFilter(String filterString) {
         return item -> filterString != null && filterString.trim().length()>0 ? item.getName().startsWith(filterString) : true;
     }
+	
+	/**
+	 * makes sure that only options are suggested which are not already part of the uri
+	 * 
+	 * @param alreadyDefinedOptions	a set of already defined options
+	 * @param positionInCamelURI	the position inside the camel uri
+	 * @return
+	 */
+	public static Predicate<CompletionItem> removeDuplicatedOptions(Set<OptionParamURIInstance> alreadyDefinedOptions, int positionInCamelURI) {
+		return uriOption -> {
+			int occured = 0;
+			for (OptionParamURIInstance definedOption : alreadyDefinedOptions) {
+				if (definedOption.getKey().getKeyName().equalsIgnoreCase(uriOption.getLabel()) && !definedOption.isInRange(positionInCamelURI) ) {
+					// found dupe
+					occured++;
+				}
+			}
+			return occured < 1;
+		};
+	}
+	
+	/**
+	 * ensures that only items with the correct group (either consumer or producer) are
+	 * in the list of possible completion items
+	 * 
+	 * @param isProducer
+	 * @return
+	 */
+	public static Predicate<EndpointOptionModel> matchesProducerConsumerGroups(boolean isProducer) {
+		return endpoint -> {
+			String group = endpoint.getGroup();
+			if (isProducer) {
+				return !"consumer".equals(group);
+			} else {
+				return !"producer".equals(group);
+			}
+		};
+	}
 }
