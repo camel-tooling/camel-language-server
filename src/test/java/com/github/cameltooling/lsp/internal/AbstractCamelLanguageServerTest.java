@@ -2,13 +2,18 @@ package com.github.cameltooling.lsp.internal;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.URISyntaxException;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
+import java.util.stream.Collectors;
 
 import org.eclipse.lsp4j.CompletionItem;
 import org.eclipse.lsp4j.CompletionList;
@@ -26,8 +31,6 @@ import org.eclipse.lsp4j.TextDocumentPositionParams;
 import org.eclipse.lsp4j.jsonrpc.messages.Either;
 import org.eclipse.lsp4j.services.LanguageClient;
 import org.eclipse.lsp4j.services.TextDocumentService;
-
-import com.github.cameltooling.lsp.internal.CamelLanguageServer;
 
 public abstract class AbstractCamelLanguageServerTest {
 
@@ -81,6 +84,14 @@ public abstract class AbstractCamelLanguageServerTest {
 				return camelLanguageServer;
 			}
 
+	protected CamelLanguageServer initializeLanguageServer(InputStream stream) {
+		try (BufferedReader buffer = new BufferedReader(new InputStreamReader(stream))) {
+            return initializeLanguageServer(buffer.lines().collect(Collectors.joining("\n")));
+        } catch (ExecutionException | InterruptedException | URISyntaxException | IOException ex) {
+        	return null;
+        }
+	}
+	
 	private TextDocumentItem createTestTextDocument(String text) {
 		return new TextDocumentItem(DUMMY_URI, CamelLanguageServer.LANGUAGE_ID, 0, text);
 	}

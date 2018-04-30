@@ -18,6 +18,8 @@ package com.github.cameltooling.lsp.internal;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
@@ -26,8 +28,6 @@ import org.eclipse.lsp4j.CompletionList;
 import org.eclipse.lsp4j.Position;
 import org.eclipse.lsp4j.jsonrpc.messages.Either;
 import org.junit.Test;
-
-import com.github.cameltooling.lsp.internal.CamelLanguageServer;
 
 
 public class CamelLanguageServerTest extends AbstractCamelLanguageServerTest {
@@ -71,6 +71,20 @@ public class CamelLanguageServerTest extends AbstractCamelLanguageServerTest {
 		assertThat(completions.get().getLeft()).contains(expectedAhcCompletioncompletionItem);
 	}
 
+//	@Test
+//	public void testProvideCompletionforMultilineURI() throws Exception {
+//		CamelLanguageServer camelLanguageServer = initializeLanguageServer(
+//				"<camelContext xmlns=\"http://camel.apache.org/schema/spring\">\n" + 
+//				"<to uri=\"file:myFolder?\n" + 
+//				"noop=true&amp;\n" + 
+//				"recursive=false\n" +
+//				"\"/>\n\"" +
+//				"</camelContext>");
+//		
+//		CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = getCompletionFor(camelLanguageServer, new Position(1, 23));
+//		assertThat(completions.get().getLeft().size()).isGreaterThan(10);
+//	}
+	
 	@Test
 	public void testDONTProvideCompletionForNotCamelnamespace() throws Exception {
 		CamelLanguageServer camelLanguageServer = initializeLanguageServer("<from uri=\"\"></from>\n");
@@ -89,5 +103,15 @@ public class CamelLanguageServerTest extends AbstractCamelLanguageServerTest {
 		
 		assertThat(completions.get().getLeft()).isEmpty();
 		assertThat(completions.get().getRight()).isNull();
+	}
+	
+	@Test
+	public void testLoadCamelContextFromFile() throws Exception {
+		File f = new File("src/test/resources/workspace/cbr-blueprint.xml");
+		assertThat(f).exists();
+		try (FileInputStream fis = new FileInputStream(f)) {
+			CamelLanguageServer cls = initializeLanguageServer(fis);
+			assertThat(cls).isNotNull();
+		}
 	}
 }
