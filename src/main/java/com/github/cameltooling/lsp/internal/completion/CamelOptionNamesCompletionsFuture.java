@@ -60,6 +60,7 @@ public class CamelOptionNamesCompletionsFuture implements Function<CamelCatalog,
 					}
 					completionItem.setInsertText(insertText);
 					completionItem.setDocumentation(parameter.getDescription());
+					completionItem.setDetail(parameter.getJavaType());
 					return completionItem;
 				})
 				// filter duplicated uri options
