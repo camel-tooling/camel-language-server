@@ -5,15 +5,13 @@
 [![License](https://img.shields.io/badge/license-Apache%202-blue.svg)]()
 [![Gitter](https://img.shields.io/gitter/room/camel-tooling/Lobby.js.svg)](https://gitter.im/camel-tooling/Lobby)
 
-camel-language-server
-=====================
+# camel-language-server
 
 camel-language-server is a server implementation that provides Camel DSL smartness.
 The server adheres to the [language server protocol](https://github.com/Microsoft/language-server-protocol)
 and can be used with any editor that supports the protocol. The server utilizes [Apache Camel](http://camel.apache.org/).
 
-Clients
---------------
+# Clients
 
 These clients are available:
 * [Eclipse IDE](https://github.com/camel-tooling/camel-lsp-client-eclipse)
@@ -24,13 +22,20 @@ Help is welcome to provide more client implementations, especially for:
 * [Eclipse Theia](https://github.com/camel-tooling/camel-lsp-client-theia)
 
 
-Features
---------------
-* Code completion
-* Hover
+## Features
 
-Features planned
---------------
+### Code completion for Camel URI with XML DSL
+* Completion for Camel components ![Completion for Camel components](./images/completionComponent.png "Completion for Camel components")
+* Completion for Camel attributes ![Completion for Camel attributes](./images/completionAttribute.png "Completion for Camel attributes")
+* Completion for Camel attributes value ![Completion for Camel attributes value](./images/completionAttributeValueForChoice.png "Completion for Camel attributes value")
+
+### Hover on Camel URI with XML DSL
+
+On hover, the documentation of the Camel component is available.
+![Hover on Camel components](./images/hoverComponent.png "Hover on Camel components")
+
+## Features planned
+
 * As you type reporting of parsing and compilation errors
 * More advanced Code completion
 * Code outline
@@ -39,12 +44,11 @@ Features planned
 * Highlights
 * Code formatting
 
-Feedback
----------
+## Feedback
+
 * File a bug in [GitHub Issues](https://github.com/camel-tooling/camel-language-server/issues).
 
+## License
 
-License
--------
 ASL 2.0, See [LICENSE](LICENSE) file.
 
