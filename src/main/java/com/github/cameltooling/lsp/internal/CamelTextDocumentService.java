@@ -56,6 +56,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.github.cameltooling.lsp.internal.completion.CamelEndpointCompletionProcessor;
+import com.github.cameltooling.lsp.internal.documentsymbol.DocumentSymbolProcessor;
 import com.github.cameltooling.lsp.internal.hover.HoverProcessor;
 
 /**
@@ -122,7 +123,7 @@ public class CamelTextDocumentService implements TextDocumentService {
 	@Override
 	public CompletableFuture<List<? extends SymbolInformation>> documentSymbol(DocumentSymbolParams params) {
 		LOGGER.info("documentSymbol: {}", params.getTextDocument());
-		return CompletableFuture.completedFuture(Collections.emptyList());
+		return new DocumentSymbolProcessor(openedDocuments.get(params.getTextDocument().getUri())).getDocumentSymbols();
 	}
 
 	@Override

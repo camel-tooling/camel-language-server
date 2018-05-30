@@ -36,6 +36,7 @@ import org.xml.sax.SAXException;
 
 public class ParserFileHelper {
 	
+	private static final String ATTRIBUTE_ROUTE = "route";
 	private static final String NAMESPACEURI_CAMEL_BLUEPRINT = "http://camel.apache.org/schema/blueprint";
 	private static final String NAMESPACEURI_CAMEL_SPRING = "http://camel.apache.org/schema/spring";
 	private static final List<String> CAMEL_NODES_TAG = Arrays.asList("to", "from");
@@ -121,6 +122,14 @@ public class ParserFileHelper {
 			}
 		}
 		return false;
+	}
+
+	public NodeList getRouteNodes(TextDocumentItem textDocumentItem) throws Exception {
+		if (hasElementFromCamelNamespace(textDocumentItem)) {
+			Document parsedXml = XmlLineNumberParser.parseXml(new ByteArrayInputStream(textDocumentItem.getText().getBytes(StandardCharsets.UTF_8)));
+			return parsedXml.getElementsByTagName(ATTRIBUTE_ROUTE);
+		}
+		return null;
 	}
 	
 }
