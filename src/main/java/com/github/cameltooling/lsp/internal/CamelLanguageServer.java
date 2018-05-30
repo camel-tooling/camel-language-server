@@ -80,6 +80,7 @@ public class CamelLanguageServer extends AbstractLanguageServer implements Langu
 		capabilities.setTextDocumentSync(TextDocumentSyncKind.Full);
 		capabilities.setCompletionProvider(new CompletionOptions(Boolean.TRUE, Arrays.asList(".","?","&", "\"", "=")));
 		capabilities.setHoverProvider(Boolean.TRUE);
+		capabilities.setDocumentSymbolProvider(Boolean.TRUE);
 		return capabilities;
 	}
 
