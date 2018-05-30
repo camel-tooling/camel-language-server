@@ -70,9 +70,7 @@ public class CamelTextDocumentService implements TextDocumentService {
 	
 	public CamelTextDocumentService() {
 		camelCatalog = CompletableFuture.supplyAsync(() -> {
-			DefaultCamelCatalog res = new DefaultCamelCatalog(true);
-			res.loadVersion("2.20.1");
-			return res;
+			return new DefaultCamelCatalog(true);
 		});
 	}
 	
