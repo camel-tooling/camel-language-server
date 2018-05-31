@@ -69,9 +69,7 @@ public class CamelTextDocumentService implements TextDocumentService {
 	private CompletableFuture<CamelCatalog> camelCatalog;
 	
 	public CamelTextDocumentService() {
-		camelCatalog = CompletableFuture.supplyAsync(() -> {
-			return new DefaultCamelCatalog(true);
-		});
+		camelCatalog = CompletableFuture.supplyAsync(() -> new DefaultCamelCatalog(true));
 	}
 	
 	@Override
