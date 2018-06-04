@@ -1,4 +1,6 @@
 language: java
+before_install:
+- "export IS_SNAPSHOT=`grep '<version>' pom.xml -m 1 | cut -d'>' -f 2 | cut -d'<' -f 1 | cut -d'-' -f 2`"
 install: 
 - mvn install -P !build-extras -DskipTests=true -Dmaven.javadoc.skip=true -B -V
 script: mvn test -P !build-extras -B
@@ -12,19 +14,21 @@ env:
   global:
   - GPG_DIR="`pwd`/cd"
 after_success:
-- if [[ $TRAVIS_PULL_REQUEST == "false" && $TRAVIS_BRANCH == "master" ]]; then 
+- if [[ $IS_SNAPSHOT == "SNAPSHOT" ]]; then
+  export SNAPSHOT=TRUE;
+ else
+  export SNAPSHOT=FALSE;
+fi
+- if [[ $TRAVIS_PULL_REQUEST == "false" && $TRAVIS_BRANCH == "master" && $SNAPSHOT == "TRUE" || -n "$TRAVIS_TAG" && $SNAPSHOT == "FALSE" ]]; then 
   mvn sonar:sonar -Dsonar.login=${SONAR_TOKEN} -Dsonar.organization="camel-tooling" -Dsonar.projectKey="camel-lsp-server" -Dsonar.projectName="Camel LSP Server"; 
-  ./cd/before-deploy.sh;
-  ./cd/deploy.sh;
-  fi
-deploy:
-  provider: releases
-  api_key: "${DEPLOY_TOKEN}"
-  file: target/camel-lsp-server-1.0.0-SNAPSHOT.jar
-  skip_cleanup: true
-  overwrite: true
-  on:
-    branch: master
+ fi
+- if [[ $TRAVIS_PULL_REQUEST == "false" && $TRAVIS_BRANCH == "master" && $SNAPSHOT == "TRUE" ]]; then
+ ./cd/before-deploy.sh;
+ ./cd/deploy.sh;
+ elif [[ -n "$TRAVIS_TAG" && $SNAPSHOT == "FALSE" ]]; then
+ ./cd/before-deploy.sh;
+ ./cd/deploy.sh;
+ fi
 addons:
   sonarcloud:
     organization: camel-tooling
