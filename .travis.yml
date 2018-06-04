@@ -18,7 +18,7 @@ after_success:
   export SNAPSHOT=TRUE;
  else
   export SNAPSHOT=FALSE;
-fi
+ fi
 - if [[ $TRAVIS_PULL_REQUEST == "false" && $TRAVIS_BRANCH == "master" && $SNAPSHOT == "TRUE" || -n "$TRAVIS_TAG" && $SNAPSHOT == "FALSE" ]]; then 
   mvn sonar:sonar -Dsonar.login=${SONAR_TOKEN} -Dsonar.organization="camel-tooling" -Dsonar.projectKey="camel-lsp-server" -Dsonar.projectName="Camel LSP Server"; 
  fi
