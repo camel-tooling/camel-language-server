@@ -49,6 +49,15 @@ public class CamelComponentOptionsCompletionsTest extends AbstractCamelLanguageS
 	}
     
     @Test
+	public void testProvideCamelOptionsForConsumerOnlyForJava() throws Exception {
+    	CompletionItem completionItem = new CompletionItem("bridgeErrorHandler");
+    	completionItem.setInsertText("bridgeErrorHandler=false");
+    	completionItem.setDocumentation("Allows for bridging the consumer to the Camel routing Error Handler, which mean any exceptions occurred while the consumer is trying to pickup incoming messages, or the likes, will now be processed as a message and handled by the routing Error Handler. By default the consumer will use the org.apache.camel.spi.ExceptionHandler to deal with exceptions, that will be logged at WARN/ERROR level and ignored.");
+    	completionItem.setDetail("boolean");
+		testProvideCamelOptions("from(\"timer:timerName?\")//camel", 0, 22, completionItem, ".java");
+	}
+
+	@Test
 	public void testProvideCamelOptionsForConsumerOrProducer() throws Exception {
     	CompletionItem completionItem = new CompletionItem("clientConfigOptions");
     	completionItem.setInsertText("clientConfigOptions=");
@@ -63,7 +72,11 @@ public class CamelComponentOptionsCompletionsTest extends AbstractCamelLanguageS
    	}
     
     private void testProvideCamelOptions(String textTotest, int line, int character, CompletionItem completionItemExpected) throws URISyntaxException, InterruptedException, ExecutionException {
-    	CamelLanguageServer camelLanguageServer = initializeLanguageServer(textTotest);
+    	testProvideCamelOptions(textTotest, line, character, completionItemExpected, ".xml");
+    }
+       
+    private void testProvideCamelOptions(String textTotest, int line, int character, CompletionItem completionItemExpected, String fileType) throws URISyntaxException, InterruptedException, ExecutionException {
+    	CamelLanguageServer camelLanguageServer = initializeLanguageServer(textTotest, fileType);
     	
     	CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = getCompletionFor(camelLanguageServer, new Position(line, character));
     	

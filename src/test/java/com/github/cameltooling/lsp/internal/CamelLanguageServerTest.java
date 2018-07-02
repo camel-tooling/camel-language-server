@@ -27,6 +27,7 @@ import org.eclipse.lsp4j.CompletionItem;
 import org.eclipse.lsp4j.CompletionList;
 import org.eclipse.lsp4j.Position;
 import org.eclipse.lsp4j.jsonrpc.messages.Either;
+import org.junit.Ignore;
 import org.junit.Test;
 
 
@@ -60,7 +61,30 @@ public class CamelLanguageServerTest extends AbstractCamelLanguageServerTest {
 	}
 	
 	@Test
-	public void testProvideCompletionforMultiline() throws Exception {
+	public void testProvideCompletionForJava() throws Exception {
+		CamelLanguageServer camelLanguageServer = initializeLanguageServer(
+				"//camel file\n"+
+				"from(\"\")\n",
+				".java");
+		
+		CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = getCompletionFor(camelLanguageServer, new Position(1, 6));
+		
+		assertThat(completions.get().getLeft()).contains(expectedAhcCompletioncompletionItem);
+	}
+	
+	@Test
+	public void testProvideCompletionForJavaOnRealFile() throws Exception {
+		File f = new File("src/test/resources/workspace/camel.java");
+		assertThat(f).exists();
+		try (FileInputStream fis = new FileInputStream(f)) {
+			CamelLanguageServer cls = initializeLanguageServer(fis, ".java");
+			CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = getCompletionFor(cls, new Position(38, 14));
+			assertThat(completions.get().getLeft()).contains(expectedAhcCompletioncompletionItem);
+		}
+	}
+	
+	@Test
+	public void testProvideCompletionforMultilineXmlFile() throws Exception {
 		CamelLanguageServer camelLanguageServer = initializeLanguageServer(
 				"<camelContext xmlns=\"http://camel.apache.org/schema/spring\">\n" + 
 				"<to uri=\"\" ></to>\n" + 
@@ -71,19 +95,20 @@ public class CamelLanguageServerTest extends AbstractCamelLanguageServerTest {
 		assertThat(completions.get().getLeft()).contains(expectedAhcCompletioncompletionItem);
 	}
 
-//	@Test
-//	public void testProvideCompletionforMultilineURI() throws Exception {
-//		CamelLanguageServer camelLanguageServer = initializeLanguageServer(
-//				"<camelContext xmlns=\"http://camel.apache.org/schema/spring\">\n" + 
-//				"<to uri=\"file:myFolder?\n" + 
-//				"noop=true&amp;\n" + 
-//				"recursive=false\n" +
-//				"\"/>\n\"" +
-//				"</camelContext>");
-//		
-//		CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = getCompletionFor(camelLanguageServer, new Position(1, 23));
-//		assertThat(completions.get().getLeft().size()).isGreaterThan(10);
-//	}
+	@Test
+	@Ignore("activate when support of multiline is implemented camel-tooling/camel-language-server#34")
+	public void testProvideCompletionforMultilineURI() throws Exception {
+		CamelLanguageServer camelLanguageServer = initializeLanguageServer(
+				"<camelContext xmlns=\"http://camel.apache.org/schema/spring\">\n" + 
+				"<to uri=\"file:myFolder?\n" + 
+				"noop=true&amp;\n" + 
+				"recursive=false\n" +
+				"\"/>\n\"" +
+				"</camelContext>");
+		
+		CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = getCompletionFor(camelLanguageServer, new Position(1, 23));
+		assertThat(completions.get().getLeft().size()).isGreaterThan(10);
+	}
 	
 	@Test
 	public void testDONTProvideCompletionForNotCamelnamespace() throws Exception {
@@ -110,8 +135,19 @@ public class CamelLanguageServerTest extends AbstractCamelLanguageServerTest {
 		File f = new File("src/test/resources/workspace/cbr-blueprint.xml");
 		assertThat(f).exists();
 		try (FileInputStream fis = new FileInputStream(f)) {
-			CamelLanguageServer cls = initializeLanguageServer(fis);
+			CamelLanguageServer cls = initializeLanguageServer(fis, ".xml");
+			assertThat(cls).isNotNull();
+		}
+	}
+	
+	@Test
+	public void testLoadJavaCamelContextFromFile() throws Exception {
+		File f = new File("src/test/resources/workspace/camel.java");
+		assertThat(f).exists();
+		try (FileInputStream fis = new FileInputStream(f)) {
+			CamelLanguageServer cls = initializeLanguageServer(fis, ".java");
 			assertThat(cls).isNotNull();
 		}
 	}
 }
+

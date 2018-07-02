@@ -73,7 +73,6 @@ public class CamelTextDocumentService implements TextDocumentService {
 		camelCatalog = CompletableFuture.supplyAsync(() -> new DefaultCamelCatalog(true));
 	}
 	
-	
 	@Override
 	public CompletableFuture<Either<List<CompletionItem>, CompletionList>> completion(CompletionParams completionParams) {
 		String uri = completionParams.getTextDocument().getUri();

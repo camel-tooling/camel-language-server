@@ -27,6 +27,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.github.cameltooling.lsp.internal.parser.ParserFileHelper;
+import com.github.cameltooling.lsp.internal.parser.ParserFileHelperFactory;
 import com.github.cameltooling.model.util.StringUtils;
 
 public class HoverProcessor {
@@ -42,8 +43,8 @@ public class HoverProcessor {
 
 	public CompletableFuture<Hover> getHover(Position position) {
 		try {
-			ParserFileHelper parserFileHelper = new ParserFileHelper();
-			if(parserFileHelper.getCorrespondingCamelNodeForCompletion(textDocumentItem, position.getLine()) != null){
+			ParserFileHelper parserFileHelper = new ParserFileHelperFactory().getCorrespondingParserFileHelper(textDocumentItem, position.getLine());
+			if (parserFileHelper != null){
 				String camelComponentUri = parserFileHelper.getCamelComponentUri(textDocumentItem, position);
 				String componentName = StringUtils.asComponentName(camelComponentUri);
 				if (componentName != null) {

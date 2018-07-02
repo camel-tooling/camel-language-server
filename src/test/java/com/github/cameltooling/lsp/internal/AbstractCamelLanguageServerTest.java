@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -38,6 +39,7 @@ public abstract class AbstractCamelLanguageServerTest {
 
 	protected static final String AHC_DOCUMENTATION = "To call external HTTP services using Async Http Client.";
 	protected static final String DUMMY_URI = "dummyUri";
+	private String extensionUsed;
 	protected CompletionItem expectedAhcCompletioncompletionItem;
 
 	public AbstractCamelLanguageServerTest() {
@@ -69,46 +71,50 @@ public abstract class AbstractCamelLanguageServerTest {
 		}
 	}
 
-	protected CamelLanguageServer initializeLanguageServer(String text)
-			throws URISyntaxException, InterruptedException, ExecutionException {
-				InitializeParams params = new InitializeParams();
-				params.setProcessId(new Random().nextInt());
-				params.setRootUri(getTestResource("/workspace/").toURI().toString());
-				CamelLanguageServer camelLanguageServer = new CamelLanguageServer();
-				camelLanguageServer.connect(new DummyLanguageClient());
-				CompletableFuture<InitializeResult> initialize = camelLanguageServer.initialize(params);
-				
-				assertThat(initialize).isCompleted();
-				assertThat(initialize.get().getCapabilities().getCompletionProvider().getResolveProvider()).isTrue();
-				
-				camelLanguageServer.getTextDocumentService().didOpen(new DidOpenTextDocumentParams(createTestTextDocument(text)));
-				
-				return camelLanguageServer;
-			}
+	protected CamelLanguageServer initializeLanguageServer(String text) throws URISyntaxException, InterruptedException, ExecutionException {
+		return initializeLanguageServer(text, ".xml");
+	}
 
-	protected CamelLanguageServer initializeLanguageServer(InputStream stream) {
+	protected CamelLanguageServer initializeLanguageServer(String text, String suffixFileName) throws URISyntaxException, InterruptedException, ExecutionException {
+		this.extensionUsed = suffixFileName;
+		InitializeParams params = new InitializeParams();
+		params.setProcessId(new Random().nextInt());
+		params.setRootUri(getTestResource("/workspace/").toURI().toString());
+		CamelLanguageServer camelLanguageServer = new CamelLanguageServer();
+		camelLanguageServer.connect(new DummyLanguageClient());
+		CompletableFuture<InitializeResult> initialize = camelLanguageServer.initialize(params);
+
+		assertThat(initialize).isCompleted();
+		assertThat(initialize.get().getCapabilities().getCompletionProvider().getResolveProvider()).isTrue();
+
+		camelLanguageServer.getTextDocumentService().didOpen(new DidOpenTextDocumentParams(createTestTextDocument(text, suffixFileName)));
+
+		return camelLanguageServer;
+	}
+
+	protected CamelLanguageServer initializeLanguageServer(FileInputStream stream, String suffixFileName) {
 		try (BufferedReader buffer = new BufferedReader(new InputStreamReader(stream))) {
-            return initializeLanguageServer(buffer.lines().collect(Collectors.joining("\n")));
+            return initializeLanguageServer(buffer.lines().collect(Collectors.joining("\n")), suffixFileName);
         } catch (ExecutionException | InterruptedException | URISyntaxException | IOException ex) {
         	return null;
         }
 	}
 	
-	private TextDocumentItem createTestTextDocument(String text) {
-		return new TextDocumentItem(DUMMY_URI, CamelLanguageServer.LANGUAGE_ID, 0, text);
+	private TextDocumentItem createTestTextDocument(String text, String suffixFileName) {
+		return new TextDocumentItem(DUMMY_URI + suffixFileName, CamelLanguageServer.LANGUAGE_ID, 0, text);
 	}
 
 	protected CompletableFuture<Either<List<CompletionItem>, CompletionList>> getCompletionFor(CamelLanguageServer camelLanguageServer, Position position) {
 		TextDocumentService textDocumentService = camelLanguageServer.getTextDocumentService();
 		
-		CompletionParams completionParams = new CompletionParams(new TextDocumentIdentifier(DUMMY_URI), position);
+		CompletionParams completionParams = new CompletionParams(new TextDocumentIdentifier(DUMMY_URI+extensionUsed), position);
 		CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = textDocumentService.completion(completionParams);
 		return completions;
 	}
 	
 	protected CompletableFuture<List<? extends SymbolInformation>> getDocumentSymbolFor(CamelLanguageServer camelLanguageServer) {
 		TextDocumentService textDocumentService = camelLanguageServer.getTextDocumentService();
-		DocumentSymbolParams params = new DocumentSymbolParams(new TextDocumentIdentifier(DUMMY_URI));
+		DocumentSymbolParams params = new DocumentSymbolParams(new TextDocumentIdentifier(DUMMY_URI+extensionUsed));
 		return textDocumentService.documentSymbol(params);
 	}
 
