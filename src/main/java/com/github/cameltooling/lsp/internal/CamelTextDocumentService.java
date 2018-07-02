@@ -30,6 +30,7 @@ import org.eclipse.lsp4j.CodeLensParams;
 import org.eclipse.lsp4j.Command;
 import org.eclipse.lsp4j.CompletionItem;
 import org.eclipse.lsp4j.CompletionList;
+import org.eclipse.lsp4j.CompletionParams;
 import org.eclipse.lsp4j.DidChangeTextDocumentParams;
 import org.eclipse.lsp4j.DidCloseTextDocumentParams;
 import org.eclipse.lsp4j.DidOpenTextDocumentParams;
@@ -72,11 +73,13 @@ public class CamelTextDocumentService implements TextDocumentService {
 		camelCatalog = CompletableFuture.supplyAsync(() -> new DefaultCamelCatalog(true));
 	}
 	
+	
 	@Override
-	public CompletableFuture<Either<List<CompletionItem>, CompletionList>> completion(TextDocumentPositionParams completionRequest) {
-		LOGGER.info("completion: {}", completionRequest.getTextDocument().getUri());
-		TextDocumentItem textDocumentItem = openedDocuments.get(completionRequest.getTextDocument().getUri());
-		return new CamelEndpointCompletionProcessor(textDocumentItem, camelCatalog).getCompletions(completionRequest.getPosition()).thenApply(Either::forLeft);
+	public CompletableFuture<Either<List<CompletionItem>, CompletionList>> completion(CompletionParams completionParams) {
+		String uri = completionParams.getTextDocument().getUri();
+		LOGGER.info("completion: {}", uri);
+		TextDocumentItem textDocumentItem = openedDocuments.get(uri);
+		return new CamelEndpointCompletionProcessor(textDocumentItem, camelCatalog).getCompletions(completionParams.getPosition()).thenApply(Either::forLeft);
 	}
 
 	@Override
