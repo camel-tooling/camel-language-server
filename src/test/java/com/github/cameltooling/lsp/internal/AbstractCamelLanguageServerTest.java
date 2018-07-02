@@ -17,6 +17,7 @@ import java.util.stream.Collectors;
 
 import org.eclipse.lsp4j.CompletionItem;
 import org.eclipse.lsp4j.CompletionList;
+import org.eclipse.lsp4j.CompletionParams;
 import org.eclipse.lsp4j.DidOpenTextDocumentParams;
 import org.eclipse.lsp4j.DocumentSymbolParams;
 import org.eclipse.lsp4j.InitializeParams;
@@ -29,7 +30,6 @@ import org.eclipse.lsp4j.ShowMessageRequestParams;
 import org.eclipse.lsp4j.SymbolInformation;
 import org.eclipse.lsp4j.TextDocumentIdentifier;
 import org.eclipse.lsp4j.TextDocumentItem;
-import org.eclipse.lsp4j.TextDocumentPositionParams;
 import org.eclipse.lsp4j.jsonrpc.messages.Either;
 import org.eclipse.lsp4j.services.LanguageClient;
 import org.eclipse.lsp4j.services.TextDocumentService;
@@ -101,8 +101,8 @@ public abstract class AbstractCamelLanguageServerTest {
 	protected CompletableFuture<Either<List<CompletionItem>, CompletionList>> getCompletionFor(CamelLanguageServer camelLanguageServer, Position position) {
 		TextDocumentService textDocumentService = camelLanguageServer.getTextDocumentService();
 		
-		TextDocumentPositionParams dummyCompletionPositionRequest = new TextDocumentPositionParams(new TextDocumentIdentifier(DUMMY_URI), position);
-		CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = textDocumentService.completion(dummyCompletionPositionRequest);
+		CompletionParams completionParams = new CompletionParams(new TextDocumentIdentifier(DUMMY_URI), position);
+		CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = textDocumentService.completion(completionParams);
 		return completions;
 	}
 	
