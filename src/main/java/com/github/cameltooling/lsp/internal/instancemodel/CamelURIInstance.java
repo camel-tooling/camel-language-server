@@ -38,20 +38,29 @@ import com.github.cameltooling.lsp.internal.completion.CamelComponentSchemesComp
 public class CamelURIInstance extends CamelUriElementInstance {
 	
 	private static final String CAMEL_PATH_SEPARATOR_REGEX = ":|/";
-	private static final String PARAMETERS_SEPARATOR = "&amp;";
-	private static final List<String> PRODUCER_NODE_TAG = Arrays.asList("to", "interceptSendToEndpoint", "wireTap", "deadLetterChanel");
+	private static final List<String> PRODUCER_TYPE_POSSIBLE_NAMES = Arrays.asList("to", "interceptSendToEndpoint", "wireTap", "deadLetterChanel");
 	private CamelComponentURIInstance component;
 	private Set<PathParamURIInstance> pathParams = new HashSet<>();
 	private Set<OptionParamURIInstance> optionParams = new HashSet<>();
-	private Node node;
-	
-	public CamelURIInstance(String uriToParse) {
-		this(uriToParse, null);
-	}
+	private DSLModelHelper dslModelHelper;
 	
 	public CamelURIInstance(String uriToParse, Node node) {
 		super(0, uriToParse != null ? uriToParse.length() : 0);
-		this.node = node;
+		dslModelHelper = new XMLDSLModelHelper(node);
+		init(uriToParse);
+	}
+	
+	/**
+	 * @param uriToParse
+	 * @param methodName the method name of the Java call encapsulating the provided uri to parse
+	 */
+	public CamelURIInstance(String uriToParse, String methodName) {
+		super(0, uriToParse != null ? uriToParse.length() : 0);
+		dslModelHelper = new JavaDSLModelHelper(methodName);
+		init(uriToParse);
+	}
+	
+	private void init(String uriToParse) {
 		if(uriToParse != null && !uriToParse.isEmpty()) {
 			int posDoubleDot = uriToParse.indexOf(':');
 			if (posDoubleDot > 0) {
@@ -67,13 +76,14 @@ public class CamelURIInstance extends CamelUriElementInstance {
 
 	private void initOptionParams(String uriToParse, int posEndofPathParams) {
 		if(uriToParse.length() > posEndofPathParams) {
-			String[] allOptionParams = uriToParse.substring(posEndofPathParams + 1).split(PARAMETERS_SEPARATOR);
+			String parametersSeparator = dslModelHelper.getParametersSeparator();
+			String[] allOptionParams = uriToParse.substring(posEndofPathParams + 1).split(parametersSeparator);
 			int currentPosition = posEndofPathParams + 1;
 			for (String optionParam : allOptionParams) {
 				optionParams.add(new OptionParamURIInstance(this, optionParam, currentPosition, currentPosition + optionParam.length()));
-				currentPosition += optionParam.length() + 5;
+				currentPosition += optionParam.length() + parametersSeparator.length();
 			}
-			if(uriToParse.endsWith(PARAMETERS_SEPARATOR)) {
+			if(uriToParse.endsWith(parametersSeparator)) {
 				optionParams.add(new OptionParamURIInstance(this, "", currentPosition, currentPosition));
 			}
 		}
@@ -149,6 +159,6 @@ public class CamelURIInstance extends CamelUriElementInstance {
 	}
 	
 	public boolean isProducer() {
-		return PRODUCER_NODE_TAG.contains(node.getNodeName());
+		return PRODUCER_TYPE_POSSIBLE_NAMES.contains(dslModelHelper.getTypeDeterminingProducerConsumer());
 	}
 }
