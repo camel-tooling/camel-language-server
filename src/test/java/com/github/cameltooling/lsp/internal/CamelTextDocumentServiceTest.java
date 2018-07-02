@@ -41,7 +41,7 @@ public class CamelTextDocumentServiceTest extends AbstractCamelLanguageServerTes
 		
 		DidChangeTextDocumentParams changeEvent = new DidChangeTextDocumentParams();
 		VersionedTextDocumentIdentifier textDocument = new VersionedTextDocumentIdentifier();
-		textDocument.setUri(DUMMY_URI);
+		textDocument.setUri(DUMMY_URI+".xml");
 		changeEvent.setTextDocument(textDocument);
 		TextDocumentContentChangeEvent contentChange = new TextDocumentContentChangeEvent("<to xmlns=\"http://camel.apache.org/schema/blueprint\" uri=\"\"></to>\n");
 		changeEvent.setContentChanges(Collections.singletonList(contentChange));

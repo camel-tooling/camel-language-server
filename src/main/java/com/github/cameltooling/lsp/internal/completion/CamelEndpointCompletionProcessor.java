@@ -26,17 +26,16 @@ import org.eclipse.lsp4j.Position;
 import org.eclipse.lsp4j.TextDocumentItem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.w3c.dom.Node;
 
 import com.github.cameltooling.lsp.internal.instancemodel.CamelURIInstance;
 import com.github.cameltooling.lsp.internal.instancemodel.CamelUriElementInstance;
 import com.github.cameltooling.lsp.internal.parser.ParserFileHelper;
+import com.github.cameltooling.lsp.internal.parser.ParserFileHelperFactory;
 
 public class CamelEndpointCompletionProcessor {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(CamelEndpointCompletionProcessor.class);
 	private TextDocumentItem textDocumentItem;
-	private ParserFileHelper parserFileHelper = new ParserFileHelper();
 	private CompletableFuture<CamelCatalog> camelCatalog;
 
 	public CamelEndpointCompletionProcessor(TextDocumentItem textDocumentItem, CompletableFuture<CamelCatalog> camelCatalog) {
@@ -47,20 +46,23 @@ public class CamelEndpointCompletionProcessor {
 	public CompletableFuture<List<CompletionItem>> getCompletions(Position position) {
 		if(textDocumentItem != null) {
 			try {
-				Node correspondingCamelNode = parserFileHelper.getCorrespondingCamelNodeForCompletion(textDocumentItem, position.getLine());
-				if (correspondingCamelNode != null) {
-					String line = parserFileHelper.getLine(textDocumentItem, position);
+				ParserFileHelper parserFileHelper = new ParserFileHelperFactory().getCorrespondingParserFileHelper(textDocumentItem, position.getLine());
+				if (parserFileHelper != null) {
 					String camelComponentUri = parserFileHelper.getCamelComponentUri(textDocumentItem, position);
-					CamelURIInstance camelURIInstance = new CamelURIInstance(camelComponentUri, correspondingCamelNode);
-					int positionInCamelUri = position.getCharacter() - line.indexOf("uri=") - 5;
-					CamelUriElementInstance camelUriElementInstance = camelURIInstance.getSpecificElement(positionInCamelUri);
-					return camelUriElementInstance.getCompletions(camelCatalog, positionInCamelUri);
+					CamelURIInstance camelURIInstance = parserFileHelper.createCamelURIInstance(textDocumentItem, position, camelComponentUri);
+					int positionInCamelUri = parserFileHelper.getPositionInCamelURI(textDocumentItem, position);
+					return getCompletions(camelURIInstance, positionInCamelUri);
 				}
 			} catch (Exception e) {
 				LOGGER.error("Error searching for corresponding node elements", e);
 			}
 		}
 		return CompletableFuture.completedFuture(Collections.emptyList());
+	}
+
+	private CompletableFuture<List<CompletionItem>> getCompletions(CamelURIInstance camelURIInstance, int positionInCamelUri) {
+		CamelUriElementInstance camelUriElementInstance = camelURIInstance.getSpecificElement(positionInCamelUri);
+		return camelUriElementInstance.getCompletions(camelCatalog, positionInCamelUri);
 	}
 
 }

@@ -33,14 +33,14 @@ import org.slf4j.LoggerFactory;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import com.github.cameltooling.lsp.internal.parser.ParserFileHelper;
+import com.github.cameltooling.lsp.internal.parser.ParserXMLFileHelper;
 
 public class DocumentSymbolProcessor {
 	
 	private static final String ATTRIBUTE_ID = "id";
 	private static final Logger LOGGER = LoggerFactory.getLogger(DocumentSymbolProcessor.class);
 	private TextDocumentItem textDocumentItem;
-	private ParserFileHelper parserFileHelper = new ParserFileHelper();
+	private ParserXMLFileHelper parserFileHelper = new ParserXMLFileHelper();
 
 	public DocumentSymbolProcessor(TextDocumentItem textDocumentItem) {
 		this.textDocumentItem = textDocumentItem;

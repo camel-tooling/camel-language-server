@@ -39,39 +39,44 @@ import com.github.cameltooling.lsp.internal.CamelLanguageServer;
 @RunWith(Parameterized.class)
 public class CamelEndpointUriCompletionTest extends AbstractCamelLanguageServerTest {
 	
-	@Parameters(name="{4} - Position ({1},{2})")
+	@Parameters(name="{4} - Position ({1},{2}) - {6}")
     public static Collection<Object[]> data() {
     	return Arrays.asList(new Object[][] {
     		
     		// test the component schemes
-    		{ "<from uri=\"\" xmlns=\"http://camel.apache.org/schema/blueprint\"></from>\n", 		0, 11, "Empty component scheme",			null,	300},
-    		{ "<from uri=\"f\" xmlns=\"http://camel.apache.org/schema/blueprint\"></from>\n", 		0, 12, "URI with component scheme f", 		"f",	8},
-    		{ "<from uri=\"fi\" xmlns=\"http://camel.apache.org/schema/blueprint\"></from>\n", 		0, 13, "URI with component scheme fi",		"fi",	1},
-    		{ "<from uri=\"fil\" xmlns=\"http://camel.apache.org/schema/blueprint\"></from>\n", 	0, 14, "URI with component scheme fil", 	"fil",  1},
-    		{ "<from uri=\"file\" xmlns=\"http://camel.apache.org/schema/blueprint\"></from>\n", 	0, 15, "URI with component scheme file", 	"file", 1},
-    		{ "<from uri=\"file\" xmlns=\"http://camel.apache.org/schema/blueprint\"></from>\n", 	0, 11, "URI with component scheme file", 	null,   300},
-    		{ "<from uri=\"file\" xmlns=\"http://camel.apache.org/schema/blueprint\"></from>\n", 	0, 12, "URI with component scheme file", 	"f",    8},
+    		{ "<from uri=\"\" xmlns=\"http://camel.apache.org/schema/blueprint\"></from>\n", 		0, 11, "Empty component scheme",			null,	300, ".xml"},
+    		{ "<from uri=\"f\" xmlns=\"http://camel.apache.org/schema/blueprint\"></from>\n", 		0, 12, "URI with component scheme f", 		"f",	8, ".xml"},
+    		{ "<from uri=\"fi\" xmlns=\"http://camel.apache.org/schema/blueprint\"></from>\n", 		0, 13, "URI with component scheme fi",		"fi",	1, ".xml"},
+    		{ "<from uri=\"fil\" xmlns=\"http://camel.apache.org/schema/blueprint\"></from>\n", 	0, 14, "URI with component scheme fil", 	"fil",  1, ".xml"},
+    		{ "<from uri=\"file\" xmlns=\"http://camel.apache.org/schema/blueprint\"></from>\n", 	0, 15, "URI with component scheme file", 	"file", 1, ".xml"},
+    		{ "<from uri=\"file\" xmlns=\"http://camel.apache.org/schema/blueprint\"></from>\n", 	0, 11, "URI with component scheme file", 	null,   300, ".xml"},
+    		{ "<from uri=\"file\" xmlns=\"http://camel.apache.org/schema/blueprint\"></from>\n", 	0, 12, "URI with component scheme file", 	"f",    8, ".xml"},
+    		{ "from(\"file\")//camel", 																0, 7, "URI with component scheme file for Java", "f",   8, ".java"},
     		
     		// test the path params
-    		{ "<from uri=\"ahc:\" xmlns=\"http://camel.apache.org/schema/blueprint\"></from>\n", 		0, 15, "Empty path param", 			"ahc:",     1},
-    		{ "<from uri=\"ahc:h\" xmlns=\"http://camel.apache.org/schema/blueprint\"></from>\n", 		0, 16, "URI with path param h", 	"ahc:h",	1},
-    		{ "<from uri=\"ahc:ht\" xmlns=\"http://camel.apache.org/schema/blueprint\"></from>\n", 		0, 17, "URI with path param ht",	"ahc:ht",	1},
-    		{ "<from uri=\"ahc:htt\" xmlns=\"http://camel.apache.org/schema/blueprint\"></from>\n", 	0, 18, "URI with path param htt", 	"ahc:htt",	1},
-    		{ "<from uri=\"ahc:http\" xmlns=\"http://camel.apache.org/schema/blueprint\"></from>\n", 	0, 19, "URI with path param http", 	"ahc:http",	1},
-    		{ "<from uri=\"ahc:httpUri\" xmlns=\"http://camel.apache.org/schema/blueprint\"></from>\n", 0, 15, "URI with path param http", 	null,		1},
+    		{ "<from uri=\"ahc:\" xmlns=\"http://camel.apache.org/schema/blueprint\"></from>\n", 		0, 15, "Empty path param", 			"ahc:",     1, ".xml"},
+    		{ "<from uri=\"ahc:h\" xmlns=\"http://camel.apache.org/schema/blueprint\"></from>\n", 		0, 16, "URI with path param h", 	"ahc:h",	1, ".xml"},
+    		{ "<from uri=\"ahc:ht\" xmlns=\"http://camel.apache.org/schema/blueprint\"></from>\n", 		0, 17, "URI with path param ht",	"ahc:ht",	1, ".xml"},
+    		{ "<from uri=\"ahc:htt\" xmlns=\"http://camel.apache.org/schema/blueprint\"></from>\n", 	0, 18, "URI with path param htt", 	"ahc:htt",	1, ".xml"},
+    		{ "<from uri=\"ahc:http\" xmlns=\"http://camel.apache.org/schema/blueprint\"></from>\n", 	0, 19, "URI with path param http", 	"ahc:http",	1, ".xml"},
+    		{ "<from uri=\"ahc:httpUri\" xmlns=\"http://camel.apache.org/schema/blueprint\"></from>\n", 0, 15, "URI with path param http", 	null,		1, ".xml"},
+    		{ "from(\"ahc:httpUri\")//camel", 0, 10, "URI with path param http for java", 	null,		1, ".java"},
     		
     		// test the uri options
-    		{ "<from uri=\"file:bla?\" xmlns=\"http://camel.apache.org/schema/blueprint\"></from>\n", 		0, 20, "Empty option",			null,		70},
-    		{ "<from uri=\"file:bla?n\" xmlns=\"http://camel.apache.org/schema/blueprint\"></from>\n", 		0, 21, "URI with option n", 	"n",		1},
-    		{ "<from uri=\"file:bla?no\" xmlns=\"http://camel.apache.org/schema/blueprint\"></from>\n", 	0, 22, "URI with option no",	"no",		1},
-    		{ "<from uri=\"file:bla?noo\" xmlns=\"http://camel.apache.org/schema/blueprint\"></from>\n", 	0, 23, "URI with option noo", 	"noo",		1},
-    		{ "<from uri=\"file:bla?noop\" xmlns=\"http://camel.apache.org/schema/blueprint\"></from>\n", 	0, 24, "URI with option noop", 	"noop",		1},
-    		{ "<from uri=\"file:bla?noop\" xmlns=\"http://camel.apache.org/schema/blueprint\"></from>\n", 	0, 20, "URI with option noop", 	null,		10},
-    		{ "<from uri=\"file:bla?noop=f\" xmlns=\"http://camel.apache.org/schema/blueprint\"></from>\n", 	0, 26, "URI with option noop", 	"f",	1},
-    		{ "<from uri=\"file:bla?noop=t\" xmlns=\"http://camel.apache.org/schema/blueprint\"></from>\n", 	0, 26, "URI with option noop", 	"t",	1},
-    		{ "<from uri=\"file:bla?noop=false\" xmlns=\"http://camel.apache.org/schema/blueprint\"></from>\n", 	0, 25, "URI with option noop", 	null,	2},
-    		{ "<from uri=\"file:bla?noop=false\" xmlns=\"http://camel.apache.org/schema/blueprint\"/>\n",	0, 21, "Param Key Completion",	"n",		1},
-    		{ "<from uri=\"file:bla?noop=false\" xmlns=\"http://camel.apache.org/schema/blueprint\"/>\n",	0, 22, "Param Key Completion",	"no",		1},
+    		{ "<from uri=\"file:bla?\" xmlns=\"http://camel.apache.org/schema/blueprint\"></from>\n", 		0, 20, "Empty option",			null,		70, ".xml"},
+    		{ "from(\"file:bla?\")//camel", 																0, 15, "Empty option for Java",	null,		70, ".java"},
+    		{ "<from uri=\"file:bla?n\" xmlns=\"http://camel.apache.org/schema/blueprint\"></from>\n", 		0, 21, "URI with option n", 	"n",		1, ".xml"},
+    		{ "<from uri=\"file:bla?no\" xmlns=\"http://camel.apache.org/schema/blueprint\"></from>\n", 	0, 22, "URI with option no",	"no",		1, ".xml"},
+    		{ "<from uri=\"file:bla?noo\" xmlns=\"http://camel.apache.org/schema/blueprint\"></from>\n", 	0, 23, "URI with option noo", 	"noo",		1, ".xml"},
+    		{ "<from uri=\"file:bla?noop\" xmlns=\"http://camel.apache.org/schema/blueprint\"></from>\n", 	0, 24, "URI with option noop", 	"noop",		1, ".xml"},
+    		{ "<from uri=\"file:bla?noop\" xmlns=\"http://camel.apache.org/schema/blueprint\"></from>\n", 	0, 20, "URI with option noop", 	null,		10, ".xml"},
+    		{ "<from uri=\"file:bla?noop=f\" xmlns=\"http://camel.apache.org/schema/blueprint\"></from>\n", 0, 26, "URI with option noop", 	"f",	1, ".xml"},
+    		{ "from(\"file:bla?noop=f\")//camel", 															0, 21, "URI with option noop", 	"f",	1, ".java"},
+    		{ "<from uri=\"file:bla?noop=t\" xmlns=\"http://camel.apache.org/schema/blueprint\"></from>\n", 	0, 26, "URI with option noop", 	"t",	1, ".xml"},
+    		{ "<from uri=\"file:bla?noop=false\" xmlns=\"http://camel.apache.org/schema/blueprint\"></from>\n", 	0, 25, "URI with option noop", 	null,	2, ".xml"},
+    		{ "<from uri=\"file:bla?noop=false\" xmlns=\"http://camel.apache.org/schema/blueprint\"/>\n",	0, 21, "Param Key Completion",	"n",		1, ".xml"},
+    		{ "<from uri=\"file:bla?noop=false\" xmlns=\"http://camel.apache.org/schema/blueprint\"/>\n",	0, 22, "Param Key Completion",	"no",		1, ".xml"},
+    		{ "<from uri=\"file:bla?noop=false&amp;\" xmlns=\"http://camel.apache.org/schema/blueprint\"/>\n",	0, 35, "Second option",	null,			70, ".xml"}
     		
     	});
     }
@@ -88,10 +93,12 @@ public class CamelEndpointUriCompletionTest extends AbstractCamelLanguageServerT
     public String filterString;
     @Parameter(5)
     public int expectedMinResultSetSize;
+    @Parameter(6)
+	public String extension;
 	
 	@Test
 	public void testProvideCompletionForCamelBlueprintNamespace() throws Exception {
-		CamelLanguageServer camelLanguageServer = initializeLanguageServer(textToTest);
+		CamelLanguageServer camelLanguageServer = initializeLanguageServer(textToTest, extension);
 		
 		CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = getCompletionFor(camelLanguageServer, new Position(line, character));
 		List<CompletionItem> items = completions.get().getLeft();
