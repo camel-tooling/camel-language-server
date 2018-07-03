@@ -45,7 +45,8 @@ public class DocumentSymbolProcessor {
 	public DocumentSymbolProcessor(TextDocumentItem textDocumentItem) {
 		this.textDocumentItem = textDocumentItem;
 	}
-
+	
+	@SuppressWarnings("squid:S1452")
 	public CompletableFuture<List<? extends SymbolInformation>> getDocumentSymbols() {
 		return CompletableFuture.supplyAsync(() -> {
 			try {
