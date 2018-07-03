@@ -129,7 +129,7 @@ public class CamelURIInstanceTest {
 			checkTimerPeriodParamForJava(secondOptionParam);
 		} else {
 			checkDelayTimerParam(secondOptionParam);
-			checkTimerPeriodParam(firstOptionParam);
+			checkTimerPeriodParamForJava(firstOptionParam);
 		}
 	}
 
