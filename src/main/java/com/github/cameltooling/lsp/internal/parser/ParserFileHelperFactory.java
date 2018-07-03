@@ -20,7 +20,7 @@ import org.eclipse.lsp4j.TextDocumentItem;
 
 public class ParserFileHelperFactory {
 	
-	public ParserFileHelper getCorrespondingParserFileHelper(TextDocumentItem textDocumentItem, int line) throws Exception {
+	public ParserFileHelper getCorrespondingParserFileHelper(TextDocumentItem textDocumentItem, int line) {
 		ParserXMLFileHelper xmlParser = new ParserXMLFileHelper();
 		String uri = textDocumentItem.getUri();
 		if (uri.endsWith(".xml") && xmlParser.getCorrespondingCamelNodeForCompletion(textDocumentItem, line) != null) {
