@@ -42,7 +42,7 @@ public abstract class AbstractLanguageServer {
 					Thread.currentThread().interrupt();
 				}
 			}
-			LOGGER.info("Camel Language Server - Client vanished...");				
+			LOGGER.info("Camel Language Server - Client vanished...");
 		}
 	}
 
@@ -92,8 +92,12 @@ public abstract class AbstractLanguageServer {
 			Process process = Runtime.getRuntime().exec(command);
 			int processResult = process.waitFor();
 			return processResult == 0;
-		} catch (IOException | InterruptedException e) {
+		} catch (IOException e) {
 			LOGGER.error(e.getMessage(), e);
+			return true;
+		} catch (InterruptedException e) {
+			LOGGER.error(e.getMessage(), e);
+			Thread.currentThread().interrupt();
 			return true;
 		}
 	}
