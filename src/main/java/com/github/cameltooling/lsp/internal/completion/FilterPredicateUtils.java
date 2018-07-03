@@ -25,11 +25,11 @@ import com.github.cameltooling.lsp.internal.instancemodel.OptionParamURIInstance
 import com.github.cameltooling.model.EndpointOptionModel;
 
 public class FilterPredicateUtils {
-	
+
 	private FilterPredicateUtils() {
 		// util class
 	}
-	
+
 	/**
 	 * ensures that only completions are displayed which start with the text the user typed already
 	 * 
@@ -37,9 +37,15 @@ public class FilterPredicateUtils {
 	 * @return	the predicate
 	 */
 	public static Predicate<CompletionItem> matchesCompletionFilter(String filterString) {
-        return item -> filterString != null && filterString.trim().length() > 0 ? item.getLabel().startsWith(filterString) : true;
-    }
-	
+		return item -> {
+			if (filterString != null && filterString.trim().length() > 0) {
+				return item.getLabel().startsWith(filterString);
+			} else {
+				return true;
+			}
+		};
+	}
+
 	/**
 	 * ensures that only completions are displayed which start with the text the user typed already 
 	 * 
@@ -47,9 +53,15 @@ public class FilterPredicateUtils {
 	 * @return	the predicate
 	 */
 	public static Predicate<EndpointOptionModel> matchesEndpointOptionFilter(String filterString) {
-        return item -> filterString != null && filterString.trim().length()>0 ? item.getName().startsWith(filterString) : true;
-    }
-	
+		return item -> {
+			if (filterString != null && filterString.trim().length()>0) {
+				return item.getName().startsWith(filterString);
+			} else {
+				return true;
+			}
+		};
+	}
+
 	/**
 	 * makes sure that only options are suggested which are not already part of the uri
 	 * 
@@ -69,7 +81,7 @@ public class FilterPredicateUtils {
 			return occured < 1;
 		};
 	}
-	
+
 	/**
 	 * ensures that only items with the correct group (either consumer or producer) are
 	 * in the list of possible completion items
