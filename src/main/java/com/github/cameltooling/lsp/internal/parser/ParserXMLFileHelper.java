@@ -26,6 +26,8 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.apache.camel.parser.helper.XmlLineNumberParser;
 import org.eclipse.lsp4j.Position;
 import org.eclipse.lsp4j.TextDocumentItem;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -36,6 +38,7 @@ import com.github.cameltooling.lsp.internal.instancemodel.CamelURIInstance;
 
 public class ParserXMLFileHelper extends ParserFileHelper {
 	
+	private static final Logger LOGGER = LoggerFactory.getLogger(ParserXMLFileHelper.class);
 	private static final String ATTRIBUTE_ROUTE = "route";
 	private static final String NAMESPACEURI_CAMEL_BLUEPRINT = "http://camel.apache.org/schema/blueprint";
 	private static final String NAMESPACEURI_CAMEL_SPRING = "http://camel.apache.org/schema/spring";
@@ -55,14 +58,18 @@ public class ParserXMLFileHelper extends ParserFileHelper {
 	 * @param textDocumentItem	the text document item
 	 * @param line 	the line number
 	 * @return Currently returns the first from Camel Node ignoring the exact position
-	 * @throws Exception on any error 
 	 */
-	public Node getCorrespondingCamelNodeForCompletion(TextDocumentItem textDocumentItem, int line) throws Exception {
-		if (hasElementFromCamelNamespace(textDocumentItem)) {
-			Document parseXml = XmlLineNumberParser.parseXml(new ByteArrayInputStream(textDocumentItem.getText().getBytes(StandardCharsets.UTF_8)));
-			Element documentElement = parseXml.getDocumentElement();
-			return findElementAtLine(line, documentElement);
-		} else {
+	public Node getCorrespondingCamelNodeForCompletion(TextDocumentItem textDocumentItem, int line) {
+		try {
+			if (hasElementFromCamelNamespace(textDocumentItem)) {
+				Document parseXml = XmlLineNumberParser.parseXml(new ByteArrayInputStream(textDocumentItem.getText().getBytes(StandardCharsets.UTF_8)));
+				Element documentElement = parseXml.getDocumentElement();
+				return findElementAtLine(line, documentElement);
+			} else {
+				return null;
+			}
+		} catch (Exception e) {
+			LOGGER.warn("Exception while trying to parse the file", e);
 			return null;
 		}
 	}
@@ -115,7 +122,7 @@ public class ParserXMLFileHelper extends ParserFileHelper {
 	}
 
 	@Override
-	public CamelURIInstance createCamelURIInstance(TextDocumentItem textDocumentItem, Position position, String camelComponentUri) throws Exception {
+	public CamelURIInstance createCamelURIInstance(TextDocumentItem textDocumentItem, Position position, String camelComponentUri) {
 		Node correspondingCamelNode = getCorrespondingCamelNodeForCompletion(textDocumentItem, position.getLine());
 		return new CamelURIInstance(camelComponentUri, correspondingCamelNode);
 	}

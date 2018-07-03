@@ -51,7 +51,7 @@ public class ParserJavaFileHelper extends ParserFileHelper {
 	}
 
 	@Override
-	public CamelURIInstance createCamelURIInstance(TextDocumentItem textDocumentItem, Position position, String camelComponentUri) throws Exception {
+	public CamelURIInstance createCamelURIInstance(TextDocumentItem textDocumentItem, Position position, String camelComponentUri) {
 		return new CamelURIInstance(camelComponentUri, getCorrespondingMethodName(textDocumentItem, position.getLine()));
 	}
 
