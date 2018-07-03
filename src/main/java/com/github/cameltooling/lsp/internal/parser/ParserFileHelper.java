@@ -52,7 +52,7 @@ public abstract class ParserFileHelper {
 		return end != -1 && position <= end && position >= start;
 	}
 
-	public abstract CamelURIInstance createCamelURIInstance(TextDocumentItem textDocumentItem, Position position, String camelComponentUri) throws Exception;
+	public abstract CamelURIInstance createCamelURIInstance(TextDocumentItem textDocumentItem, Position position, String camelComponentUri);
 
 	public abstract int getPositionInCamelURI(TextDocumentItem textDocumentItem, Position position);
 	
