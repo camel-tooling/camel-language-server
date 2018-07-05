@@ -11,7 +11,7 @@ point it `camel-language-server` and Eclipse should automatically
 detect the projects and import it properly.
 
 3. If you discover an error on `pom.xml` after import about Tycho, you can use Quick Fix
-(Ctrl+1) to install the Tycho maven integration.
+(Ctrl+1) to install the Tycho Maven integration.
 
 
 # Building from command line
@@ -22,6 +22,19 @@ detect the projects and import it properly.
 ```bash    
     $ mvn clean verify
 ````
+
+# How to release
+
+* Ensure pom is using only non-snapshot dependencies
+* Modify pom version to use a non-snapshot version
+* Provide a PR
+* Wait that it is reviewed and merged
+* Create a tag
+* Push the tag to camel-tooling organization repository
+** A build will start automatically on https://travis-ci.org/camel-tooling/camel-language-server
+** Ensure build is OK
+* Modify pom version to use an incremented snapshot version to prepare next release iteration
+* Provide a PR
 
 # Technical Overview
 
