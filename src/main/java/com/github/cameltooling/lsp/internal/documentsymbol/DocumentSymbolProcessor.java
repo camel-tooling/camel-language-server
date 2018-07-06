@@ -50,10 +50,16 @@ public class DocumentSymbolProcessor {
 	public CompletableFuture<List<? extends SymbolInformation>> getDocumentSymbols() {
 		return CompletableFuture.supplyAsync(() -> {
 			try {
+				List<SymbolInformation> symbolInformations = new ArrayList<>();
 				NodeList routeNodes = parserFileHelper.getRouteNodes(textDocumentItem);
 				if (routeNodes != null) {
-					return convertToSymbolInformation(routeNodes);
+					symbolInformations.addAll(convertToSymbolInformation(routeNodes));
 				}
+				NodeList camelContextNodes = parserFileHelper.getCamelContextNodes(textDocumentItem);
+				if (camelContextNodes != null) {
+					symbolInformations.addAll(convertToSymbolInformation(camelContextNodes));
+				}
+				return symbolInformations;
 			} catch (Exception e) {
 				LOGGER.error("Cannot determine document symbols", e);
 			}
@@ -75,8 +81,8 @@ public class DocumentSymbolProcessor {
 		return res;
 	}
 
-	private String computeDisplayNameOfSymbol(Node routeNode) {
-		Node routeIdAttribute = routeNode.getAttributes().getNamedItem(ATTRIBUTE_ID);
+	private String computeDisplayNameOfSymbol(Node node) {
+		Node routeIdAttribute = node.getAttributes().getNamedItem(ATTRIBUTE_ID);
 		String displayNameOfSymbol;
 		if (routeIdAttribute != null) {
 			displayNameOfSymbol = routeIdAttribute.getNodeValue();
