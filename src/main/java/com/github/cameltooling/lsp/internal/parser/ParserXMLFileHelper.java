@@ -19,6 +19,10 @@ package com.github.cameltooling.lsp.internal.parser;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -40,8 +44,10 @@ public class ParserXMLFileHelper extends ParserFileHelper {
 	
 	private static final Logger LOGGER = LoggerFactory.getLogger(ParserXMLFileHelper.class);
 	private static final String ATTRIBUTE_ROUTE = "route";
+	private static final String ATTRIBUTE_CAMEL_CONTEXT = "camelContext";
 	private static final String NAMESPACEURI_CAMEL_BLUEPRINT = "http://camel.apache.org/schema/blueprint";
 	private static final String NAMESPACEURI_CAMEL_SPRING = "http://camel.apache.org/schema/spring";
+	private static final List<String> DOCUMENT_SYMBOL_POSSIBLE_TYPES = Arrays.asList(ATTRIBUTE_CAMEL_CONTEXT, ATTRIBUTE_ROUTE);
 
 	public String getCamelComponentUri(String line, int characterPosition) {
 		int uriAttribute = line.indexOf("uri=\"");
@@ -78,7 +84,9 @@ public class ParserXMLFileHelper extends ParserFileHelper {
 		DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 		dbf.setNamespaceAware(true);
 		Document xmlParsed = dbf.newDocumentBuilder().parse(new ByteArrayInputStream(textDocumentItem.getText().getBytes(StandardCharsets.UTF_8)));
-		for (String camelNodeTag : CAMEL_POSSIBLE_TYPES) {
+		Set<String> interestingCamelNodeType = new HashSet<>(CAMEL_POSSIBLE_TYPES);
+		interestingCamelNodeType.addAll(DOCUMENT_SYMBOL_POSSIBLE_TYPES);
+		for (String camelNodeTag : interestingCamelNodeType) {
 			if(hasElementFromCamelNameSpaces(xmlParsed.getElementsByTagName(camelNodeTag))){
 				return true;
 			}
@@ -114,9 +122,17 @@ public class ParserXMLFileHelper extends ParserFileHelper {
 	}
 
 	public NodeList getRouteNodes(TextDocumentItem textDocumentItem) throws Exception {
+		return getNodesOfType(textDocumentItem, ATTRIBUTE_ROUTE);
+	}
+
+	public NodeList getCamelContextNodes(TextDocumentItem textDocumentItem) throws Exception {
+		return getNodesOfType(textDocumentItem, ATTRIBUTE_CAMEL_CONTEXT);
+	}
+	
+	private NodeList getNodesOfType(TextDocumentItem textDocumentItem, String attributeTypeToFilter) throws Exception {
 		if (hasElementFromCamelNamespace(textDocumentItem)) {
 			Document parsedXml = XmlLineNumberParser.parseXml(new ByteArrayInputStream(textDocumentItem.getText().getBytes(StandardCharsets.UTF_8)));
-			return parsedXml.getElementsByTagName(ATTRIBUTE_ROUTE);
+			return parsedXml.getElementsByTagName(attributeTypeToFilter);
 		}
 		return null;
 	}

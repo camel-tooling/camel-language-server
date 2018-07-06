@@ -55,7 +55,7 @@ public class DocumentSymbolProcessorTest extends AbstractCamelLanguageServerTest
 				"      </recipientList>\r\n" + 
 				"    </route>\n"
 				+ "</camelContext>\n";
-		List<? extends SymbolInformation> documentSymbols = testRetrieveDocumentSymbol(textTotest, 2);
+		List<? extends SymbolInformation> documentSymbols = testRetrieveDocumentSymbol(textTotest, 3);
 		SymbolInformation firstRoute = documentSymbols.get(0);
 		assertThat(firstRoute.getName()).isEqualTo("a route");
 		Position expectedStart = new Position(2, 24/* expecting 4 but seems a bug in Camel*/);
@@ -64,11 +64,71 @@ public class DocumentSymbolProcessorTest extends AbstractCamelLanguageServerTest
 	}
 
 	@Test
-	public void testEmptyCamelContextReturnNoDocumentSymbol() throws Exception {
+	public void testEmptyCamelContextReturnCamelContextDocumentSymbol() throws Exception {
 		String textTotest =
 				"<camelContext id=\"camel\" xmlns=\"http://camel.apache.org/schema/spring\">\r\n" + 
 				"</camelContext>\n";
-		testRetrieveDocumentSymbol(textTotest, 0);
+		testRetrieveDocumentSymbol(textTotest, 1);
+	}
+	
+	@Test
+	public void test2CamelContext() throws Exception {
+		String textTotest =
+				"<beans xmlns=\"http://www.springframework.org/schema/beans\"\n" + 
+				"       xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n" + 
+				"       xsi:schemaLocation=\"\n" + 
+				"       http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd\n" + 
+				"       http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring.xsd\">\n" + 
+				"<camelContext id=\"camel\" xmlns=\"http://camel.apache.org/schema/spring\">\r\n" + 
+				"\r\n" + 
+				"    <route id=\"a route\">\r\n" + 
+				"      <from uri=\"direct:cafe\"/>\r\n" + 
+				"      <split>\r\n" + 
+				"        <method bean=\"orderSplitter\"/>\r\n" + 
+				"        <to uri=\"direct:drink\"/>\r\n" + 
+				"      </split>\r\n" + 
+				"    </route>\r\n" + 
+				"\r\n" + 
+				"    <route id=\"another Route\">\r\n" + 
+				"      <from uri=\"direct:drink\"/>\r\n" + 
+				"      <recipientList>\r\n" + 
+				"        <method bean=\"drinkRouter\"/>\r\n" + 
+				"      </recipientList>\r\n" + 
+				"    </route>\n"
+				+ "</camelContext>\n" +
+				"<camelContext id=\"camel2\" xmlns=\"http://camel.apache.org/schema/spring\">\r\n" + 
+				"\r\n" + 
+				"    <route id=\"a route2\">\r\n" + 
+				"      <from uri=\"direct:cafe\"/>\r\n" + 
+				"      <split>\r\n" + 
+				"        <method bean=\"orderSplitter\"/>\r\n" + 
+				"        <to uri=\"direct:drink\"/>\r\n" + 
+				"      </split>\r\n" + 
+				"    </route>\r\n" + 
+				"\r\n" + 
+				"    <route id=\"another Route2\">\r\n" + 
+				"      <from uri=\"direct:drink\"/>\r\n" + 
+				"      <recipientList>\r\n" + 
+				"        <method bean=\"drinkRouter\"/>\r\n" + 
+				"      </recipientList>\r\n" + 
+				"    </route>\n"
+				+ "</camelContext>\n"
+				+ "</beans>";
+		testRetrieveDocumentSymbol(textTotest, 6);
+	}
+	
+	@Test
+	public void testEmptyRoutes() throws Exception {
+		String textTotest =
+				"<camelContext id=\"camel\" xmlns=\"http://camel.apache.org/schema/spring\">\r\n" + 
+				"\r\n" + 
+				"    <route id=\"a route\">\r\n" + 
+				"    </route>\r\n" + 
+				"\r\n" + 
+				"    <route id=\"another Route\">\r\n" + 
+				"    </route>\n"
+				+ "</camelContext>\n";
+		testRetrieveDocumentSymbol(textTotest, 3);
 	}
 	
 	@Test
@@ -97,7 +157,7 @@ public class DocumentSymbolProcessorTest extends AbstractCamelLanguageServerTest
 				"      </recipientList>\r\n" + 
 				"    </route>\n"
 				+ "</camelContext>\n";
-		testRetrieveDocumentSymbol(textTotest, 3);
+		testRetrieveDocumentSymbol(textTotest, 4);
 	}
 	
 	@Test
