@@ -57,6 +57,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.github.cameltooling.lsp.internal.completion.CamelEndpointCompletionProcessor;
+import com.github.cameltooling.lsp.internal.diagnostic.DiagnosticService;
 import com.github.cameltooling.lsp.internal.documentsymbol.DocumentSymbolProcessor;
 import com.github.cameltooling.lsp.internal.hover.HoverProcessor;
 
@@ -68,11 +69,13 @@ public class CamelTextDocumentService implements TextDocumentService {
 	private static final Logger LOGGER = LoggerFactory.getLogger(CamelTextDocumentService.class);
 	private Map<String, TextDocumentItem> openedDocuments = new HashMap<>();
 	private CompletableFuture<CamelCatalog> camelCatalog;
-	
-	public CamelTextDocumentService() {
+	private CamelLanguageServer camelLanguageServer;
+
+	public CamelTextDocumentService(CamelLanguageServer camelLanguageServer) {
+		this.camelLanguageServer = camelLanguageServer;
 		camelCatalog = CompletableFuture.supplyAsync(() -> new DefaultCamelCatalog(true));
 	}
-	
+
 	@Override
 	public CompletableFuture<Either<List<CompletionItem>, CompletionList>> completion(CompletionParams completionParams) {
 		String uri = completionParams.getTextDocument().getUri();
@@ -192,6 +195,10 @@ public class CamelTextDocumentService implements TextDocumentService {
 	@Override
 	public void didSave(DidSaveTextDocumentParams params) {
 		LOGGER.info("didSave: {}", params.getTextDocument());
+		new DiagnosticService(camelCatalog, camelLanguageServer).compute(params);
 	}
-
+	
+	public TextDocumentItem getOpenedDocument(String uri) {
+		return openedDocuments.get(uri);
+	}
 }

@@ -43,7 +43,7 @@ public class CamelLanguageServer extends AbstractLanguageServer implements Langu
 	private LanguageClient client;
 	
 	public CamelLanguageServer() {
-		super.setTextDocumentService(new CamelTextDocumentService());
+		super.setTextDocumentService(new CamelTextDocumentService(this));
 		super.setWorkspaceService(new CamelWorkspaceService());
 	}
 	
@@ -105,7 +105,7 @@ public class CamelLanguageServer extends AbstractLanguageServer implements Langu
 	 *            The message to send back to the client
 	 */
 	public void sendLogMessageNotification(final MessageType type, final String msg) {
-		client.logMessage(new MessageParams(type, msg));
+		getClient().logMessage(new MessageParams(type, msg));
 	}
 
 	/**
@@ -118,6 +118,11 @@ public class CamelLanguageServer extends AbstractLanguageServer implements Langu
 	 *            The message to send back to the client
 	 */
 	public void sendShowMessageNotification(final MessageType type, final String msg) {
-		client.showMessage(new MessageParams(type, msg));
+		getClient().showMessage(new MessageParams(type, msg));
 	}
+
+	public LanguageClient getClient() {
+		return client;
+	}
+	
 }

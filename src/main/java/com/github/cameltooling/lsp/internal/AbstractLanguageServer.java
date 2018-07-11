@@ -18,7 +18,6 @@ package com.github.cameltooling.lsp.internal;
 
 import java.io.IOException;
 
-import org.eclipse.lsp4j.services.TextDocumentService;
 import org.eclipse.lsp4j.services.WorkspaceService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,7 +51,7 @@ public abstract class AbstractLanguageServer {
 	private volatile boolean shutdown;
 	private long parentProcessId;
 	private WorkspaceService workspaceService;
-	private TextDocumentService textDocumentService;
+	private CamelTextDocumentService textDocumentService;
 	
 	/**
 	 * starts the language server process
@@ -140,14 +139,14 @@ public abstract class AbstractLanguageServer {
 	/**
 	 * @return the textDocumentService
 	 */
-	public TextDocumentService getTextDocumentService() {
+	public CamelTextDocumentService getTextDocumentService() {
 		return this.textDocumentService;
 	}
 	
 	/**
 	 * @param textDocumentService the textDocumentService to set
 	 */
-	protected void setTextDocumentService(TextDocumentService textDocumentService) {
+	protected void setTextDocumentService(CamelTextDocumentService textDocumentService) {
 		this.textDocumentService = textDocumentService;
 	}
 	
