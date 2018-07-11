@@ -288,7 +288,7 @@
 		</dependency>
 		<dependency>
 			<groupId>org.jboss.forge.roaster</groupId>
-			<artifactId>roaster-api</artifactId>
+			<artifactId>roaster-jdt</artifactId>
 			<version>${roaster.version}</version>
 		</dependency>
 	</dependencies>

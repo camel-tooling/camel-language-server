@@ -68,8 +68,13 @@ public class CamelDiagnosticTest extends AbstractCamelLanguageServerTest {
 	}
 	
 	@Test
-	public void testNoErrorForJavaFile() throws Exception {
-		testDiagnostic("camel", 0, ".java");
+	public void testValidationErrorForJavaFile() throws Exception {
+		testDiagnostic("camel-with-endpoint-error", 1, ".java");
+		Range range = lastPublishedDiagnostics.getDiagnostics().get(0).getRange();
+		assertThat(range.getStart().getLine()).isEqualTo(12);
+		assertThat(range.getStart().getCharacter()).isEqualTo(0);
+		assertThat(range.getEnd().getLine()).isEqualTo(12);
+		assertThat(range.getEnd().getCharacter()).isEqualTo(39);
 	}
 	
 	private void testDiagnostic(String fileUnderTest, int expectedNumberOfError, String extension) throws FileNotFoundException {
