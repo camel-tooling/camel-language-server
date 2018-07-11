@@ -34,6 +34,11 @@ Help is welcome to provide more client implementations, especially for:
 On hover, the documentation of the Camel component is available.
 ![Hover on Camel components](./images/hoverComponent.png "Hover on Camel components")
 
+### Diagnostics (a.k.a. Validation) on Camel URI with XML DSL
+
+On save, diagnostics on Camel URIs are updated:
+![Diagnostic on Camel URI](./images/diagnostic.png "Diagnostic on Camel URI")
+
 ## Features planned
 
 * As you type reporting of parsing and compilation errors
