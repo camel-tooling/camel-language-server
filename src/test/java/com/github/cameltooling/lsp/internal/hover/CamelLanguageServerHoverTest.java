@@ -61,8 +61,7 @@ public class CamelLanguageServerHoverTest extends AbstractCamelLanguageServerTes
 		TextDocumentPositionParams position = new TextDocumentPositionParams(new TextDocumentIdentifier(DUMMY_URI+".xml"), new Position(0, 4));
 		CompletableFuture<Hover> hover = camelLanguageServer.getTextDocumentService().hover(position);
 		
-		assertThat(hover.get().getContents().getLeft()).isEmpty();
-		assertThat(hover.get().getContents().getRight()).isNull();
+		assertThat(hover.get()).isNull();
 	}
 	
 	@Test
@@ -72,8 +71,7 @@ public class CamelLanguageServerHoverTest extends AbstractCamelLanguageServerTes
 		TextDocumentPositionParams position = new TextDocumentPositionParams(new TextDocumentIdentifier(DUMMY_URI+".xml"), new Position(0, 15));
 		CompletableFuture<Hover> hover = camelLanguageServer.getTextDocumentService().hover(position);
 		
-		assertThat(hover.get().getContents().getLeft()).isEmpty();
-		assertThat(hover.get().getContents().getRight()).isNull();
+		assertThat(hover.get()).isNull();
 	}
 
 }

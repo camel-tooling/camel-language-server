@@ -16,7 +16,6 @@
  */
 package com.github.cameltooling.lsp.internal.hover;
 
-import java.util.Collections;
 import java.util.concurrent.CompletableFuture;
 
 import org.apache.camel.catalog.CamelCatalog;
@@ -54,7 +53,7 @@ public class HoverProcessor {
 		} catch (Exception e) {
 			LOGGER.error("Error searching hover", e);
 		}
-		return CompletableFuture.completedFuture(new Hover(Collections.emptyList()));
+		return CompletableFuture.completedFuture(null);
 	}
 
 }
