@@ -40,6 +40,7 @@ public final class CamelComponentSchemesCompletionsFuture implements Function<Ca
 				.map(componentModel -> {
 					CompletionItem completionItem = new CompletionItem(componentModel.getSyntax());
 					completionItem.setDocumentation(componentModel.getDescription());
+					completionItem.setDeprecated(Boolean.valueOf(componentModel.getDeprecated()));
 					return completionItem;
 				})
 				.filter(FilterPredicateUtils.matchesCompletionFilter(filterString))

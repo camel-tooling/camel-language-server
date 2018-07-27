@@ -46,6 +46,7 @@ public abstract class AbstractCamelLanguageServerTest {
 		super();
 		expectedAhcCompletioncompletionItem = new CompletionItem("ahc:httpUri");
 		expectedAhcCompletioncompletionItem.setDocumentation(AHC_DOCUMENTATION);
+		expectedAhcCompletioncompletionItem.setDeprecated(false);
 	}
 	
 	final class DummyLanguageClient implements LanguageClient {
