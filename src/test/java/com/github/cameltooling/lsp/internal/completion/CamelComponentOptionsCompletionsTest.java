@@ -45,6 +45,7 @@ public class CamelComponentOptionsCompletionsTest extends AbstractCamelLanguageS
     	completionItem.setInsertText("bridgeErrorHandler=false");
     	completionItem.setDocumentation("Allows for bridging the consumer to the Camel routing Error Handler, which mean any exceptions occurred while the consumer is trying to pickup incoming messages, or the likes, will now be processed as a message and handled by the routing Error Handler. By default the consumer will use the org.apache.camel.spi.ExceptionHandler to deal with exceptions, that will be logged at WARN/ERROR level and ignored.");
     	completionItem.setDetail("boolean");
+    	completionItem.setDeprecated(false);
 		testProvideCamelOptions("<from uri=\"timer:timerName?\" xmlns=\"http://camel.apache.org/schema/blueprint\"></from>\n", 0, 27, completionItem);
 	}
     
@@ -54,6 +55,7 @@ public class CamelComponentOptionsCompletionsTest extends AbstractCamelLanguageS
     	completionItem.setInsertText("bridgeErrorHandler=false");
     	completionItem.setDocumentation("Allows for bridging the consumer to the Camel routing Error Handler, which mean any exceptions occurred while the consumer is trying to pickup incoming messages, or the likes, will now be processed as a message and handled by the routing Error Handler. By default the consumer will use the org.apache.camel.spi.ExceptionHandler to deal with exceptions, that will be logged at WARN/ERROR level and ignored.");
     	completionItem.setDetail("boolean");
+    	completionItem.setDeprecated(false);
 		testProvideCamelOptions("from(\"timer:timerName?\")//camel", 0, 22, completionItem, ".java");
 	}
 
@@ -63,6 +65,7 @@ public class CamelComponentOptionsCompletionsTest extends AbstractCamelLanguageS
     	completionItem.setInsertText("clientConfigOptions=");
     	completionItem.setDocumentation("To configure the AsyncHttpClientConfig using the key/values from the Map.");
     	completionItem.setDetail("java.util.Map<java.lang.String,java.lang.Object>");
+    	completionItem.setDeprecated(false);
 		testProvideCamelOptions("<from uri=\"ahc:httpUri?\" xmlns=\"http://camel.apache.org/schema/blueprint\"></from>\n", 0, 23, completionItem);
 	}
     
@@ -88,6 +91,7 @@ public class CamelComponentOptionsCompletionsTest extends AbstractCamelLanguageS
     	completionItem.setInsertText("bridgeEndpoint=false");
     	completionItem.setDocumentation("If the option is true, then the Exchange.HTTP_URI header is ignored, and use the endpoint's URI for request. You may also set the throwExceptionOnFailure to be false to let the AhcProducer send all the fault response back.");
     	completionItem.setDetail("boolean");
+    	completionItem.setDeprecated(false);
 		return completionItem;
 	}
     
