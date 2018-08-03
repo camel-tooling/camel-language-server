@@ -43,6 +43,10 @@ import com.github.cameltooling.lsp.internal.instancemodel.CamelURIInstance;
 public class ParserXMLFileHelper extends ParserFileHelper {
 	
 	private static final Logger LOGGER = LoggerFactory.getLogger(ParserXMLFileHelper.class);
+	
+	protected static final List<String> CAMEL_POSSIBLE_TYPES = Arrays.asList("to", "from", "endpoint");
+	protected static final List<Character> POSSIBLE_URI_CLOSURE_CHARS = Arrays.asList('\"', '\'');
+	
 	private static final String ATTRIBUTE_ROUTE = "route";
 	private static final String ATTRIBUTE_CAMEL_CONTEXT = "camelContext";
 	private static final String NAMESPACEURI_CAMEL_BLUEPRINT = "http://camel.apache.org/schema/blueprint";
