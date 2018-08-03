@@ -16,13 +16,18 @@
  */
 package com.github.cameltooling.lsp.internal.parser;
 
+import java.util.Arrays;
+import java.util.List;
+
 import org.eclipse.lsp4j.Position;
 import org.eclipse.lsp4j.TextDocumentItem;
 
 import com.github.cameltooling.lsp.internal.instancemodel.CamelURIInstance;
 
 public class ParserJavaFileHelper extends ParserFileHelper {
-
+	
+	protected static final List<String> CAMEL_POSSIBLE_TYPES = Arrays.asList("to", "from");
+	
 	@Override
 	public String getCamelComponentUri(String line, int characterPosition) {
 		for (String methodName : CAMEL_POSSIBLE_TYPES) {
