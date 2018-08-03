@@ -27,6 +27,7 @@ import com.github.cameltooling.lsp.internal.instancemodel.CamelURIInstance;
 public abstract class ParserFileHelper {
 	
 	protected static final List<String> CAMEL_POSSIBLE_TYPES = Arrays.asList("to", "from", "endpoint");
+	protected static final List<Character> POSSIBLE_URI_CLOSURE_CHARS = Arrays.asList('\"', '\'');
 	
 	public String getLine(TextDocumentItem textDocumentItem, Position position) {
 		int line = position.getLine();
