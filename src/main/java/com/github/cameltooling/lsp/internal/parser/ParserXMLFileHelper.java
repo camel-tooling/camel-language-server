@@ -48,15 +48,20 @@ public class ParserXMLFileHelper extends ParserFileHelper {
 	private static final String NAMESPACEURI_CAMEL_BLUEPRINT = "http://camel.apache.org/schema/blueprint";
 	private static final String NAMESPACEURI_CAMEL_SPRING = "http://camel.apache.org/schema/spring";
 	private static final List<String> DOCUMENT_SYMBOL_POSSIBLE_TYPES = Arrays.asList(ATTRIBUTE_CAMEL_CONTEXT, ATTRIBUTE_ROUTE);
-	private static final String URI_PARAM = "uri=\"";
-
+	private static final String URI_PARAM = "uri=";
+	
 	public String getCamelComponentUri(String line, int characterPosition) {
 		int uriAttribute = line.indexOf(URI_PARAM);
 		if(uriAttribute != -1) {
-			int firstQuote = line.indexOf('\"', uriAttribute);
-			int nextQuote = line.indexOf('\"', firstQuote+1);
-			if (isBetween(characterPosition, firstQuote, nextQuote)) {
-				return line.substring(firstQuote+1, nextQuote);
+			int firstQuote = uriAttribute + URI_PARAM.length();
+			Character closure = line.charAt(firstQuote);
+			if (POSSIBLE_URI_CLOSURE_CHARS.contains(closure)) {
+				int nextQuote = line.indexOf(closure, firstQuote+1);
+				if (isBetween(characterPosition, firstQuote, nextQuote)) {
+					return line.substring(firstQuote+1, nextQuote);
+				}
+			} else {
+				LOGGER.warn("Encountered an unsupported URI closure char %s", closure);
 			}
 		}
 		return null;
