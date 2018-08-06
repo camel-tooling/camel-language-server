@@ -48,13 +48,15 @@ public class ParserXMLFileHelper extends ParserFileHelper {
 	private static final String NAMESPACEURI_CAMEL_BLUEPRINT = "http://camel.apache.org/schema/blueprint";
 	private static final String NAMESPACEURI_CAMEL_SPRING = "http://camel.apache.org/schema/spring";
 	private static final List<String> DOCUMENT_SYMBOL_POSSIBLE_TYPES = Arrays.asList(ATTRIBUTE_CAMEL_CONTEXT, ATTRIBUTE_ROUTE);
+	private static final String URI_PARAM = "uri=\"";
 
 	public String getCamelComponentUri(String line, int characterPosition) {
-		int uriAttribute = line.indexOf("uri=\"");
+		int uriAttribute = line.indexOf(URI_PARAM);
 		if(uriAttribute != -1) {
-			int nextQuote = line.indexOf('\"', uriAttribute + 5);
-			if (isBetween(characterPosition, uriAttribute + 5, nextQuote)) {
-				return line.substring(uriAttribute + 5, nextQuote);
+			int firstQuote = line.indexOf('\"', uriAttribute);
+			int nextQuote = line.indexOf('\"', firstQuote+1);
+			if (isBetween(characterPosition, firstQuote, nextQuote)) {
+				return line.substring(firstQuote+1, nextQuote);
 			}
 		}
 		return null;
@@ -147,5 +149,4 @@ public class ParserXMLFileHelper extends ParserFileHelper {
 	public int getPositionInCamelURI(TextDocumentItem textDocumentItem, Position position) {
 		return position.getCharacter() - getLine(textDocumentItem, position).indexOf("uri=") - 5;
 	}
-	
 }
