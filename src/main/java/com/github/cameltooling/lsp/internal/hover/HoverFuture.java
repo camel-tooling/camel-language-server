@@ -23,22 +23,23 @@ import org.apache.camel.catalog.CamelCatalog;
 import org.eclipse.lsp4j.Hover;
 import org.eclipse.lsp4j.jsonrpc.messages.Either;
 
+import com.github.cameltooling.lsp.internal.instancemodel.CamelUriElementInstance;
 import com.github.cameltooling.model.ComponentModel;
 import com.github.cameltooling.model.util.ModelHelper;
 
 public class HoverFuture implements Function<CamelCatalog, Hover> {
 	
-	private String componentName;
-
-	public HoverFuture(String componentName) {
-		this.componentName = componentName;
+	private CamelUriElementInstance uriElement;
+	
+	public HoverFuture(CamelUriElementInstance uriElement) {
+		this.uriElement = uriElement;
 	}
 
 	@Override
 	public Hover apply(CamelCatalog camelCatalog) {
 		Hover hover = new Hover();
-		ComponentModel componentModel = ModelHelper.generateComponentModel(camelCatalog.componentJSonSchema(componentName), true);
-		hover.setContents(Collections.singletonList((Either.forLeft(componentModel.getDescription()))));
+		ComponentModel componentModel = ModelHelper.generateComponentModel(camelCatalog.componentJSonSchema(uriElement.getComponentName()), true);
+		hover.setContents(Collections.singletonList((Either.forLeft(uriElement.getDescription(componentModel)))));
 		return hover;
 	}
 

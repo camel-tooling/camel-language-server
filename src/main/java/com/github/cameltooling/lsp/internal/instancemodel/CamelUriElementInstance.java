@@ -22,6 +22,8 @@ import java.util.concurrent.CompletableFuture;
 import org.apache.camel.catalog.CamelCatalog;
 import org.eclipse.lsp4j.CompletionItem;
 
+import com.github.cameltooling.model.ComponentModel;
+
 public abstract class CamelUriElementInstance {
 	
 	private int startPosition;
@@ -45,5 +47,8 @@ public abstract class CamelUriElementInstance {
 	}
 
 	public abstract CompletableFuture<List<CompletionItem>> getCompletions(CompletableFuture<CamelCatalog> camelCatalog, int positionInCamelUri);
-
+	
+	public abstract String getComponentName();
+	
+	public abstract String getDescription(ComponentModel componentModel);
 }

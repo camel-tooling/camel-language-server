@@ -24,6 +24,7 @@ import org.apache.camel.catalog.CamelCatalog;
 import org.eclipse.lsp4j.CompletionItem;
 
 import com.github.cameltooling.lsp.internal.completion.CamelOptionValuesCompletionsFuture;
+import com.github.cameltooling.model.ComponentModel;
 
 /**
  * For a Camel URI "timer:timerName?delay=10s", it represents "10s"
@@ -67,6 +68,16 @@ public class OptionParamValueURIInstance extends CamelUriElementInstance {
 		if (valueName != null && valueName.trim().length()>0 && getStartPosition()!=positionInUri) {
 			return valueName.length()>len ? valueName.substring(0, Math.max(1, len)) : valueName;
 		}
+		return null;
+	}
+	
+	@Override
+	public String getComponentName() {
+		return optionParamURIInstance.getComponentName();
+	}
+	
+	@Override
+	public String getDescription(ComponentModel componentModel) {
 		return null;
 	}
 }

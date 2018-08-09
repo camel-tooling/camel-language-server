@@ -66,7 +66,7 @@ public class CamelLanguageServerHoverTest extends AbstractCamelLanguageServerTes
 	
 	@Test
 	public void testDontProvideDocumentationOnHoverWhenEndingWithAnd() throws Exception {
-		CamelLanguageServer camelLanguageServer = initializeLanguageServer("<from uri=\"ahc:httpUri?test=test&\" xmlns=\"http://camel.apache.org/schema/spring\"></from>\n");
+		CamelLanguageServer camelLanguageServer = initializeLanguageServer("<from uri=\"ahc:httpUri?bufferSize=1024&\" xmlns=\"http://camel.apache.org/schema/spring\"></from>\n");
 		
 		TextDocumentPositionParams position = new TextDocumentPositionParams(new TextDocumentIdentifier(DUMMY_URI+".xml"), new Position(0, 15));
 		CompletableFuture<Hover> hover = camelLanguageServer.getTextDocumentService().hover(position);
@@ -74,4 +74,13 @@ public class CamelLanguageServerHoverTest extends AbstractCamelLanguageServerTes
 		assertThat(hover.get()).isNull();
 	}
 
+	@Test
+	public void testProvideParameterDocumentationOnHoverWhenEndingWithAnd() throws Exception {
+		CamelLanguageServer camelLanguageServer = initializeLanguageServer("<from uri=\"file:bla?filter=test\" xmlns=\"http://camel.apache.org/schema/spring\"></from>\n");
+		
+		TextDocumentPositionParams position = new TextDocumentPositionParams(new TextDocumentIdentifier(DUMMY_URI+".xml"), new Position(0, 26));
+		CompletableFuture<Hover> hover = camelLanguageServer.getTextDocumentService().hover(position);
+		
+		assertThat(hover.get().getContents().getLeft().get(0).getLeft()).isEqualTo(FILE_FILTER_DOCUMENTATION);		
+	}
 }
