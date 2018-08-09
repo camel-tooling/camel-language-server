@@ -55,9 +55,12 @@ public class ParserXMLFileHelper extends ParserFileHelper {
 	private static final String ATTRIBUTE_CAMEL_CONTEXT = "camelContext";
 	private static final String NAMESPACEURI_CAMEL_BLUEPRINT = "http://camel.apache.org/schema/blueprint";
 	private static final String NAMESPACEURI_CAMEL_SPRING = "http://camel.apache.org/schema/spring";
+	private static final List<String> CAMEL_NAMESPACE_URIS = Arrays.asList(NAMESPACEURI_CAMEL_BLUEPRINT, NAMESPACEURI_CAMEL_SPRING);
 	private static final List<String> DOCUMENT_SYMBOL_POSSIBLE_TYPES = Arrays.asList(ATTRIBUTE_CAMEL_CONTEXT, ATTRIBUTE_ROUTE);
 	private static final String URI_PARAM = "uri=";
 	
+	private String prefixNamespace = null;
+
 	public String getCamelComponentUri(String line, int characterPosition) {
 		int uriAttribute = line.indexOf(URI_PARAM);
 		if(uriAttribute != -1) {
@@ -102,8 +105,10 @@ public class ParserXMLFileHelper extends ParserFileHelper {
 		Set<String> interestingCamelNodeType = new HashSet<>(CAMEL_POSSIBLE_TYPES);
 		interestingCamelNodeType.addAll(DOCUMENT_SYMBOL_POSSIBLE_TYPES);
 		for (String camelNodeTag : interestingCamelNodeType) {
-			if(hasElementFromCamelNameSpaces(xmlParsed.getElementsByTagName(camelNodeTag))){
-				return true;
+			for (String camelNamespace : CAMEL_NAMESPACE_URIS) {
+				if (hasElementFromCamelNameSpaces(xmlParsed.getElementsByTagNameNS(camelNamespace, camelNodeTag))) {
+					return true;
+				}
 			}
 		}
 		return false;
@@ -130,6 +135,7 @@ public class ParserXMLFileHelper extends ParserFileHelper {
 		for (int i = 0; i < childNodes.getLength(); i++) {
 			Node child = childNodes.item(i);
 			if (NAMESPACEURI_CAMEL_BLUEPRINT.equals(child.getNamespaceURI()) || NAMESPACEURI_CAMEL_SPRING.equals(child.getNamespaceURI())) {
+				prefixNamespace = child.getPrefix();
 				return true;
 			}
 		}
@@ -146,8 +152,12 @@ public class ParserXMLFileHelper extends ParserFileHelper {
 	
 	private NodeList getNodesOfType(TextDocumentItem textDocumentItem, String attributeTypeToFilter) throws Exception {
 		if (hasElementFromCamelNamespace(textDocumentItem)) {
-			Document parsedXml = getDocumentWithLineInformation(textDocumentItem);
-			return parsedXml.getElementsByTagName(attributeTypeToFilter);
+			Document parsedXml = XmlLineNumberParser.parseXml(new ByteArrayInputStream(textDocumentItem.getText().getBytes(StandardCharsets.UTF_8)));
+			if (prefixNamespace != null) {
+				return parsedXml.getElementsByTagName(prefixNamespace+":"+attributeTypeToFilter);
+			} else {
+				return parsedXml.getElementsByTagName(attributeTypeToFilter);
+			}
 		}
 		return null;
 	}

@@ -24,6 +24,7 @@ import java.util.List;
 import org.apache.log4j.AppenderSkeleton;
 import org.apache.log4j.Logger;
 import org.apache.log4j.spi.LoggingEvent;
+import org.eclipse.lsp4j.TextDocumentItem;
 import org.junit.Test;
 
 public class ParserXMLFileHelperTest {
@@ -58,5 +59,51 @@ public class ParserXMLFileHelperTest {
 	        return new ArrayList<LoggingEvent>(log);
 	    }
 	}
-
+	
+	public void testGetRouteNodesWithNamespacePrefix() throws Exception {
+		String camel =
+				"<camel:camelContext id=\"camel\" xmlns:camel=\"http://camel.apache.org/schema/spring\">\r\n" + 
+				"\r\n" + 
+				"    <camel:route id=\"a route\">\r\n" + 
+				"      <camel:from uri=\"direct:cafe\"/>\r\n" + 
+				"      <camel:split>\r\n" + 
+				"        <camel:method bean=\"orderSplitter\"/>\r\n" + 
+				"        <camel:to uri=\"direct:drink\"/>\r\n" + 
+				"      </camel:split>\r\n" + 
+				"    </camel:route>\r\n" + 
+				"\r\n" + 
+				"    <camel:route id=\"another Route\">\r\n" + 
+				"      <camel:from uri=\"direct:drink\"/>\r\n" + 
+				"      <camel:recipientList>\r\n" + 
+				"        <camel:method bean=\"drinkRouter\"/>\r\n" + 
+				"      </camel:recipientList>\r\n" + 
+				"    </camel:route>\n"
+				+ "</camel:camelContext>\n";;
+		TextDocumentItem textDocumentItem = new TextDocumentItem(null, null, 0, camel);
+		assertThat(new ParserXMLFileHelper().getRouteNodes(textDocumentItem).getLength()).isEqualTo(2);
+	}
+	
+	@Test
+	public void testGetRouteNodes() throws Exception {
+		String camel =
+				"<camelContext id=\"camel\" xmlns=\"http://camel.apache.org/schema/spring\">\r\n" + 
+				"\r\n" + 
+				"    <route id=\"a route\">\r\n" + 
+				"      <from uri=\"direct:cafe\"/>\r\n" + 
+				"      <split>\r\n" + 
+				"        <method bean=\"orderSplitter\"/>\r\n" + 
+				"        <cto uri=\"direct:drink\"/>\r\n" + 
+				"      </split>\r\n" + 
+				"    </route>\r\n" + 
+				"\r\n" + 
+				"    <route id=\"another Route\">\r\n" + 
+				"      <from uri=\"direct:drink\"/>\r\n" + 
+				"      <recipientList>\r\n" + 
+				"        <method bean=\"drinkRouter\"/>\r\n" + 
+				"      </recipientList>\r\n" + 
+				"    </route>\n"
+				+ "</camelContext>\n";;
+		TextDocumentItem textDocumentItem = new TextDocumentItem(null, null, 0, camel);
+		assertThat(new ParserXMLFileHelper().getRouteNodes(textDocumentItem).getLength()).isEqualTo(2);
+	}
 }
