@@ -23,6 +23,8 @@ import java.util.concurrent.CompletableFuture;
 import org.apache.camel.catalog.CamelCatalog;
 import org.eclipse.lsp4j.CompletionItem;
 
+import com.github.cameltooling.model.ComponentModel;
+
 /**
  * For a Camel URI "timer:timerName?delay=10s", it represents "delay=10s"
  *
@@ -77,5 +79,10 @@ public class OptionParamURIInstance extends CamelUriElementInstance {
 	
 	protected CamelURIInstance getCamelUriInstance() {
 		return camelURIInstance;
+	}
+	
+	@Override
+	public String getDescription(ComponentModel componentModel) {
+		return key.getDescription(componentModel);
 	}
 }

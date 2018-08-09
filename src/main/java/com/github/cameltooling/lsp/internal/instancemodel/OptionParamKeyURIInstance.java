@@ -25,6 +25,7 @@ import org.apache.camel.catalog.CamelCatalog;
 import org.eclipse.lsp4j.CompletionItem;
 
 import com.github.cameltooling.lsp.internal.completion.CamelOptionNamesCompletionsFuture;
+import com.github.cameltooling.model.ComponentModel;
 
 /**
  * For a Camel URI "timer:timerName?delay=10s", it represents "delay"
@@ -74,5 +75,10 @@ public class OptionParamKeyURIInstance extends CamelUriElementInstance {
 	
 	private Set<OptionParamURIInstance> getAlreadyDefinedUriOptions() {
 		return optionParamURIInstance.getCamelUriInstance().getOptionParams();
+	}
+	
+	@Override
+	public String getDescription(ComponentModel componentModel) {
+		return componentModel.getEndpointOption(keyName).getDescription();
 	}
 }

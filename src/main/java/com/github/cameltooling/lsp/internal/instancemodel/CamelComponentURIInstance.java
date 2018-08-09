@@ -24,6 +24,7 @@ import org.apache.camel.catalog.CamelCatalog;
 import org.eclipse.lsp4j.CompletionItem;
 
 import com.github.cameltooling.lsp.internal.completion.CamelComponentSchemesCompletionsFuture;
+import com.github.cameltooling.model.ComponentModel;
 
 /**
  * For a Camel URI "timer:timerName?delay=10s", it represents "timer"
@@ -62,5 +63,10 @@ public class CamelComponentURIInstance extends CamelUriElementInstance {
 			return componentName.substring(getStartPosition(), positionInUri);
 		}
 		return null;
+	}
+	
+	@Override
+	public String getDescription(ComponentModel componentModel) {
+		return componentModel.getDescription();
 	}
 }

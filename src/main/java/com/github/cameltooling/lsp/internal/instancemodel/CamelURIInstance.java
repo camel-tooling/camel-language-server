@@ -28,6 +28,7 @@ import org.eclipse.lsp4j.CompletionItem;
 import org.w3c.dom.Node;
 
 import com.github.cameltooling.lsp.internal.completion.CamelComponentSchemesCompletionsFuture;
+import com.github.cameltooling.model.ComponentModel;
 
 /**
  * represents the whole Camel URI
@@ -160,5 +161,15 @@ public class CamelURIInstance extends CamelUriElementInstance {
 	
 	public boolean isProducer() {
 		return PRODUCER_TYPE_POSSIBLE_NAMES.contains(dslModelHelper.getTypeDeterminingProducerConsumer());
+	}
+	
+	@Override
+	public String getComponentName() {
+		return component.getComponentName();
+	}
+	
+	@Override
+	public String getDescription(ComponentModel componentModel) {
+		return null;
 	}
 }

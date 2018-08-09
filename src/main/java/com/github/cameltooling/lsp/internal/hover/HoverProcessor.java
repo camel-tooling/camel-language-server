@@ -25,6 +25,8 @@ import org.eclipse.lsp4j.TextDocumentItem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.github.cameltooling.lsp.internal.instancemodel.CamelURIInstance;
+import com.github.cameltooling.lsp.internal.instancemodel.CamelUriElementInstance;
 import com.github.cameltooling.lsp.internal.parser.ParserFileHelper;
 import com.github.cameltooling.lsp.internal.parser.ParserFileHelperFactory;
 import com.github.cameltooling.model.util.StringUtils;
@@ -47,7 +49,10 @@ public class HoverProcessor {
 				String camelComponentUri = parserFileHelper.getCamelComponentUri(textDocumentItem, position);
 				String componentName = StringUtils.asComponentName(camelComponentUri);
 				if (componentName != null) {
-					return camelCatalog.thenApply(new HoverFuture(componentName));
+					CamelURIInstance camelURIInstance = parserFileHelper.createCamelURIInstance(textDocumentItem, position, camelComponentUri);
+					int positionInCamelUri = parserFileHelper.getPositionInCamelURI(textDocumentItem, position);
+					CamelUriElementInstance elem = camelURIInstance.getSpecificElement(positionInCamelUri);
+					return camelCatalog.thenApply(new HoverFuture(elem));
 				}
 			}
 		} catch (Exception e) {
