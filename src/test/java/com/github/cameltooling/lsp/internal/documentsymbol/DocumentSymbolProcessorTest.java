@@ -27,7 +27,6 @@ import org.eclipse.lsp4j.Location;
 import org.eclipse.lsp4j.Position;
 import org.eclipse.lsp4j.Range;
 import org.eclipse.lsp4j.SymbolInformation;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import com.github.cameltooling.lsp.internal.AbstractCamelLanguageServerTest;
@@ -161,7 +160,7 @@ public class DocumentSymbolProcessorTest extends AbstractCamelLanguageServerTest
 	}
 	
 	@Test
-	@Ignore("ignore until it is fixed more globally, see https://github.com/camel-tooling/camel-language-server/issues/74")
+	//@Ignore("ignore until it is fixed more globally, see https://github.com/camel-tooling/camel-language-server/issues/74")
 	public void testRoutesProvidedAsDocumentSymbolWithNamespaceprefix() throws Exception {
 		String textTotest =
 				"<camel:camelContext id=\"camel\" xmlns:camel=\"http://camel.apache.org/schema/spring\">\r\n" + 
@@ -181,7 +180,7 @@ public class DocumentSymbolProcessorTest extends AbstractCamelLanguageServerTest
 				"      </camel:recipientList>\r\n" + 
 				"    </camel:route>\n"
 				+ "</camel:camelContext>\n";
-		testRetrieveDocumentSymbol(textTotest, 2);
+		testRetrieveDocumentSymbol(textTotest, 3);
 	}
 
 	private List<? extends SymbolInformation> testRetrieveDocumentSymbol(String textTotest, int expectedSize) throws URISyntaxException, InterruptedException, ExecutionException {
