@@ -60,6 +60,7 @@ import com.github.cameltooling.lsp.internal.completion.CamelEndpointCompletionPr
 import com.github.cameltooling.lsp.internal.diagnostic.DiagnosticService;
 import com.github.cameltooling.lsp.internal.documentsymbol.DocumentSymbolProcessor;
 import com.github.cameltooling.lsp.internal.hover.HoverProcessor;
+import com.github.cameltooling.lsp.internal.references.ReferencesProcessor;
 
 /**
  * @author lhein
@@ -112,7 +113,7 @@ public class CamelTextDocumentService implements TextDocumentService {
 	@Override
 	public CompletableFuture<List<? extends Location>> references(ReferenceParams params) {
 		LOGGER.info("references: {}", params.getTextDocument());
-		return CompletableFuture.completedFuture(Collections.emptyList());
+		return new ReferencesProcessor(openedDocuments.get(params.getTextDocument().getUri())).getReferences(params.getPosition());
 	}
 
 	@Override
@@ -197,7 +198,7 @@ public class CamelTextDocumentService implements TextDocumentService {
 		LOGGER.info("didSave: {}", params.getTextDocument());
 		new DiagnosticService(camelCatalog, camelLanguageServer).compute(params);
 	}
-	
+
 	public TextDocumentItem getOpenedDocument(String uri) {
 		return openedDocuments.get(uri);
 	}

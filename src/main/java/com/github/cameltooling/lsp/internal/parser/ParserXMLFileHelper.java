@@ -20,6 +20,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -27,8 +28,11 @@ import java.util.Set;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
+import org.apache.camel.parser.helper.CamelXmlHelper;
 import org.apache.camel.parser.helper.XmlLineNumberParser;
+import org.eclipse.lsp4j.Location;
 import org.eclipse.lsp4j.Position;
+import org.eclipse.lsp4j.Range;
 import org.eclipse.lsp4j.TextDocumentItem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -79,7 +83,7 @@ public class ParserXMLFileHelper extends ParserFileHelper {
 	public Node getCorrespondingCamelNodeForCompletion(TextDocumentItem textDocumentItem, int line) {
 		try {
 			if (hasElementFromCamelNamespace(textDocumentItem)) {
-				Document parseXml = XmlLineNumberParser.parseXml(new ByteArrayInputStream(textDocumentItem.getText().getBytes(StandardCharsets.UTF_8)));
+				Document parseXml = getDocumentWithLineInformation(textDocumentItem);
 				Element documentElement = parseXml.getDocumentElement();
 				return findElementAtLine(line, documentElement);
 			} else {
@@ -142,10 +146,14 @@ public class ParserXMLFileHelper extends ParserFileHelper {
 	
 	private NodeList getNodesOfType(TextDocumentItem textDocumentItem, String attributeTypeToFilter) throws Exception {
 		if (hasElementFromCamelNamespace(textDocumentItem)) {
-			Document parsedXml = XmlLineNumberParser.parseXml(new ByteArrayInputStream(textDocumentItem.getText().getBytes(StandardCharsets.UTF_8)));
+			Document parsedXml = getDocumentWithLineInformation(textDocumentItem);
 			return parsedXml.getElementsByTagName(attributeTypeToFilter);
 		}
 		return null;
+	}
+
+	private Document getDocumentWithLineInformation(TextDocumentItem textDocumentItem) throws Exception {
+		return XmlLineNumberParser.parseXml(new ByteArrayInputStream(textDocumentItem.getText().getBytes(StandardCharsets.UTF_8)));
 	}
 
 	@Override
@@ -157,5 +165,23 @@ public class ParserXMLFileHelper extends ParserFileHelper {
 	@Override
 	public int getPositionInCamelURI(TextDocumentItem textDocumentItem, Position position) {
 		return position.getCharacter() - getLine(textDocumentItem, position).indexOf("uri=") - 5;
+	}
+
+	public List<Node> getAllEndpoints(TextDocumentItem textDocumentItem) throws Exception {
+		if (hasElementFromCamelNamespace(textDocumentItem)) {
+			return CamelXmlHelper.findAllEndpoints(getDocumentWithLineInformation(textDocumentItem));
+		}
+		return Collections.emptyList();
+	}
+
+	public Location retrieveLocation(Node node, TextDocumentItem textDocumentItem) {
+		Position startPosition = new Position(retrieveIntUserData(node, XmlLineNumberParser.LINE_NUMBER), retrieveIntUserData(node, XmlLineNumberParser.COLUMN_NUMBER));
+		Position endPosition = new Position(retrieveIntUserData(node, XmlLineNumberParser.LINE_NUMBER_END), retrieveIntUserData(node, XmlLineNumberParser.COLUMN_NUMBER_END));
+		Range range = new Range(startPosition, endPosition);
+		return new Location(textDocumentItem.getUri(), range);
+	}
+	
+	private int retrieveIntUserData(Node node, String userData) {
+		return Integer.parseInt((String)node.getUserData(userData)) -1;
 	}
 }

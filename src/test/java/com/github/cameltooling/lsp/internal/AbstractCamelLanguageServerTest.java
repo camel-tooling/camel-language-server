@@ -22,10 +22,12 @@ import org.eclipse.lsp4j.DidOpenTextDocumentParams;
 import org.eclipse.lsp4j.DocumentSymbolParams;
 import org.eclipse.lsp4j.InitializeParams;
 import org.eclipse.lsp4j.InitializeResult;
+import org.eclipse.lsp4j.Location;
 import org.eclipse.lsp4j.MessageActionItem;
 import org.eclipse.lsp4j.MessageParams;
 import org.eclipse.lsp4j.Position;
 import org.eclipse.lsp4j.PublishDiagnosticsParams;
+import org.eclipse.lsp4j.ReferenceParams;
 import org.eclipse.lsp4j.ShowMessageRequestParams;
 import org.eclipse.lsp4j.SymbolInformation;
 import org.eclipse.lsp4j.TextDocumentIdentifier;
@@ -119,6 +121,14 @@ public abstract class AbstractCamelLanguageServerTest {
 		TextDocumentService textDocumentService = camelLanguageServer.getTextDocumentService();
 		DocumentSymbolParams params = new DocumentSymbolParams(new TextDocumentIdentifier(DUMMY_URI+extensionUsed));
 		return textDocumentService.documentSymbol(params);
+	}
+	
+	protected CompletableFuture<List<? extends Location>> getReferencesFor(CamelLanguageServer camelLanguageServer, Position position) {
+		TextDocumentService textDocumentService = camelLanguageServer.getTextDocumentService();
+		ReferenceParams params = new ReferenceParams();
+		params.setPosition(position);
+		params.setTextDocument(new TextDocumentIdentifier(DUMMY_URI+extensionUsed));
+		return textDocumentService.references(params);
 	}
 
 	public File getTestResource(String name) throws URISyntaxException {
