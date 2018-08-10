@@ -32,7 +32,7 @@ import com.github.cameltooling.model.EndpointOptionModel;
  */
 public class OptionParamURIInstance extends CamelUriElementInstance {
 
-	public static final String INVALID_URI_OPTION = "The parameter you entered is not a known parameter of the component for the used Camel version!"; 
+	public static final String INVALID_URI_OPTION = "The parameter %s is not a known parameter of the component. Check if it is written correctly and is supported by the used Camel version (see pom.xml)."; 
 	
 	private OptionParamKeyURIInstance key;
 	private OptionParamValueURIInstance value;
@@ -87,6 +87,6 @@ public class OptionParamURIInstance extends CamelUriElementInstance {
 	@Override
 	public String getDescription(ComponentModel componentModel) {
 		EndpointOptionModel model = componentModel.getEndpointOption(getKey().getKeyName());
-		return model != null ? model.getDescription() : INVALID_URI_OPTION;
+		return model != null ? model.getDescription() : String.format(INVALID_URI_OPTION, getKey().getKeyName());
 	}
 }

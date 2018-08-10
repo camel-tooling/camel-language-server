@@ -32,6 +32,8 @@ import com.github.cameltooling.lsp.internal.instancemodel.OptionParamURIInstance
 
 public class CamelLanguageServerHoverTest extends AbstractCamelLanguageServerTest {
 	
+	
+	
 	@Test
 	public void testProvideDocumentationOnHover() throws Exception {
 		CamelLanguageServer camelLanguageServer = initializeLanguageServer("<from uri=\"ahc:httpUri\" xmlns=\"http://camel.apache.org/schema/spring\"></from>\n");
@@ -92,7 +94,7 @@ public class CamelLanguageServerHoverTest extends AbstractCamelLanguageServerTes
 		TextDocumentPositionParams position = new TextDocumentPositionParams(new TextDocumentIdentifier(DUMMY_URI+".xml"), new Position(0, 26));
 		CompletableFuture<Hover> hover = camelLanguageServer.getTextDocumentService().hover(position);
 		
-		assertThat(hover.get().getContents().getLeft().get(0).getLeft()).isEqualTo(OptionParamURIInstance.INVALID_URI_OPTION);		
+		assertThat(hover.get().getContents().getLeft().get(0).getLeft()).isEqualTo(String.format(OptionParamURIInstance.INVALID_URI_OPTION, "test"));		
 	}
 	
 	@Test
@@ -102,7 +104,7 @@ public class CamelLanguageServerHoverTest extends AbstractCamelLanguageServerTes
 		TextDocumentPositionParams position = new TextDocumentPositionParams(new TextDocumentIdentifier(DUMMY_URI+".xml"), new Position(0, 19));
 		CompletableFuture<Hover> hover = camelLanguageServer.getTextDocumentService().hover(position);
 		
-		assertThat(hover.get().getContents().getLeft().get(0).getLeft()).isNotNull();		
+		assertThat(hover.get().getContents().getLeft().get(0).getLeft()).isEqualTo(KAFKA_SYNTAX_HOVER);		
 	}
 	
 	@Test
@@ -112,6 +114,6 @@ public class CamelLanguageServerHoverTest extends AbstractCamelLanguageServerTes
 		TextDocumentPositionParams position = new TextDocumentPositionParams(new TextDocumentIdentifier(DUMMY_URI+".xml"), new Position(0, 17));
 		CompletableFuture<Hover> hover = camelLanguageServer.getTextDocumentService().hover(position);
 		
-		assertThat(hover.get().getContents().getLeft().get(0).getLeft()).isNotNull();		
+		assertThat(hover.get().getContents().getLeft().get(0).getLeft()).isEqualTo(KAFKA_SYNTAX_HOVER);
 	}
 }

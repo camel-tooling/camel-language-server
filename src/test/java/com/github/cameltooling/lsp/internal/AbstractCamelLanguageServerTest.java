@@ -36,6 +36,7 @@ import org.eclipse.lsp4j.services.TextDocumentService;
 
 public abstract class AbstractCamelLanguageServerTest {
 
+	protected static final String KAFKA_SYNTAX_HOVER = "kafka:topic";
 	protected static final String AHC_DOCUMENTATION = "To call external HTTP services using Async Http Client.";
 	protected static final String FILE_FILTER_DOCUMENTATION = "Pluggable filter as a org.apache.camel.component.file.GenericFileFilter class. Will skip files if filter returns false in its accept() method.";
 	protected static final String DUMMY_URI = "dummyUri";
@@ -125,5 +126,4 @@ public abstract class AbstractCamelLanguageServerTest {
 	public File getTestResource(String name) throws URISyntaxException {
 		return Paths.get(CamelLanguageServerTest.class.getResource(name).toURI()).toFile();
 	}
-
 }
