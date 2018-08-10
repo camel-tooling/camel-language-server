@@ -28,6 +28,7 @@ import org.junit.Test;
 
 import com.github.cameltooling.lsp.internal.AbstractCamelLanguageServerTest;
 import com.github.cameltooling.lsp.internal.CamelLanguageServer;
+import com.github.cameltooling.lsp.internal.instancemodel.OptionParamURIInstance;
 
 public class CamelLanguageServerHoverTest extends AbstractCamelLanguageServerTest {
 	
@@ -66,7 +67,7 @@ public class CamelLanguageServerHoverTest extends AbstractCamelLanguageServerTes
 	
 	@Test
 	public void testDontProvideDocumentationOnHoverWhenEndingWithAnd() throws Exception {
-		CamelLanguageServer camelLanguageServer = initializeLanguageServer("<from uri=\"ahc:httpUri?bufferSize=1024&\" xmlns=\"http://camel.apache.org/schema/spring\"></from>\n");
+		CamelLanguageServer camelLanguageServer = initializeLanguageServer("<from uri=\"ahc:httpUri?test=test&\" xmlns=\"http://camel.apache.org/schema/spring\"></from>\n");
 		
 		TextDocumentPositionParams position = new TextDocumentPositionParams(new TextDocumentIdentifier(DUMMY_URI+".xml"), new Position(0, 15));
 		CompletableFuture<Hover> hover = camelLanguageServer.getTextDocumentService().hover(position);
@@ -75,12 +76,42 @@ public class CamelLanguageServerHoverTest extends AbstractCamelLanguageServerTes
 	}
 
 	@Test
-	public void testProvideParameterDocumentationOnHoverWhenEndingWithAnd() throws Exception {
+	public void testProvideParameterDocumentationOnHover() throws Exception {
 		CamelLanguageServer camelLanguageServer = initializeLanguageServer("<from uri=\"file:bla?filter=test\" xmlns=\"http://camel.apache.org/schema/spring\"></from>\n");
 		
 		TextDocumentPositionParams position = new TextDocumentPositionParams(new TextDocumentIdentifier(DUMMY_URI+".xml"), new Position(0, 26));
 		CompletableFuture<Hover> hover = camelLanguageServer.getTextDocumentService().hover(position);
 		
 		assertThat(hover.get().getContents().getLeft().get(0).getLeft()).isEqualTo(FILE_FILTER_DOCUMENTATION);		
+	}
+	
+	@Test
+	public void testProvideParameterDocumentationForUnknownParamOnHover() throws Exception {
+		CamelLanguageServer camelLanguageServer = initializeLanguageServer("<from uri=\"file:bla?test=test\" xmlns=\"http://camel.apache.org/schema/spring\"></from>\n");
+		
+		TextDocumentPositionParams position = new TextDocumentPositionParams(new TextDocumentIdentifier(DUMMY_URI+".xml"), new Position(0, 26));
+		CompletableFuture<Hover> hover = camelLanguageServer.getTextDocumentService().hover(position);
+		
+		assertThat(hover.get().getContents().getLeft().get(0).getLeft()).isEqualTo(OptionParamURIInstance.INVALID_URI_OPTION);		
+	}
+	
+	@Test
+	public void testProvideSyntaxForPathParameterOnHover() throws Exception {
+		CamelLanguageServer camelLanguageServer = initializeLanguageServer("<from uri=\"kafka:fl\" xmlns=\"http://camel.apache.org/schema/spring\"></from>\n");
+		
+		TextDocumentPositionParams position = new TextDocumentPositionParams(new TextDocumentIdentifier(DUMMY_URI+".xml"), new Position(0, 19));
+		CompletableFuture<Hover> hover = camelLanguageServer.getTextDocumentService().hover(position);
+		
+		assertThat(hover.get().getContents().getLeft().get(0).getLeft()).isNotNull();		
+	}
+	
+	@Test
+	public void testProvideSyntaxForEmptyPathParameterOnHover() throws Exception {
+		CamelLanguageServer camelLanguageServer = initializeLanguageServer("<from uri=\"kafka:\" xmlns=\"http://camel.apache.org/schema/spring\"></from>\n");
+		
+		TextDocumentPositionParams position = new TextDocumentPositionParams(new TextDocumentIdentifier(DUMMY_URI+".xml"), new Position(0, 17));
+		CompletableFuture<Hover> hover = camelLanguageServer.getTextDocumentService().hover(position);
+		
+		assertThat(hover.get().getContents().getLeft().get(0).getLeft()).isNotNull();		
 	}
 }

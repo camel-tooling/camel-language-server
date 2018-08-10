@@ -78,6 +78,6 @@ public class OptionParamValueURIInstance extends CamelUriElementInstance {
 	
 	@Override
 	public String getDescription(ComponentModel componentModel) {
-		return null;
+		return optionParamURIInstance.getDescription(componentModel);
 	}
 }
