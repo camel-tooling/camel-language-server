@@ -21,10 +21,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
-import org.apache.camel.parser.helper.XmlLineNumberParser;
 import org.eclipse.lsp4j.Location;
-import org.eclipse.lsp4j.Position;
-import org.eclipse.lsp4j.Range;
 import org.eclipse.lsp4j.SymbolInformation;
 import org.eclipse.lsp4j.SymbolKind;
 import org.eclipse.lsp4j.TextDocumentItem;
@@ -71,10 +68,7 @@ public class DocumentSymbolProcessor {
 		List<SymbolInformation> res = new ArrayList<>();
 		for (int i = 0; i < routeNodes.getLength(); i++) {
 			Node routeNode = routeNodes.item(i);
-			Position startPosition = new Position(retrieveIntUserData(routeNode, XmlLineNumberParser.LINE_NUMBER), retrieveIntUserData(routeNode, XmlLineNumberParser.COLUMN_NUMBER));
-			Position endPosition = new Position(retrieveIntUserData(routeNode, XmlLineNumberParser.LINE_NUMBER_END), retrieveIntUserData(routeNode, XmlLineNumberParser.COLUMN_NUMBER_END));
-			Range range = new Range(startPosition, endPosition);
-			Location location = new Location(textDocumentItem.getUri(), range);
+			Location location = parserFileHelper.retrieveLocation(routeNode, textDocumentItem);
 			String displayNameOfSymbol = computeDisplayNameOfSymbol(routeNode);
 			res.add(new SymbolInformation(displayNameOfSymbol, SymbolKind.Field, location));
 		}
@@ -91,9 +85,4 @@ public class DocumentSymbolProcessor {
 		}
 		return displayNameOfSymbol;
 	}
-
-	private int retrieveIntUserData(Node node, String userData) {
-		return Integer.parseInt((String)node.getUserData(userData)) -1;
-	}
-
 }
