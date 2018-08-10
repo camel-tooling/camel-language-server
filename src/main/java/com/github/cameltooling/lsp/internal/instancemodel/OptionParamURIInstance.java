@@ -24,12 +24,15 @@ import org.apache.camel.catalog.CamelCatalog;
 import org.eclipse.lsp4j.CompletionItem;
 
 import com.github.cameltooling.model.ComponentModel;
+import com.github.cameltooling.model.EndpointOptionModel;
 
 /**
  * For a Camel URI "timer:timerName?delay=10s", it represents "delay=10s"
  *
  */
 public class OptionParamURIInstance extends CamelUriElementInstance {
+
+	public static final String INVALID_URI_OPTION = "The parameter you entered is not a known parameter of the component for the used Camel version!"; 
 	
 	private OptionParamKeyURIInstance key;
 	private OptionParamValueURIInstance value;
@@ -83,6 +86,7 @@ public class OptionParamURIInstance extends CamelUriElementInstance {
 	
 	@Override
 	public String getDescription(ComponentModel componentModel) {
-		return key.getDescription(componentModel);
+		EndpointOptionModel model = componentModel.getEndpointOption(getKey().getKeyName());
+		return model != null ? model.getDescription() : INVALID_URI_OPTION;
 	}
 }

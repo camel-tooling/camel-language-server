@@ -29,7 +29,6 @@ import com.github.cameltooling.model.ComponentModel;
 
 /**
  * For a Camel URI "timer:timerName?delay=10s", it represents "timerName"
- *
  */
 public class PathParamURIInstance extends CamelUriElementInstance {
 
@@ -95,6 +94,6 @@ public class PathParamURIInstance extends CamelUriElementInstance {
 	
 	@Override
 	public String getDescription(ComponentModel componentModel) {
-		return componentModel.getEndpointOption(value).getDescription();
+		return componentModel.getSyntax();
 	}
 }
