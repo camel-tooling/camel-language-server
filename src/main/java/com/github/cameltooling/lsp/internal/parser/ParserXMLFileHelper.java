@@ -65,7 +65,7 @@ public class ParserXMLFileHelper extends ParserFileHelper {
 					return line.substring(firstQuote+1, nextQuote);
 				}
 			} else {
-				LOGGER.warn("Encountered an unsupported URI closure char %s", closure);
+				LOGGER.warn("Encountered an unsupported URI closure char {}", closure);
 			}
 		}
 		return null;
