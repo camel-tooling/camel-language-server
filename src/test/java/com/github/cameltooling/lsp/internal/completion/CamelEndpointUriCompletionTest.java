@@ -120,6 +120,10 @@ public class CamelEndpointUriCompletionTest extends AbstractCamelLanguageServerT
     		{ "<endpoint uri=\"file:bla?noop\" xmlns=\"http://camel.apache.org/schema/blueprint\"></endpoint>\n", 	0, 28, "URI with option noop", 	"noop",		1, ".xml"},
     		{ "<endpoint uri=\"file:bla?noop\" xmlns=\"http://camel.apache.org/schema/blueprint\"></endpoint>\n", 	0, 24, "URI with option noop", 	null,		10, ".xml"},
     		{ "<endpoint uri=\"file:bla?noop=f\" xmlns=\"http://camel.apache.org/schema/blueprint\"></endpoint>\n", 0, 30, "URI with option noop", 	"f",	1, ".xml"},
+    		
+    		//test with prefix
+    		{ "<camel:from uri=\"f\" xmlns:camel=\"http://camel.apache.org/schema/blueprint\"></camel:from>\n", 		0, 18, "URI with component scheme f in file using namespace prefix", 		"f",	8, ".xml"},
+    	
     	});
     }
     

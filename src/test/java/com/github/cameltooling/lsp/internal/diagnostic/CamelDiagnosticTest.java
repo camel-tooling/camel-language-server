@@ -25,6 +25,7 @@ import java.io.FileNotFoundException;
 import org.eclipse.lsp4j.DidSaveTextDocumentParams;
 import org.eclipse.lsp4j.Range;
 import org.eclipse.lsp4j.TextDocumentIdentifier;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import com.github.cameltooling.lsp.internal.AbstractCamelLanguageServerTest;
@@ -40,6 +41,17 @@ public class CamelDiagnosticTest extends AbstractCamelLanguageServerTest {
 	@Test
 	public void testValidationError() throws Exception {
 		testDiagnostic("camel-with-endpoint-error", 1, ".xml");
+		Range range = lastPublishedDiagnostics.getDiagnostics().get(0).getRange();
+		assertThat(range.getStart().getLine()).isEqualTo(8);
+		assertThat(range.getStart().getCharacter()).isEqualTo(0);
+		assertThat(range.getEnd().getLine()).isEqualTo(8);
+		assertThat(range.getEnd().getCharacter()).isEqualTo(52);
+	}
+	
+	@Test
+	@Ignore("blocked by upstream issue https://issues.apache.org/jira/browse/CAMEL-12735")
+	public void testValidationErrorWithNamespacePrefix() throws Exception {
+		testDiagnostic("camel-with-endpoint-error-withNamespacePrefix", 1, ".xml");
 		Range range = lastPublishedDiagnostics.getDiagnostics().get(0).getRange();
 		assertThat(range.getStart().getLine()).isEqualTo(8);
 		assertThat(range.getStart().getCharacter()).isEqualTo(0);
