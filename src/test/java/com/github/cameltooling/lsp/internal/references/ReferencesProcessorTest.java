@@ -26,6 +26,7 @@ import java.util.concurrent.ExecutionException;
 import org.eclipse.lsp4j.Location;
 import org.eclipse.lsp4j.Position;
 import org.eclipse.lsp4j.Range;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import com.github.cameltooling.lsp.internal.AbstractCamelLanguageServerTest;
@@ -102,9 +103,31 @@ public class ReferencesProcessorTest extends AbstractCamelLanguageServerTest {
 			"    </route>\r\n" +
 			"  </camelContext>";
 
+	private static final String SINGLE_REFERENCE_WITH_NAMESPACE_PREFIX = "  <camel:camelContext id=\"myContext\" \r\n" + 
+			"    xmlns:camel=\"http://camel.apache.org/schema/spring\">\r\n" + 
+			"    <camel:endpoint uri=\"timer:timerName?delay=1000\"></endpoint>\r\n" + 
+			"    <camel:route id=\"a route\">\r\n" + 
+			"      <camel:from uri='timer:timerName'/>\r\n" + 
+			"      <camel:to uri=\"direct:anId\"/>\r\n" + 
+			"    </camel:route>\r\n" + 
+			"    <camel:route id=\"a second route\">\r\n" + 
+			"      <camel:from uri=\"direct:anId\"/>\r\n" + 
+			"      <camel:to uri=\"file:directoryName\"/>\r\n" + 
+			"    </camel:route>\r\n" + 
+			"  </camel:camelContext>";
+
 	@Test
 	public void testRetrieveASingleDirectReferenceFor_to() throws Exception {
 		Location res = testRetrieveReferences(SINGLE_REFERENCE, 1, new Position(5, 18)).get(0);
+		Range range = res.getRange();
+		assertThat(range.getStart().getLine()).isEqualTo(8);
+		assertThat(range.getEnd().getLine()).isEqualTo(8);
+	}
+	
+	@Test
+	@Ignore("blocked by upstream issue https://issues.apache.org/jira/browse/CAMEL-12735")
+	public void testRetrieveASingleDirectReferenceFor_to_whenUsingCamelNamespacePrefix() throws Exception {
+		Location res = testRetrieveReferences(SINGLE_REFERENCE_WITH_NAMESPACE_PREFIX, 1, new Position(5, 18)).get(0);
 		Range range = res.getRange();
 		assertThat(range.getStart().getLine()).isEqualTo(8);
 		assertThat(range.getEnd().getLine()).isEqualTo(8);

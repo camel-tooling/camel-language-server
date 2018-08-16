@@ -59,7 +59,7 @@ public class ParserXMLFileHelper extends ParserFileHelper {
 	private static final List<String> DOCUMENT_SYMBOL_POSSIBLE_TYPES = Arrays.asList(ATTRIBUTE_CAMEL_CONTEXT, ATTRIBUTE_ROUTE);
 	private static final String URI_PARAM = "uri=";
 	
-	private String prefixNamespace = null;
+	private String prefixCamelNamespace = null;
 
 	public String getCamelComponentUri(String line, int characterPosition) {
 		int uriAttribute = line.indexOf(URI_PARAM);
@@ -115,7 +115,7 @@ public class ParserXMLFileHelper extends ParserFileHelper {
 	}
 
 	private Node findElementAtLine(int line, Node node) {
-		if (CAMEL_POSSIBLE_TYPES.contains(prefixNamespace != null ? node.getNodeName().substring(prefixNamespace.length() + 1) : node.getNodeName())) {
+		if (CAMEL_POSSIBLE_TYPES.contains(prefixCamelNamespace != null ? node.getNodeName().substring(prefixCamelNamespace.length() + 1) : node.getNodeName())) {
 			return node;
 		}
 		NodeList childNodes = node.getChildNodes();
@@ -135,7 +135,7 @@ public class ParserXMLFileHelper extends ParserFileHelper {
 		for (int i = 0; i < childNodes.getLength(); i++) {
 			Node child = childNodes.item(i);
 			if (NAMESPACEURI_CAMEL_BLUEPRINT.equals(child.getNamespaceURI()) || NAMESPACEURI_CAMEL_SPRING.equals(child.getNamespaceURI())) {
-				prefixNamespace = child.getPrefix();
+				prefixCamelNamespace = child.getPrefix();
 				return true;
 			}
 		}
@@ -153,8 +153,8 @@ public class ParserXMLFileHelper extends ParserFileHelper {
 	private NodeList getNodesOfType(TextDocumentItem textDocumentItem, String attributeTypeToFilter) throws Exception {
 		if (hasElementFromCamelNamespace(textDocumentItem)) {
 			Document parsedXml = XmlLineNumberParser.parseXml(new ByteArrayInputStream(textDocumentItem.getText().getBytes(StandardCharsets.UTF_8)));
-			if (prefixNamespace != null) {
-				return parsedXml.getElementsByTagName(prefixNamespace+":"+attributeTypeToFilter);
+			if (prefixCamelNamespace != null) {
+				return parsedXml.getElementsByTagName(prefixCamelNamespace+":"+attributeTypeToFilter);
 			} else {
 				return parsedXml.getElementsByTagName(attributeTypeToFilter);
 			}
