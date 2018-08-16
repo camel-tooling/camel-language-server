@@ -115,7 +115,7 @@ public class ParserXMLFileHelper extends ParserFileHelper {
 	}
 
 	private Node findElementAtLine(int line, Node node) {
-		if(CAMEL_POSSIBLE_TYPES.contains(node.getNodeName())) {
+		if (CAMEL_POSSIBLE_TYPES.contains(prefixNamespace != null ? node.getNodeName().substring(prefixNamespace.length() + 1) : node.getNodeName())) {
 			return node;
 		}
 		NodeList childNodes = node.getChildNodes();

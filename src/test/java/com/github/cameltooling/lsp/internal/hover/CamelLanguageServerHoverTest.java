@@ -32,13 +32,21 @@ import com.github.cameltooling.lsp.internal.instancemodel.OptionParamURIInstance
 
 public class CamelLanguageServerHoverTest extends AbstractCamelLanguageServerTest {
 	
-	
-	
 	@Test
 	public void testProvideDocumentationOnHover() throws Exception {
 		CamelLanguageServer camelLanguageServer = initializeLanguageServer("<from uri=\"ahc:httpUri\" xmlns=\"http://camel.apache.org/schema/spring\"></from>\n");
 		
 		TextDocumentPositionParams position = new TextDocumentPositionParams(new TextDocumentIdentifier(DUMMY_URI+".xml"), new Position(0, 13));
+		CompletableFuture<Hover> hover = camelLanguageServer.getTextDocumentService().hover(position);
+		
+		assertThat(hover.get().getContents().getLeft().get(0).getLeft()).isEqualTo(AHC_DOCUMENTATION);
+	}
+	
+	@Test
+	public void testProvideDocumentationOnHoverWithCamelPrefix() throws Exception {
+		CamelLanguageServer camelLanguageServer = initializeLanguageServer("<camel:from uri=\"ahc:httpUri\" xmlns:camel=\"http://camel.apache.org/schema/spring\"></camel:from>\n");
+		
+		TextDocumentPositionParams position = new TextDocumentPositionParams(new TextDocumentIdentifier(DUMMY_URI+".xml"), new Position(0, 19));
 		CompletableFuture<Hover> hover = camelLanguageServer.getTextDocumentService().hover(position);
 		
 		assertThat(hover.get().getContents().getLeft().get(0).getLeft()).isEqualTo(AHC_DOCUMENTATION);
