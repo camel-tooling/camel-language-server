@@ -42,11 +42,13 @@ import org.eclipse.lsp4j.DocumentRangeFormattingParams;
 import org.eclipse.lsp4j.DocumentSymbolParams;
 import org.eclipse.lsp4j.Hover;
 import org.eclipse.lsp4j.Location;
+import org.eclipse.lsp4j.Position;
 import org.eclipse.lsp4j.ReferenceParams;
 import org.eclipse.lsp4j.RenameParams;
 import org.eclipse.lsp4j.SignatureHelp;
 import org.eclipse.lsp4j.SymbolInformation;
 import org.eclipse.lsp4j.TextDocumentContentChangeEvent;
+import org.eclipse.lsp4j.TextDocumentIdentifier;
 import org.eclipse.lsp4j.TextDocumentItem;
 import org.eclipse.lsp4j.TextDocumentPositionParams;
 import org.eclipse.lsp4j.TextEdit;
@@ -57,6 +59,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.github.cameltooling.lsp.internal.completion.CamelEndpointCompletionProcessor;
+import com.github.cameltooling.lsp.internal.definition.DefinitionProcessor;
 import com.github.cameltooling.lsp.internal.diagnostic.DiagnosticService;
 import com.github.cameltooling.lsp.internal.documentsymbol.DocumentSymbolProcessor;
 import com.github.cameltooling.lsp.internal.hover.HoverProcessor;
@@ -105,9 +108,11 @@ public class CamelTextDocumentService implements TextDocumentService {
 	}
 
 	@Override
-	public CompletableFuture<List<? extends Location>> definition(TextDocumentPositionParams position) {
-		LOGGER.info("definition: {}", position.getTextDocument());
-		return CompletableFuture.completedFuture(Collections.emptyList());
+	public CompletableFuture<List<? extends Location>> definition(TextDocumentPositionParams params) {
+		TextDocumentIdentifier textDocument = params.getTextDocument();
+		LOGGER.info("definition: {}", textDocument);
+		TextDocumentItem textDocumentItem = openedDocuments.get(textDocument.getUri());
+		return new DefinitionProcessor(textDocumentItem).getDefinitions(params.getPosition());
 	}
 
 	@Override

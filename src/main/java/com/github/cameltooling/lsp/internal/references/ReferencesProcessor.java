@@ -23,6 +23,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 
 import org.apache.camel.parser.helper.CamelXmlHelper;
@@ -34,6 +35,7 @@ import org.slf4j.LoggerFactory;
 import org.w3c.dom.Node;
 
 import com.github.cameltooling.lsp.internal.instancemodel.CamelURIInstance;
+import com.github.cameltooling.lsp.internal.instancemodel.PathParamURIInstance;
 import com.github.cameltooling.lsp.internal.parser.ParserXMLFileHelper;
 
 public class ReferencesProcessor {
@@ -71,7 +73,7 @@ public class ReferencesProcessor {
 			for (Entry<CamelURIInstance, Node> entry : allCamelUriInstance.entrySet()) {
 				CamelURIInstance camelURIInstance = entry.getKey();
 				if (isReference(camelURIInstanceToSearchReference, directId, camelURIInstance)) {
-					references.add(parserXMLFileHelper .retrieveLocation(entry.getValue(), textDocumentItem));
+					references.add(parserXMLFileHelper.retrieveLocation(entry.getValue(), textDocumentItem));
 				}
 			}
 		}
@@ -98,8 +100,9 @@ public class ReferencesProcessor {
 	}
 	
 	private String getDirectId(CamelURIInstance camelDirectURIInstance) {
-		if (!camelDirectURIInstance.getPathParams().isEmpty()) {
-			return camelDirectURIInstance.getPathParams().iterator().next().getValue();
+		Set<PathParamURIInstance> pathParams = camelDirectURIInstance.getPathParams();
+		if (!pathParams.isEmpty()) {
+			return pathParams.iterator().next().getValue();
 		}
 		return null;
 	}
