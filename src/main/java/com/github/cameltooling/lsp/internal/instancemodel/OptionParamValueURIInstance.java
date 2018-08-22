@@ -47,7 +47,7 @@ public class OptionParamValueURIInstance extends CamelUriElementInstance {
 
 	@Override
 	public CompletableFuture<List<CompletionItem>> getCompletions(CompletableFuture<CamelCatalog> camelCatalog, int positionInCamelUri) {
-		if(getStartPosition() <= positionInCamelUri && positionInCamelUri <= getEndPosition()) {
+		if(getStartPositionInUri() <= positionInCamelUri && positionInCamelUri <= getEndPositionInUri()) {
 			return camelCatalog.thenApply(new CamelOptionValuesCompletionsFuture(this, getFilter(positionInCamelUri)));
 		} else {
 			return CompletableFuture.completedFuture(Collections.emptyList());
@@ -64,8 +64,8 @@ public class OptionParamValueURIInstance extends CamelUriElementInstance {
 	 * @return	the filter string or null if not to be filtered
 	 */
 	private String getFilter(int positionInUri) { 
-		int len = positionInUri-getStartPosition() -1;
-		if (valueName != null && valueName.trim().length()>0 && getStartPosition()!=positionInUri) {
+		int len = positionInUri-getStartPositionInUri() -1;
+		if (valueName != null && valueName.trim().length()>0 && getStartPositionInUri()!=positionInUri) {
 			return valueName.length()>len ? valueName.substring(0, Math.max(1, len)) : valueName;
 		}
 		return null;
@@ -79,5 +79,10 @@ public class OptionParamValueURIInstance extends CamelUriElementInstance {
 	@Override
 	public String getDescription(ComponentModel componentModel) {
 		return optionParamURIInstance.getDescription(componentModel);
+	}
+	
+	@Override
+	public CamelURIInstance getCamelUriInstance() {
+		return optionParamURIInstance.getCamelUriInstance();
 	}
 }

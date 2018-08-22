@@ -32,10 +32,10 @@ import com.github.cameltooling.model.ComponentModel;
  */
 public class PathParamURIInstance extends CamelUriElementInstance {
 
-	private CamelURIInstance uriInstance;
+	private CamelComponentAndPathUriInstance uriInstance;
 	private String value;
 
-	public PathParamURIInstance(CamelURIInstance uriInstance, String value, int startPosition, int endPosition) {
+	public PathParamURIInstance(CamelComponentAndPathUriInstance uriInstance, String value, int startPosition, int endPosition) {
 		super(startPosition, endPosition);
 		this.uriInstance = uriInstance;
 		this.value = value;
@@ -47,7 +47,7 @@ public class PathParamURIInstance extends CamelUriElementInstance {
 	
 	@Override
 	public CompletableFuture<List<CompletionItem>> getCompletions(CompletableFuture<CamelCatalog> camelCatalog, int positionInCamelUri) {
-		if(getStartPosition() <= positionInCamelUri && positionInCamelUri <= getEndPosition()) {
+		if(getStartPositionInUri() <= positionInCamelUri && positionInCamelUri <= getEndPositionInUri()) {
 			return camelCatalog.thenApply(new CamelComponentSchemesCompletionsFuture(getFilter()));
 		} else {
 			return CompletableFuture.completedFuture(Collections.emptyList());
@@ -58,20 +58,20 @@ public class PathParamURIInstance extends CamelUriElementInstance {
 	public boolean equals(Object obj) {
 		if(obj instanceof PathParamURIInstance) {
 			return value.equals(((PathParamURIInstance) obj).getValue())
-					&& getStartPosition() == ((PathParamURIInstance) obj).getStartPosition()
-					&& getEndPosition() == ((PathParamURIInstance) obj).getEndPosition();
+					&& getStartPositionInUri() == ((PathParamURIInstance) obj).getStartPositionInUri()
+					&& getEndPositionInUri() == ((PathParamURIInstance) obj).getEndPositionInUri();
 		}
 		return super.equals(obj);
 	}
 	
 	@Override
 	public int hashCode() {
-		return Objects.hash(value, getStartPosition(), getEndPosition());
+		return Objects.hash(value, getStartPositionInUri(), getEndPositionInUri());
 	}
 	
 	@Override
 	public String toString() {
-		return "Value: "+value+" start position:"+getStartPosition()+ " end position:"+getEndPosition();
+		return "Value: "+value+" start position:" + getStartPositionInUri() + " end position:" + getEndPositionInUri();
 	}
 	
 	/**
@@ -95,5 +95,10 @@ public class PathParamURIInstance extends CamelUriElementInstance {
 	@Override
 	public String getDescription(ComponentModel componentModel) {
 		return componentModel.getSyntax();
+	}
+	
+	@Override
+	public CamelURIInstance getCamelUriInstance() {
+		return uriInstance.getCamelUriInstance();
 	}
 }

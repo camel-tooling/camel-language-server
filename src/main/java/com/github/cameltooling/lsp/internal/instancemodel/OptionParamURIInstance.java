@@ -73,20 +73,21 @@ public class OptionParamURIInstance extends CamelUriElementInstance {
 	}
 
 	public String getComponentName() {
-		return camelURIInstance.getComponent().getComponentName();
+		return camelURIInstance.getComponentName();
 	}
 	
 	public boolean isProducer() {
 		return camelURIInstance.isProducer();
 	}
-	
-	protected CamelURIInstance getCamelUriInstance() {
-		return camelURIInstance;
-	}
-	
+
 	@Override
 	public String getDescription(ComponentModel componentModel) {
 		EndpointOptionModel model = componentModel.getEndpointOption(getKey().getKeyName());
 		return model != null ? model.getDescription() : String.format(INVALID_URI_OPTION, getKey().getKeyName());
+	}
+	
+	@Override
+	public CamelURIInstance getCamelUriInstance() {
+		return camelURIInstance;
 	}
 }

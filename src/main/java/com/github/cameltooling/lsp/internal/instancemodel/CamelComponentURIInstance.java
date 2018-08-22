@@ -32,10 +32,12 @@ import com.github.cameltooling.model.ComponentModel;
  */
 public class CamelComponentURIInstance extends CamelUriElementInstance {
 	
+	private CamelComponentAndPathUriInstance parent;
 	private String componentName;
 
-	public CamelComponentURIInstance(String componentName, int endPosition) {
+	public CamelComponentURIInstance(CamelComponentAndPathUriInstance parent, String componentName, int endPosition) {
 		super(0, endPosition);
+		this.parent = parent;
 		this.componentName = componentName;
 	}
 
@@ -45,7 +47,7 @@ public class CamelComponentURIInstance extends CamelUriElementInstance {
 
 	@Override
 	public CompletableFuture<List<CompletionItem>> getCompletions(CompletableFuture<CamelCatalog> camelCatalog, int positionInCamelUri) {
-		if(getStartPosition() <= positionInCamelUri && positionInCamelUri <= getEndPosition()) {
+		if(getStartPositionInUri() <= positionInCamelUri && positionInCamelUri <= getEndPositionInUri()) {
 			return camelCatalog.thenApply(new CamelComponentSchemesCompletionsFuture(getFilter(positionInCamelUri)));
 		} else {
 			return CompletableFuture.completedFuture(Collections.emptyList());
@@ -59,8 +61,8 @@ public class CamelComponentURIInstance extends CamelUriElementInstance {
 	 * @return	the filter string or null if not to be filtered
 	 */
 	private String getFilter(int positionInUri) { 
-		if (componentName != null && componentName.trim().length()>0 && getStartPosition() != positionInUri) {
-			return componentName.substring(getStartPosition(), positionInUri);
+		if (componentName != null && componentName.trim().length()>0 && getStartPositionInUri() != positionInUri) {
+			return componentName.substring(getStartPositionInUri(), positionInUri);
 		}
 		return null;
 	}
@@ -68,5 +70,10 @@ public class CamelComponentURIInstance extends CamelUriElementInstance {
 	@Override
 	public String getDescription(ComponentModel componentModel) {
 		return componentModel.getDescription();
+	}
+	
+	@Override
+	public CamelURIInstance getCamelUriInstance() {
+		return parent.getCamelUriInstance();
 	}
 }

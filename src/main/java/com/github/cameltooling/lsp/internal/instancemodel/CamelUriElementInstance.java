@@ -21,34 +21,54 @@ import java.util.concurrent.CompletableFuture;
 
 import org.apache.camel.catalog.CamelCatalog;
 import org.eclipse.lsp4j.CompletionItem;
+import org.eclipse.lsp4j.TextDocumentItem;
 
 import com.github.cameltooling.model.ComponentModel;
 
 public abstract class CamelUriElementInstance {
 	
-	private int startPosition;
-	private int endPosition;
+	private int startPositionInUri;
+	private int endPositionInUri;
+	private TextDocumentItem document;
 
-	public CamelUriElementInstance(int startPosition, int endPosition) {
-		this.startPosition = startPosition;
-		this.endPosition = endPosition;
+	public CamelUriElementInstance(int startPositionInUri, int endPositionInUri) {
+		this.startPositionInUri = startPositionInUri;
+		this.endPositionInUri = endPositionInUri;
 	}
 
-	public int getStartPosition() {
-		return startPosition;
+	public int getStartPositionInUri() {
+		return startPositionInUri;
 	}
 
-	public int getEndPosition() {
-		return endPosition;
+	public int getEndPositionInUri() {
+		return endPositionInUri;
 	}
 
 	public boolean isInRange(int position) {
-		return startPosition <= position && position <= endPosition;
+		return startPositionInUri <= position && position <= endPositionInUri;
+	}
+	
+	public TextDocumentItem getDocument() {
+		return document;
 	}
 
+	public void setDocument(TextDocumentItem document) {
+		this.document = document;
+	}
+
+	public int getStartPositionInLine() {
+		return getCamelUriInstance().getStartPositionInDocument().getCharacter() + getStartPositionInUri();
+	}
+	
+	public int getEndPositionInLine() {
+		return getCamelUriInstance().getStartPositionInDocument().getCharacter() + getEndPositionInUri();
+	}
+	
 	public abstract CompletableFuture<List<CompletionItem>> getCompletions(CompletableFuture<CamelCatalog> camelCatalog, int positionInCamelUri);
 	
 	public abstract String getComponentName();
 	
 	public abstract String getDescription(ComponentModel componentModel);
+	
+	public abstract CamelURIInstance getCamelUriInstance();
 }
