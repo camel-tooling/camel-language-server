@@ -44,7 +44,7 @@ public class CamelComponentOptionEnumerationValuesTest extends AbstractCamelLang
 
 		CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = getCompletionFor(camelLanguageServer, new Position(line, character));
 
-		assertThat(completions.get().getLeft()).contains(
+		assertThat(completionListContainsElements(completions.get().getLeft(), 
 				new CompletionItem("InOnly"),
 				new CompletionItem("RobustInOnly"),
 				new CompletionItem("InOut"),
@@ -52,7 +52,7 @@ public class CamelComponentOptionEnumerationValuesTest extends AbstractCamelLang
 				new CompletionItem("OutOnly"),
 				new CompletionItem("RobustOutOnly"),
 				new CompletionItem("OutIn"),
-				new CompletionItem("OutOptionalIn"));
+				new CompletionItem("OutOptionalIn"))).isTrue();
 	}
 
 }

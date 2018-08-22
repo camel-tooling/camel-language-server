@@ -23,13 +23,16 @@ import java.util.stream.Collectors;
 import org.apache.camel.catalog.CamelCatalog;
 import org.eclipse.lsp4j.CompletionItem;
 
+import com.github.cameltooling.lsp.internal.instancemodel.CamelUriElementInstance;
 import com.github.cameltooling.model.util.ModelHelper;
 
 public final class CamelComponentSchemesCompletionsFuture implements Function<CamelCatalog, List<CompletionItem>> {
 	
+	private CamelUriElementInstance uriElement;
 	private String filterString;
 	
-	public CamelComponentSchemesCompletionsFuture(String filterText) {
+	public CamelComponentSchemesCompletionsFuture(CamelUriElementInstance uriElement, String filterText) {
+		this.uriElement = uriElement;
 		this.filterString = filterText;
 	}
 	
@@ -41,6 +44,7 @@ public final class CamelComponentSchemesCompletionsFuture implements Function<Ca
 					CompletionItem completionItem = new CompletionItem(componentModel.getSyntax());
 					completionItem.setDocumentation(componentModel.getDescription());
 					completionItem.setDeprecated(Boolean.valueOf(componentModel.getDeprecated()));
+					completionItem.setData(CompletionResolverUtils.getCompletionResolverDataForUriInstance(uriElement, completionItem.getLabel()));
 					return completionItem;
 				})
 				.filter(FilterPredicateUtils.matchesCompletionFilter(filterString))

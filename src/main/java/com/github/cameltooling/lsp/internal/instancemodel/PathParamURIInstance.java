@@ -16,7 +16,6 @@
  */
 package com.github.cameltooling.lsp.internal.instancemodel;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
@@ -24,7 +23,6 @@ import java.util.concurrent.CompletableFuture;
 import org.apache.camel.catalog.CamelCatalog;
 import org.eclipse.lsp4j.CompletionItem;
 
-import com.github.cameltooling.lsp.internal.completion.CamelComponentSchemesCompletionsFuture;
 import com.github.cameltooling.model.ComponentModel;
 
 /**
@@ -47,11 +45,7 @@ public class PathParamURIInstance extends CamelUriElementInstance {
 	
 	@Override
 	public CompletableFuture<List<CompletionItem>> getCompletions(CompletableFuture<CamelCatalog> camelCatalog, int positionInCamelUri) {
-		if(getStartPositionInUri() <= positionInCamelUri && positionInCamelUri <= getEndPositionInUri()) {
-			return camelCatalog.thenApply(new CamelComponentSchemesCompletionsFuture(getFilter()));
-		} else {
-			return CompletableFuture.completedFuture(Collections.emptyList());
-		}
+		return uriInstance.getCompletions(camelCatalog, positionInCamelUri);
 	}
 
 	@Override
@@ -72,19 +66,6 @@ public class PathParamURIInstance extends CamelUriElementInstance {
 	@Override
 	public String toString() {
 		return "Value: "+value+" start position:" + getStartPositionInUri() + " end position:" + getEndPositionInUri();
-	}
-	
-	/**
-	 * returns the filter string to be applied on the list of all completions
-	 * 
-	 * @return	the filter string or null if not to be filtered
-	 */
-	private String getFilter() { 
-		String filter = String.format("%s:", uriInstance.getComponent().getComponentName());
-		if (value != null && value.trim().length()>0) {
-			filter = String.format("%s%s", filter, value);
-		}
-		return filter;
 	}
 	
 	@Override

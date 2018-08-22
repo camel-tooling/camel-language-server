@@ -16,14 +16,12 @@
  */
 package com.github.cameltooling.lsp.internal.instancemodel;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 import org.apache.camel.catalog.CamelCatalog;
 import org.eclipse.lsp4j.CompletionItem;
 
-import com.github.cameltooling.lsp.internal.completion.CamelComponentSchemesCompletionsFuture;
 import com.github.cameltooling.model.ComponentModel;
 
 /**
@@ -47,24 +45,7 @@ public class CamelComponentURIInstance extends CamelUriElementInstance {
 
 	@Override
 	public CompletableFuture<List<CompletionItem>> getCompletions(CompletableFuture<CamelCatalog> camelCatalog, int positionInCamelUri) {
-		if(getStartPositionInUri() <= positionInCamelUri && positionInCamelUri <= getEndPositionInUri()) {
-			return camelCatalog.thenApply(new CamelComponentSchemesCompletionsFuture(getFilter(positionInCamelUri)));
-		} else {
-			return CompletableFuture.completedFuture(Collections.emptyList());
-		}		
-	}
-	
-	/**
-	 * returns the filter string to be applied on the list of all completions
-	 * 
-	 * @param positionInUri	the position
-	 * @return	the filter string or null if not to be filtered
-	 */
-	private String getFilter(int positionInUri) { 
-		if (componentName != null && componentName.trim().length()>0 && getStartPositionInUri() != positionInUri) {
-			return componentName.substring(getStartPositionInUri(), positionInUri);
-		}
-		return null;
+		return parent.getCompletions(camelCatalog, positionInCamelUri);		
 	}
 	
 	@Override
