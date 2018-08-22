@@ -25,19 +25,23 @@ import java.util.stream.Stream;
 import org.apache.camel.catalog.CamelCatalog;
 import org.eclipse.lsp4j.CompletionItem;
 
+import com.github.cameltooling.lsp.internal.instancemodel.CamelUriElementInstance;
+import com.github.cameltooling.lsp.internal.instancemodel.OptionParamKeyURIInstance;
 import com.github.cameltooling.lsp.internal.instancemodel.OptionParamURIInstance;
 import com.github.cameltooling.model.EndpointOptionModel;
 import com.github.cameltooling.model.util.ModelHelper;
 
 public class CamelOptionNamesCompletionsFuture implements Function<CamelCatalog, List<CompletionItem>>  {
 
+	private CamelUriElementInstance uriElement;
 	private String camelComponentName;
 	private boolean isProducer;
 	private String filterString;
 	private int positionInCamelURI;
 	private Set<OptionParamURIInstance> alreadyDefinedOptions;
 
-	public CamelOptionNamesCompletionsFuture(String camelComponentName, boolean isProducer, String filterText, int positionInCamelURI, Set<OptionParamURIInstance> alreadyDefinedOptions) {
+	public CamelOptionNamesCompletionsFuture(CamelUriElementInstance uriElement, String camelComponentName, boolean isProducer, String filterText, int positionInCamelURI, Set<OptionParamURIInstance> alreadyDefinedOptions) {
+		this.uriElement = uriElement;
 		this.camelComponentName = camelComponentName;
 		this.isProducer = isProducer;
 		this.filterString = filterText;
@@ -54,14 +58,22 @@ public class CamelOptionNamesCompletionsFuture implements Function<CamelCatalog,
 				.filter(FilterPredicateUtils.matchesProducerConsumerGroups(isProducer))
 				.map(parameter -> {
 					CompletionItem completionItem = new CompletionItem(parameter.getName());
-					String insertText = parameter.getName() + "=";
-					if(parameter.getDefaultValue() != null) {
-						insertText += parameter.getDefaultValue();
+					String insertText = parameter.getName();
+					
+					boolean hasValue = false;
+					if (uriElement instanceof OptionParamKeyURIInstance) {
+						OptionParamKeyURIInstance param = (OptionParamKeyURIInstance)uriElement;
+						hasValue = param.getOptionParamURIInstance().getValue() != null;
+					}
+					
+					if(!hasValue && parameter.getDefaultValue() != null) {
+						insertText += String.format("=%s", parameter.getDefaultValue());
 					}
 					completionItem.setInsertText(insertText);
 					completionItem.setDocumentation(parameter.getDescription());
 					completionItem.setDetail(parameter.getJavaType());
 					completionItem.setDeprecated(Boolean.valueOf(parameter.getDeprecated()));
+					completionItem.setData(CompletionResolverUtils.getCompletionResolverDataForUriInstance(uriElement, insertText));
 					return completionItem;
 				})
 				// filter duplicated uri options

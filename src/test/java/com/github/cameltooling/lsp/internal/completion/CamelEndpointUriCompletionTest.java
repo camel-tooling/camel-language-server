@@ -48,12 +48,13 @@ public class CamelEndpointUriCompletionTest extends AbstractCamelLanguageServerT
     		{ "<from uri=\"f\" xmlns=\"http://camel.apache.org/schema/blueprint\"></from>\n", 		0, 12, "URI with component scheme f", 		"f",	8, ".xml"},
     		{ "<from uri=\"fi\" xmlns=\"http://camel.apache.org/schema/blueprint\"></from>\n", 		0, 13, "URI with component scheme fi",		"fi",	1, ".xml"},
     		{ "<from uri=\"fil\" xmlns=\"http://camel.apache.org/schema/blueprint\"></from>\n", 	0, 14, "URI with component scheme fil", 	"fil",  1, ".xml"},
-    		{ "<from uri='file' xmlns=\"http://camel.apache.org/schema/blueprint\"></from>\n", 	0, 15, "URI with component scheme file", 	"file", 1, ".xml"},
+    		{ "<from uri='file' xmlns=\"http://camel.apache.org/schema/blueprint\"></from>\n", 		0, 15, "URI with component scheme file", 	"file", 1, ".xml"},
     		{ "<from uri=\"file\" xmlns=\"http://camel.apache.org/schema/blueprint\"></from>\n", 	0, 11, "URI with component scheme file", 	null,   300, ".xml"},
     		{ "<from uri=\"file\" xmlns=\"http://camel.apache.org/schema/blueprint\"></from>\n", 	0, 12, "URI with component scheme file", 	"f",    8, ".xml"},
     		{ "from(\"file\")//camel", 																0, 7, "URI with component scheme file for Java", "f",   8, ".java"},
     		
     		// test the path params - FROM
+    		{ "<from uri=\"ahc\" xmlns=\"http://camel.apache.org/schema/blueprint\"></from>\n", 		0, 14, "Empty path param without separator",	"ahc",   3, ".xml"},
     		{ "<from uri=\"ahc:\" xmlns=\"http://camel.apache.org/schema/blueprint\"></from>\n", 		0, 15, "Empty path param", 			"ahc:",     1, ".xml"},
     		{ "<from uri='ahc:h' xmlns=\"http://camel.apache.org/schema/blueprint\"></from>\n", 		0, 16, "URI with path param h", 	"ahc:h",	1, ".xml"},
     		{ "<from uri=\"ahc:ht\" xmlns=\"http://camel.apache.org/schema/blueprint\"></from>\n", 		0, 17, "URI with path param ht",	"ahc:ht",	1, ".xml"},

@@ -46,10 +46,14 @@ public class OptionParamKeyURIInstance extends CamelUriElementInstance {
 		return keyName;
 	}
 	
+	public OptionParamURIInstance getOptionParamURIInstance() {
+		return this.optionParamURIInstance;
+	}
+	
 	@Override
 	public CompletableFuture<List<CompletionItem>> getCompletions(CompletableFuture<CamelCatalog> camelCatalog, int positionInCamelUri) {
 		if(getStartPositionInUri() <= positionInCamelUri && positionInCamelUri <= getEndPositionInUri()) {
-			return camelCatalog.thenApply(new CamelOptionNamesCompletionsFuture(getComponentName(), optionParamURIInstance.isProducer(), getFilter(positionInCamelUri), positionInCamelUri, getAlreadyDefinedUriOptions()));
+			return camelCatalog.thenApply(new CamelOptionNamesCompletionsFuture(this, getComponentName(), optionParamURIInstance.isProducer(), getFilter(positionInCamelUri), positionInCamelUri, getAlreadyDefinedUriOptions()));
 		} else {
 			return CompletableFuture.completedFuture(Collections.emptyList());
 		}
@@ -65,7 +69,7 @@ public class OptionParamKeyURIInstance extends CamelUriElementInstance {
 	 * @param position the positionInUri
 	 * @return	the filter string or null if not to be filtered
 	 */
-	private String getFilter(int positionInUri) { 
+	private String getFilter(int positionInUri) {
 		int len = positionInUri-getStartPositionInUri()-1;
 		if (keyName != null && keyName.trim().length()>0 && getStartPositionInUri() != positionInUri) {
 			return keyName.length()>len ? keyName.substring(0, Math.max(1, len)) : keyName;

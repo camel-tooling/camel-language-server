@@ -112,7 +112,7 @@ public class CamelURIInstance extends CamelUriElementInstance {
 	@Override
 	public CompletableFuture<List<CompletionItem>> getCompletions(CompletableFuture<CamelCatalog> camelCatalog, int positionInCamelUri) {
 		if(getStartPositionInUri() <= positionInCamelUri && positionInCamelUri <= getEndPositionInUri()) {
-			return camelCatalog.thenApply(new CamelComponentSchemesCompletionsFuture(getFilter()));
+			return camelCatalog.thenApply(new CamelComponentSchemesCompletionsFuture(this, getFilter()));
 		} else {
 			return CompletableFuture.completedFuture(Collections.emptyList());
 		}

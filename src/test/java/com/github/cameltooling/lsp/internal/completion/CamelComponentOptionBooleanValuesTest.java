@@ -44,9 +44,15 @@ public class CamelComponentOptionBooleanValuesTest extends AbstractCamelLanguage
 
 		CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = getCompletionFor(camelLanguageServer, new Position(line, character));
 
-		assertThat(completions.get().getLeft()).contains(
-				new CompletionItem("true"),
-				new CompletionItem("false"));
+		assertThat(completions.get().getLeft()).hasSize(2);
+		
+		boolean trueFound = false;
+		boolean falseFound = false;
+		for (CompletionItem item : completions.get().getLeft()) {
+			if (item.getLabel().equals(Boolean.TRUE.toString())) trueFound = true;
+			if (item.getLabel().equals(Boolean.FALSE.toString())) falseFound = true;
+		}
+		assertThat(trueFound).isTrue();
+		assertThat(falseFound).isTrue();
 	}
-
 }

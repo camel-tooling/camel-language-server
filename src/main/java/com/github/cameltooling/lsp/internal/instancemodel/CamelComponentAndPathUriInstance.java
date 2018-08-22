@@ -98,10 +98,9 @@ public class CamelComponentAndPathUriInstance extends CamelUriElementInstance {
 	}
 	
 	@Override
-	public CompletableFuture<List<CompletionItem>> getCompletions(CompletableFuture<CamelCatalog> camelCatalog,
-			int positionInCamelUri) {
+	public CompletableFuture<List<CompletionItem>> getCompletions(CompletableFuture<CamelCatalog> camelCatalog, int positionInCamelUri) {
 		if(getStartPositionInUri() <= positionInCamelUri && positionInCamelUri <= getEndPositionInUri()) {
-			return camelCatalog.thenApply(new CamelComponentSchemesCompletionsFuture(getFilter()));
+			return camelCatalog.thenApply(new CamelComponentSchemesCompletionsFuture(this, getFilter(positionInCamelUri)));
 		} else {
 			return CompletableFuture.completedFuture(Collections.emptyList());
 		}
@@ -110,12 +109,17 @@ public class CamelComponentAndPathUriInstance extends CamelUriElementInstance {
 	/**
 	 * returns the filter string to be applied on the list of all completions
 	 * 
+	 * @param positionInUri	the position
 	 * @return	the filter string or null if not to be filtered
 	 */
-	private String getFilter() { 
-		if (component != null) {
-			return String.format("%s:", component.getComponentName());
-		}
+	private String getFilter(int positionInUri) {
+		String componentName = getComponent().getComponentName();
+		if (componentName != null && componentName.trim().length()>0 && getStartPositionInUri() != positionInUri) {
+			String filter = componentName.substring(getStartPositionInUri(), positionInUri < componentName.length() ? positionInUri : componentName.length());
+			// if cursor is behind the ":" then we add it to the filter to exclude other components with the same starting chars like ahc and ahc-https
+			if (positionInUri-getStartPositionInUri() > componentName.length()) filter += ":";
+			return filter;
+		}		
 		return null;
 	}
 	

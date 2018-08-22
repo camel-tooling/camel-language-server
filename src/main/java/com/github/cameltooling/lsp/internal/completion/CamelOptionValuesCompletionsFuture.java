@@ -51,7 +51,11 @@ public class CamelOptionValuesCompletionsFuture implements Function<CamelCatalog
 			if (enums != null && !enums.isEmpty()) {
 				return computeCompletionForEnums(enums);
 			} else if(BOOLEAN_TYPE.equals(endpointOptionModel.getType())) {
-				Stream<CompletionItem> values = Stream.of(new CompletionItem(Boolean.TRUE.toString()), new CompletionItem(Boolean.FALSE.toString()));
+				CompletionItem trueItem = new CompletionItem(Boolean.TRUE.toString());
+				trueItem.setData(CompletionResolverUtils.getCompletionResolverDataForUriInstance(optionParamValueURIInstance, trueItem.getLabel()));
+				CompletionItem falseItem =  new CompletionItem(Boolean.FALSE.toString());
+				falseItem.setData(CompletionResolverUtils.getCompletionResolverDataForUriInstance(optionParamValueURIInstance, falseItem.getLabel()));
+				Stream<CompletionItem> values = Stream.of(trueItem, falseItem);
 				return values.filter(FilterPredicateUtils.matchesCompletionFilter(filterString)).collect(Collectors.toList());
 			}
 		}
@@ -61,7 +65,9 @@ public class CamelOptionValuesCompletionsFuture implements Function<CamelCatalog
 	private List<CompletionItem> computeCompletionForEnums(String enums) {
 		List<CompletionItem> completionItems = new ArrayList<>();
 		for(String enumValue : enums.split(",")) {
-			completionItems.add(new CompletionItem(enumValue));
+			CompletionItem item = new CompletionItem(enumValue);
+			item.setData(CompletionResolverUtils.getCompletionResolverDataForUriInstance(optionParamValueURIInstance, enumValue));
+			completionItems.add(item);
 		}
 		return completionItems.stream().filter(FilterPredicateUtils.matchesCompletionFilter(filterString)).collect(Collectors.toList());
 	}

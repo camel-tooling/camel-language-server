@@ -145,4 +145,18 @@ public abstract class AbstractCamelLanguageServerTest {
 	public File getTestResource(String name) throws URISyntaxException {
 		return Paths.get(CamelLanguageServerTest.class.getResource(name).toURI()).toFile();
 	}
+	
+	protected boolean completionListContainsElement(List<CompletionItem> items, CompletionItem expectedItem) {
+		for (CompletionItem item : items) {
+			if (expectedItem.getLabel().equals(item.getLabel())) return true;
+		}
+		return false;
+	}
+	
+	protected boolean completionListContainsElements(List<CompletionItem> items, CompletionItem... expectedItem) {
+		for (CompletionItem item : expectedItem) {
+			if (!completionListContainsElement(items, item)) return false;
+		}
+		return true;
+	}
 }
