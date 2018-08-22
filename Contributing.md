@@ -54,10 +54,10 @@ As this is an implementation of Language Server Protocol for Apache Camel, it is
 
 ## LSP for Apache Camel architecture explanations
 
-com.github.cameltooling.lsp.internal.CamelTextDocumentService is the main entry point currently as the current implementation is dealing with a single XML file. The various methods of the CamelTextDocumentService are called by the LSP clients. When clients are implemented correctly, they are called depending on the capabilities declared in com.github.cameltooling.lsp.internal.CamelLanguageServer.createServerCapabilities().
+[CamelTextDocumentService](src/main/java/com/github/cameltooling/lsp/internal/CamelTextDocumentService.java) is the main entry point currently as the current implementation is dealing with a single XML file. The various methods of the CamelTextDocumentService are called by the LSP clients. When clients are implemented correctly, they are called depending on the capabilities declared in [CamelLanguageServer.createServerCapabilities()](src/main/java/com/github/cameltooling/lsp/internal/CamelLanguageServer.java).
 
-The metamodel from the Camel Catalog describing the Camel components is represented by the java class com.github.cameltooling.model.ComponentModel.
-The model describing the Camel URI is in com.github.cameltooling.lsp.internal.instancemodel package. The top-level element is [CamelURIInstance](src/main/java/com/github/cameltooling/lsp/internal/instancemodel/CamelURIInstance.java).
+The metamodel from the Camel Catalog describing the Camel components is represented by the java class [ComponentModel](https://github.com/camel-tooling/camel-tooling-common/blob/master/src/main/java/com/github/cameltooling/model/ComponentModel.java).
+The model describing the Camel URI is in [com.github.cameltooling.lsp.internal.instancemodel](https://github.com/camel-tooling/camel-language-server/tree/master/src/main/java/com/github/cameltooling/lsp/internal/instancemodel) package. The top-level element is [CamelUriElementInstance](src/main/java/com/github/cameltooling/lsp/internal/instancemodel/CamelUriElementInstance.java).
 The model describing the Camel URI is storing the position of each sub-model elements (Camel component name, path parameter, Option parameter with its key and value). The naming tries to be as close as possible as the Apache Camel one.
 
 For instance, with the Camel URI "timer:timerName?delay=10s":
