@@ -169,7 +169,12 @@ public class ParserXMLFileHelper extends ParserFileHelper {
 	@Override
 	public CamelURIInstance createCamelURIInstance(TextDocumentItem textDocumentItem, Position position, String camelComponentUri) {
 		Node correspondingCamelNode = getCorrespondingCamelNodeForCompletion(textDocumentItem, position.getLine());
-		return new CamelURIInstance(camelComponentUri, correspondingCamelNode);
+		CamelURIInstance uriInstance = new CamelURIInstance(camelComponentUri, correspondingCamelNode);
+		uriInstance.setDocument(textDocumentItem);
+		int start = getLine(textDocumentItem, position.getLine()).indexOf(camelComponentUri);
+		uriInstance.setStartPositionInDocument(new Position(position.getLine(), start));
+		uriInstance.setEndPositionInDocument(new Position(position.getLine(), start+camelComponentUri.length()));
+		return uriInstance;
 	}
 
 	@Override

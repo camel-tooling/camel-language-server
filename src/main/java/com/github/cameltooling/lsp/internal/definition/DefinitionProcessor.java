@@ -52,7 +52,7 @@ public class DefinitionProcessor {
 			if (camelComponentUri != null) {
 				CamelURIInstance camelURIInstance = parserXMLFileHelper.createCamelURIInstance(textDocumentItem, position, camelComponentUri);
 				if (camelURIInstance != null && "ref".equals(camelURIInstance.getComponentName())) {
-					Set<PathParamURIInstance> pathParams = camelURIInstance.getPathParams();
+					Set<PathParamURIInstance> pathParams = camelURIInstance.getComponentAndPathUriElementInstance().getPathParams();
 					if(!pathParams.isEmpty()) {
 						String refId = pathParams.iterator().next().getValue();
 						return searchEndpointsWithId(refId);

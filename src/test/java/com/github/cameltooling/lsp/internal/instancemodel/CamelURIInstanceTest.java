@@ -16,7 +16,6 @@
  */
 package com.github.cameltooling.lsp.internal.instancemodel;
 
-
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Iterator;
@@ -24,16 +23,12 @@ import java.util.Iterator;
 import org.junit.Test;
 import org.w3c.dom.Node;
 
-import com.github.cameltooling.lsp.internal.instancemodel.CamelURIInstance;
-import com.github.cameltooling.lsp.internal.instancemodel.OptionParamURIInstance;
-import com.github.cameltooling.lsp.internal.instancemodel.PathParamURIInstance;
-
 public class CamelURIInstanceTest {
 	
 	@Test
 	public void testEmptyUri() throws Exception {
 		CamelURIInstance camelURIInstance = new CamelURIInstance("", (Node) null);
-		assertThat(camelURIInstance.getComponent()).isNull();
+		assertThat(camelURIInstance.getComponentAndPathUriElementInstance()).isNull();
 		assertThat(camelURIInstance.getOptionParams()).isEmpty();
 		assertThat(camelURIInstance.getOptionParams()).isEmpty();
 	}
@@ -41,48 +36,48 @@ public class CamelURIInstanceTest {
 	@Test
 	public void testComponentOnlyInUri() throws Exception {
 		CamelURIInstance camelURIInstance = new CamelURIInstance("timer", (Node) null);
-		assertThat(camelURIInstance.getComponent().getComponentName()).isEqualTo("timer");
-		assertThat(camelURIInstance.getComponent().getEndPosition()).isEqualTo(5);
+		assertThat(camelURIInstance.getComponentAndPathUriElementInstance().getComponentName()).isEqualTo("timer");
+		assertThat(camelURIInstance.getComponentAndPathUriElementInstance().getEndPositionInUri()).isEqualTo(5);
 	}
 	
 	@Test
 	public void testComponentWithSomethingElseInUri() throws Exception {
 		CamelURIInstance camelURIInstance = new CamelURIInstance("timer:timerName", (Node) null);
-		assertThat(camelURIInstance.getComponent().getComponentName()).isEqualTo("timer");
-		assertThat(camelURIInstance.getComponent().getEndPosition()).isEqualTo(5);
+		assertThat(camelURIInstance.getComponentAndPathUriElementInstance().getComponentName()).isEqualTo("timer");
+		assertThat(camelURIInstance.getComponentAndPathUriElementInstance().getComponent().getEndPositionInUri()).isEqualTo(5);
 	}
 	
 	@Test
 	public void testPathParam() throws Exception {
 		CamelURIInstance camelURIInstance = new CamelURIInstance("timer:timerName", (Node) null);
-		PathParamURIInstance pathParam = camelURIInstance.getPathParams().iterator().next();
+		PathParamURIInstance pathParam = camelURIInstance.getComponentAndPathUriElementInstance().getPathParams().iterator().next();
 		assertThat(pathParam.getValue()).isEqualTo("timerName");
-		assertThat(pathParam.getStartPosition()).isEqualTo(6);
-		assertThat(pathParam.getEndPosition()).isEqualTo(15);
+		assertThat(pathParam.getStartPositionInUri()).isEqualTo(6);
+		assertThat(pathParam.getEndPositionInUri()).isEqualTo(15);
 	}
 	
 	@Test
 	public void testMultiplePathParam() throws Exception {
 		CamelURIInstance camelURIInstance = new CamelURIInstance("amqp:destinationType:destinationName", (Node) null);
-		assertThat(camelURIInstance.getPathParams()).containsOnly(
-				new PathParamURIInstance(camelURIInstance, "destinationType", 5, 20),
-				new PathParamURIInstance(camelURIInstance, "destinationName", 21, 36));
+		assertThat(camelURIInstance.getComponentAndPathUriElementInstance().getPathParams()).containsOnly(
+				new PathParamURIInstance(camelURIInstance.getComponentAndPathUriElementInstance(), "destinationType", 5, 20),
+				new PathParamURIInstance(camelURIInstance.getComponentAndPathUriElementInstance(), "destinationName", 21, 36));
 	}
 	
 	@Test
 	public void testMultiplePathParamWithSomethingElseInUri() throws Exception {
 		CamelURIInstance camelURIInstance = new CamelURIInstance("amqp:destinationType:destinationName?anOption", (Node) null);
-		assertThat(camelURIInstance.getPathParams()).containsOnly(
-				new PathParamURIInstance(camelURIInstance, "destinationType", 5, 20),
-				new PathParamURIInstance(camelURIInstance, "destinationName", 21, 36));
+		assertThat(camelURIInstance.getComponentAndPathUriElementInstance().getPathParams()).containsOnly(
+				new PathParamURIInstance(camelURIInstance.getComponentAndPathUriElementInstance(), "destinationType", 5, 20),
+				new PathParamURIInstance(camelURIInstance.getComponentAndPathUriElementInstance(), "destinationName", 21, 36));
 	}
 	
 	@Test
 	public void testMultiplePathParamWithSlashDelimiter() throws Exception {
 		CamelURIInstance camelURIInstance = new CamelURIInstance("atmos:name/operation", (Node) null);
-		assertThat(camelURIInstance.getPathParams()).containsOnly(
-				new PathParamURIInstance(camelURIInstance, "name", 6, 10),
-				new PathParamURIInstance(camelURIInstance, "operation", 11, 20));
+		assertThat(camelURIInstance.getComponentAndPathUriElementInstance().getPathParams()).containsOnly(
+				new PathParamURIInstance(camelURIInstance.getComponentAndPathUriElementInstance(), "name", 6, 10),
+				new PathParamURIInstance(camelURIInstance.getComponentAndPathUriElementInstance(), "operation", 11, 20));
 	}
 	
 	@Test
@@ -93,14 +88,14 @@ public class CamelURIInstanceTest {
 	}
 
 	private void checkDelayTimerParam(OptionParamURIInstance optionParam) {
-		assertThat(optionParam.getStartPosition()).isEqualTo(16);
-		assertThat(optionParam.getEndPosition()).isEqualTo(26);
+		assertThat(optionParam.getStartPositionInUri()).isEqualTo(16);
+		assertThat(optionParam.getEndPositionInUri()).isEqualTo(26);
 		assertThat(optionParam.getKey().getKeyName()).isEqualTo("delay");
-		assertThat(optionParam.getKey().getStartPosition()).isEqualTo(16);
-		assertThat(optionParam.getKey().getEndPosition()).isEqualTo(21);
+		assertThat(optionParam.getKey().getStartPositionInUri()).isEqualTo(16);
+		assertThat(optionParam.getKey().getEndPositionInUri()).isEqualTo(21);
 		assertThat(optionParam.getValue().getValueName()).isEqualTo("1000");
-		assertThat(optionParam.getValue().getStartPosition()).isEqualTo(22);
-		assertThat(optionParam.getValue().getEndPosition()).isEqualTo(26);
+		assertThat(optionParam.getValue().getStartPositionInUri()).isEqualTo(22);
+		assertThat(optionParam.getValue().getEndPositionInUri()).isEqualTo(26);
 	}
 	
 	@Test
@@ -134,36 +129,36 @@ public class CamelURIInstanceTest {
 	}
 
 	private void checkTimerPeriodParam(OptionParamURIInstance secondOptionParam) {
-		assertThat(secondOptionParam.getStartPosition()).isEqualTo(31);
-		assertThat(secondOptionParam.getEndPosition()).isEqualTo(42);
+		assertThat(secondOptionParam.getStartPositionInUri()).isEqualTo(31);
+		assertThat(secondOptionParam.getEndPositionInUri()).isEqualTo(42);
 		assertThat(secondOptionParam.getKey().getKeyName()).isEqualTo("period");
-		assertThat(secondOptionParam.getKey().getStartPosition()).isEqualTo(31);
-		assertThat(secondOptionParam.getKey().getEndPosition()).isEqualTo(37);
+		assertThat(secondOptionParam.getKey().getStartPositionInUri()).isEqualTo(31);
+		assertThat(secondOptionParam.getKey().getEndPositionInUri()).isEqualTo(37);
 		assertThat(secondOptionParam.getValue().getValueName()).isEqualTo("2000");
-		assertThat(secondOptionParam.getValue().getStartPosition()).isEqualTo(38);
-		assertThat(secondOptionParam.getValue().getEndPosition()).isEqualTo(42);
+		assertThat(secondOptionParam.getValue().getStartPositionInUri()).isEqualTo(38);
+		assertThat(secondOptionParam.getValue().getEndPositionInUri()).isEqualTo(42);
 	}
 	
 	private void checkTimerPeriodParamForJava(OptionParamURIInstance secondOptionParam) {
-		assertThat(secondOptionParam.getStartPosition()).isEqualTo(27);
-		assertThat(secondOptionParam.getEndPosition()).isEqualTo(38);
+		assertThat(secondOptionParam.getStartPositionInUri()).isEqualTo(27);
+		assertThat(secondOptionParam.getEndPositionInUri()).isEqualTo(38);
 		assertThat(secondOptionParam.getKey().getKeyName()).isEqualTo("period");
-		assertThat(secondOptionParam.getKey().getStartPosition()).isEqualTo(27);
-		assertThat(secondOptionParam.getKey().getEndPosition()).isEqualTo(33);
+		assertThat(secondOptionParam.getKey().getStartPositionInUri()).isEqualTo(27);
+		assertThat(secondOptionParam.getKey().getEndPositionInUri()).isEqualTo(33);
 		assertThat(secondOptionParam.getValue().getValueName()).isEqualTo("2000");
-		assertThat(secondOptionParam.getValue().getStartPosition()).isEqualTo(34);
-		assertThat(secondOptionParam.getValue().getEndPosition()).isEqualTo(38);
+		assertThat(secondOptionParam.getValue().getStartPositionInUri()).isEqualTo(34);
+		assertThat(secondOptionParam.getValue().getEndPositionInUri()).isEqualTo(38);
 	}
 	
 	@Test
 	public void testEmptyOptionParam() throws Exception {
 		CamelURIInstance camelURIInstance = new CamelURIInstance("timer:timerName?", (Node) null);
 		OptionParamURIInstance optionParam = camelURIInstance.getOptionParams().iterator().next();
-		assertThat(optionParam.getStartPosition()).isEqualTo(16);
-		assertThat(optionParam.getEndPosition()).isEqualTo(16);
+		assertThat(optionParam.getStartPositionInUri()).isEqualTo(16);
+		assertThat(optionParam.getEndPositionInUri()).isEqualTo(16);
 		assertThat(optionParam.getKey().getKeyName()).isEqualTo("");
-		assertThat(optionParam.getKey().getStartPosition()).isEqualTo(16);
-		assertThat(optionParam.getKey().getEndPosition()).isEqualTo(16);
+		assertThat(optionParam.getKey().getStartPositionInUri()).isEqualTo(16);
+		assertThat(optionParam.getKey().getEndPositionInUri()).isEqualTo(16);
 		assertThat(optionParam.getValue()).isNull();
 	}
 	
@@ -171,11 +166,11 @@ public class CamelURIInstanceTest {
 	public void testEmptyOptionValueParam() throws Exception {
 		CamelURIInstance camelURIInstance = new CamelURIInstance("timer:timerName?delay", (Node) null);
 		OptionParamURIInstance optionParam = camelURIInstance.getOptionParams().iterator().next();
-		assertThat(optionParam.getStartPosition()).isEqualTo(16);
-		assertThat(optionParam.getEndPosition()).isEqualTo(21);
+		assertThat(optionParam.getStartPositionInUri()).isEqualTo(16);
+		assertThat(optionParam.getEndPositionInUri()).isEqualTo(21);
 		assertThat(optionParam.getKey().getKeyName()).isEqualTo("delay");
-		assertThat(optionParam.getKey().getStartPosition()).isEqualTo(16);
-		assertThat(optionParam.getKey().getEndPosition()).isEqualTo(21);
+		assertThat(optionParam.getKey().getStartPositionInUri()).isEqualTo(16);
+		assertThat(optionParam.getKey().getEndPositionInUri()).isEqualTo(21);
 		assertThat(optionParam.getValue()).isNull();
 	}
 	
@@ -206,11 +201,11 @@ public class CamelURIInstanceTest {
 	}
 
 	private void checkDelayParameter(OptionParamURIInstance firstOptionParam) {
-		assertThat(firstOptionParam.getStartPosition()).isEqualTo(16);
-		assertThat(firstOptionParam.getEndPosition()).isEqualTo(21);
+		assertThat(firstOptionParam.getStartPositionInUri()).isEqualTo(16);
+		assertThat(firstOptionParam.getEndPositionInUri()).isEqualTo(21);
 		assertThat(firstOptionParam.getKey().getKeyName()).isEqualTo("delay");
-		assertThat(firstOptionParam.getKey().getStartPosition()).isEqualTo(16);
-		assertThat(firstOptionParam.getKey().getEndPosition()).isEqualTo(21);
+		assertThat(firstOptionParam.getKey().getStartPositionInUri()).isEqualTo(16);
+		assertThat(firstOptionParam.getKey().getEndPositionInUri()).isEqualTo(21);
 		assertThat(firstOptionParam.getValue()).isNull();
 	}
 	
@@ -218,14 +213,14 @@ public class CamelURIInstanceTest {
 	public void testEmptyOptionValueParamWithEqual() throws Exception {
 		CamelURIInstance camelURIInstance = new CamelURIInstance("timer:timerName?delay=", (Node) null);
 		OptionParamURIInstance optionParam = camelURIInstance.getOptionParams().iterator().next();
-		assertThat(optionParam.getStartPosition()).isEqualTo(16);
-		assertThat(optionParam.getEndPosition()).isEqualTo(22);
+		assertThat(optionParam.getStartPositionInUri()).isEqualTo(16);
+		assertThat(optionParam.getEndPositionInUri()).isEqualTo(22);
 		assertThat(optionParam.getKey().getKeyName()).isEqualTo("delay");
-		assertThat(optionParam.getKey().getStartPosition()).isEqualTo(16);
-		assertThat(optionParam.getKey().getEndPosition()).isEqualTo(21);
+		assertThat(optionParam.getKey().getStartPositionInUri()).isEqualTo(16);
+		assertThat(optionParam.getKey().getEndPositionInUri()).isEqualTo(21);
 		assertThat(optionParam.getValue().getValueName()).isEqualTo(null);
-		assertThat(optionParam.getValue().getStartPosition()).isEqualTo(22);
-		assertThat(optionParam.getValue().getEndPosition()).isEqualTo(22);
+		assertThat(optionParam.getValue().getStartPositionInUri()).isEqualTo(22);
+		assertThat(optionParam.getValue().getEndPositionInUri()).isEqualTo(22);
 	}
 
 }

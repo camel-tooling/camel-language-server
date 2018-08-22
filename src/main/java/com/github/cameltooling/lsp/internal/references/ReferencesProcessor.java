@@ -100,7 +100,7 @@ public class ReferencesProcessor {
 	}
 	
 	private String getDirectId(CamelURIInstance camelDirectURIInstance) {
-		Set<PathParamURIInstance> pathParams = camelDirectURIInstance.getPathParams();
+		Set<PathParamURIInstance> pathParams = camelDirectURIInstance.getComponentAndPathUriElementInstance().getPathParams();
 		if (!pathParams.isEmpty()) {
 			return pathParams.iterator().next().getValue();
 		}
@@ -108,7 +108,7 @@ public class ReferencesProcessor {
 	}
 
 	private boolean isDirectComponentKind(CamelURIInstance camelURIInstanceToSearchReference) {
-		return POSSIBLE_DIRECT_REFERENCE.contains(camelURIInstanceToSearchReference.getComponent().getComponentName());
+		return POSSIBLE_DIRECT_REFERENCE.contains(camelURIInstanceToSearchReference.getComponentName());
 	}
 
 }
