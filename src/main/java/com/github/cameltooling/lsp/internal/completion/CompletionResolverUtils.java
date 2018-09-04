@@ -28,7 +28,6 @@ import com.google.gson.JsonElement;
  */
 public class CompletionResolverUtils {
 	
-	public static final String KEY_URI = "documentURI";
 	public static final String KEY_REPLACE_RANGE_START = "startChar";
 	public static final String KEY_REPLACE_RANGE_END = "endChar";
 	public static final String KEY_LINE = "lineNo";
@@ -43,11 +42,11 @@ public class CompletionResolverUtils {
 		
 		if (uriInstance != null && uriInstance.getCamelUriInstance().getAbsoluteBounds() != null) {
 			if (uriInstance.getDocument() != null) {
-				map.put(KEY_URI, uriInstance.getDocument().getUri());
+				map.put("documentURI", uriInstance.getDocument().getUri());
 			}
-			map.put(KEY_LINE, "" + uriInstance.getCamelUriInstance().getAbsoluteBounds().getStart().getLine());
-			map.put(KEY_REPLACE_RANGE_START, "" + uriInstance.getStartPositionInLine());
-			map.put(KEY_REPLACE_RANGE_END,   "" + uriInstance.getEndPositionInLine());
+			map.put(KEY_LINE, Integer.toString(uriInstance.getCamelUriInstance().getAbsoluteBounds().getStart().getLine()));
+			map.put(KEY_REPLACE_RANGE_START, Integer.toString(uriInstance.getStartPositionInLine()));
+			map.put(KEY_REPLACE_RANGE_END,   Integer.toString(uriInstance.getEndPositionInLine()));
 			map.put(KEY_REPLACEMENT, replacement);
 		}
 		
@@ -59,7 +58,7 @@ public class CompletionResolverUtils {
 			return null;
 		}
 		if(clazz == null ){
-			throw new IllegalArgumentException("Class can not be null");
+			throw new IllegalArgumentException("Class cannot be null");
 		}
 		if(object instanceof JsonElement){
 			Gson gson = new Gson();

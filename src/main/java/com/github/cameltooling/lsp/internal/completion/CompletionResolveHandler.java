@@ -29,7 +29,7 @@ import org.eclipse.lsp4j.TextEdit;
 public class CompletionResolveHandler {
 
 	public CompletionItem resolve(CompletionItem param) {
-		Map data = CompletionResolverUtils.getDataFromJSON(param.getData(), Map.class);
+		Map<?,?> data = CompletionResolverUtils.getDataFromJSON(param.getData(), Map.class);
 		// clean resolve data
 		param.setData(null);
 

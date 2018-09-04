@@ -117,7 +117,9 @@ public class CamelComponentAndPathUriInstance extends CamelUriElementInstance {
 		if (componentName != null && componentName.trim().length()>0 && getStartPositionInUri() != positionInUri) {
 			String filter = componentName.substring(getStartPositionInUri(), positionInUri < componentName.length() ? positionInUri : componentName.length());
 			// if cursor is behind the ":" then we add it to the filter to exclude other components with the same starting chars like ahc and ahc-https
-			if (positionInUri-getStartPositionInUri() > componentName.length()) filter += ":";
+			if (positionInUri-getStartPositionInUri() > componentName.length()) {
+				filter += ":";
+			}
 			return filter;
 		}		
 		return null;
