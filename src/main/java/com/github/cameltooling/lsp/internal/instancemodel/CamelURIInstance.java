@@ -27,6 +27,7 @@ import org.apache.camel.catalog.CamelCatalog;
 import org.eclipse.lsp4j.CompletionItem;
 import org.eclipse.lsp4j.Position;
 import org.eclipse.lsp4j.Range;
+import org.eclipse.lsp4j.TextDocumentItem;
 import org.w3c.dom.Node;
 
 import com.github.cameltooling.lsp.internal.completion.CamelComponentSchemesCompletionsFuture;
@@ -50,8 +51,9 @@ public class CamelURIInstance extends CamelUriElementInstance {
 	private CamelComponentAndPathUriInstance componentAndPathUriElementInstance;
 	private Set<OptionParamURIInstance> optionParams = new HashSet<>();
 		
-	public CamelURIInstance(String uriToParse, Node node) {
+	public CamelURIInstance(String uriToParse, Node node, TextDocumentItem textDocumentItem) {
 		super(0, uriToParse != null ? uriToParse.length() : 0);
+		setDocument(textDocumentItem);
 		dslModelHelper = new XMLDSLModelHelper(node);
 		init(uriToParse);
 	}
@@ -60,8 +62,9 @@ public class CamelURIInstance extends CamelUriElementInstance {
 	 * @param uriToParse the camel uri to parse
 	 * @param methodName the method name of the Java call encapsulating the provided uri to parse
 	 */
-	public CamelURIInstance(String uriToParse, String methodName) {
+	public CamelURIInstance(String uriToParse, String methodName, TextDocumentItem textDocumentItem) {
 		super(0, uriToParse != null ? uriToParse.length() : 0);
+		setDocument(textDocumentItem);
 		dslModelHelper = new JavaDSLModelHelper(methodName);
 		init(uriToParse);
 	}
