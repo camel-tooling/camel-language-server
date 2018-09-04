@@ -57,8 +57,7 @@ public class ParserJavaFileHelper extends ParserFileHelper {
 
 	@Override
 	public CamelURIInstance createCamelURIInstance(TextDocumentItem textDocumentItem, Position position, String camelComponentUri) {
-		CamelURIInstance uriInstance = new CamelURIInstance(camelComponentUri, getCorrespondingMethodName(textDocumentItem, position.getLine()));
-		uriInstance.setDocument(textDocumentItem);
+		CamelURIInstance uriInstance = new CamelURIInstance(camelComponentUri, getCorrespondingMethodName(textDocumentItem, position.getLine()), textDocumentItem);
 		int start = getLine(textDocumentItem, position.getLine()).indexOf(camelComponentUri);
 		uriInstance.setStartPositionInDocument(new Position(position.getLine(), start));
 		uriInstance.setEndPositionInDocument(new Position(position.getLine(), start+camelComponentUri.length()));
