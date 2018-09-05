@@ -93,7 +93,7 @@ public class ReferencesProcessor {
 		for (Node endpoint : allEndpoints) {
 			String uriToParse = CamelXmlHelper.getSafeAttribute(endpoint, "uri");
 			if (uriToParse != null) {
-				allCamelUriInstance.put(new CamelURIInstance(uriToParse, endpoint), endpoint);
+				allCamelUriInstance.put(new CamelURIInstance(uriToParse, endpoint, textDocumentItem), endpoint);
 			}
 		}
 		return allCamelUriInstance;
