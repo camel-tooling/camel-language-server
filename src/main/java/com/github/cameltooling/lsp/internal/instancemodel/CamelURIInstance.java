@@ -58,10 +58,6 @@ public class CamelURIInstance extends CamelUriElementInstance {
 		init(uriToParse);
 	}
 	
-	/**
-	 * @param uriToParse the camel uri to parse
-	 * @param methodName the method name of the Java call encapsulating the provided uri to parse
-	 */
 	public CamelURIInstance(String uriToParse, String methodName, TextDocumentItem textDocumentItem) {
 		super(0, uriToParse != null ? uriToParse.length() : 0);
 		setDocument(textDocumentItem);
