@@ -152,6 +152,7 @@ public class CamelEndpointUriCompletionTest extends AbstractCamelLanguageServerT
 		if (filterString != null) {
 			for (CompletionItem item : items) {
 				assertThat(item.getLabel()).startsWith(filterString);
+				assertThat(hasTextEdit(item)).isTrue();
 			}
 		} 
 		assertThat(completions.get().getRight()).isNull();

@@ -159,4 +159,17 @@ public abstract class AbstractCamelLanguageServerTest {
 		}
 		return true;
 	}
+	
+	protected boolean hasTextEdit(CompletionItem item) {
+		return item != null && item.getTextEdit() != null;
+	}
+	
+	protected boolean completionListHasTextEdits(List<CompletionItem> items) {
+		for (CompletionItem item : items) {
+			if (!hasTextEdit(item)) {
+				return false;
+			}
+		}
+		return true;
+	}
 }
