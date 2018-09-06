@@ -58,7 +58,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.github.cameltooling.lsp.internal.completion.CamelEndpointCompletionProcessor;
-import com.github.cameltooling.lsp.internal.completion.CompletionResolveHandler;
 import com.github.cameltooling.lsp.internal.definition.DefinitionProcessor;
 import com.github.cameltooling.lsp.internal.diagnostic.DiagnosticService;
 import com.github.cameltooling.lsp.internal.documentsymbol.DocumentSymbolProcessor;
@@ -91,8 +90,7 @@ public class CamelTextDocumentService implements TextDocumentService {
 	@Override
 	public CompletableFuture<CompletionItem> resolveCompletionItem(CompletionItem unresolved) {
 		LOGGER.info("resolveCompletionItem: {}", unresolved.getLabel());
-		CompletionResolveHandler handler = new CompletionResolveHandler();
-		return CompletableFuture.supplyAsync(() -> handler.resolve(unresolved));
+		return CompletableFuture.completedFuture(unresolved);
 	}
 
 	@Override

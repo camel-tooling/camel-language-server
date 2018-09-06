@@ -44,7 +44,7 @@ public final class CamelComponentSchemesCompletionsFuture implements Function<Ca
 					CompletionItem completionItem = new CompletionItem(componentModel.getSyntax());
 					completionItem.setDocumentation(componentModel.getDescription());
 					completionItem.setDeprecated(Boolean.valueOf(componentModel.getDeprecated()));
-					completionItem.setData(CompletionResolverUtils.getCompletionResolverDataForUriInstance(uriElement, completionItem.getLabel()));
+					CompletionResolverUtils.applyTextEditToCompletionItem(uriElement, completionItem);
 					return completionItem;
 				})
 				.filter(FilterPredicateUtils.matchesCompletionFilter(filterString))
