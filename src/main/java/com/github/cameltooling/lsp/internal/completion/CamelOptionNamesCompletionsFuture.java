@@ -73,7 +73,7 @@ public class CamelOptionNamesCompletionsFuture implements Function<CamelCatalog,
 					completionItem.setDocumentation(parameter.getDescription());
 					completionItem.setDetail(parameter.getJavaType());
 					completionItem.setDeprecated(Boolean.valueOf(parameter.getDeprecated()));
-					completionItem.setData(CompletionResolverUtils.getCompletionResolverDataForUriInstance(uriElement, insertText));
+					CompletionResolverUtils.applyTextEditToCompletionItem(uriElement, completionItem);
 					return completionItem;
 				})
 				// filter duplicated uri options
