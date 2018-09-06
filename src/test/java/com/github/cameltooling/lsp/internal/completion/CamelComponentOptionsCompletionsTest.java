@@ -84,6 +84,7 @@ public class CamelComponentOptionsCompletionsTest extends AbstractCamelLanguageS
     	CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = getCompletionFor(camelLanguageServer, new Position(line, character));
     	
     	assertThat(completionListContainsElement(completions.get().getLeft(), completionItemExpected)).isTrue();
+    	assertThat(completionListHasTextEdits(completions.get().getLeft())).isTrue();
     }
 
 	private CompletionItem getBridgeEndpointExpectedCompletionItem() {

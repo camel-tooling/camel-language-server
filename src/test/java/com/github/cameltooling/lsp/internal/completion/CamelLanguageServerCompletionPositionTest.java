@@ -99,6 +99,7 @@ public class CamelLanguageServerCompletionPositionTest extends AbstractCamelLang
 		
 		if(shouldHaveCompletion) {
 			assertThat(completionListContainsElement(completions.get().getLeft(), expectedAhcCompletioncompletionItem)).isTrue();
+			assertThat(completionListHasTextEdits(completions.get().getLeft())).isTrue();
 		} else {
 			assertThat(completionListContainsElement(completions.get().getLeft(), expectedAhcCompletioncompletionItem)).isFalse();
 			assertThat(completions.get().getRight()).isNull();
