@@ -33,7 +33,11 @@ public class XMLDSLModelHelper implements DSLModelHelper {
 	
 	@Override
 	public String getTypeDeterminingProducerConsumer() {
-		return node.getNodeName();
+		if(node.getLocalName() != null) {
+			return node.getLocalName();
+		} else {
+			return node.getNodeName();
+		}
 	}
 	
 }
