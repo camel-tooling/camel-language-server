@@ -170,15 +170,19 @@ public class ParserXMLFileHelper extends ParserFileHelper {
 	public CamelURIInstance createCamelURIInstance(TextDocumentItem textDocumentItem, Position position, String camelComponentUri) {
 		Node correspondingCamelNode = getCorrespondingCamelNodeForCompletion(textDocumentItem, position.getLine());
 		CamelURIInstance uriInstance = new CamelURIInstance(camelComponentUri, correspondingCamelNode, textDocumentItem);
-		int start = getLine(textDocumentItem, position.getLine()).indexOf(camelComponentUri);
+		int start = getStartCharacterInDocumentOnLinePosition(textDocumentItem, position);
 		uriInstance.setStartPositionInDocument(new Position(position.getLine(), start));
 		uriInstance.setEndPositionInDocument(new Position(position.getLine(), start+camelComponentUri.length()));
 		return uriInstance;
 	}
 
+	private int getStartCharacterInDocumentOnLinePosition(TextDocumentItem textDocumentItem, Position position) {
+		return getLine(textDocumentItem, position.getLine()).indexOf(URI_PARAM) + 1 + URI_PARAM.length();
+	}
+
 	@Override
 	public int getPositionInCamelURI(TextDocumentItem textDocumentItem, Position position) {
-		return position.getCharacter() - getLine(textDocumentItem, position).indexOf("uri=") - 5;
+		return position.getCharacter() - getLine(textDocumentItem, position).indexOf(URI_PARAM) - 5;
 	}
 
 	public List<Node> getAllEndpoints(TextDocumentItem textDocumentItem) throws Exception {

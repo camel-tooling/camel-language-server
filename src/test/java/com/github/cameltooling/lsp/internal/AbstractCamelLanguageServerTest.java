@@ -27,12 +27,14 @@ import org.eclipse.lsp4j.MessageActionItem;
 import org.eclipse.lsp4j.MessageParams;
 import org.eclipse.lsp4j.Position;
 import org.eclipse.lsp4j.PublishDiagnosticsParams;
+import org.eclipse.lsp4j.Range;
 import org.eclipse.lsp4j.ReferenceParams;
 import org.eclipse.lsp4j.ShowMessageRequestParams;
 import org.eclipse.lsp4j.SymbolInformation;
 import org.eclipse.lsp4j.TextDocumentIdentifier;
 import org.eclipse.lsp4j.TextDocumentItem;
 import org.eclipse.lsp4j.TextDocumentPositionParams;
+import org.eclipse.lsp4j.TextEdit;
 import org.eclipse.lsp4j.jsonrpc.messages.Either;
 import org.eclipse.lsp4j.services.LanguageClient;
 import org.eclipse.lsp4j.services.TextDocumentService;
@@ -44,14 +46,18 @@ public abstract class AbstractCamelLanguageServerTest {
 	protected static final String FILE_FILTER_DOCUMENTATION = "Pluggable filter as a org.apache.camel.component.file.GenericFileFilter class. Will skip files if filter returns false in its accept() method.";
 	protected static final String DUMMY_URI = "dummyUri";
 	private String extensionUsed;
-	protected CompletionItem expectedAhcCompletioncompletionItem;
 	protected PublishDiagnosticsParams lastPublishedDiagnostics;
 
 	public AbstractCamelLanguageServerTest() {
 		super();
-		expectedAhcCompletioncompletionItem = new CompletionItem("ahc:httpUri");
+	}
+
+	protected CompletionItem createExpectedAhcCompletionItem(int lineStart, int characterStart, int lineEnd, int characterEnd) {
+		CompletionItem expectedAhcCompletioncompletionItem = new CompletionItem("ahc:httpUri");
 		expectedAhcCompletioncompletionItem.setDocumentation(AHC_DOCUMENTATION);
 		expectedAhcCompletioncompletionItem.setDeprecated(false);
+		expectedAhcCompletioncompletionItem.setTextEdit(new TextEdit(new Range(new Position(lineStart, characterStart), new Position(lineEnd, characterEnd)), "ahc:httpUri"));
+		return expectedAhcCompletioncompletionItem;
 	}
 	
 	final class DummyLanguageClient implements LanguageClient {
@@ -146,30 +152,8 @@ public abstract class AbstractCamelLanguageServerTest {
 		return Paths.get(CamelLanguageServerTest.class.getResource(name).toURI()).toFile();
 	}
 	
-	protected boolean completionListContainsElement(List<CompletionItem> items, CompletionItem expectedItem) {
-		for (CompletionItem item : items) {
-			if (expectedItem.getLabel().equals(item.getLabel())) return true;
-		}
-		return false;
-	}
-	
-	protected boolean completionListContainsElements(List<CompletionItem> items, CompletionItem... expectedItem) {
-		for (CompletionItem item : expectedItem) {
-			if (!completionListContainsElement(items, item)) return false;
-		}
-		return true;
-	}
-	
 	protected boolean hasTextEdit(CompletionItem item) {
 		return item != null && item.getTextEdit() != null;
 	}
 	
-	protected boolean completionListHasTextEdits(List<CompletionItem> items) {
-		for (CompletionItem item : items) {
-			if (!hasTextEdit(item)) {
-				return false;
-			}
-		}
-		return true;
-	}
 }

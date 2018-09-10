@@ -41,7 +41,11 @@ public class CompletionResolverUtils {
 			Range range = new Range(pStart, pEnd);
 			
 			// replace instead of insert
-			item.setTextEdit(new TextEdit(range, item.getLabel()));
+			if(item.getInsertText() != null) {
+				item.setTextEdit(new TextEdit(range, item.getInsertText()));
+			} else {
+				item.setTextEdit(new TextEdit(range, item.getLabel()));
+			}
 		}
 	}
 }
