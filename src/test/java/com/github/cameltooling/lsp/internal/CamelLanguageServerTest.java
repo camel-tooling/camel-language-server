@@ -39,16 +39,16 @@ public class CamelLanguageServerTest extends AbstractCamelLanguageServerTest {
 		
 		CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = getCompletionFor(camelLanguageServer, new Position(0, 11));
 		
-		assertThat(completionListContainsElement(completions.get().getLeft(), expectedAhcCompletioncompletionItem)).isTrue();
+		assertThat(completions.get().getLeft()).contains(createExpectedAhcCompletionItem(0, 11, 0, 11));
 	}
-	
+
 	@Test
 	public void testProvideCompletionForToCamelBlueprintNamespace() throws Exception {
 		CamelLanguageServer camelLanguageServer = initializeLanguageServer("<to uri=\"\" xmlns=\"http://camel.apache.org/schema/blueprint\"></to>\n");
 		
 		CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = getCompletionFor(camelLanguageServer, new Position(0, 9));
 		
-		assertThat(completionListContainsElement(completions.get().getLeft(), expectedAhcCompletioncompletionItem)).isTrue();
+		assertThat(completions.get().getLeft()).contains(createExpectedAhcCompletionItem(0, 9, 0, 9));
 	}
 	
 	@Test
@@ -57,7 +57,7 @@ public class CamelLanguageServerTest extends AbstractCamelLanguageServerTest {
 		
 		CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = getCompletionFor(camelLanguageServer, new Position(0, 11));
 		
-		assertThat(completionListContainsElement(completions.get().getLeft(), expectedAhcCompletioncompletionItem)).isTrue();
+		assertThat(completions.get().getLeft()).contains(createExpectedAhcCompletionItem(0, 11, 0, 11));
 	}
 	
 	@Test
@@ -69,7 +69,7 @@ public class CamelLanguageServerTest extends AbstractCamelLanguageServerTest {
 		
 		CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = getCompletionFor(camelLanguageServer, new Position(1, 6));
 		
-		assertThat(completionListContainsElement(completions.get().getLeft(), expectedAhcCompletioncompletionItem)).isTrue();
+		assertThat(completions.get().getLeft()).contains(createExpectedAhcCompletionItem(1, 6, 1, 6));
 	}
 	
 	@Test
@@ -79,7 +79,7 @@ public class CamelLanguageServerTest extends AbstractCamelLanguageServerTest {
 		try (FileInputStream fis = new FileInputStream(f)) {
 			CamelLanguageServer cls = initializeLanguageServer(fis, ".java");
 			CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = getCompletionFor(cls, new Position(38, 14));
-			assertThat(completionListContainsElement(completions.get().getLeft(), expectedAhcCompletioncompletionItem)).isTrue();
+			assertThat(completions.get().getLeft()).contains(createExpectedAhcCompletionItem(38, 14, 38, 27));
 		}
 	}
 	
@@ -92,7 +92,7 @@ public class CamelLanguageServerTest extends AbstractCamelLanguageServerTest {
 		
 		CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = getCompletionFor(camelLanguageServer, new Position(1, 9));
 		
-		assertThat(completionListContainsElement(completions.get().getLeft(), expectedAhcCompletioncompletionItem)).isTrue();
+		assertThat(completions.get().getLeft()).contains(createExpectedAhcCompletionItem(1, 9, 1, 9));
 	}
 
 	@Test

@@ -26,6 +26,8 @@ import java.util.concurrent.ExecutionException;
 import org.eclipse.lsp4j.CompletionItem;
 import org.eclipse.lsp4j.CompletionList;
 import org.eclipse.lsp4j.Position;
+import org.eclipse.lsp4j.Range;
+import org.eclipse.lsp4j.TextEdit;
 import org.eclipse.lsp4j.jsonrpc.messages.Either;
 import org.junit.Test;
 
@@ -44,15 +46,21 @@ public class CamelComponentOptionEnumerationValuesTest extends AbstractCamelLang
 
 		CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = getCompletionFor(camelLanguageServer, new Position(line, character));
 
-		assertThat(completionListContainsElements(completions.get().getLeft(), 
-				new CompletionItem("InOnly"),
-				new CompletionItem("RobustInOnly"),
-				new CompletionItem("InOut"),
-				new CompletionItem("InOptionalOut"),
-				new CompletionItem("OutOnly"),
-				new CompletionItem("RobustOutOnly"),
-				new CompletionItem("OutIn"),
-				new CompletionItem("OutOptionalIn"))).isTrue();
+		assertThat(completions.get().getLeft()).contains(
+				createExpectedCompletionItem("InOnly"),
+				createExpectedCompletionItem("RobustInOnly"),
+				createExpectedCompletionItem("InOut"),
+				createExpectedCompletionItem("InOptionalOut"),
+				createExpectedCompletionItem("OutOnly"),
+				createExpectedCompletionItem("RobustOutOnly"),
+				createExpectedCompletionItem("OutIn"),
+				createExpectedCompletionItem("OutOptionalIn"));
+	}
+
+	private CompletionItem createExpectedCompletionItem(String enumOption) {
+		CompletionItem completionItem = new CompletionItem(enumOption);
+		completionItem.setTextEdit(new TextEdit(new Range(new Position(0, 43), new Position(0, 43)), enumOption));
+		return completionItem;
 	}
 
 }

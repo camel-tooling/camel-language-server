@@ -23,6 +23,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
+import org.assertj.core.api.Condition;
 import org.eclipse.lsp4j.CompletionItem;
 import org.eclipse.lsp4j.CompletionList;
 import org.eclipse.lsp4j.Position;
@@ -39,43 +40,43 @@ import com.github.cameltooling.lsp.internal.CamelLanguageServer;
 @RunWith(Parameterized.class)
 public class CamelLanguageServerCompletionPositionTest extends AbstractCamelLanguageServerTest {
 	
-	@Parameters(name="{4} - Position ({1},{2})")
+	@Parameters(name="{6} - Position ({1},{2})")
     public static Collection<Object[]> data() {
     	return Arrays.asList(new Object[][] {
-    		{ "<from uri=\"\" xmlns=\"http://camel.apache.org/schema/blueprint\"></from>\n", 0, 0, false, "Empty URI" },
-    		{ "<from uri=\"\" xmlns=\"http://camel.apache.org/schema/blueprint\"></from>\n", 0, 1, false, "Empty URI" },
-    		{ "<from uri=\"\" xmlns=\"http://camel.apache.org/schema/blueprint\"></from>\n", 0, 2, false, "Empty URI"},
-    		{ "<from uri=\"\" xmlns=\"http://camel.apache.org/schema/blueprint\"></from>\n", 0, 3, false, "Empty URI"},
-    		{ "<from uri=\"\" xmlns=\"http://camel.apache.org/schema/blueprint\"></from>\n", 0, 4, false, "Empty URI"},
-    		{ "<from uri=\"\" xmlns=\"http://camel.apache.org/schema/blueprint\"></from>\n", 0, 5, false, "Empty URI"},
-    		{ "<from uri=\"\" xmlns=\"http://camel.apache.org/schema/blueprint\"></from>\n", 0, 6, false, "Empty URI"},
-    		{ "<from uri=\"\" xmlns=\"http://camel.apache.org/schema/blueprint\"></from>\n", 0, 7, false, "Empty URI"},
-    		{ "<from uri=\"\" xmlns=\"http://camel.apache.org/schema/blueprint\"></from>\n", 0, 8, false, "Empty URI"},
-    		{ "<from uri=\"\" xmlns=\"http://camel.apache.org/schema/blueprint\"></from>\n", 0, 9, false, "Empty URI"},
-    		{ "<from uri=\"\" xmlns=\"http://camel.apache.org/schema/blueprint\"></from>\n", 0, 10, false, "Empty URI" },
-    		{ "<from uri=\"\" xmlns=\"http://camel.apache.org/schema/blueprint\"></from>\n", 0, 11, true, "Empty URI" },
-    		{ "<from uri=\"\" xmlns=\"http://camel.apache.org/schema/blueprint\"></from>\n", 0, 12, false, "Empty URI" },
-    		{ "<from uri=\"\" xmlns=\"http://camel.apache.org/schema/blueprint\"></from>\n", 0, 13, false, "Empty URI" },
-    		{ "<from uri=\"\" xmlns=\"http://camel.apache.org/schema/blueprint\"></from>\n", 0, 14, false, "Empty URI" },
-    		{ "<from uri=\"\" xmlns=\"http://camel.apache.org/schema/blueprint\"></from>\n", 0, 15, false, "Empty URI" },
+    		{ "<from uri=\"\" xmlns=\"http://camel.apache.org/schema/blueprint\"></from>\n", 0, 0, -1, -1, false, "Empty URI" },
+    		{ "<from uri=\"\" xmlns=\"http://camel.apache.org/schema/blueprint\"></from>\n", 0, 1, -1, -1, false, "Empty URI" },
+    		{ "<from uri=\"\" xmlns=\"http://camel.apache.org/schema/blueprint\"></from>\n", 0, 2, -1, -1, false, "Empty URI"},
+    		{ "<from uri=\"\" xmlns=\"http://camel.apache.org/schema/blueprint\"></from>\n", 0, 3, -1, -1, false, "Empty URI"},
+    		{ "<from uri=\"\" xmlns=\"http://camel.apache.org/schema/blueprint\"></from>\n", 0, 4, -1, -1, false, "Empty URI"},
+    		{ "<from uri=\"\" xmlns=\"http://camel.apache.org/schema/blueprint\"></from>\n", 0, 5, -1, -1, false, "Empty URI"},
+    		{ "<from uri=\"\" xmlns=\"http://camel.apache.org/schema/blueprint\"></from>\n", 0, 6, -1, -1, false, "Empty URI"},
+    		{ "<from uri=\"\" xmlns=\"http://camel.apache.org/schema/blueprint\"></from>\n", 0, 7, -1, -1, false, "Empty URI"},
+    		{ "<from uri=\"\" xmlns=\"http://camel.apache.org/schema/blueprint\"></from>\n", 0, 8, -1, -1, false, "Empty URI"},
+    		{ "<from uri=\"\" xmlns=\"http://camel.apache.org/schema/blueprint\"></from>\n", 0, 9, -1, -1, false, "Empty URI"},
+    		{ "<from uri=\"\" xmlns=\"http://camel.apache.org/schema/blueprint\"></from>\n", 0, 10, -1, -1, false, "Empty URI" },
+    		{ "<from uri=\"\" xmlns=\"http://camel.apache.org/schema/blueprint\"></from>\n", 0, 11, 11, 11, true, "Empty URI" },
+    		{ "<from uri=\"\" xmlns=\"http://camel.apache.org/schema/blueprint\"></from>\n", 0, 12, -1, -1, false, "Empty URI" },
+    		{ "<from uri=\"\" xmlns=\"http://camel.apache.org/schema/blueprint\"></from>\n", 0, 13, -1, -1, false, "Empty URI" },
+    		{ "<from uri=\"\" xmlns=\"http://camel.apache.org/schema/blueprint\"></from>\n", 0, 14, -1, -1, false, "Empty URI" },
+    		{ "<from uri=\"\" xmlns=\"http://camel.apache.org/schema/blueprint\"></from>\n", 0, 15, -1, -1, false, "Empty URI" },
 
-    		{ "<from uri=\"ahc\" xmlns=\"http://camel.apache.org/schema/blueprint\"></from>\n", 0, 10, false, "Uri with some value" },
-    		{ "<from uri=\"ahc\" xmlns=\"http://camel.apache.org/schema/blueprint\"></from>\n", 0, 11, true, "Uri with some value" },
-    		{ "<from uri=\"ahc\" xmlns=\"http://camel.apache.org/schema/blueprint\"></from>\n", 0, 12, true, "Uri with some value" },
-    		{ "<from uri=\"ahc\" xmlns=\"http://camel.apache.org/schema/blueprint\"></from>\n", 0, 13, true, "Uri with some value" },
-    		{ "<from uri=\"ahc\" xmlns=\"http://camel.apache.org/schema/blueprint\"></from>\n", 0, 14, true, "Uri with some value" },
-    		{ "<from uri=\"ahc\" xmlns=\"http://camel.apache.org/schema/blueprint\"></from>\n", 0, 15, false, "Uri with some value" },
+    		{ "<from uri=\"ahc\" xmlns=\"http://camel.apache.org/schema/blueprint\"></from>\n", 0, 10, -1, -1, false, "Uri with some value" },
+    		{ "<from uri=\"ahc\" xmlns=\"http://camel.apache.org/schema/blueprint\"></from>\n", 0, 11, 11, 14, true, "Uri with some value" },
+    		{ "<from uri=\"ahc\" xmlns=\"http://camel.apache.org/schema/blueprint\"></from>\n", 0, 12, 11, 14, true, "Uri with some value" },
+    		{ "<from uri=\"ahc\" xmlns=\"http://camel.apache.org/schema/blueprint\"></from>\n", 0, 13, 11, 14, true, "Uri with some value" },
+    		{ "<from uri=\"ahc\" xmlns=\"http://camel.apache.org/schema/blueprint\"></from>\n", 0, 14, 11, 14, true, "Uri with some value" },
+    		{ "<from uri=\"ahc\" xmlns=\"http://camel.apache.org/schema/blueprint\"></from>\n", 0, 15, -1, -1, false, "Uri with some value" },
     		
-    		{ "<from uri=\"ahc:httpUri?anOption=aValue\" xmlns=\"http://camel.apache.org/schema/blueprint\"></from>\n", 0, 14, true, "Uri with a syntax provided" },
-    		{ "<from uri=\"ahc:httpUri?anOption=aValue\" xmlns=\"http://camel.apache.org/schema/blueprint\"></from>\n", 0, 16, true, "Uri with a syntax provided" },
-    		{ "<from uri=\"ahc:httpUri?anOption=aValue\" xmlns=\"http://camel.apache.org/schema/blueprint\"></from>\n", 0, 17, true, "Uri with a syntax provided" },
-    		{ "<from uri=\"ahc:httpUri?anOption=aValue\" xmlns=\"http://camel.apache.org/schema/blueprint\"></from>\n", 0, 18, true, "Uri with a syntax provided" },
-    		{ "<from uri=\"ahc:httpUri?anOption=aValue\" xmlns=\"http://camel.apache.org/schema/blueprint\"></from>\n", 0, 19, true, "Uri with a syntax provided" },
-    		{ "<from uri=\"ahc:httpUri?anOption=aValue\" xmlns=\"http://camel.apache.org/schema/blueprint\"></from>\n", 0, 20, true, "Uri with a syntax provided" },
-    		{ "<from uri=\"ahc:httpUri?anOption=aValue\" xmlns=\"http://camel.apache.org/schema/blueprint\"></from>\n", 0, 21, true, "Uri with a syntax provided" },
-    		{ "<from uri=\"ahc:httpUri?anOption=aValue\" xmlns=\"http://camel.apache.org/schema/blueprint\"></from>\n", 0, 22, true, "Uri with a syntax provided" },
-    		{ "<from uri=\"ahc:httpUri?anOption=aValue\" xmlns=\"http://camel.apache.org/schema/blueprint\"></from>\n", 0, 23, false, "Uri with a syntax provided" },
-    		{ "<from uri=\"ahc:httpUri?anOption=aValue\" xmlns=\"http://camel.apache.org/schema/blueprint\"></from>\n", 0, 24, false, "Uri with a syntax provided" }
+    		{ "<from uri=\"ahc:httpUri?anOption=aValue\" xmlns=\"http://camel.apache.org/schema/blueprint\"></from>\n", 0, 14, 11, 22, true, "Uri with a syntax provided" },
+    		{ "<from uri=\"ahc:httpUri?anOption=aValue\" xmlns=\"http://camel.apache.org/schema/blueprint\"></from>\n", 0, 16, 11, 22, true, "Uri with a syntax provided" },
+    		{ "<from uri=\"ahc:httpUri?anOption=aValue\" xmlns=\"http://camel.apache.org/schema/blueprint\"></from>\n", 0, 17, 11, 22, true, "Uri with a syntax provided" },
+    		{ "<from uri=\"ahc:httpUri?anOption=aValue\" xmlns=\"http://camel.apache.org/schema/blueprint\"></from>\n", 0, 18, 11, 22, true, "Uri with a syntax provided" },
+    		{ "<from uri=\"ahc:httpUri?anOption=aValue\" xmlns=\"http://camel.apache.org/schema/blueprint\"></from>\n", 0, 19, 11, 22, true, "Uri with a syntax provided" },
+    		{ "<from uri=\"ahc:httpUri?anOption=aValue\" xmlns=\"http://camel.apache.org/schema/blueprint\"></from>\n", 0, 20, 11, 22, true, "Uri with a syntax provided" },
+    		{ "<from uri=\"ahc:httpUri?anOption=aValue\" xmlns=\"http://camel.apache.org/schema/blueprint\"></from>\n", 0, 21, 11, 22, true, "Uri with a syntax provided" },
+    		{ "<from uri=\"ahc:httpUri?anOption=aValue\" xmlns=\"http://camel.apache.org/schema/blueprint\"></from>\n", 0, 22, 11, 22, true, "Uri with a syntax provided" },
+    		{ "<from uri=\"ahc:httpUri?anOption=aValue\" xmlns=\"http://camel.apache.org/schema/blueprint\"></from>\n", 0, 23, -1, -1, false, "Uri with a syntax provided" },
+    		{ "<from uri=\"ahc:httpUri?anOption=aValue\" xmlns=\"http://camel.apache.org/schema/blueprint\"></from>\n", 0, 24, -1, -1, false, "Uri with a syntax provided" }
     		
     	});
     }
@@ -85,23 +86,27 @@ public class CamelLanguageServerCompletionPositionTest extends AbstractCamelLang
     @Parameter(1)
     public int line;
     @Parameter(2)
-    public int character;
+    public int characterCallingCompletion;
     @Parameter(3)
-    public boolean shouldHaveCompletion;
+    public int characterStartCompletion;
     @Parameter(4)
+    public int characterEndCompletion;
+    @Parameter(5)
+    public boolean shouldHaveCompletion;
+    @Parameter(6)
     public String testNameQualification;
 	
 	@Test
 	public void testProvideCompletionForCamelBlueprintNamespace() throws Exception {
 		CamelLanguageServer camelLanguageServer = initializeLanguageServer(textToTest);
 		
-		CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = getCompletionFor(camelLanguageServer, new Position(line, character));
+		CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = getCompletionFor(camelLanguageServer, new Position(line, characterCallingCompletion));
 		
 		if(shouldHaveCompletion) {
-			assertThat(completionListContainsElement(completions.get().getLeft(), expectedAhcCompletioncompletionItem)).isTrue();
-			assertThat(completionListHasTextEdits(completions.get().getLeft())).isTrue();
+			assertThat(completions.get().getLeft()).contains(createExpectedAhcCompletionItem(line, characterStartCompletion, line, characterEndCompletion));
 		} else {
-			assertThat(completionListContainsElement(completions.get().getLeft(), expectedAhcCompletioncompletionItem)).isFalse();
+			Condition<CompletionItem> ahc = new Condition<>(completionItem -> completionItem.getLabel().contains("ahc"), "Found an ahc component");
+			assertThat(completions.get().getLeft().stream()).areNot(ahc);
 			assertThat(completions.get().getRight()).isNull();
 		}
 	}
