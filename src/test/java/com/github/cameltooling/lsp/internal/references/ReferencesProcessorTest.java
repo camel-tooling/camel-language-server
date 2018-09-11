@@ -115,6 +115,23 @@ public class ReferencesProcessorTest extends AbstractCamelLanguageServerTest {
 			"      <camel:to uri=\"file:directoryName\"/>\r\n" + 
 			"    </camel:route>\r\n" + 
 			"  </camel:camelContext>";
+	
+	private static final String SEVERAL_REFERENCES_WITH_AN_EMPTY_URI ="  <camelContext id=\"myContext\" \r\n" + 
+			"    xmlns=\"http://camel.apache.org/schema/spring\">\r\n" + 
+			"    <endpoint uri=\"\"></endpoint>\r\n" + 
+			"    <route id=\"a route\">\r\n" + 
+			"      <from uri='timer:timerName'/>\r\n" + 
+			"      <to uri=\"direct:anId\"/>\r\n" + 
+			"    </route>\r\n" + 
+			"    <route id=\"a second route\">\r\n" + 
+			"      <from uri=\"direct:anId\"/>\r\n" + 
+			"      <to uri=\"file:directoryName\"/>\r\n" + 
+			"    </route>\r\n" +
+			"    <route id=\"a third route\">\r\n" + 
+			"      <from uri='timer:timerName'/>\r\n" + 
+			"      <to uri=\"direct:anId\"/>\r\n" + 
+			"    </route>\r\n" +
+			"  </camelContext>";
 
 	@Test
 	public void testRetrieveASingleDirectReferenceFor_to() throws Exception {
@@ -154,6 +171,11 @@ public class ReferencesProcessorTest extends AbstractCamelLanguageServerTest {
 	@Test
 	public void testRetrieveNoReferenceWithSameTo() throws Exception {
 		testRetrieveReferences(SAME_TO, 0, new Position(5, 18));
+	}
+	
+	@Test
+	public void testFindReferencesEvenWhenThereisAnEmptyURiSomewhere() throws Exception {
+		testRetrieveReferences(SEVERAL_REFERENCES_WITH_AN_EMPTY_URI, 2, new Position(8, 18));
 	}
 	
 	@Test

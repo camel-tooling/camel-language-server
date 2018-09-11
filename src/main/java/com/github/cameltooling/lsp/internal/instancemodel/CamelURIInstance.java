@@ -143,7 +143,11 @@ public class CamelURIInstance extends CamelUriElementInstance {
 	
 	@Override
 	public String getComponentName() {
-		return componentAndPathUriElementInstance.getComponentName();
+		if (componentAndPathUriElementInstance != null) {
+			return componentAndPathUriElementInstance.getComponentName();
+		} else {
+			return null;
+		}
 	}
 	
 	@Override
