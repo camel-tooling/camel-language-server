@@ -35,6 +35,7 @@ import org.eclipse.lsp4j.CompletionItem;
 import org.eclipse.lsp4j.CompletionList;
 import org.eclipse.lsp4j.CompletionParams;
 import org.eclipse.lsp4j.DidOpenTextDocumentParams;
+import org.eclipse.lsp4j.DocumentSymbol;
 import org.eclipse.lsp4j.DocumentSymbolParams;
 import org.eclipse.lsp4j.InitializeParams;
 import org.eclipse.lsp4j.InitializeResult;
@@ -152,7 +153,7 @@ public abstract class AbstractCamelLanguageServerTest {
 		return completions;
 	}
 	
-	protected CompletableFuture<List<? extends SymbolInformation>> getDocumentSymbolFor(CamelLanguageServer camelLanguageServer) {
+	protected CompletableFuture<List<Either<SymbolInformation,DocumentSymbol>>> getDocumentSymbolFor(CamelLanguageServer camelLanguageServer) {
 		TextDocumentService textDocumentService = camelLanguageServer.getTextDocumentService();
 		DocumentSymbolParams params = new DocumentSymbolParams(new TextDocumentIdentifier(DUMMY_URI+extensionUsed));
 		return textDocumentService.documentSymbol(params);

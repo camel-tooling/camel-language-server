@@ -21,10 +21,12 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
+import org.eclipse.lsp4j.DocumentSymbol;
 import org.eclipse.lsp4j.Location;
 import org.eclipse.lsp4j.SymbolInformation;
 import org.eclipse.lsp4j.SymbolKind;
 import org.eclipse.lsp4j.TextDocumentItem;
+import org.eclipse.lsp4j.jsonrpc.messages.Either;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Node;
@@ -43,11 +45,10 @@ public class DocumentSymbolProcessor {
 		this.textDocumentItem = textDocumentItem;
 	}
 	
-	@SuppressWarnings("squid:S1452")
-	public CompletableFuture<List<? extends SymbolInformation>> getDocumentSymbols() {
+	public CompletableFuture<List<Either<SymbolInformation, DocumentSymbol>>> getDocumentSymbols() {
 		return CompletableFuture.supplyAsync(() -> {
 			try {
-				List<SymbolInformation> symbolInformations = new ArrayList<>();
+				List<Either<SymbolInformation, DocumentSymbol>> symbolInformations = new ArrayList<>();
 				NodeList routeNodes = parserFileHelper.getRouteNodes(textDocumentItem);
 				if (routeNodes != null) {
 					symbolInformations.addAll(convertToSymbolInformation(routeNodes));
@@ -64,13 +65,13 @@ public class DocumentSymbolProcessor {
 		});
 	}
 
-	private List<SymbolInformation> convertToSymbolInformation(NodeList routeNodes) {
-		List<SymbolInformation> res = new ArrayList<>();
+	private List<Either<SymbolInformation, DocumentSymbol>> convertToSymbolInformation(NodeList routeNodes) {
+		List<Either<SymbolInformation, DocumentSymbol>> res = new ArrayList<>();
 		for (int i = 0; i < routeNodes.getLength(); i++) {
 			Node routeNode = routeNodes.item(i);
 			Location location = parserFileHelper.retrieveLocation(routeNode, textDocumentItem);
 			String displayNameOfSymbol = computeDisplayNameOfSymbol(routeNode);
-			res.add(new SymbolInformation(displayNameOfSymbol, SymbolKind.Field, location));
+			res.add(Either.forLeft(new SymbolInformation(displayNameOfSymbol, SymbolKind.Field, location)));
 		}
 		return res;
 	}
