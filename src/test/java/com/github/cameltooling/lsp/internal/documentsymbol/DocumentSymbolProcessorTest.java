@@ -23,10 +23,12 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
+import org.eclipse.lsp4j.DocumentSymbol;
 import org.eclipse.lsp4j.Location;
 import org.eclipse.lsp4j.Position;
 import org.eclipse.lsp4j.Range;
 import org.eclipse.lsp4j.SymbolInformation;
+import org.eclipse.lsp4j.jsonrpc.messages.Either;
 import org.junit.Test;
 
 import com.github.cameltooling.lsp.internal.AbstractCamelLanguageServerTest;
@@ -54,8 +56,8 @@ public class DocumentSymbolProcessorTest extends AbstractCamelLanguageServerTest
 				"      </recipientList>\r\n" + 
 				"    </route>\n"
 				+ "</camelContext>\n";
-		List<? extends SymbolInformation> documentSymbols = testRetrieveDocumentSymbol(textTotest, 3);
-		SymbolInformation firstRoute = documentSymbols.get(0);
+		List<Either<SymbolInformation, DocumentSymbol>> documentSymbols = testRetrieveDocumentSymbol(textTotest, 3);
+		SymbolInformation firstRoute = documentSymbols.get(0).getLeft();
 		assertThat(firstRoute.getName()).isEqualTo("a route");
 		Position expectedStart = new Position(2, 24/* expecting 4 but seems a bug in Camel*/);
 		Position expectedEnd = new Position(8, 12);
@@ -182,10 +184,10 @@ public class DocumentSymbolProcessorTest extends AbstractCamelLanguageServerTest
 		testRetrieveDocumentSymbol(textTotest, 3);
 	}
 
-	private List<? extends SymbolInformation> testRetrieveDocumentSymbol(String textTotest, int expectedSize) throws URISyntaxException, InterruptedException, ExecutionException {
+	private List<Either<SymbolInformation, DocumentSymbol>> testRetrieveDocumentSymbol(String textTotest, int expectedSize) throws URISyntaxException, InterruptedException, ExecutionException {
 		CamelLanguageServer camelLanguageServer = initializeLanguageServer(textTotest);
-		CompletableFuture<List<? extends SymbolInformation>> documentSymbolFor = getDocumentSymbolFor(camelLanguageServer);
-		List<? extends SymbolInformation> symbolsInformation = documentSymbolFor.get();
+		CompletableFuture<List<Either<SymbolInformation,DocumentSymbol>>> documentSymbolFor = getDocumentSymbolFor(camelLanguageServer);
+		List<Either<SymbolInformation, DocumentSymbol>> symbolsInformation = documentSymbolFor.get();
 		assertThat(symbolsInformation).hasSize(expectedSize);
 		return symbolsInformation;
 	}
