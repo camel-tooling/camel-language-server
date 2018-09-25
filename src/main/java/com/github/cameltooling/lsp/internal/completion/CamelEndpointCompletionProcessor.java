@@ -62,7 +62,7 @@ public class CamelEndpointCompletionProcessor {
 
 	private CompletableFuture<List<CompletionItem>> getCompletions(CamelURIInstance camelURIInstance, int positionInCamelUri) {
 		CamelUriElementInstance camelUriElementInstance = camelURIInstance.getSpecificElement(positionInCamelUri);
-		return camelUriElementInstance.getCompletions(camelCatalog, positionInCamelUri);
+		return camelUriElementInstance.getCompletions(camelCatalog, positionInCamelUri, textDocumentItem);
 	}
 
 }

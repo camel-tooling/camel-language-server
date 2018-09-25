@@ -22,6 +22,7 @@ import java.util.concurrent.CompletableFuture;
 
 import org.apache.camel.catalog.CamelCatalog;
 import org.eclipse.lsp4j.CompletionItem;
+import org.eclipse.lsp4j.TextDocumentItem;
 
 import com.github.cameltooling.model.ComponentModel;
 import com.github.cameltooling.model.EndpointOptionModel;
@@ -68,7 +69,7 @@ public class OptionParamURIInstance extends CamelUriElementInstance {
 	}
 	
 	@Override
-	public CompletableFuture<List<CompletionItem>> getCompletions(CompletableFuture<CamelCatalog> camelCatalog, int positionInCamelUri) {
+	public CompletableFuture<List<CompletionItem>> getCompletions(CompletableFuture<CamelCatalog> camelCatalog, int positionInCamelUri, TextDocumentItem docItem) {
 		return CompletableFuture.completedFuture(Collections.emptyList());
 	}
 

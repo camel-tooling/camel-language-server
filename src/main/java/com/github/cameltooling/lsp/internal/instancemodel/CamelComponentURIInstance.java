@@ -21,6 +21,7 @@ import java.util.concurrent.CompletableFuture;
 
 import org.apache.camel.catalog.CamelCatalog;
 import org.eclipse.lsp4j.CompletionItem;
+import org.eclipse.lsp4j.TextDocumentItem;
 
 import com.github.cameltooling.model.ComponentModel;
 
@@ -44,8 +45,8 @@ public class CamelComponentURIInstance extends CamelUriElementInstance {
 	}
 
 	@Override
-	public CompletableFuture<List<CompletionItem>> getCompletions(CompletableFuture<CamelCatalog> camelCatalog, int positionInCamelUri) {
-		return parent.getCompletions(camelCatalog, positionInCamelUri);		
+	public CompletableFuture<List<CompletionItem>> getCompletions(CompletableFuture<CamelCatalog> camelCatalog, int positionInCamelUri, TextDocumentItem docItem) {
+		return parent.getCompletions(camelCatalog, positionInCamelUri, docItem);		
 	}
 	
 	@Override
