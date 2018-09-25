@@ -64,7 +64,7 @@ public abstract class CamelUriElementInstance {
 		return getCamelUriInstance().getStartPositionInDocument().getCharacter() + getEndPositionInUri();
 	}
 	
-	public abstract CompletableFuture<List<CompletionItem>> getCompletions(CompletableFuture<CamelCatalog> camelCatalog, int positionInCamelUri);
+	public abstract CompletableFuture<List<CompletionItem>> getCompletions(CompletableFuture<CamelCatalog> camelCatalog, int positionInCamelUri, TextDocumentItem docItem);
 	
 	public abstract String getComponentName();
 	

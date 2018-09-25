@@ -35,6 +35,7 @@ import org.slf4j.LoggerFactory;
 import org.w3c.dom.Node;
 
 import com.github.cameltooling.lsp.internal.instancemodel.CamelURIInstance;
+import com.github.cameltooling.lsp.internal.instancemodel.CamelUriElementInstance;
 import com.github.cameltooling.lsp.internal.instancemodel.PathParamURIInstance;
 import com.github.cameltooling.lsp.internal.parser.ParserXMLFileHelper;
 
@@ -99,7 +100,7 @@ public class ReferencesProcessor {
 		return allCamelUriInstance;
 	}
 	
-	private String getDirectId(CamelURIInstance camelDirectURIInstance) {
+	private static String getDirectId(CamelURIInstance camelDirectURIInstance) {
 		Set<PathParamURIInstance> pathParams = camelDirectURIInstance.getComponentAndPathUriElementInstance().getPathParams();
 		if (!pathParams.isEmpty()) {
 			return pathParams.iterator().next().getValue();
@@ -107,8 +108,26 @@ public class ReferencesProcessor {
 		return null;
 	}
 
-	private boolean isDirectComponentKind(CamelURIInstance camelURIInstanceToSearchReference) {
+	public static boolean isDirectComponentKind(CamelUriElementInstance camelURIInstanceToSearchReference) {
 		return POSSIBLE_DIRECT_REFERENCE.contains(camelURIInstanceToSearchReference.getComponentName());
 	}
 
+	public static List<String> retrieveEndpointIDsOfScheme(String scheme, ParserXMLFileHelper xmlFileHelper, TextDocumentItem docItem) throws Exception {
+		List<Node> allEndpoints = xmlFileHelper.getAllEndpoints(docItem);
+		List<String> endpointIDs = new ArrayList<>();
+		for (Node endpoint : allEndpoints) {
+			String uriToParse = CamelXmlHelper.getSafeAttribute(endpoint, "uri");
+			if (uriToParse != null) {
+				CamelURIInstance uriInstance = new CamelURIInstance(uriToParse, endpoint, docItem);
+				if (isDirectComponentKind(uriInstance) && uriInstance.getComponentName().equalsIgnoreCase(scheme)) {
+					String dId = getDirectId(uriInstance);
+					String directValue = String.format("%s:%s", scheme, dId);
+					if (dId != null && dId.trim().length()>0 && !endpointIDs.contains(directValue)) {
+						endpointIDs.add(directValue);
+					}
+				}
+			}
+		}
+		return endpointIDs;
+	}
 }
