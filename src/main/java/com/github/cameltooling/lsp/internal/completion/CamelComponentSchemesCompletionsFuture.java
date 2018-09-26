@@ -28,7 +28,6 @@ import org.slf4j.LoggerFactory;
 
 import com.github.cameltooling.lsp.internal.instancemodel.CamelUriElementInstance;
 import com.github.cameltooling.lsp.internal.parser.ParserXMLFileHelper;
-import com.github.cameltooling.lsp.internal.references.ReferencesProcessor;
 import com.github.cameltooling.model.util.ModelHelper;
 
 public final class CamelComponentSchemesCompletionsFuture implements Function<CamelCatalog, List<CompletionItem>> {
@@ -48,31 +47,34 @@ public final class CamelComponentSchemesCompletionsFuture implements Function<Ca
 	@Override
 	public List<CompletionItem> apply(CamelCatalog catalog) {
 		List<CompletionItem> result = catalog.findComponentNames().stream()
-				.map(componentName -> ModelHelper.generateComponentModel(catalog.componentJSonSchema(componentName), true))
-				.map(componentModel -> {
-					CompletionItem completionItem = new CompletionItem(componentModel.getSyntax());
-					completionItem.setDocumentation(componentModel.getDescription());
-					completionItem.setDeprecated(Boolean.valueOf(componentModel.getDeprecated()));
-					CompletionResolverUtils.applyTextEditToCompletionItem(uriElement, completionItem);
-					return completionItem;
-				})
-				.filter(FilterPredicateUtils.matchesCompletionFilter(filterString))
-				.collect(Collectors.toList());
-		
-		if (ReferencesProcessor.isDirectComponentKind(uriElement)) {
-			// find all endpoints of same component scheme and add them to the list of completion suggestions
-			try {
-				List<String> allEndpointIDsWithScheme = ReferencesProcessor.retrieveEndpointIDsOfScheme(uriElement.getComponentName(), new ParserXMLFileHelper(), docItem);
-				for (String s : allEndpointIDsWithScheme) {
-					CompletionItem completionItem = new CompletionItem(s);
-					CompletionResolverUtils.applyTextEditToCompletionItem(uriElement, completionItem);
-					result.add(completionItem);
-				}
-			} catch (Exception ex) {
-				LOGGER.error("Error retrieving existing " + uriElement.getComponentName() + " endpoints!", ex);
-			}
+			.map(componentName -> ModelHelper.generateComponentModel(catalog.componentJSonSchema(componentName), true))
+			.map(componentModel -> {
+				CompletionItem completionItem = new CompletionItem(componentModel.getSyntax());
+				completionItem.setDocumentation(componentModel.getDescription());
+				completionItem.setDeprecated(Boolean.valueOf(componentModel.getDeprecated()));
+				CompletionResolverUtils.applyTextEditToCompletionItem(uriElement, completionItem);
+				return completionItem;
+			})
+			.filter(FilterPredicateUtils.matchesCompletionFilter(filterString))
+			.collect(Collectors.toList());
+	
+		if (CompletionResolverUtils.isDirectComponentKind(uriElement)) {
+			addExistingEndpointsOfSameSchemeCompletionItems(result);
 		}
 		
 		return result;
+	}
+	
+	private void addExistingEndpointsOfSameSchemeCompletionItems(List<CompletionItem> result) {
+		try {
+			List<String> allEndpointIDsWithScheme = CompletionResolverUtils.retrieveEndpointIDsOfScheme(uriElement.getComponentName(), new ParserXMLFileHelper(), docItem);
+			for (String s : allEndpointIDsWithScheme) {
+				CompletionItem completionItem = new CompletionItem(s);
+				CompletionResolverUtils.applyTextEditToCompletionItem(uriElement, completionItem);
+				result.add(completionItem);
+			}
+		} catch (Exception ex) {
+			LOGGER.error("Error retrieving existing " + uriElement.getComponentName() + " endpoints!", ex);
+		}
 	}
 }
