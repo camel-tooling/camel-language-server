@@ -39,7 +39,7 @@ import com.github.cameltooling.lsp.internal.parser.ParserXMLFileHelper;
  */
 public class CompletionResolverUtils {
 	
-	private static final List<String> POSSIBLE_DIRECT_REFERENCE = Arrays.asList("direct","direct-vm");
+	private static final List<String> POSSIBLE_DIRECT_REFERENCE = Arrays.asList("direct","direct-vm", "seda", "vm", "amqp", "jms", "activemq", "broker");
 	
 	private CompletionResolverUtils() {
 		// util class
