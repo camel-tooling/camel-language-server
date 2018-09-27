@@ -58,7 +58,7 @@ public final class CamelComponentSchemesCompletionsFuture implements Function<Ca
 			.filter(FilterPredicateUtils.matchesCompletionFilter(filterString))
 			.collect(Collectors.toList());
 	
-		if (CompletionResolverUtils.isDirectComponentKind(uriElement)) {
+		if (CompletionResolverUtils.isReferenceComponentKind(uriElement)) {
 			addExistingEndpointsOfSameSchemeCompletionItems(result);
 		}
 		
