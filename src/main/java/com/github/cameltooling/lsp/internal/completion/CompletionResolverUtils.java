@@ -39,7 +39,7 @@ import com.github.cameltooling.lsp.internal.parser.ParserXMLFileHelper;
  */
 public class CompletionResolverUtils {
 	
-	private static final List<String> POSSIBLE_DIRECT_REFERENCE = Arrays.asList("direct","direct-vm", "seda", "vm", "amqp", "jms", "activemq", "broker");
+	private static final List<String> POSSIBLE_REFERENCES = Arrays.asList("direct","direct-vm", "seda", "vm");
 	
 	private CompletionResolverUtils() {
 		// util class
@@ -62,11 +62,11 @@ public class CompletionResolverUtils {
 		}
 	}
 	
-	public static boolean isDirectComponentKind(CamelUriElementInstance camelURIInstanceToSearchReference) {
-		return POSSIBLE_DIRECT_REFERENCE.contains(camelURIInstanceToSearchReference.getComponentName());
+	public static boolean isReferenceComponentKind(CamelUriElementInstance camelURIInstanceToSearchReference) {
+		return POSSIBLE_REFERENCES.contains(camelURIInstanceToSearchReference.getComponentName());
 	}
 
-	public static String getDirectId(CamelURIInstance camelDirectURIInstance) {
+	public static String getReferenceKey(CamelURIInstance camelDirectURIInstance) {
 		Set<PathParamURIInstance> pathParams = camelDirectURIInstance.getComponentAndPathUriElementInstance().getPathParams();
 		if (!pathParams.isEmpty()) {
 			return pathParams.iterator().next().getValue();
@@ -81,8 +81,8 @@ public class CompletionResolverUtils {
 			String uriToParse = CamelXmlHelper.getSafeAttribute(endpoint, "uri");
 			if (uriToParse != null) {
 				CamelURIInstance uriInstance = new CamelURIInstance(uriToParse, endpoint, docItem);
-				if (isDirectComponentKind(uriInstance) && uriInstance.getComponentName().equalsIgnoreCase(scheme)) {
-					String dId = getDirectId(uriInstance);
+				if (isReferenceComponentKind(uriInstance) && uriInstance.getComponentName().equalsIgnoreCase(scheme)) {
+					String dId = getReferenceKey(uriInstance);
 					String directValue = String.format("%s:%s", scheme, dId);
 					if (dId != null && dId.trim().length()>0 && !endpointIDs.contains(directValue)) {
 						endpointIDs.add(directValue);

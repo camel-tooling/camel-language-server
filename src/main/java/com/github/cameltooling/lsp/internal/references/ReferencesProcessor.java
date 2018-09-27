@@ -52,7 +52,7 @@ public class ReferencesProcessor {
 			try {
 				String camelComponentUri = parserXMLFileHelper.getCamelComponentUri(textDocumentItem, position);
 				CamelURIInstance camelURIInstanceToSearchReference = parserXMLFileHelper.createCamelURIInstance(textDocumentItem, position, camelComponentUri);
-				if (CompletionResolverUtils.isDirectComponentKind(camelURIInstanceToSearchReference)) {
+				if (CompletionResolverUtils.isReferenceComponentKind(camelURIInstanceToSearchReference)) {
 					Map<CamelURIInstance, Node> allCamelUriInstances = retrieveAllEndpoints();
 					return CompletableFuture.completedFuture(findReferences(camelURIInstanceToSearchReference, allCamelUriInstances));
 				}
@@ -65,7 +65,7 @@ public class ReferencesProcessor {
 
 	private List<Location> findReferences(CamelURIInstance camelURIInstanceToSearchReference, Map<CamelURIInstance, Node> allCamelUriInstance) {
 		List<Location> references = new ArrayList<>();
-		String directId = CompletionResolverUtils.getDirectId(camelURIInstanceToSearchReference);
+		String directId = CompletionResolverUtils.getReferenceKey(camelURIInstanceToSearchReference);
 		if (directId != null && !directId.isEmpty()) {
 			for (Entry<CamelURIInstance, Node> entry : allCamelUriInstance.entrySet()) {
 				CamelURIInstance camelURIInstance = entry.getKey();
@@ -78,10 +78,10 @@ public class ReferencesProcessor {
 	}
 
 	private boolean isReference(CamelURIInstance camelURIInstanceToSearchReference, String directId, CamelURIInstance camelURIInstance) {
-		return CompletionResolverUtils.isDirectComponentKind(camelURIInstance)
+		return CompletionResolverUtils.isReferenceComponentKind(camelURIInstance)
 				&& (camelURIInstanceToSearchReference.isProducer() && !camelURIInstance.isProducer()
 						|| !camelURIInstanceToSearchReference.isProducer() && camelURIInstance.isProducer())
-				&& directId.equals(CompletionResolverUtils.getDirectId(camelURIInstance));
+				&& directId.equals(CompletionResolverUtils.getReferenceKey(camelURIInstance));
 	}
 
 	private Map<CamelURIInstance, Node> retrieveAllEndpoints() throws Exception {
