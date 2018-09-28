@@ -56,4 +56,30 @@ public class CompleteIdOnDirectEndpointsTest extends AbstractCamelLanguageServer
 			assertThat(textEdit.getNewText()).isIn("direct-vm:name", "direct-vm:processing");
 		}
 	}
+	
+	@Test
+	public void testVMEndpointCompletion() throws Exception {
+		CamelLanguageServer camelLanguageServer = initializeLanguageServer(new FileInputStream("src/test/resources/workspace/direct-endpoint-test.xml"), ".xml");
+		Position positionInMiddleOfcomponentPart = new Position(25, 39);
+		CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = getCompletionFor(camelLanguageServer, positionInMiddleOfcomponentPart);
+		List<CompletionItem> items = completions.get().getLeft();
+		assertThat(items).hasSize(2);
+		for (CompletionItem completionItem : items) {
+			TextEdit textEdit = completionItem.getTextEdit();
+			assertThat(textEdit.getNewText()).isIn("vm:name", "vm:processing");
+		}
+	}
+	
+	@Test
+	public void testSEDAEndpointCompletion() throws Exception {
+		CamelLanguageServer camelLanguageServer = initializeLanguageServer(new FileInputStream("src/test/resources/workspace/direct-endpoint-test.xml"), ".xml");
+		Position positionInMiddleOfcomponentPart = new Position(33, 41);
+		CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = getCompletionFor(camelLanguageServer, positionInMiddleOfcomponentPart);
+		List<CompletionItem> items = completions.get().getLeft();
+		assertThat(items).hasSize(2);
+		for (CompletionItem completionItem : items) {
+			TextEdit textEdit = completionItem.getTextEdit();
+			assertThat(textEdit.getNewText()).isIn("seda:name", "seda:processing");
+		}
+	}
 }

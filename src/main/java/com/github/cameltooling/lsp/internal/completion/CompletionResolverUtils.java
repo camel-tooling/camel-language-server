@@ -17,7 +17,6 @@
 package com.github.cameltooling.lsp.internal.completion;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
@@ -31,6 +30,7 @@ import org.w3c.dom.Node;
 
 import com.github.cameltooling.lsp.internal.instancemodel.CamelURIInstance;
 import com.github.cameltooling.lsp.internal.instancemodel.CamelUriElementInstance;
+import com.github.cameltooling.lsp.internal.instancemodel.ModelUtils;
 import com.github.cameltooling.lsp.internal.instancemodel.PathParamURIInstance;
 import com.github.cameltooling.lsp.internal.parser.ParserXMLFileHelper;
 
@@ -38,8 +38,6 @@ import com.github.cameltooling.lsp.internal.parser.ParserXMLFileHelper;
  * @author lheinema
  */
 public class CompletionResolverUtils {
-	
-	private static final List<String> POSSIBLE_REFERENCES = Arrays.asList("direct","direct-vm", "seda", "vm");
 	
 	private CompletionResolverUtils() {
 		// util class
@@ -61,10 +59,6 @@ public class CompletionResolverUtils {
 			}
 		}
 	}
-	
-	public static boolean isReferenceComponentKind(CamelUriElementInstance camelURIInstanceToSearchReference) {
-		return POSSIBLE_REFERENCES.contains(camelURIInstanceToSearchReference.getComponentName());
-	}
 
 	public static String getReferenceKey(CamelURIInstance camelDirectURIInstance) {
 		Set<PathParamURIInstance> pathParams = camelDirectURIInstance.getComponentAndPathUriElementInstance().getPathParams();
@@ -81,7 +75,7 @@ public class CompletionResolverUtils {
 			String uriToParse = CamelXmlHelper.getSafeAttribute(endpoint, "uri");
 			if (uriToParse != null) {
 				CamelURIInstance uriInstance = new CamelURIInstance(uriToParse, endpoint, docItem);
-				if (isReferenceComponentKind(uriInstance) && uriInstance.getComponentName().equalsIgnoreCase(scheme)) {
+				if (ModelUtils.isReferenceComponentKind(uriInstance) && uriInstance.getComponentName().equalsIgnoreCase(scheme)) {
 					String dId = getReferenceKey(uriInstance);
 					String directValue = String.format("%s:%s", scheme, dId);
 					if (dId != null && dId.trim().length()>0 && !endpointIDs.contains(directValue)) {

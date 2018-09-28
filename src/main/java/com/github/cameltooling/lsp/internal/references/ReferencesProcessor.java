@@ -34,6 +34,7 @@ import org.w3c.dom.Node;
 
 import com.github.cameltooling.lsp.internal.completion.CompletionResolverUtils;
 import com.github.cameltooling.lsp.internal.instancemodel.CamelURIInstance;
+import com.github.cameltooling.lsp.internal.instancemodel.ModelUtils;
 import com.github.cameltooling.lsp.internal.parser.ParserXMLFileHelper;
 
 public class ReferencesProcessor {
@@ -52,7 +53,7 @@ public class ReferencesProcessor {
 			try {
 				String camelComponentUri = parserXMLFileHelper.getCamelComponentUri(textDocumentItem, position);
 				CamelURIInstance camelURIInstanceToSearchReference = parserXMLFileHelper.createCamelURIInstance(textDocumentItem, position, camelComponentUri);
-				if (CompletionResolverUtils.isReferenceComponentKind(camelURIInstanceToSearchReference)) {
+				if (ModelUtils.isReferenceComponentKind(camelURIInstanceToSearchReference)) {
 					Map<CamelURIInstance, Node> allCamelUriInstances = retrieveAllEndpoints();
 					return CompletableFuture.completedFuture(findReferences(camelURIInstanceToSearchReference, allCamelUriInstances));
 				}
@@ -78,7 +79,7 @@ public class ReferencesProcessor {
 	}
 
 	private boolean isReference(CamelURIInstance camelURIInstanceToSearchReference, String directId, CamelURIInstance camelURIInstance) {
-		return CompletionResolverUtils.isReferenceComponentKind(camelURIInstance)
+		return ModelUtils.isReferenceComponentKind(camelURIInstance)
 				&& (camelURIInstanceToSearchReference.isProducer() && !camelURIInstance.isProducer()
 						|| !camelURIInstanceToSearchReference.isProducer() && camelURIInstance.isProducer())
 				&& directId.equals(CompletionResolverUtils.getReferenceKey(camelURIInstance));

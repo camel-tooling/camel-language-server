@@ -27,6 +27,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.github.cameltooling.lsp.internal.instancemodel.CamelUriElementInstance;
+import com.github.cameltooling.lsp.internal.instancemodel.ModelUtils;
 import com.github.cameltooling.lsp.internal.parser.ParserXMLFileHelper;
 import com.github.cameltooling.model.util.ModelHelper;
 
@@ -58,7 +59,7 @@ public final class CamelComponentSchemesCompletionsFuture implements Function<Ca
 			.filter(FilterPredicateUtils.matchesCompletionFilter(filterString))
 			.collect(Collectors.toList());
 	
-		if (CompletionResolverUtils.isReferenceComponentKind(uriElement)) {
+		if (ModelUtils.isReferenceComponentKind(uriElement)) {
 			addExistingEndpointsOfSameSchemeCompletionItems(result);
 		}
 		
