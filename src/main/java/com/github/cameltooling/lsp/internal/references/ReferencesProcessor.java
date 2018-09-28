@@ -34,7 +34,7 @@ import org.w3c.dom.Node;
 
 import com.github.cameltooling.lsp.internal.completion.CompletionResolverUtils;
 import com.github.cameltooling.lsp.internal.instancemodel.CamelURIInstance;
-import com.github.cameltooling.lsp.internal.instancemodel.ModelUtils;
+import com.github.cameltooling.lsp.internal.instancemodel.ReferenceUtils;
 import com.github.cameltooling.lsp.internal.parser.ParserXMLFileHelper;
 
 public class ReferencesProcessor {
@@ -53,7 +53,7 @@ public class ReferencesProcessor {
 			try {
 				String camelComponentUri = parserXMLFileHelper.getCamelComponentUri(textDocumentItem, position);
 				CamelURIInstance camelURIInstanceToSearchReference = parserXMLFileHelper.createCamelURIInstance(textDocumentItem, position, camelComponentUri);
-				if (ModelUtils.isReferenceComponentKind(camelURIInstanceToSearchReference)) {
+				if (ReferenceUtils.isReferenceComponentKind(camelURIInstanceToSearchReference)) {
 					Map<CamelURIInstance, Node> allCamelUriInstances = retrieveAllEndpoints();
 					return CompletableFuture.completedFuture(findReferences(camelURIInstanceToSearchReference, allCamelUriInstances));
 				}
@@ -66,7 +66,7 @@ public class ReferencesProcessor {
 
 	private List<Location> findReferences(CamelURIInstance camelURIInstanceToSearchReference, Map<CamelURIInstance, Node> allCamelUriInstance) {
 		List<Location> references = new ArrayList<>();
-		String directId = CompletionResolverUtils.getReferenceKey(camelURIInstanceToSearchReference);
+		String directId = ReferenceUtils.getReferenceKey(camelURIInstanceToSearchReference);
 		if (directId != null && !directId.isEmpty()) {
 			for (Entry<CamelURIInstance, Node> entry : allCamelUriInstance.entrySet()) {
 				CamelURIInstance camelURIInstance = entry.getKey();
@@ -79,10 +79,10 @@ public class ReferencesProcessor {
 	}
 
 	private boolean isReference(CamelURIInstance camelURIInstanceToSearchReference, String directId, CamelURIInstance camelURIInstance) {
-		return ModelUtils.isReferenceComponentKind(camelURIInstance)
+		return ReferenceUtils.isReferenceComponentKind(camelURIInstance)
 				&& (camelURIInstanceToSearchReference.isProducer() && !camelURIInstance.isProducer()
 						|| !camelURIInstanceToSearchReference.isProducer() && camelURIInstance.isProducer())
-				&& directId.equals(CompletionResolverUtils.getReferenceKey(camelURIInstance));
+				&& directId.equals(ReferenceUtils.getReferenceKey(camelURIInstance));
 	}
 
 	private Map<CamelURIInstance, Node> retrieveAllEndpoints() throws Exception {
