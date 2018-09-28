@@ -11,12 +11,28 @@
             <to id="_output1" uri="file:work/output"/>
         </route>
         <route id="directvm-input">
-            <from id="_from2" uri="file:work/output"/>
+            <from id="_from3" uri="file:work/output"/>
             <to id="_processing2" uri="direct-vm:processing"/>
         </route>
         <route id="directvm-output">
-            <from id="_from3" uri="direct-vm:processing"/>
+            <from id="_from4" uri="direct-vm:processing"/>
             <to id="_output2" uri="file:work/output_final"/>
+        </route>
+        <route id="vm-input">
+            <from id="_from5" uri="file:work/output"/>
+            <to id="_processing3" uri="vm:processing"/>
+        </route>
+        <route id="vm-output">
+            <from id="_from6" uri="vm:processing"/>
+            <to id="_output3" uri="file:work/output_final"/>
+        </route>
+        <route id="seda-input">
+            <from id="_from7" uri="file:work/output"/>
+            <to id="_processing4" uri="seda:processing"/>
+        </route>
+        <route id="seda-output">
+            <from id="_from8" uri="seda:processing"/>
+            <to id="_output4" uri="file:work/output_final"/>
         </route>
     </camelContext>
 </blueprint>
