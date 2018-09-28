@@ -16,6 +16,7 @@
  */
 package com.github.cameltooling.lsp.internal.completion;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -27,7 +28,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.github.cameltooling.lsp.internal.instancemodel.CamelUriElementInstance;
-import com.github.cameltooling.lsp.internal.instancemodel.ModelUtils;
+import com.github.cameltooling.lsp.internal.instancemodel.ReferenceUtils;
 import com.github.cameltooling.lsp.internal.parser.ParserXMLFileHelper;
 import com.github.cameltooling.model.util.ModelHelper;
 
@@ -47,7 +48,15 @@ public final class CamelComponentSchemesCompletionsFuture implements Function<Ca
 	
 	@Override
 	public List<CompletionItem> apply(CamelCatalog catalog) {
-		List<CompletionItem> result = catalog.findComponentNames().stream()
+		List<CompletionItem> result = getCompletionForComponents(catalog);
+		if (ReferenceUtils.isReferenceComponentKind(uriElement)) {
+			result.addAll(addExistingEndpointsOfSameSchemeCompletionItems());
+		}
+		return result;
+	}
+
+	private List<CompletionItem> getCompletionForComponents(CamelCatalog catalog) {
+		return catalog.findComponentNames().stream()
 			.map(componentName -> ModelHelper.generateComponentModel(catalog.componentJSonSchema(componentName), true))
 			.map(componentModel -> {
 				CompletionItem completionItem = new CompletionItem(componentModel.getSyntax());
@@ -58,15 +67,10 @@ public final class CamelComponentSchemesCompletionsFuture implements Function<Ca
 			})
 			.filter(FilterPredicateUtils.matchesCompletionFilter(filterString))
 			.collect(Collectors.toList());
-	
-		if (ModelUtils.isReferenceComponentKind(uriElement)) {
-			addExistingEndpointsOfSameSchemeCompletionItems(result);
-		}
-		
-		return result;
 	}
 	
-	private void addExistingEndpointsOfSameSchemeCompletionItems(List<CompletionItem> result) {
+	private List<CompletionItem> addExistingEndpointsOfSameSchemeCompletionItems() {
+		List<CompletionItem> result = new ArrayList<>();
 		try {
 			List<String> allEndpointIDsWithScheme = CompletionResolverUtils.retrieveEndpointIDsOfScheme(uriElement.getComponentName(), new ParserXMLFileHelper(), docItem);
 			for (String s : allEndpointIDsWithScheme) {
@@ -77,5 +81,6 @@ public final class CamelComponentSchemesCompletionsFuture implements Function<Ca
 		} catch (Exception ex) {
 			LOGGER.error("Error retrieving existing " + uriElement.getComponentName() + " endpoints!", ex);
 		}
+		return result;
 	}
 }

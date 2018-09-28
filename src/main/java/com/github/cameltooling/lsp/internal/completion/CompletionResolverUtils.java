@@ -18,7 +18,6 @@ package com.github.cameltooling.lsp.internal.completion;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 import org.apache.camel.parser.helper.CamelXmlHelper;
 import org.eclipse.lsp4j.CompletionItem;
@@ -30,8 +29,7 @@ import org.w3c.dom.Node;
 
 import com.github.cameltooling.lsp.internal.instancemodel.CamelURIInstance;
 import com.github.cameltooling.lsp.internal.instancemodel.CamelUriElementInstance;
-import com.github.cameltooling.lsp.internal.instancemodel.ModelUtils;
-import com.github.cameltooling.lsp.internal.instancemodel.PathParamURIInstance;
+import com.github.cameltooling.lsp.internal.instancemodel.ReferenceUtils;
 import com.github.cameltooling.lsp.internal.parser.ParserXMLFileHelper;
 
 /**
@@ -60,14 +58,6 @@ public class CompletionResolverUtils {
 		}
 	}
 
-	public static String getReferenceKey(CamelURIInstance camelDirectURIInstance) {
-		Set<PathParamURIInstance> pathParams = camelDirectURIInstance.getComponentAndPathUriElementInstance().getPathParams();
-		if (!pathParams.isEmpty()) {
-			return pathParams.iterator().next().getValue();
-		}
-		return null;
-	}
-
 	public static List<String> retrieveEndpointIDsOfScheme(String scheme, ParserXMLFileHelper xmlFileHelper, TextDocumentItem docItem) throws Exception {
 		List<Node> allEndpoints = xmlFileHelper.getAllEndpoints(docItem);
 		List<String> endpointIDs = new ArrayList<>();
@@ -75,8 +65,8 @@ public class CompletionResolverUtils {
 			String uriToParse = CamelXmlHelper.getSafeAttribute(endpoint, "uri");
 			if (uriToParse != null) {
 				CamelURIInstance uriInstance = new CamelURIInstance(uriToParse, endpoint, docItem);
-				if (ModelUtils.isReferenceComponentKind(uriInstance) && uriInstance.getComponentName().equalsIgnoreCase(scheme)) {
-					String dId = getReferenceKey(uriInstance);
+				if (ReferenceUtils.isReferenceComponentKind(uriInstance) && uriInstance.getComponentName().equalsIgnoreCase(scheme)) {
+					String dId = ReferenceUtils.getReferenceKey(uriInstance);
 					String directValue = String.format("%s:%s", scheme, dId);
 					if (dId != null && dId.trim().length()>0 && !endpointIDs.contains(directValue)) {
 						endpointIDs.add(directValue);
