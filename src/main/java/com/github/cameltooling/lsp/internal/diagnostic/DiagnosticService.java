@@ -18,6 +18,7 @@ package com.github.cameltooling.lsp.internal.diagnostic;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.StringReader;
 import java.nio.charset.StandardCharsets;
@@ -50,12 +51,14 @@ import org.slf4j.LoggerFactory;
 import com.github.cameltooling.lsp.internal.CamelEndpointDetailsWrapper;
 import com.github.cameltooling.lsp.internal.CamelLanguageServer;
 import com.github.cameltooling.lsp.internal.parser.ParserXMLFileHelper;
+import com.github.cameltooling.lsp.internal.util.MavenUtils;
 import com.github.cameltooling.model.diagnostic.BooleanErrorMsg;
 import com.github.cameltooling.model.diagnostic.CamelDiagnosticEndpointMessage;
 import com.github.cameltooling.model.diagnostic.EnumErrorMsg;
 import com.github.cameltooling.model.diagnostic.IntegerErrorMsg;
 import com.github.cameltooling.model.diagnostic.NumberErrorMsg;
 import com.github.cameltooling.model.diagnostic.ReferenceErrorMsg;
+import com.github.cameltooling.model.diagnostic.UnknownComponentErrorMsg;
 import com.github.cameltooling.model.diagnostic.UnknownErrorMsg;
 
 public class DiagnosticService {
@@ -96,10 +99,16 @@ public class DiagnosticService {
 		Map<CamelEndpointDetailsWrapper, EndpointValidationResult> endpointErrors = new HashMap<>();
 		try {
 			CamelCatalog camelCatalogResolved = camelCatalog.get();
+			File pom = MavenUtils.findPomInReferencedURI(params.getTextDocument().getUri());
 			for (CamelEndpointDetails camelEndpointDetails : endpoints) {
 				EndpointValidationResult validateEndpointProperties = camelCatalogResolved.validateEndpointProperties(camelEndpointDetails.getEndpointUri(), true);
 				if (validateEndpointProperties.hasErrors()) {
 					endpointErrors.put(new CamelEndpointDetailsWrapper(camelEndpointDetails), validateEndpointProperties);
+				}
+				if (pom != null && !MavenUtils.isComponentDependencyConfigured(pom, camelCatalogResolved, camelEndpointDetails.getEndpointComponentName())) {
+					EndpointValidationResult result = new EndpointValidationResult(camelEndpointDetails.getEndpointUri());
+					result.addUnknownComponent(camelEndpointDetails.getEndpointComponentName());
+					endpointErrors.put(new CamelEndpointDetailsWrapper(camelEndpointDetails), result);
 				}
 			}
 		} catch (InterruptedException e) {
@@ -184,6 +193,7 @@ public class DiagnosticService {
 		computeErrorMessage(validationResult, sb, validationResult.getInvalidBoolean(), new BooleanErrorMsg());
 		computeErrorMessage(validationResult, sb, validationResult.getInvalidReference(), new ReferenceErrorMsg());
 		computeErrorMessage(validationResult, sb, validationResult.getInvalidEnum(), new EnumErrorMsg());
+		computeErrorMessage(validationResult, sb, validationResult.getUnknownComponent(), new UnknownComponentErrorMsg());
 		computeErrorMessage(validationResult, sb, validationResult.getUnknown(), new UnknownErrorMsg());
 		return sb.toString();
 	}
@@ -201,6 +211,12 @@ public class DiagnosticService {
 			for (String invalid : entryErrors) {
 				sb.append(errorMsgComputer.getErrorMessage(validationResult, invalid)).append("\n");
 			}
+		}
+	}
+	
+	private void computeErrorMessage(EndpointValidationResult validationResult, StringBuilder sb, String entryError, CamelDiagnosticEndpointMessage<String> errorMsgComputer) {
+		if (entryError != null) {
+			sb.append(errorMsgComputer.getErrorMessage(validationResult, entryError)).append("\n");
 		}
 	}
 }
