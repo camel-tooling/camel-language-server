@@ -59,7 +59,7 @@
 		<camel.version>2.22.1</camel.version>
 		<camel.tooling.common.version>0.0.3-SNAPSHOT</camel.tooling.common.version>
 		<roaster.version>2.20.1.Final</roaster.version>
-		<maven.version>3.3.9</maven.version>
+		<maven.version>3.5.4</maven.version>
 	</properties>
 
 	<distributionManagement>
