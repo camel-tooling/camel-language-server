@@ -134,9 +134,9 @@ public class MavenUtils {
 	}
 
 	public static File getPomFromPath(File path) {
-		File[] files = path.listFiles( (File pathname) -> {
-			return pathname.getName().equalsIgnoreCase("pom.xml");
-		});
+		File[] files = path.listFiles( (File pathname) ->
+			"pom.xml".equalsIgnoreCase(pathname.getName())
+		);
 		if (files.length>0) {
 			return files[0];
 		}
