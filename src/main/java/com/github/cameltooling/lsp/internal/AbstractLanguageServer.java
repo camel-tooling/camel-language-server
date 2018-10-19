@@ -33,7 +33,7 @@ public abstract class AbstractLanguageServer {
 		@Override
 		public void run() {
 			LOGGER.info("Starting Camel Language Server...");
-			while (!shutdown && parentProcessStillRunning()) {
+			while (!shutdown && parentProcessStillRunning() && !Thread.currentThread().isInterrupted()) {
 				try {
 					Thread.sleep(1000);
 				} catch (InterruptedException e) {
@@ -41,7 +41,9 @@ public abstract class AbstractLanguageServer {
 					Thread.currentThread().interrupt();
 				}
 			}
-			LOGGER.info("Camel Language Server - Client vanished...");
+			if (!Thread.currentThread().isInterrupted()) {
+				LOGGER.info("Camel Language Server - Client vanished...");
+			}
 		}
 	}
 
@@ -106,7 +108,11 @@ public abstract class AbstractLanguageServer {
 	 */
 	public void stopServer() {
 		LOGGER.info("Stopping language server");
-		runner.interrupt();
+		if (runner != null) {
+			runner.interrupt();
+		} else {
+			LOGGER.info("Request to stop the server has been received but it wasn't started.");
+		}
 	}
 
 	/**
