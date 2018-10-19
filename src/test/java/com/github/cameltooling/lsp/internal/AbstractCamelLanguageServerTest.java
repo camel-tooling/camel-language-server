@@ -1,3 +1,19 @@
+/**
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.github.cameltooling.lsp.internal;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -38,6 +54,7 @@ import org.eclipse.lsp4j.TextEdit;
 import org.eclipse.lsp4j.jsonrpc.messages.Either;
 import org.eclipse.lsp4j.services.LanguageClient;
 import org.eclipse.lsp4j.services.TextDocumentService;
+import org.junit.After;
 
 public abstract class AbstractCamelLanguageServerTest {
 
@@ -47,9 +64,17 @@ public abstract class AbstractCamelLanguageServerTest {
 	protected static final String DUMMY_URI = "dummyUri";
 	private String extensionUsed;
 	protected PublishDiagnosticsParams lastPublishedDiagnostics;
+	private CamelLanguageServer camelLanguageServer;
 
 	public AbstractCamelLanguageServerTest() {
 		super();
+	}
+	
+	@After
+	public void tearDown() {
+		if (camelLanguageServer != null) {
+			camelLanguageServer.stopServer();
+		}
 	}
 
 	protected CompletionItem createExpectedAhcCompletionItem(int lineStart, int characterStart, int lineEnd, int characterEnd) {
@@ -94,8 +119,9 @@ public abstract class AbstractCamelLanguageServerTest {
 		InitializeParams params = new InitializeParams();
 		params.setProcessId(new Random().nextInt());
 		params.setRootUri(getTestResource("/workspace/").toURI().toString());
-		CamelLanguageServer camelLanguageServer = new CamelLanguageServer();
+		camelLanguageServer = new CamelLanguageServer();
 		camelLanguageServer.connect(new DummyLanguageClient());
+		camelLanguageServer.startServer();
 		CompletableFuture<InitializeResult> initialize = camelLanguageServer.initialize(params);
 
 		assertThat(initialize).isCompleted();
