@@ -94,9 +94,13 @@ public class CamelDiagnosticTest extends AbstractCamelLanguageServerTest {
 		DidSaveTextDocumentParams params = new DidSaveTextDocumentParams(new TextDocumentIdentifier(DUMMY_URI+extension));
 		camelLanguageServer.getTextDocumentService().didSave(params);
 		
-		while (lastPublishedDiagnostics == null) {
+		long time = 0;
+		long waitTime = 500;
+		long timeout = 15 * 1000;
+		while (lastPublishedDiagnostics == null && time <= timeout) {
 			// wait for async computation of the diag result
-			Thread.sleep(500);
+			Thread.sleep(waitTime);
+			time+=waitTime;
 		}
 		assertThat(lastPublishedDiagnostics.getDiagnostics()).hasSize(expectedNumberOfError);
 	}
