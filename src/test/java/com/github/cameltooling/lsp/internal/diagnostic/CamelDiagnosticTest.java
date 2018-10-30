@@ -87,13 +87,17 @@ public class CamelDiagnosticTest extends AbstractCamelLanguageServerTest {
 		assertThat(range.getEnd().getCharacter()).isEqualTo(39);
 	}
 	
-	private void testDiagnostic(String fileUnderTest, int expectedNumberOfError, String extension) throws FileNotFoundException {
+	private void testDiagnostic(String fileUnderTest, int expectedNumberOfError, String extension) throws InterruptedException, FileNotFoundException {
 		File f = new File("src/test/resources/workspace/diagnostic/" + fileUnderTest + extension);
 		CamelLanguageServer camelLanguageServer = initializeLanguageServer(new FileInputStream(f), extension);
 		
 		DidSaveTextDocumentParams params = new DidSaveTextDocumentParams(new TextDocumentIdentifier(DUMMY_URI+extension));
 		camelLanguageServer.getTextDocumentService().didSave(params);
 		
+		while (lastPublishedDiagnostics == null) {
+			// wait for async computation of the diag result
+			Thread.sleep(500);
+		}
 		assertThat(lastPublishedDiagnostics.getDiagnostics()).hasSize(expectedNumberOfError);
 	}
 	
