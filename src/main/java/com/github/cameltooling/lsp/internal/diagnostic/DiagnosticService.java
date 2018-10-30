@@ -37,9 +37,9 @@ import org.apache.camel.parser.XmlRouteParser;
 import org.apache.camel.parser.model.CamelEndpointDetails;
 import org.eclipse.lsp4j.Diagnostic;
 import org.eclipse.lsp4j.DiagnosticSeverity;
+import org.eclipse.lsp4j.DidChangeTextDocumentParams;
 import org.eclipse.lsp4j.DidSaveTextDocumentParams;
 import org.eclipse.lsp4j.Position;
-import org.eclipse.lsp4j.PublishDiagnosticsParams;
 import org.eclipse.lsp4j.Range;
 import org.eclipse.lsp4j.TextDocumentItem;
 import org.jboss.forge.roaster.Roaster;
@@ -65,6 +65,7 @@ public class DiagnosticService {
 	
 	private CompletableFuture<CamelCatalog> camelCatalog;
 	private CamelLanguageServer camelLanguageServer;
+	private CompletableFuture<DiagnosticRunner> diagnostics;
 
 	public DiagnosticService(CompletableFuture<CamelCatalog> camelCatalog, CamelLanguageServer camelLanguageServer) {
 		this.camelCatalog = camelCatalog;
@@ -73,15 +74,24 @@ public class DiagnosticService {
 
 	public void compute(DidSaveTextDocumentParams params) {
 		String camelText = retrieveFullText(params);
-		Map<CamelEndpointDetailsWrapper, EndpointValidationResult> endpointErrors = computeCamelErrors(camelText, params);
-		List<Diagnostic> diagnostics = converToLSPDiagnostics(camelText, endpointErrors, camelLanguageServer.getTextDocumentService().getOpenedDocument(params.getTextDocument().getUri()));
-		PublishDiagnosticsParams diagnosticParam = new PublishDiagnosticsParams(params.getTextDocument().getUri(), diagnostics);
-		camelLanguageServer.getClient().publishDiagnostics(diagnosticParam);
+		computeDiagnostics(camelText, params.getTextDocument().getUri());
+	}
+	
+	public void compute(DidChangeTextDocumentParams params) {
+		String camelText = params.getContentChanges().get(0).getText();
+		computeDiagnostics(camelText, params.getTextDocument().getUri());
 	}
 
-	private Map<CamelEndpointDetailsWrapper, EndpointValidationResult> computeCamelErrors(String camelText, DidSaveTextDocumentParams params) {
-		List<CamelEndpointDetails> endpoints = retrieveEndpoints(params, camelText);
-		return diagnoseEndpoints(params, endpoints);
+	private void computeDiagnostics(String camelText, String uri) {
+		if (diagnostics != null) {
+			diagnostics.cancel(true);
+		}
+		diagnostics = CompletableFuture.supplyAsync(() -> new DiagnosticRunner(this, camelLanguageServer, camelText, uri));
+	}
+	
+	Map<CamelEndpointDetailsWrapper, EndpointValidationResult> computeCamelErrors(String camelText, String uri) {
+		List<CamelEndpointDetails> endpoints = retrieveEndpoints(uri, camelText);
+		return diagnoseEndpoints(uri, endpoints);
 	}
 
 	private String retrieveFullText(DidSaveTextDocumentParams params) {
@@ -92,7 +102,7 @@ public class DiagnosticService {
 		return camelText;
 	}
 
-	private Map<CamelEndpointDetailsWrapper, EndpointValidationResult> diagnoseEndpoints(DidSaveTextDocumentParams params, List<CamelEndpointDetails> endpoints) {
+	private Map<CamelEndpointDetailsWrapper, EndpointValidationResult> diagnoseEndpoints(String uri, List<CamelEndpointDetails> endpoints) {
 		Map<CamelEndpointDetailsWrapper, EndpointValidationResult> endpointErrors = new HashMap<>();
 		try {
 			CamelCatalog camelCatalogResolved = camelCatalog.get();
@@ -104,21 +114,20 @@ public class DiagnosticService {
 			}
 		} catch (InterruptedException e) {
 			Thread.currentThread().interrupt();
-			logExceptionValidatingDocument(params, e);
+			logExceptionValidatingDocument(uri, e);
 		} catch (ExecutionException e) {
-			logExceptionValidatingDocument(params, e);
+			logExceptionValidatingDocument(uri, e);
 		}
 		return endpointErrors;
 	}
 
-	private List<CamelEndpointDetails> retrieveEndpoints(DidSaveTextDocumentParams params, String camelText) {
+	private List<CamelEndpointDetails> retrieveEndpoints(String uri, String camelText) {
 		List<CamelEndpointDetails> endpoints = new ArrayList<>();
-		String uri = params.getTextDocument().getUri();
 		if (uri.endsWith(".xml")) {
 			try {
 				XmlRouteParser.parseXmlRouteEndpoints(new ByteArrayInputStream(camelText.getBytes(StandardCharsets.UTF_8)), "", "/"+uri, endpoints);
 			} catch (Exception e) {
-				logExceptionValidatingDocument(params, e);
+				logExceptionValidatingDocument(uri, e);
 			}
 		} else if(uri.endsWith(".java")) {
 			JavaClassSource clazz = (JavaClassSource) Roaster.parse(camelText);
@@ -127,11 +136,11 @@ public class DiagnosticService {
 		return endpoints;
 	}
 
-	private void logExceptionValidatingDocument(DidSaveTextDocumentParams params, Exception e) {
-		LOGGER.warn("Error while trying to validate the document " + params.getTextDocument().getUri(), e);
+	private void logExceptionValidatingDocument(String docUri, Exception e) {
+		LOGGER.warn("Error while trying to validate the document {0}", docUri, e);
 	}
 
-	private List<Diagnostic> converToLSPDiagnostics(String fullCamelText, Map<CamelEndpointDetailsWrapper, EndpointValidationResult> endpointErrors, TextDocumentItem textDocumentItem) {
+	List<Diagnostic> converToLSPDiagnostics(String fullCamelText, Map<CamelEndpointDetailsWrapper, EndpointValidationResult> endpointErrors, TextDocumentItem textDocumentItem) {
 		List<Diagnostic> diagnostics = new ArrayList<>();
 		for (Map.Entry<CamelEndpointDetailsWrapper, EndpointValidationResult> endpointError : endpointErrors.entrySet()) {
 			EndpointValidationResult validationResult = endpointError.getValue();

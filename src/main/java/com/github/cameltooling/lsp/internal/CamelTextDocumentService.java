@@ -188,6 +188,7 @@ public class CamelTextDocumentService implements TextDocumentService {
 		TextDocumentItem textDocumentItem = openedDocuments.get(params.getTextDocument().getUri());
 		if (!contentChanges.isEmpty()) {
 			textDocumentItem.setText(contentChanges.get(0).getText());
+			new DiagnosticService(camelCatalog, camelLanguageServer).compute(params);
 		}
 	}
 
