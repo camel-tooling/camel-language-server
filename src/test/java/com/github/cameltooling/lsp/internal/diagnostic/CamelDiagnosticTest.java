@@ -17,11 +17,13 @@
 package com.github.cameltooling.lsp.internal.diagnostic;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.awaitility.Awaitility.await;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 
+import org.awaitility.Duration;
 import org.eclipse.lsp4j.DidSaveTextDocumentParams;
 import org.eclipse.lsp4j.Range;
 import org.eclipse.lsp4j.TextDocumentIdentifier;
@@ -87,22 +89,15 @@ public class CamelDiagnosticTest extends AbstractCamelLanguageServerTest {
 		assertThat(range.getEnd().getCharacter()).isEqualTo(39);
 	}
 	
-	private void testDiagnostic(String fileUnderTest, int expectedNumberOfError, String extension) throws InterruptedException, FileNotFoundException {
+	private void testDiagnostic(String fileUnderTest, int expectedNumberOfError, String extension) throws FileNotFoundException {
 		File f = new File("src/test/resources/workspace/diagnostic/" + fileUnderTest + extension);
 		CamelLanguageServer camelLanguageServer = initializeLanguageServer(new FileInputStream(f), extension);
 		
 		DidSaveTextDocumentParams params = new DidSaveTextDocumentParams(new TextDocumentIdentifier(DUMMY_URI+extension));
 		camelLanguageServer.getTextDocumentService().didSave(params);
 		
-		long time = 0;
-		long waitTime = 500;
-		long timeout = 15 * 1000;
-		while (lastPublishedDiagnostics == null && time <= timeout) {
-			// wait for async computation of the diag result
-			Thread.sleep(waitTime);
-			time+=waitTime;
-		}
-		assertThat(lastPublishedDiagnostics.getDiagnostics()).hasSize(expectedNumberOfError);
+		await().timeout(Duration.ONE_SECOND).untilAsserted(() -> assertThat(lastPublishedDiagnostics).isNotNull());
+		await().timeout(Duration.ONE_SECOND).untilAsserted(() -> assertThat(lastPublishedDiagnostics.getDiagnostics()).hasSize(expectedNumberOfError));
 	}
 	
 }
