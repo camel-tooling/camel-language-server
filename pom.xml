@@ -59,6 +59,7 @@
 		<camel.version>2.22.1</camel.version>
 		<camel.tooling.common.version>0.0.3-SNAPSHOT</camel.tooling.common.version>
 		<roaster.version>2.20.1.Final</roaster.version>
+		<awaitility.version>3.1.2</awaitility.version>
 	</properties>
 
 	<distributionManagement>
@@ -295,6 +296,12 @@
 			<groupId>org.jboss.forge.roaster</groupId>
 			<artifactId>roaster-jdt</artifactId>
 			<version>${roaster.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.awaitility</groupId>
+			<artifactId>awaitility</artifactId>
+			<version>${awaitility.version}</version>
+			<scope>test</scope>
 		</dependency>
 	</dependencies>
 	
