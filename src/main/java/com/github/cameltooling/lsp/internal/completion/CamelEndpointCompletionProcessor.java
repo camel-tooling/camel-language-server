@@ -34,6 +34,7 @@ import com.github.cameltooling.lsp.internal.parser.ParserFileHelperFactory;
 
 public class CamelEndpointCompletionProcessor {
 
+	public static final String ERROR_SEARCHING_FOR_CORRESPONDING_NODE_ELEMENTS = "Error searching for corresponding node elements";
 	private static final Logger LOGGER = LoggerFactory.getLogger(CamelEndpointCompletionProcessor.class);
 	private TextDocumentItem textDocumentItem;
 	private CompletableFuture<CamelCatalog> camelCatalog;
@@ -44,17 +45,19 @@ public class CamelEndpointCompletionProcessor {
 	}
 
 	public CompletableFuture<List<CompletionItem>> getCompletions(Position position) {
-		if(textDocumentItem != null) {
+		if (textDocumentItem != null) {
 			try {
 				ParserFileHelper parserFileHelper = new ParserFileHelperFactory().getCorrespondingParserFileHelper(textDocumentItem, position.getLine());
 				if (parserFileHelper != null) {
 					String camelComponentUri = parserFileHelper.getCamelComponentUri(textDocumentItem, position);
-					CamelURIInstance camelURIInstance = parserFileHelper.createCamelURIInstance(textDocumentItem, position, camelComponentUri);
-					int positionInCamelUri = parserFileHelper.getPositionInCamelURI(textDocumentItem, position);
-					return getCompletions(camelURIInstance, positionInCamelUri);
+					if (camelComponentUri != null) {
+						CamelURIInstance camelURIInstance = parserFileHelper.createCamelURIInstance(textDocumentItem, position, camelComponentUri);
+						int positionInCamelUri = parserFileHelper.getPositionInCamelURI(textDocumentItem, position);
+						return getCompletions(camelURIInstance, positionInCamelUri);
+					}
 				}
 			} catch (Exception e) {
-				LOGGER.error("Error searching for corresponding node elements", e);
+				LOGGER.error(ERROR_SEARCHING_FOR_CORRESPONDING_NODE_ELEMENTS, e);
 			}
 		}
 		return CompletableFuture.completedFuture(Collections.emptyList());

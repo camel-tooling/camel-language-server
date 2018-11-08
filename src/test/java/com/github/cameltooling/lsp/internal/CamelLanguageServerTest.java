@@ -23,12 +23,16 @@ import java.io.FileInputStream;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
+import org.apache.log4j.Logger;
+import org.apache.log4j.spi.LoggingEvent;
 import org.eclipse.lsp4j.CompletionItem;
 import org.eclipse.lsp4j.CompletionList;
 import org.eclipse.lsp4j.Position;
 import org.eclipse.lsp4j.jsonrpc.messages.Either;
 import org.junit.Ignore;
 import org.junit.Test;
+
+import com.github.cameltooling.lsp.internal.completion.CamelEndpointCompletionProcessor;
 
 
 public class CamelLanguageServerTest extends AbstractCamelLanguageServerTest {
@@ -122,12 +126,20 @@ public class CamelLanguageServerTest extends AbstractCamelLanguageServerTest {
 	
 	@Test
 	public void testDONTProvideCompletionWhenNotAfterURIEqualQuote() throws Exception {
+		final TestLogAppender appender = new TestLogAppender();
+		final Logger logger = Logger.getRootLogger();
+		logger.addAppender(appender);
 		CamelLanguageServer camelLanguageServer = initializeLanguageServer("<from uri=\"\" xmlns=\"http://camel.apache.org/schema/spring\"></from>\n");
 		
 		CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = getCompletionFor(camelLanguageServer, new Position(0, 6));
 		
 		assertThat(completions.get().getLeft()).isEmpty();
 		assertThat(completions.get().getRight()).isNull();
+		for (LoggingEvent loggingEvent : appender.getLog()) {
+			if (loggingEvent.getMessage() != null) {
+				assertThat((String)loggingEvent.getMessage()).doesNotContain(CamelEndpointCompletionProcessor.ERROR_SEARCHING_FOR_CORRESPONDING_NODE_ELEMENTS);
+			}
+		}
 	}
 	
 	@Test

@@ -18,46 +18,21 @@ package com.github.cameltooling.lsp.internal.parser;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.apache.log4j.AppenderSkeleton;
 import org.apache.log4j.Logger;
-import org.apache.log4j.spi.LoggingEvent;
 import org.eclipse.lsp4j.TextDocumentItem;
 import org.junit.Test;
+
+import com.github.cameltooling.lsp.internal.TestLogAppender;
 
 public class ParserXMLFileHelperTest {
 
 	@Test
 	public void testGetCamelComponentUri() throws Exception {
-		final TestAppender appender = new TestAppender();
+		final TestLogAppender appender = new TestLogAppender();
 		final Logger logger = Logger.getRootLogger();
         logger.addAppender(appender);
 		new ParserXMLFileHelper().getCamelComponentUri("uri=!!", 2);
 		assertThat(appender.getLog().get(0).getMessage()).isEqualTo("Encountered an unsupported URI closure char !");
-	}
-	
-	class TestAppender extends AppenderSkeleton {
-	    private final List<LoggingEvent> log = new ArrayList<LoggingEvent>();
-
-	    @Override
-	    public boolean requiresLayout() {
-	        return false;
-	    }
-
-	    @Override
-	    protected void append(final LoggingEvent loggingEvent) {
-	        log.add(loggingEvent);
-	    }
-
-	    @Override
-	    public void close() {
-	    }
-
-	    public List<LoggingEvent> getLog() {
-	        return new ArrayList<LoggingEvent>(log);
-	    }
 	}
 	
 	public void testGetRouteNodesWithNamespacePrefix() throws Exception {
@@ -78,7 +53,7 @@ public class ParserXMLFileHelperTest {
 				"        <camel:method bean=\"drinkRouter\"/>\r\n" + 
 				"      </camel:recipientList>\r\n" + 
 				"    </camel:route>\n"
-				+ "</camel:camelContext>\n";;
+				+ "</camel:camelContext>\n";
 		TextDocumentItem textDocumentItem = new TextDocumentItem(null, null, 0, camel);
 		assertThat(new ParserXMLFileHelper().getRouteNodes(textDocumentItem).getLength()).isEqualTo(2);
 	}
@@ -92,7 +67,7 @@ public class ParserXMLFileHelperTest {
 				"      <from uri=\"direct:cafe\"/>\r\n" + 
 				"      <split>\r\n" + 
 				"        <method bean=\"orderSplitter\"/>\r\n" + 
-				"        <cto uri=\"direct:drink\"/>\r\n" + 
+				"        <to uri=\"direct:drink\"/>\r\n" + 
 				"      </split>\r\n" + 
 				"    </route>\r\n" + 
 				"\r\n" + 
@@ -102,7 +77,7 @@ public class ParserXMLFileHelperTest {
 				"        <method bean=\"drinkRouter\"/>\r\n" + 
 				"      </recipientList>\r\n" + 
 				"    </route>\n"
-				+ "</camelContext>\n";;
+				+ "</camelContext>\n";
 		TextDocumentItem textDocumentItem = new TextDocumentItem(null, null, 0, camel);
 		assertThat(new ParserXMLFileHelper().getRouteNodes(textDocumentItem).getLength()).isEqualTo(2);
 	}
