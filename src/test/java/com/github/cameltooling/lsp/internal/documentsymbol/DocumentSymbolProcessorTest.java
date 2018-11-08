@@ -18,11 +18,15 @@ package com.github.cameltooling.lsp.internal.documentsymbol;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.net.URISyntaxException;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
+import org.apache.log4j.Logger;
+import org.apache.log4j.spi.LoggingEvent;
 import org.eclipse.lsp4j.DocumentSymbol;
 import org.eclipse.lsp4j.Location;
 import org.eclipse.lsp4j.Position;
@@ -33,6 +37,7 @@ import org.junit.Test;
 
 import com.github.cameltooling.lsp.internal.AbstractCamelLanguageServerTest;
 import com.github.cameltooling.lsp.internal.CamelLanguageServer;
+import com.github.cameltooling.lsp.internal.TestLogAppender;
 
 public class DocumentSymbolProcessorTest extends AbstractCamelLanguageServerTest {
 	
@@ -190,6 +195,25 @@ public class DocumentSymbolProcessorTest extends AbstractCamelLanguageServerTest
 		List<Either<SymbolInformation, DocumentSymbol>> symbolsInformation = documentSymbolFor.get();
 		assertThat(symbolsInformation).hasSize(expectedSize);
 		return symbolsInformation;
+	}
+	
+	@Test
+	public void testNoExceptionWithJavaFile() throws Exception {
+		final TestLogAppender appender = new TestLogAppender();
+		final Logger logger = Logger.getRootLogger();
+		logger.addAppender(appender);
+		File f = new File("src/test/resources/workspace/camel.java");
+		try (FileInputStream fis = new FileInputStream(f)) {
+			CamelLanguageServer camelLanguageServer = initializeLanguageServer(fis, ".java");
+			CompletableFuture<List<Either<SymbolInformation,DocumentSymbol>>> documentSymbolFor = getDocumentSymbolFor(camelLanguageServer);
+			List<Either<SymbolInformation, DocumentSymbol>> symbolsInformation = documentSymbolFor.get();
+			assertThat(symbolsInformation).isEmpty();
+			for (LoggingEvent loggingEvent : appender.getLog()) {
+				if (loggingEvent.getMessage() != null) {
+					assertThat((String)loggingEvent.getMessage()).doesNotContain(DocumentSymbolProcessor.CANNOT_DETERMINE_DOCUMENT_SYMBOLS);
+				}
+			}
+		}
 	}
 
 }

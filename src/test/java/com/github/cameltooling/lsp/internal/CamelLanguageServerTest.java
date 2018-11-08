@@ -82,8 +82,8 @@ public class CamelLanguageServerTest extends AbstractCamelLanguageServerTest {
 		assertThat(f).exists();
 		try (FileInputStream fis = new FileInputStream(f)) {
 			CamelLanguageServer cls = initializeLanguageServer(fis, ".java");
-			CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = getCompletionFor(cls, new Position(38, 14));
-			assertThat(completions.get().getLeft()).contains(createExpectedAhcCompletionItem(38, 14, 38, 27));
+			CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = getCompletionFor(cls, new Position(15, 14));
+			assertThat(completions.get().getLeft()).contains(createExpectedAhcCompletionItem(15, 14, 15, 27));
 		}
 	}
 	
