@@ -36,6 +36,7 @@ import com.github.cameltooling.lsp.internal.parser.ParserXMLFileHelper;
 
 public class DocumentSymbolProcessor {
 	
+	static final String CANNOT_DETERMINE_DOCUMENT_SYMBOLS = "Cannot determine document symbols";
 	private static final String ATTRIBUTE_ID = "id";
 	private static final Logger LOGGER = LoggerFactory.getLogger(DocumentSymbolProcessor.class);
 	private TextDocumentItem textDocumentItem;
@@ -47,19 +48,21 @@ public class DocumentSymbolProcessor {
 	
 	public CompletableFuture<List<Either<SymbolInformation, DocumentSymbol>>> getDocumentSymbols() {
 		return CompletableFuture.supplyAsync(() -> {
-			try {
-				List<Either<SymbolInformation, DocumentSymbol>> symbolInformations = new ArrayList<>();
-				NodeList routeNodes = parserFileHelper.getRouteNodes(textDocumentItem);
-				if (routeNodes != null) {
-					symbolInformations.addAll(convertToSymbolInformation(routeNodes));
+			if (textDocumentItem.getUri().endsWith(".xml")) {
+				try {
+					List<Either<SymbolInformation, DocumentSymbol>> symbolInformations = new ArrayList<>();
+					NodeList routeNodes = parserFileHelper.getRouteNodes(textDocumentItem);
+					if (routeNodes != null) {
+						symbolInformations.addAll(convertToSymbolInformation(routeNodes));
+					}
+					NodeList camelContextNodes = parserFileHelper.getCamelContextNodes(textDocumentItem);
+					if (camelContextNodes != null) {
+						symbolInformations.addAll(convertToSymbolInformation(camelContextNodes));
+					}
+					return symbolInformations;
+				} catch (Exception e) {
+					LOGGER.error(CANNOT_DETERMINE_DOCUMENT_SYMBOLS, e);
 				}
-				NodeList camelContextNodes = parserFileHelper.getCamelContextNodes(textDocumentItem);
-				if (camelContextNodes != null) {
-					symbolInformations.addAll(convertToSymbolInformation(camelContextNodes));
-				}
-				return symbolInformations;
-			} catch (Exception e) {
-				LOGGER.error("Cannot determine document symbols", e);
 			}
 			return Collections.emptyList();
 		});

@@ -30,7 +30,7 @@ public class ParserXMLFileHelperTest {
 	public void testGetCamelComponentUri() throws Exception {
 		final TestLogAppender appender = new TestLogAppender();
 		final Logger logger = Logger.getRootLogger();
-        logger.addAppender(appender);
+		logger.addAppender(appender);
 		new ParserXMLFileHelper().getCamelComponentUri("uri=!!", 2);
 		assertThat(appender.getLog().get(0).getMessage()).isEqualTo("Encountered an unsupported URI closure char !");
 	}
