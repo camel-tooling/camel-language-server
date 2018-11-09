@@ -65,7 +65,6 @@ public class DiagnosticService {
 	
 	private CompletableFuture<CamelCatalog> camelCatalog;
 	private CamelLanguageServer camelLanguageServer;
-	private CompletableFuture<DiagnosticRunner> diagnostics;
 
 	public DiagnosticService(CompletableFuture<CamelCatalog> camelCatalog, CamelLanguageServer camelLanguageServer) {
 		this.camelCatalog = camelCatalog;
@@ -83,10 +82,7 @@ public class DiagnosticService {
 	}
 
 	private void computeDiagnostics(String camelText, String uri) {
-		if (diagnostics != null) {
-			diagnostics.cancel(true);
-		}
-		diagnostics = CompletableFuture.supplyAsync(() -> new DiagnosticRunner(this, camelLanguageServer, camelText, uri));
+		CompletableFuture.supplyAsync(() -> new DiagnosticRunner(this, camelLanguageServer, camelText, uri));
 	}
 	
 	Map<CamelEndpointDetailsWrapper, EndpointValidationResult> computeCamelErrors(String camelText, String uri) {
@@ -141,18 +137,18 @@ public class DiagnosticService {
 	}
 
 	List<Diagnostic> converToLSPDiagnostics(String fullCamelText, Map<CamelEndpointDetailsWrapper, EndpointValidationResult> endpointErrors, TextDocumentItem textDocumentItem) {
-		List<Diagnostic> diagnostics = new ArrayList<>();
+		List<Diagnostic> lspDiagnostics = new ArrayList<>();
 		for (Map.Entry<CamelEndpointDetailsWrapper, EndpointValidationResult> endpointError : endpointErrors.entrySet()) {
 			EndpointValidationResult validationResult = endpointError.getValue();
 			CamelEndpointDetails camelEndpointDetails = endpointError.getKey().getCamelEndpointDetails();
-			diagnostics.add(new Diagnostic(
+			lspDiagnostics.add(new Diagnostic(
 					computeRange(fullCamelText, textDocumentItem, camelEndpointDetails),
 					computeErrorMessage(validationResult),
 					DiagnosticSeverity.Error,
 					APACHE_CAMEL_VALIDATION,
 					null));
 		}
-		return diagnostics;
+		return lspDiagnostics;
 	}
 
 	private Range computeRange(String fullCamelText, TextDocumentItem textDocumentItem, CamelEndpointDetails camelEndpointDetails) {
