@@ -1,8 +1,4 @@
 language: java
-before_install:
-- "export VERSION_SUFFIX=`grep '<version>' pom.xml -m 1 | cut -d'>' -f 2 | cut -d'<' -f 1 | cut -d'-' -f 2`"
-install: 
-- mvn install -P !build-extras -DskipTests=true -Dmaven.javadoc.skip=true -B -V
 jdk:
 - oraclejdk8
 - oraclejdk11
@@ -17,9 +13,12 @@ jobs:
   include:
     - stage: test
       script: mvn test -P !build-extras -B
+      script: mvn install -P !build-extras -DskipTests=true -Dmaven.javadoc.skip=true -B -V
     - stage: deploy
+      name: "Sonar Analysis and Deployment"
       script:
         - echo "test deploy phase"
+        - "export VERSION_SUFFIX=`grep '<version>' pom.xml -m 1 | cut -d'>' -f 2 | cut -d'<' -f 1 | cut -d'-' -f 2`"
         - if [[ $VERSION_SUFFIX == "SNAPSHOT" ]]; then
           export IS_SNAPSHOT=true;
          else
@@ -36,9 +35,9 @@ jobs:
          ./cd/before-deploy.sh;
          ./cd/deploy.sh;
          fi
-addons:
-  sonarcloud:
-    organization: camel-tooling
+      addons:
+        sonarcloud:
+          organization: camel-tooling
 stages:
  - test
  - name: deploy
