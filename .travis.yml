@@ -3,7 +3,6 @@ before_install:
 - "export VERSION_SUFFIX=`grep '<version>' pom.xml -m 1 | cut -d'>' -f 2 | cut -d'<' -f 1 | cut -d'-' -f 2`"
 install: 
 - mvn install -P !build-extras -DskipTests=true -Dmaven.javadoc.skip=true -B -V
-script: mvn test -P !build-extras -B
 jdk:
 - oraclejdk8
 - oraclejdk11
@@ -16,6 +15,8 @@ env:
   - GPG_DIR="`pwd`/cd"
 jobs:
   include:
+    - stage: test
+      script: mvn test -P !build-extras -B
     - stage: deploy
       script:
         - echo "test deploy phase"
