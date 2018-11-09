@@ -14,22 +14,31 @@ cache:
 env:
   global:
   - GPG_DIR="`pwd`/cd"
-after_success:
-- if [[ $VERSION_SUFFIX == "SNAPSHOT" ]]; then
-  export IS_SNAPSHOT=true;
- else
-  export IS_SNAPSHOT=false;
- fi
-- if [[ $TRAVIS_PULL_REQUEST == "false" && $TRAVIS_BRANCH == "master" && $IS_SNAPSHOT == "true" || -n "$TRAVIS_TAG" && $IS_SNAPSHOT == "false" ]]; then 
-  mvn sonar:sonar -Dsonar.login=${SONAR_TOKEN} -Dsonar.organization="camel-tooling" -Dsonar.projectKey="camel-lsp-server" -Dsonar.projectName="Camel LSP Server"; 
- fi
-- if [[ $TRAVIS_PULL_REQUEST == "false" && $TRAVIS_BRANCH == "master" && $IS_SNAPSHOT == "true" ]]; then
- ./cd/before-deploy.sh;
- ./cd/deploy.sh;
- elif [[ -n "$TRAVIS_TAG" && $IS_SNAPSHOT == "false" ]]; then
- ./cd/before-deploy.sh;
- ./cd/deploy.sh;
- fi
+jobs:
+  include:
+    - stage: deploy
+      script:
+        - echo "test deploy phase"
+        - if [[ $VERSION_SUFFIX == "SNAPSHOT" ]]; then
+          export IS_SNAPSHOT=true;
+         else
+          export IS_SNAPSHOT=false;
+         fi
+        - if [[ $TRAVIS_PULL_REQUEST == "false" && $TRAVIS_BRANCH == "master" && $IS_SNAPSHOT == "true" || -n "$TRAVIS_TAG" && $IS_SNAPSHOT == "false" ]]; then 
+          mvn test -P !build-extras -B
+          mvn sonar:sonar -Dsonar.login=${SONAR_TOKEN} -Dsonar.organization="camel-tooling" -Dsonar.projectKey="camel-lsp-server" -Dsonar.projectName="Camel LSP Server"; 
+         fi
+        - if [[ $TRAVIS_PULL_REQUEST == "false" && $TRAVIS_BRANCH == "master" && $IS_SNAPSHOT == "true" ]]; then
+         ./cd/before-deploy.sh;
+         ./cd/deploy.sh;
+         elif [[ -n "$TRAVIS_TAG" && $IS_SNAPSHOT == "false" ]]; then
+         ./cd/before-deploy.sh;
+         ./cd/deploy.sh;
+         fi
 addons:
   sonarcloud:
     organization: camel-tooling
+stages:
+ - test
+ - name: deploy
+   if: branch = 153-Java11CITest
