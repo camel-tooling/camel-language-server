@@ -1,7 +1,4 @@
 language: java
-jdk:
-- oraclejdk8
-- oraclejdk11
 cache:
   directories:
   - "$HOME/.m2"
@@ -12,11 +9,15 @@ env:
 jobs:
   include:
     - stage: test
+      jdk:
+        - oraclejdk8
+        - oraclejdk11
       script:
         - mvn install -P !build-extras -DskipTests=true -Dmaven.javadoc.skip=true -B -V
         - mvn test -P !build-extras -B
     - stage: deploy
       name: "Sonar Analysis and Deployment"
+      jdk: oraclejdk8
       script:
         - echo "test deploy phase"
         - "export VERSION_SUFFIX=`grep '<version>' pom.xml -m 1 | cut -d'>' -f 2 | cut -d'<' -f 1 | cut -d'-' -f 2`"
