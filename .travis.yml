@@ -13,8 +13,8 @@ jobs:
   include:
     - stage: test
       script:
-        - mvn test -P !build-extras -B
         - mvn install -P !build-extras -DskipTests=true -Dmaven.javadoc.skip=true -B -V
+        - mvn test -P !build-extras -B
     - stage: deploy
       name: "Sonar Analysis and Deployment"
       script:
@@ -42,4 +42,4 @@ jobs:
 stages:
  - test
  - name: deploy
-   if: branch = 153-Java11CITest
+   if: $TRAVIS_BRANCH == 153-Java11CITest
