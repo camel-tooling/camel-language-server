@@ -12,8 +12,9 @@ env:
 jobs:
   include:
     - stage: test
-      script: mvn test -P !build-extras -B
-      script: mvn install -P !build-extras -DskipTests=true -Dmaven.javadoc.skip=true -B -V
+      script:
+        - mvn test -P !build-extras -B
+        - mvn install -P !build-extras -DskipTests=true -Dmaven.javadoc.skip=true -B -V
     - stage: deploy
       name: "Sonar Analysis and Deployment"
       script:
