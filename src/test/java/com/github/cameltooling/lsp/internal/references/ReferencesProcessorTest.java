@@ -19,6 +19,7 @@ package com.github.cameltooling.lsp.internal.references;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.net.URISyntaxException;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
@@ -26,6 +27,7 @@ import java.util.concurrent.ExecutionException;
 import org.eclipse.lsp4j.Location;
 import org.eclipse.lsp4j.Position;
 import org.eclipse.lsp4j.Range;
+import org.eclipse.lsp4j.TextDocumentItem;
 import org.junit.Test;
 
 import com.github.cameltooling.lsp.internal.AbstractCamelLanguageServerTest;
@@ -131,6 +133,24 @@ public class ReferencesProcessorTest extends AbstractCamelLanguageServerTest {
 			"      <to uri=\"direct:anId\"/>\r\n" + 
 			"    </route>\r\n" +
 			"  </camelContext>";
+	
+	private static final String MULTI_DOCUMENT_REFERENCE_DOC1 = "<camelContext id=\"cbr-example-context\"\n" + 
+			"		xmlns=\"http://camel.apache.org/schema/blueprint\" xmlns:order=\"http://fusesource.com/examples/order/v7\">\n" + 
+			"		<route id=\"cbr-route\">\n" + 
+			"			<from id=\"from1\" uri=\"file:work/cbr/input\" />\n" + 
+			"			<log id=\"log1\" message=\"Receiving order ${file:name}\" />\n" + 
+			"			<to id=\"blubber\" uri=\"direct:blubber\" />\n" + 
+			"		</route>\n" + 
+			"	</camelContext>";
+	
+	private static final String MULTI_DOCUMENT_REFERENCE_DOC2 = "<camelContext id=\"cbr-example-context\"\n" + 
+			"		xmlns=\"http://camel.apache.org/schema/blueprint\" xmlns:order=\"http://fusesource.com/examples/order/v7\">\n" + 
+			"		<route id=\"cbr-route\">\n" + 
+			"			<from id=\"blubber\" uri=\"direct:blubber\" />\n" + 
+			"			<log id=\"log2\" message=\"Receiving order ${file:name}\" />\n" + 
+			"			<to id=\"to2\" uri=\"file:work/cbr/output/others1\" />\n" + 
+			"		</route>\n" + 
+			"	</camelContext>";
 
 	@Test
 	public void testRetrieveASingleDirectReferenceFor_to() throws Exception {
@@ -182,6 +202,26 @@ public class ReferencesProcessorTest extends AbstractCamelLanguageServerTest {
 		testRetrieveReferences(DIFFERENTIDS, 0, new Position(5, 18));
 		testRetrieveReferences(DIFFERENTIDS, 0, new Position(8, 18));
 		testRetrieveReferences(DIFFERENTIDS, 0, new Position(9, 18));
+	}
+	
+	@Test
+	public void testMultiDocumentReferences() throws Exception {
+		TextDocumentItem item1 = new TextDocumentItem("uri1.xml", CamelLanguageServer.LANGUAGE_ID, 0, MULTI_DOCUMENT_REFERENCE_DOC1);
+		TextDocumentItem item2 = new TextDocumentItem("uri2.xml", CamelLanguageServer.LANGUAGE_ID, 0, MULTI_DOCUMENT_REFERENCE_DOC2);
+		Position pos = new Position(5, 25);
+		List<? extends Location> results = testRetrieveReferencesFromMultipleOpenedDocuments(".xml", pos, 1, item1, item2);
+		Location loc = results.get(0);
+		assertThat(loc.getRange().getStart().getLine()).isEqualTo(3);
+		assertThat(loc.getRange().getEnd().getLine()).isEqualTo(3);
+		assertThat(loc.getUri()).contains(Arrays.asList("direct", "blubber"));
+	}
+	
+	private List<? extends Location> testRetrieveReferencesFromMultipleOpenedDocuments(String suffix, Position posInFirstDoc, int expectedResultCount, TextDocumentItem... documentItems) throws URISyntaxException, InterruptedException, ExecutionException {
+		CamelLanguageServer camelLanguageServer = initializeLanguageServer(suffix, documentItems);
+		CompletableFuture<List<? extends Location>> referencesFuture = getReferencesFor(camelLanguageServer, posInFirstDoc, "uri1.xml");
+		List<? extends Location> references = referencesFuture.get();
+		assertThat(references).hasSize(expectedResultCount);
+		return references;
 	}
 	
 	private List<? extends Location> testRetrieveReferences(String textTotest, int expectedSize, Position position) throws URISyntaxException, InterruptedException, ExecutionException {
