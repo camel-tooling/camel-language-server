@@ -32,6 +32,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Node;
 
+import com.github.cameltooling.lsp.internal.CamelTextDocumentService;
 import com.github.cameltooling.lsp.internal.instancemodel.CamelURIInstance;
 import com.github.cameltooling.lsp.internal.instancemodel.ReferenceUtils;
 import com.github.cameltooling.lsp.internal.parser.ParserXMLFileHelper;
@@ -41,8 +42,10 @@ public class ReferencesProcessor {
 	private static final Logger LOGGER = LoggerFactory.getLogger(ReferencesProcessor.class);
 	private ParserXMLFileHelper parserXMLFileHelper = new ParserXMLFileHelper();
 	private TextDocumentItem textDocumentItem;
+	private CamelTextDocumentService textDocumentService;
 
-	public ReferencesProcessor(TextDocumentItem textDocumentItem) {
+	public ReferencesProcessor(CamelTextDocumentService textDocumentService, TextDocumentItem textDocumentItem) {
+		this.textDocumentService = textDocumentService;
 		this.textDocumentItem = textDocumentItem;
 	}
 
@@ -69,8 +72,11 @@ public class ReferencesProcessor {
 		if (directId != null && !directId.isEmpty()) {
 			for (Entry<CamelURIInstance, Node> entry : allCamelUriInstance.entrySet()) {
 				CamelURIInstance camelURIInstance = entry.getKey();
-				if (isReference(camelURIInstanceToSearchReference, directId, camelURIInstance)) {
-					references.add(parserXMLFileHelper.retrieveLocation(entry.getValue(), textDocumentItem));
+				for (TextDocumentItem docItem : textDocumentService.getAllOpenDocuments()) {
+					Location loc = parserXMLFileHelper.retrieveLocation(entry.getValue(), docItem);
+					if (isReference(camelURIInstanceToSearchReference, directId, camelURIInstance) && !references.contains(loc)) {
+						references.add(parserXMLFileHelper.retrieveLocation(entry.getValue(), docItem));
+					}
 				}
 			}
 		}
@@ -85,13 +91,17 @@ public class ReferencesProcessor {
 	}
 
 	private Map<CamelURIInstance, Node> retrieveAllEndpoints() throws Exception {
-		List<Node> allEndpoints = parserXMLFileHelper.getAllEndpoints(textDocumentItem);
+		List<Node> allEndpoints = new ArrayList<>();
 		Map<CamelURIInstance, Node> allCamelUriInstance = new HashMap<>();
-		for (Node endpoint : allEndpoints) {
-			String uriToParse = CamelXmlHelper.getSafeAttribute(endpoint, "uri");
-			if (uriToParse != null) {
-				allCamelUriInstance.put(new CamelURIInstance(uriToParse, endpoint, textDocumentItem), endpoint);
+		for (TextDocumentItem docItem : textDocumentService.getAllOpenDocuments()) {
+			allEndpoints.addAll(parserXMLFileHelper.getAllEndpoints(docItem));
+			for (Node endpoint : allEndpoints) {
+				String uriToParse = CamelXmlHelper.getSafeAttribute(endpoint, "uri");
+				if (uriToParse != null) {
+					allCamelUriInstance.put(new CamelURIInstance(uriToParse, endpoint, docItem), endpoint);
+				}
 			}
+			allEndpoints.clear();
 		}
 		return allCamelUriInstance;
 	}

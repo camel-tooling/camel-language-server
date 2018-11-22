@@ -16,6 +16,7 @@
  */
 package com.github.cameltooling.lsp.internal;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -119,7 +120,7 @@ public class CamelTextDocumentService implements TextDocumentService {
 	@Override
 	public CompletableFuture<List<? extends Location>> references(ReferenceParams params) {
 		LOGGER.info("references: {}", params.getTextDocument());
-		return new ReferencesProcessor(openedDocuments.get(params.getTextDocument().getUri())).getReferences(params.getPosition());
+		return new ReferencesProcessor(this, openedDocuments.get(params.getTextDocument().getUri())).getReferences(params.getPosition());
 	}
 
 	@Override
@@ -208,5 +209,9 @@ public class CamelTextDocumentService implements TextDocumentService {
 
 	public TextDocumentItem getOpenedDocument(String uri) {
 		return openedDocuments.get(uri);
+	}
+	
+	public Collection<TextDocumentItem> getAllOpenDocuments() {
+		return openedDocuments.values();
 	}
 }

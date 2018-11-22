@@ -117,9 +117,23 @@ public abstract class AbstractCamelLanguageServerTest {
 
 	protected CamelLanguageServer initializeLanguageServer(String text, String suffixFileName) throws URISyntaxException, InterruptedException, ExecutionException {
 		this.extensionUsed = suffixFileName;
-		InitializeParams params = new InitializeParams();
-		params.setProcessId(new Random().nextInt());
-		params.setRootUri(getTestResource("/workspace/").toURI().toString());
+		initializeLanguageServer(getInitParams());
+
+		camelLanguageServer.getTextDocumentService().didOpen(new DidOpenTextDocumentParams(createTestTextDocument(text, suffixFileName)));
+
+		return camelLanguageServer;
+	}
+
+	protected CamelLanguageServer initializeLanguageServer(String suffixFileName, TextDocumentItem... documentItems) throws URISyntaxException, InterruptedException, ExecutionException {
+		this.extensionUsed = suffixFileName;
+		initializeLanguageServer(getInitParams());
+		for (TextDocumentItem docItem : documentItems) {
+			camelLanguageServer.getTextDocumentService().didOpen(new DidOpenTextDocumentParams(docItem));
+		}
+		return camelLanguageServer;
+	}
+	
+	private void initializeLanguageServer(InitializeParams params) throws ExecutionException, InterruptedException {
 		camelLanguageServer = new CamelLanguageServer();
 		camelLanguageServer.connect(new DummyLanguageClient());
 		camelLanguageServer.startServer();
@@ -127,12 +141,15 @@ public abstract class AbstractCamelLanguageServerTest {
 
 		assertThat(initialize).isCompleted();
 		assertThat(initialize.get().getCapabilities().getCompletionProvider().getResolveProvider()).isTrue();
-
-		camelLanguageServer.getTextDocumentService().didOpen(new DidOpenTextDocumentParams(createTestTextDocument(text, suffixFileName)));
-
-		return camelLanguageServer;
 	}
-
+	
+	private InitializeParams getInitParams() throws URISyntaxException {
+		InitializeParams params = new InitializeParams();
+		params.setProcessId(new Random().nextInt());
+		params.setRootUri(getTestResource("/workspace/").toURI().toString());
+		return params;
+	}
+	
 	protected CamelLanguageServer initializeLanguageServer(FileInputStream stream, String suffixFileName) {
 		try (BufferedReader buffer = new BufferedReader(new InputStreamReader(stream))) {
             return initializeLanguageServer(buffer.lines().collect(Collectors.joining("\n")), suffixFileName);
@@ -158,12 +175,16 @@ public abstract class AbstractCamelLanguageServerTest {
 		DocumentSymbolParams params = new DocumentSymbolParams(new TextDocumentIdentifier(DUMMY_URI+extensionUsed));
 		return textDocumentService.documentSymbol(params);
 	}
-	
+
 	protected CompletableFuture<List<? extends Location>> getReferencesFor(CamelLanguageServer camelLanguageServer, Position position) {
+		return getReferencesFor(camelLanguageServer, position, DUMMY_URI+extensionUsed);
+	}
+	
+	protected CompletableFuture<List<? extends Location>> getReferencesFor(CamelLanguageServer camelLanguageServer, Position position, String uri) {
 		TextDocumentService textDocumentService = camelLanguageServer.getTextDocumentService();
 		ReferenceParams params = new ReferenceParams();
 		params.setPosition(position);
-		params.setTextDocument(new TextDocumentIdentifier(DUMMY_URI+extensionUsed));
+		params.setTextDocument(new TextDocumentIdentifier(uri));
 		return textDocumentService.references(params);
 	}
 	
