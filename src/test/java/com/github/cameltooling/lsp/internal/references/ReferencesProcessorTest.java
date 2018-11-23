@@ -19,7 +19,6 @@ package com.github.cameltooling.lsp.internal.references;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.net.URISyntaxException;
-import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
@@ -141,15 +140,29 @@ public class ReferencesProcessorTest extends AbstractCamelLanguageServerTest {
 			"			<log id=\"log1\" message=\"Receiving order ${file:name}\" />\n" + 
 			"			<to id=\"blubber\" uri=\"direct:blubber\" />\n" + 
 			"		</route>\n" + 
+			"		<route id=\"cbr-route2\">\n" + 
+			"			<from id=\"from2\" uri=\"file:work/cbr/input2\" />\n" + 
+			"			<to id=\"blubber\" uri=\"direct:blubber\" />\n" + 
+			"		</route>\n" +
+			"		<route id=\"cbr-route2a\">\n" + 
+			"			<from id=\"blubber\" uri=\"direct:blubber\" />\n" + 
+			"			<log id=\"log2\" message=\"Receiving order ${file:name}\" />\n" + 
+			"			<to id=\"to2\" uri=\"file:work/cbr/output/others1\" />\n" + 
+			"		</route>\n" +
 			"	</camelContext>";
 	
 	private static final String MULTI_DOCUMENT_REFERENCE_DOC2 = "<camelContext id=\"cbr-example-context\"\n" + 
 			"		xmlns=\"http://camel.apache.org/schema/blueprint\" xmlns:order=\"http://fusesource.com/examples/order/v7\">\n" + 
-			"		<route id=\"cbr-route\">\n" + 
+			"		<route id=\"cbr-route3\">\n" + 
 			"			<from id=\"blubber\" uri=\"direct:blubber\" />\n" + 
 			"			<log id=\"log2\" message=\"Receiving order ${file:name}\" />\n" + 
 			"			<to id=\"to2\" uri=\"file:work/cbr/output/others1\" />\n" + 
 			"		</route>\n" + 
+			"		<route id=\"cbr-route4\">\n" + 
+			"			<from id=\"blubber\" uri=\"direct:blubber\" />\n" + 
+			"			<log id=\"log3\" message=\"Receiving order ${file:name}\" />\n" + 
+			"			<to id=\"to3\" uri=\"file:work/cbr/output/others1\" />\n" + 
+			"		</route>\n" +
 			"	</camelContext>";
 
 	@Test
@@ -209,11 +222,29 @@ public class ReferencesProcessorTest extends AbstractCamelLanguageServerTest {
 		TextDocumentItem item1 = new TextDocumentItem("uri1.xml", CamelLanguageServer.LANGUAGE_ID, 0, MULTI_DOCUMENT_REFERENCE_DOC1);
 		TextDocumentItem item2 = new TextDocumentItem("uri2.xml", CamelLanguageServer.LANGUAGE_ID, 0, MULTI_DOCUMENT_REFERENCE_DOC2);
 		Position pos = new Position(5, 25);
-		List<? extends Location> results = testRetrieveReferencesFromMultipleOpenedDocuments(".xml", pos, 1, item1, item2);
-		Location loc = results.get(0);
-		assertThat(loc.getRange().getStart().getLine()).isEqualTo(3);
-		assertThat(loc.getRange().getEnd().getLine()).isEqualTo(3);
-		assertThat(loc.getUri()).contains(Arrays.asList("direct", "blubber"));
+		List<? extends Location> results = testRetrieveReferencesFromMultipleOpenedDocuments(".xml", pos, 3, item1, item2);
+		
+		int foundInFile1 = 0;
+		int foundInFile2 = 0;
+		
+		int lastFoundLine = -1;
+		for (Location loc : results) {
+			int line = loc.getRange().getStart().getLine();
+			if (loc.getUri().equals("uri1.xml")) {
+				assertThat(line).isEqualTo(12);
+				foundInFile1++;
+			} else {
+				assertThat(loc.getUri()).isEqualTo("uri2.xml");
+				if (lastFoundLine != line) {
+					lastFoundLine = line;
+				}
+				assertThat(line).isIn(3, 8);
+				foundInFile2++;
+			}
+		}
+		
+		assertThat(foundInFile1).isEqualTo(1);
+		assertThat(foundInFile2).isEqualTo(2);
 	}
 	
 	private List<? extends Location> testRetrieveReferencesFromMultipleOpenedDocuments(String suffix, Position posInFirstDoc, int expectedResultCount, TextDocumentItem... documentItems) throws URISyntaxException, InterruptedException, ExecutionException {
