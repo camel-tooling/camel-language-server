@@ -116,12 +116,7 @@ public abstract class AbstractCamelLanguageServerTest {
 	}
 
 	protected CamelLanguageServer initializeLanguageServer(String text, String suffixFileName) throws URISyntaxException, InterruptedException, ExecutionException {
-		this.extensionUsed = suffixFileName;
-		initializeLanguageServer(getInitParams());
-
-		camelLanguageServer.getTextDocumentService().didOpen(new DidOpenTextDocumentParams(createTestTextDocument(text, suffixFileName)));
-
-		return camelLanguageServer;
+		return initializeLanguageServer(suffixFileName, createTestTextDocument(text, suffixFileName));
 	}
 
 	protected CamelLanguageServer initializeLanguageServer(String suffixFileName, TextDocumentItem... documentItems) throws URISyntaxException, InterruptedException, ExecutionException {
