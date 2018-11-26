@@ -211,7 +211,7 @@ public class CamelTextDocumentService implements TextDocumentService {
 		return openedDocuments.get(uri);
 	}
 	
-	public Collection<TextDocumentItem> getAllOpenDocuments() {
+	public Collection<TextDocumentItem> getAllOpenedDocuments() {
 		return openedDocuments.values();
 	}
 }

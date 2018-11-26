@@ -88,17 +88,14 @@ public class ReferencesProcessor {
 	}
 
 	private Map<CamelURIInstance, Node> retrieveAllEndpoints() throws Exception {
-		List<Node> allEndpoints = new ArrayList<>();
 		Map<CamelURIInstance, Node> allCamelUriInstance = new HashMap<>();
-		for (TextDocumentItem docItem : textDocumentService.getAllOpenDocuments()) {
-			allEndpoints.addAll(parserXMLFileHelper.getAllEndpoints(docItem));
-			for (Node endpoint : allEndpoints) {
+		for (TextDocumentItem docItem : textDocumentService.getAllOpenedDocuments()) {
+			for (Node endpoint : parserXMLFileHelper.getAllEndpoints(docItem)) {
 				String uriToParse = CamelXmlHelper.getSafeAttribute(endpoint, "uri");
 				if (uriToParse != null) {
 					allCamelUriInstance.put(new CamelURIInstance(uriToParse, endpoint, docItem), endpoint);
 				}
 			}
-			allEndpoints.clear();
 		}
 		return allCamelUriInstance;
 	}

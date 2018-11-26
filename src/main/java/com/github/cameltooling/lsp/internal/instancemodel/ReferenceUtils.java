@@ -31,7 +31,8 @@ public class ReferenceUtils {
 	}
 	
 	/**
-	 * @param camelDirectURIInstance
+	 * @param camelDirectURIInstance	the camel uri instance
+	 *  
 	 * @return the first path parameter which is the reference key for elements listed in com.github.cameltooling.lsp.internal.instancemodel.ReferenceUtils.POSSIBLE_REFERENCES
 	 */
 	public static String getReferenceKey(CamelURIInstance camelDirectURIInstance) {
