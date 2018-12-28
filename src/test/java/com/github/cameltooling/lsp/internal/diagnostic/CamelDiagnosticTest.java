@@ -44,9 +44,9 @@ public class CamelDiagnosticTest extends AbstractCamelLanguageServerTest {
 		testDiagnostic("camel-with-endpoint-error", 1, ".xml");
 		Range range = lastPublishedDiagnostics.getDiagnostics().get(0).getRange();
 		assertThat(range.getStart().getLine()).isEqualTo(8);
-		assertThat(range.getStart().getCharacter()).isEqualTo(0);
+		assertThat(range.getStart().getCharacter()).isEqualTo(16);
 		assertThat(range.getEnd().getLine()).isEqualTo(8);
-		assertThat(range.getEnd().getCharacter()).isEqualTo(52);
+		assertThat(range.getEnd().getCharacter()).isEqualTo(39);
 	}
 	
 	@Test
@@ -54,9 +54,9 @@ public class CamelDiagnosticTest extends AbstractCamelLanguageServerTest {
 		testDiagnostic("camel-with-endpoint-error-withNamespacePrefix", 1, ".xml");
 		Range range = lastPublishedDiagnostics.getDiagnostics().get(0).getRange();
 		assertThat(range.getStart().getLine()).isEqualTo(8);
-		assertThat(range.getStart().getCharacter()).isEqualTo(0);
+		assertThat(range.getStart().getCharacter()).isEqualTo(25);
 		assertThat(range.getEnd().getLine()).isEqualTo(8);
-		assertThat(range.getEnd().getCharacter()).isEqualTo(51);
+		assertThat(range.getEnd().getCharacter()).isEqualTo(48);
 	}
 	
 	@Test
@@ -84,9 +84,9 @@ public class CamelDiagnosticTest extends AbstractCamelLanguageServerTest {
 		testDiagnostic("camel-with-endpoint-error", 1, ".java");
 		Range range = lastPublishedDiagnostics.getDiagnostics().get(0).getRange();
 		assertThat(range.getStart().getLine()).isEqualTo(12);
-		assertThat(range.getStart().getCharacter()).isEqualTo(0);
+		assertThat(range.getStart().getCharacter()).isEqualTo(14);
 		assertThat(range.getEnd().getLine()).isEqualTo(12);
-		assertThat(range.getEnd().getCharacter()).isEqualTo(39);
+		assertThat(range.getEnd().getCharacter()).isEqualTo(37);
 	}
 	
 	private void testDiagnostic(String fileUnderTest, int expectedNumberOfError, String extension) throws FileNotFoundException {
@@ -96,8 +96,8 @@ public class CamelDiagnosticTest extends AbstractCamelLanguageServerTest {
 		DidSaveTextDocumentParams params = new DidSaveTextDocumentParams(new TextDocumentIdentifier(DUMMY_URI+extension));
 		camelLanguageServer.getTextDocumentService().didSave(params);
 		
-		await().timeout(Duration.ONE_SECOND).untilAsserted(() -> assertThat(lastPublishedDiagnostics).isNotNull());
-		await().timeout(Duration.ONE_SECOND).untilAsserted(() -> assertThat(lastPublishedDiagnostics.getDiagnostics()).hasSize(expectedNumberOfError));
+		await().timeout(Duration.TEN_MINUTES).untilAsserted(() -> assertThat(lastPublishedDiagnostics).isNotNull());
+		await().timeout(Duration.TEN_MINUTES).untilAsserted(() -> assertThat(lastPublishedDiagnostics.getDiagnostics()).hasSize(expectedNumberOfError));
 	}
 	
 }
