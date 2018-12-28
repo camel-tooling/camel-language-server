@@ -153,9 +153,20 @@ public class DiagnosticService {
 
 	private Range computeRange(String fullCamelText, TextDocumentItem textDocumentItem, CamelEndpointDetails camelEndpointDetails) {
 		int endLine = camelEndpointDetails.getLineNumberEnd() != null ? Integer.valueOf(camelEndpointDetails.getLineNumberEnd()) - 1 : findLine(fullCamelText, camelEndpointDetails);
-		int endLineSize = new ParserXMLFileHelper().getLine(textDocumentItem, endLine).length();
+		String lineContainingTheCamelURI = new ParserXMLFileHelper().getLine(textDocumentItem, endLine);
+		String endpointUri = camelEndpointDetails.getEndpointUri();
+		int startOfUri = lineContainingTheCamelURI.indexOf(endpointUri);
+		int startLinePosition;
+		int endLinePosition;
+		if (startOfUri != -1) {
+			startLinePosition = startOfUri;
+			endLinePosition = startOfUri + endpointUri.length();
+		} else {
+			startLinePosition = 0;
+			endLinePosition = lineContainingTheCamelURI.length();
+		}
 		int startLine = camelEndpointDetails.getLineNumber() != null ? Integer.valueOf(camelEndpointDetails.getLineNumber()) - 1 : findLine(fullCamelText, camelEndpointDetails);
-		return new Range(new Position(startLine, 0), new Position(endLine, endLineSize));
+		return new Range(new Position(startLine, startLinePosition), new Position(endLine, endLinePosition));
 	}
 
 	/**
