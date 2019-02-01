@@ -30,6 +30,8 @@ import org.eclipse.lsp4j.services.LanguageClient;
 import org.eclipse.lsp4j.services.LanguageClientAware;
 import org.eclipse.lsp4j.services.LanguageServer;
 import org.eclipse.lsp4j.services.WorkspaceService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * this is the actual server implementation
@@ -39,6 +41,7 @@ import org.eclipse.lsp4j.services.WorkspaceService;
 public class CamelLanguageServer extends AbstractLanguageServer implements LanguageServer, LanguageClientAware {
 	
 	public static final String LANGUAGE_ID = "LANGUAGE_ID_APACHE_CAMEL";
+	private static final Logger LOGGER = LoggerFactory.getLogger(CamelLanguageServer.class);
 	
 	private LanguageClient client;
 	
@@ -46,11 +49,10 @@ public class CamelLanguageServer extends AbstractLanguageServer implements Langu
 		super.setTextDocumentService(new CamelTextDocumentService(this));
 		super.setWorkspaceService(new CamelWorkspaceService());
 	}
-	
+
 	@Override
 	public void connect(LanguageClient client) {
 		this.client = client;
-		sendLogMessageNotification(MessageType.Info, "Connected to Language Server...");
 	}
 	
 	@Override
@@ -61,12 +63,11 @@ public class CamelLanguageServer extends AbstractLanguageServer implements Langu
 	
 	@Override
 	public CompletableFuture<InitializeResult> initialize(InitializeParams params) {
-		sendLogMessageNotification(MessageType.Info, "Initializing capabilities of the server...");
 		Integer processId = params.getProcessId();
 		if(processId != null) {
 			setParentProcessId(processId.longValue());
 		} else {
-			sendLogMessageNotification(MessageType.Info, "Missing Parent process ID!!");
+			LOGGER.info("Missing Parent process ID!!");
 			setParentProcessId(0);
 		}
 		
@@ -97,19 +98,6 @@ public class CamelLanguageServer extends AbstractLanguageServer implements Langu
 		return super.getWorkspaceService();
 	}
 	
-	/**
-	 * Sends the given <code>log message notification</code> back to the client
-	 * as a notification
-	 * 
-	 * @param type
-	 *            the type of message
-	 * @param msg
-	 *            The message to send back to the client
-	 */
-	public void sendLogMessageNotification(final MessageType type, final String msg) {
-		getClient().logMessage(new MessageParams(type, msg));
-	}
-
 	/**
 	 * Sends the given <code>show message notification</code> back to the client
 	 * as a notification
