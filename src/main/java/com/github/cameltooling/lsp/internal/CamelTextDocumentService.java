@@ -182,6 +182,7 @@ public class CamelTextDocumentService implements TextDocumentService {
 		TextDocumentItem textDocument = params.getTextDocument();
 		LOGGER.info("didOpen: {}", textDocument);
 		openedDocuments.put(textDocument.getUri(), textDocument);
+		new DiagnosticService(camelCatalog, camelLanguageServer).compute(params);
 	}
 
 	@Override
@@ -198,7 +199,12 @@ public class CamelTextDocumentService implements TextDocumentService {
 	@Override
 	public void didClose(DidCloseTextDocumentParams params) {
 		LOGGER.info("didClose: {}", params.getTextDocument());
-		openedDocuments.remove(params.getTextDocument().getUri());
+		String uri = params.getTextDocument().getUri();
+		openedDocuments.remove(uri);
+		/* The rule observed by VS Code servers as explained in LSP specification is to clear the Diagnostic when it is related to a single file.
+		 * https://microsoft.github.io/language-server-protocol/specification#textDocument_publishDiagnostics
+		 * */
+		new DiagnosticService(camelCatalog, camelLanguageServer).clear(uri);
 	}
 
 	@Override

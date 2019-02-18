@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -38,8 +39,10 @@ import org.apache.camel.parser.model.CamelEndpointDetails;
 import org.eclipse.lsp4j.Diagnostic;
 import org.eclipse.lsp4j.DiagnosticSeverity;
 import org.eclipse.lsp4j.DidChangeTextDocumentParams;
+import org.eclipse.lsp4j.DidOpenTextDocumentParams;
 import org.eclipse.lsp4j.DidSaveTextDocumentParams;
 import org.eclipse.lsp4j.Position;
+import org.eclipse.lsp4j.PublishDiagnosticsParams;
 import org.eclipse.lsp4j.Range;
 import org.eclipse.lsp4j.TextDocumentItem;
 import org.jboss.forge.roaster.Roaster;
@@ -80,7 +83,12 @@ public class DiagnosticService {
 		String camelText = params.getContentChanges().get(0).getText();
 		computeDiagnostics(camelText, params.getTextDocument().getUri());
 	}
-
+	
+	public void compute(DidOpenTextDocumentParams params) {
+		String camelText = params.getTextDocument().getText();
+		computeDiagnostics(camelText, params.getTextDocument().getUri());
+	}
+	
 	private void computeDiagnostics(String camelText, String uri) {
 		CompletableFuture.supplyAsync(() -> new DiagnosticRunner(this, camelLanguageServer, camelText, uri));
 	}
@@ -219,4 +227,9 @@ public class DiagnosticService {
 			}
 		}
 	}
+
+	public void clear(String uri) {
+		camelLanguageServer.getClient().publishDiagnostics(new PublishDiagnosticsParams(uri, Collections.emptyList()));
+	}
+
 }
