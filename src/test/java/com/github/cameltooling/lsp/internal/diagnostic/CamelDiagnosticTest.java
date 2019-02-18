@@ -22,17 +22,26 @@ import static org.awaitility.Awaitility.await;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.awaitility.Duration;
+import org.eclipse.lsp4j.DidChangeTextDocumentParams;
+import org.eclipse.lsp4j.DidCloseTextDocumentParams;
 import org.eclipse.lsp4j.DidSaveTextDocumentParams;
 import org.eclipse.lsp4j.Range;
+import org.eclipse.lsp4j.TextDocumentContentChangeEvent;
 import org.eclipse.lsp4j.TextDocumentIdentifier;
+import org.eclipse.lsp4j.VersionedTextDocumentIdentifier;
 import org.junit.Test;
 
 import com.github.cameltooling.lsp.internal.AbstractCamelLanguageServerTest;
 import com.github.cameltooling.lsp.internal.CamelLanguageServer;
 
 public class CamelDiagnosticTest extends AbstractCamelLanguageServerTest {
+
+	private static final Duration AWAIT_TIMEOUT = Duration.TEN_SECONDS;
+	private CamelLanguageServer camelLanguageServer;
 
 	@Test
 	public void testNoValidationError() throws Exception {
@@ -89,15 +98,40 @@ public class CamelDiagnosticTest extends AbstractCamelLanguageServerTest {
 		assertThat(range.getEnd().getCharacter()).isEqualTo(37);
 	}
 	
+	@Test
+	public void testValidationErrorClearedOnClose() throws Exception {
+		testDiagnostic("camel-with-endpoint-error", 1, ".xml");
+		
+		DidCloseTextDocumentParams params = new DidCloseTextDocumentParams(new TextDocumentIdentifier(DUMMY_URI+".xml"));
+		camelLanguageServer.getTextDocumentService().didClose(params);
+		
+		await().timeout(AWAIT_TIMEOUT).untilAsserted(() -> assertThat(lastPublishedDiagnostics.getDiagnostics()).isEmpty());
+	}
+	
+	@Test
+	public void testValidationErrorUpdatedOnChange() throws Exception {
+		testDiagnostic("camel-with-endpoint-error", 1, ".xml");
+		
+		camelLanguageServer.getTextDocumentService().getOpenedDocument(DUMMY_URI+".xml").getText();
+		DidChangeTextDocumentParams params = new DidChangeTextDocumentParams();
+		params.setTextDocument(new VersionedTextDocumentIdentifier(DUMMY_URI+".xml", 2));
+		List<TextDocumentContentChangeEvent> contentChanges = new ArrayList<>();
+		contentChanges.add(new TextDocumentContentChangeEvent("<from uri=\"timer:timerName?delay=1000\" xmlns=\"http://camel.apache.org/schema/blueprint\"></from>\n"));
+		params.setContentChanges(contentChanges);
+		camelLanguageServer.getTextDocumentService().didChange(params);
+		
+		await().timeout(AWAIT_TIMEOUT).untilAsserted(() -> assertThat(lastPublishedDiagnostics.getDiagnostics()).isEmpty());
+	}
+	
 	private void testDiagnostic(String fileUnderTest, int expectedNumberOfError, String extension) throws FileNotFoundException {
 		File f = new File("src/test/resources/workspace/diagnostic/" + fileUnderTest + extension);
-		CamelLanguageServer camelLanguageServer = initializeLanguageServer(new FileInputStream(f), extension);
+		camelLanguageServer = initializeLanguageServer(new FileInputStream(f), extension);
 		
 		DidSaveTextDocumentParams params = new DidSaveTextDocumentParams(new TextDocumentIdentifier(DUMMY_URI+extension));
 		camelLanguageServer.getTextDocumentService().didSave(params);
 		
-		await().timeout(Duration.TEN_MINUTES).untilAsserted(() -> assertThat(lastPublishedDiagnostics).isNotNull());
-		await().timeout(Duration.TEN_MINUTES).untilAsserted(() -> assertThat(lastPublishedDiagnostics.getDiagnostics()).hasSize(expectedNumberOfError));
+		await().timeout(AWAIT_TIMEOUT).untilAsserted(() -> assertThat(lastPublishedDiagnostics).isNotNull());
+		await().timeout(AWAIT_TIMEOUT).untilAsserted(() -> assertThat(lastPublishedDiagnostics.getDiagnostics()).hasSize(expectedNumberOfError));
 	}
 	
 }
