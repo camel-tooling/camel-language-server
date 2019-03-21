@@ -45,6 +45,7 @@ import org.eclipse.lsp4j.DocumentSymbol;
 import org.eclipse.lsp4j.DocumentSymbolParams;
 import org.eclipse.lsp4j.Hover;
 import org.eclipse.lsp4j.Location;
+import org.eclipse.lsp4j.LocationLink;
 import org.eclipse.lsp4j.ReferenceParams;
 import org.eclipse.lsp4j.RenameParams;
 import org.eclipse.lsp4j.SignatureHelp;
@@ -110,7 +111,7 @@ public class CamelTextDocumentService implements TextDocumentService {
 	}
 
 	@Override
-	public CompletableFuture<List<? extends Location>> definition(TextDocumentPositionParams params) {
+	public CompletableFuture<Either<List<? extends Location>, List<? extends LocationLink>>> definition(TextDocumentPositionParams params) {
 		TextDocumentIdentifier textDocument = params.getTextDocument();
 		LOGGER.info("definition: {}", textDocument);
 		TextDocumentItem textDocumentItem = openedDocuments.get(textDocument.getUri());

@@ -24,8 +24,10 @@ import java.util.concurrent.CompletableFuture;
 
 import org.apache.camel.parser.helper.CamelXmlHelper;
 import org.eclipse.lsp4j.Location;
+import org.eclipse.lsp4j.LocationLink;
 import org.eclipse.lsp4j.Position;
 import org.eclipse.lsp4j.TextDocumentItem;
+import org.eclipse.lsp4j.jsonrpc.messages.Either;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Node;
@@ -46,7 +48,7 @@ public class DefinitionProcessor {
 	}
 	
 	@SuppressWarnings("squid:S1452")
-	public CompletableFuture<List<? extends Location>> getDefinitions(Position position) {
+	public CompletableFuture<Either<List<? extends Location>, List<? extends LocationLink>>> getDefinitions(Position position) {
 		if (textDocumentItem.getUri().endsWith(".xml")) {
 			String camelComponentUri = parserXMLFileHelper.getCamelComponentUri(textDocumentItem, position);
 			if (camelComponentUri != null) {
@@ -60,22 +62,22 @@ public class DefinitionProcessor {
 				}
 			}
 		}
-		return CompletableFuture.completedFuture(Collections.emptyList());
+		return CompletableFuture.completedFuture(Either.forLeft(Collections.emptyList()));
 	}
 
-	private CompletableFuture<List<? extends Location>> searchEndpointsWithId(String refId) {
+	private CompletableFuture<Either<List<? extends Location>, List<? extends LocationLink>>> searchEndpointsWithId(String refId) {
 		try {
 			List<Node> allEndpoints = parserXMLFileHelper.getAllEndpoints(textDocumentItem);
 			for (Node endpoint : allEndpoints) {
 				String id = CamelXmlHelper.getSafeAttribute(endpoint, "id");
 				if (refId.equals(id)) {
-					return CompletableFuture.completedFuture(Arrays.asList(parserXMLFileHelper.retrieveLocation(endpoint, textDocumentItem)));
+					return CompletableFuture.completedFuture(Either.forLeft(Arrays.asList(parserXMLFileHelper.retrieveLocation(endpoint, textDocumentItem))));
 				}
 			}
 		} catch (Exception e) {
 			LOGGER.error("Cannot compute defintions for "+ textDocumentItem.getUri(), e);
 		}
-		return CompletableFuture.completedFuture(Collections.emptyList());
+		return CompletableFuture.completedFuture(Either.forLeft(Collections.emptyList()));
 	}
 
 }

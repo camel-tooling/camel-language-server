@@ -40,6 +40,7 @@ import org.eclipse.lsp4j.DocumentSymbolParams;
 import org.eclipse.lsp4j.InitializeParams;
 import org.eclipse.lsp4j.InitializeResult;
 import org.eclipse.lsp4j.Location;
+import org.eclipse.lsp4j.LocationLink;
 import org.eclipse.lsp4j.MessageActionItem;
 import org.eclipse.lsp4j.MessageParams;
 import org.eclipse.lsp4j.Position;
@@ -183,7 +184,7 @@ public abstract class AbstractCamelLanguageServerTest {
 		return textDocumentService.references(params);
 	}
 	
-	protected CompletableFuture<List<? extends Location>> getDefinitionsFor(CamelLanguageServer camelLanguageServer, Position position) {
+	protected CompletableFuture<Either<List<? extends Location>,List<? extends LocationLink>>> getDefinitionsFor(CamelLanguageServer camelLanguageServer, Position position) {
 		TextDocumentService textDocumentService = camelLanguageServer.getTextDocumentService();
 		TextDocumentPositionParams params = new TextDocumentPositionParams();
 		params.setPosition(position);
