@@ -22,6 +22,8 @@ import org.apache.log4j.Logger;
 import org.eclipse.lsp4j.TextDocumentItem;
 import org.junit.Test;
 
+import com.github.cameltooling.lsp.internal.CamelLanguageServer;
+import com.github.cameltooling.lsp.internal.DummyConstants;
 import com.github.cameltooling.lsp.internal.TestLogAppender;
 
 public class ParserXMLFileHelperTest {
@@ -54,7 +56,7 @@ public class ParserXMLFileHelperTest {
 				"      </camel:recipientList>\r\n" + 
 				"    </camel:route>\n"
 				+ "</camel:camelContext>\n";
-		TextDocumentItem textDocumentItem = new TextDocumentItem(null, null, 0, camel);
+		TextDocumentItem textDocumentItem = new TextDocumentItem(DummyConstants.DUMMY_URI, CamelLanguageServer.LANGUAGE_ID, 0, camel);
 		assertThat(new ParserXMLFileHelper().getRouteNodes(textDocumentItem).getLength()).isEqualTo(2);
 	}
 	
@@ -78,7 +80,7 @@ public class ParserXMLFileHelperTest {
 				"      </recipientList>\r\n" + 
 				"    </route>\n"
 				+ "</camelContext>\n";
-		TextDocumentItem textDocumentItem = new TextDocumentItem(null, null, 0, camel);
+		TextDocumentItem textDocumentItem = new TextDocumentItem(DummyConstants.DUMMY_URI, CamelLanguageServer.LANGUAGE_ID, 0, camel);
 		assertThat(new ParserXMLFileHelper().getRouteNodes(textDocumentItem).getLength()).isEqualTo(2);
 	}
 }
