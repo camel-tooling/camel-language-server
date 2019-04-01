@@ -110,7 +110,7 @@ public class DiagnosticService {
 		try {
 			CamelCatalog camelCatalogResolved = camelCatalog.get();
 			for (CamelEndpointDetails camelEndpointDetails : endpoints) {
-				EndpointValidationResult validateEndpointProperties = camelCatalogResolved.validateEndpointProperties(camelEndpointDetails.getEndpointUri(), true);
+				EndpointValidationResult validateEndpointProperties = camelCatalogResolved.validateEndpointProperties(camelEndpointDetails.getEndpointUri(), false);
 				if (validateEndpointProperties.hasErrors()) {
 					endpointErrors.put(camelEndpointDetails, validateEndpointProperties);
 				}
