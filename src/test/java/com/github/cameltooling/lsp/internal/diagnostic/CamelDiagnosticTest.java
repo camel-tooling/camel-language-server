@@ -33,6 +33,7 @@ import org.eclipse.lsp4j.Range;
 import org.eclipse.lsp4j.TextDocumentContentChangeEvent;
 import org.eclipse.lsp4j.TextDocumentIdentifier;
 import org.eclipse.lsp4j.VersionedTextDocumentIdentifier;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import com.github.cameltooling.lsp.internal.AbstractCamelLanguageServerTest;
@@ -121,6 +122,22 @@ public class CamelDiagnosticTest extends AbstractCamelLanguageServerTest {
 		camelLanguageServer.getTextDocumentService().didChange(params);
 		
 		await().timeout(AWAIT_TIMEOUT).untilAsserted(() -> assertThat(lastPublishedDiagnostics.getDiagnostics()).isEmpty());
+	}
+	
+	@Test
+	@Ignore("Not yet supported by Camel, see CAMEL-13382")
+	public void testNoErrorWithProperty() throws Exception {
+		testDiagnostic("camel-with-properties", 0, ".xml");
+	}
+	
+	@Test
+	public void testUnknowPropertyOnNonLenientPropertiesComponent() throws Exception {
+		testDiagnostic("camel-with-unknownParameter", 1, ".xml");
+	}
+	
+	@Test
+	public void testUnknowPropertyOnLenientPropertiesComponent() throws Exception {
+		testDiagnostic("camel-with-unknownParameter-forlenientcomponent", 0, ".xml");
 	}
 	
 	private void testDiagnostic(String fileUnderTest, int expectedNumberOfError, String extension) throws FileNotFoundException {
