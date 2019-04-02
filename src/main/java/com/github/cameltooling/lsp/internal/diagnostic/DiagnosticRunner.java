@@ -14,10 +14,10 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.camel.catalog.EndpointValidationResult;
+import org.apache.camel.parser.model.CamelEndpointDetails;
 import org.eclipse.lsp4j.Diagnostic;
 import org.eclipse.lsp4j.PublishDiagnosticsParams;
 
-import com.github.cameltooling.lsp.internal.CamelEndpointDetailsWrapper;
 import com.github.cameltooling.lsp.internal.CamelLanguageServer;
 
 /**
@@ -39,7 +39,7 @@ public class DiagnosticRunner {
 	}
 	
 	private void calculate() {
-		Map<CamelEndpointDetailsWrapper, EndpointValidationResult> endpointErrors = diagnosticServer.computeCamelErrors(camelText, uri);
+		Map<CamelEndpointDetails, EndpointValidationResult> endpointErrors = diagnosticServer.computeCamelErrors(camelText, uri);
 		List<Diagnostic> diagnostics = diagnosticServer.converToLSPDiagnostics(camelText, endpointErrors, camelLanguageServer.getTextDocumentService().getOpenedDocument(uri));
 		camelLanguageServer.getClient().publishDiagnostics(new PublishDiagnosticsParams(uri, diagnostics));
 	}
