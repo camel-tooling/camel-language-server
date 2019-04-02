@@ -50,7 +50,6 @@ import org.jboss.forge.roaster.model.source.JavaClassSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.github.cameltooling.lsp.internal.CamelEndpointDetailsWrapper;
 import com.github.cameltooling.lsp.internal.CamelLanguageServer;
 import com.github.cameltooling.lsp.internal.parser.ParserXMLFileHelper;
 import com.github.cameltooling.model.diagnostic.BooleanErrorMsg;
@@ -93,7 +92,7 @@ public class DiagnosticService {
 		CompletableFuture.supplyAsync(() -> new DiagnosticRunner(this, camelLanguageServer, camelText, uri));
 	}
 	
-	Map<CamelEndpointDetailsWrapper, EndpointValidationResult> computeCamelErrors(String camelText, String uri) {
+	Map<CamelEndpointDetails, EndpointValidationResult> computeCamelErrors(String camelText, String uri) {
 		List<CamelEndpointDetails> endpoints = retrieveEndpoints(uri, camelText);
 		return diagnoseEndpoints(uri, endpoints);
 	}
@@ -106,14 +105,14 @@ public class DiagnosticService {
 		return camelText;
 	}
 
-	private Map<CamelEndpointDetailsWrapper, EndpointValidationResult> diagnoseEndpoints(String uri, List<CamelEndpointDetails> endpoints) {
-		Map<CamelEndpointDetailsWrapper, EndpointValidationResult> endpointErrors = new HashMap<>();
+	private Map<CamelEndpointDetails, EndpointValidationResult> diagnoseEndpoints(String uri, List<CamelEndpointDetails> endpoints) {
+		Map<CamelEndpointDetails, EndpointValidationResult> endpointErrors = new HashMap<>();
 		try {
 			CamelCatalog camelCatalogResolved = camelCatalog.get();
 			for (CamelEndpointDetails camelEndpointDetails : endpoints) {
 				EndpointValidationResult validateEndpointProperties = camelCatalogResolved.validateEndpointProperties(camelEndpointDetails.getEndpointUri(), true);
 				if (validateEndpointProperties.hasErrors()) {
-					endpointErrors.put(new CamelEndpointDetailsWrapper(camelEndpointDetails), validateEndpointProperties);
+					endpointErrors.put(camelEndpointDetails, validateEndpointProperties);
 				}
 			}
 		} catch (InterruptedException e) {
@@ -144,11 +143,11 @@ public class DiagnosticService {
 		LOGGER.warn("Error while trying to validate the document {0}", docUri, e);
 	}
 
-	List<Diagnostic> converToLSPDiagnostics(String fullCamelText, Map<CamelEndpointDetailsWrapper, EndpointValidationResult> endpointErrors, TextDocumentItem textDocumentItem) {
+	List<Diagnostic> converToLSPDiagnostics(String fullCamelText, Map<CamelEndpointDetails, EndpointValidationResult> endpointErrors, TextDocumentItem textDocumentItem) {
 		List<Diagnostic> lspDiagnostics = new ArrayList<>();
-		for (Map.Entry<CamelEndpointDetailsWrapper, EndpointValidationResult> endpointError : endpointErrors.entrySet()) {
+		for (Map.Entry<CamelEndpointDetails, EndpointValidationResult> endpointError : endpointErrors.entrySet()) {
 			EndpointValidationResult validationResult = endpointError.getValue();
-			CamelEndpointDetails camelEndpointDetails = endpointError.getKey().getCamelEndpointDetails();
+			CamelEndpointDetails camelEndpointDetails = endpointError.getKey();
 			lspDiagnostics.add(new Diagnostic(
 					computeRange(fullCamelText, textDocumentItem, camelEndpointDetails),
 					computeErrorMessage(validationResult),
