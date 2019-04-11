@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.awaitility.Duration;
+import org.eclipse.lsp4j.Diagnostic;
 import org.eclipse.lsp4j.DidChangeTextDocumentParams;
 import org.eclipse.lsp4j.DidCloseTextDocumentParams;
 import org.eclipse.lsp4j.DidSaveTextDocumentParams;
@@ -82,6 +83,18 @@ public class CamelDiagnosticTest extends AbstractCamelLanguageServerTest {
 	@Test
 	public void testInvalidInteger() throws Exception {
 		testDiagnostic("camel-with-endpoint-integer-error", 1, ".xml");
+	}
+	
+	@Test
+	public void testValidationErrorWithSyntaxError() throws Exception {
+		testDiagnostic("camel-with-endpoint-error-withampersand", 1, ".xml");
+		Diagnostic diagnostic = lastPublishedDiagnostics.getDiagnostics().get(0);
+		assertThat(diagnostic.getMessage()).isNotNull();
+		Range range = diagnostic.getRange();
+		assertThat(range.getStart().getLine()).isEqualTo(8);
+		assertThat(range.getStart().getCharacter()).isEqualTo(16);
+		assertThat(range.getEnd().getLine()).isEqualTo(8);
+		assertThat(range.getEnd().getCharacter()).isEqualTo(43);
 	}
 	
 	@Test
