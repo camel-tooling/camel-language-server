@@ -208,11 +208,11 @@ public class DiagnosticService {
 		computeErrorMessage(validationResult, sb, validationResult.getInvalidReference(), new ReferenceErrorMsg());
 		computeErrorMessage(validationResult, sb, validationResult.getInvalidEnum(), new EnumErrorMsg());
 		computeErrorMessage(validationResult, sb, validationResult.getUnknown(), new UnknownErrorMsg());
-		computeErrorMessage(validationResult, sb, validationResult.getSyntaxError());
+		computeErrorMessage(sb, validationResult.getSyntaxError());
 		return sb.toString();
 	}
 
-	private void computeErrorMessage(EndpointValidationResult validationResult, StringBuilder sb, String syntaxError) {
+	private void computeErrorMessage(StringBuilder sb, String syntaxError) {
 		if(syntaxError != null) {
 			sb.append(syntaxError).append("\n");
 		}
