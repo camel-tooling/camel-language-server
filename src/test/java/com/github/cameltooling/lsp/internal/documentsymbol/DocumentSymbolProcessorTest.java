@@ -6,7 +6,7 @@
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -83,8 +83,8 @@ public class DocumentSymbolProcessorTest extends AbstractCamelLanguageServerTest
 				"<beans xmlns=\"http://www.springframework.org/schema/beans\"\n" + 
 				"       xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n" + 
 				"       xsi:schemaLocation=\"\n" + 
-				"       http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd\n" + 
-				"       http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring.xsd\">\n" + 
+				"       http://www.springframework.org/schema/beans https://www.springframework.org/schema/beans/spring-beans.xsd\n" + 
+				"       http://camel.apache.org/schema/spring https://camel.apache.org/schema/spring/camel-spring.xsd\">\n" + 
 				"<camelContext id=\"camel\" xmlns=\"http://camel.apache.org/schema/spring\">\r\n" + 
 				"\r\n" + 
 				"    <route id=\"a route\">\r\n" + 
