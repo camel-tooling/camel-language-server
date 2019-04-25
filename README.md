@@ -9,7 +9,7 @@
 
 camel-language-server is a server implementation that provides Camel DSL smartness.
 The server adheres to the [language server protocol](https://github.com/Microsoft/language-server-protocol)
-and can be used with any editor that supports the protocol. The server utilizes [Apache Camel](http://camel.apache.org/).
+and can be used with any editor that supports the protocol. The server utilizes [Apache Camel](https://camel.apache.org/).
 
 # Clients
 

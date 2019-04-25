@@ -1,9 +1,9 @@
 # First Time Setup
 
 0. Fork and clone the repository
-1. Install Eclipse [Oxygen Java EE](http://www.eclipse.org/downloads/packages/eclipse-ide-java-ee-developers/oxygenr)
+1. Install Eclipse [Oxygen Java EE](https://www.eclipse.org/downloads/packages/release/2019-03/r/eclipse-ide-enterprise-java-developers)
 that will have most needed already installed. Alternately,
-you can get the [Eclipse IDE for Java developers](http://www.eclipse.org/downloads/packages/eclipse-ide-java-developers/oxygenr)
+you can get the [Eclipse IDE for Java developers](https://www.eclipse.org/downloads/packages/release/2019-03/r/eclipse-ide-java-developers)
 and just install Eclipse PDE from marketplace.
 
 2. Once installed use `File > Open Projects from File System...` and
@@ -48,9 +48,9 @@ As this is an implementation of Language Server Protocol for Apache Camel, it is
 * information about LSP4J
     * LSP4J is a Java implementation of the LSP. This is library used for writing the LSP for Apache Camel
     * it is recommended to read at least the [getting started](https://github.com/eclipse/lsp4j/blob/master/documentation/README.md)
-    * LSP4J is using Future, the goal is to provide an API which is completely asynchronous for a better User Experience, see [Future javadoc](https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/Future.html) and [Vogella doc about CompletableFuture](http://www.vogella.com/tutorials/JavaConcurrency/article.html#completablefuture) and there is also a lot of tutorial on the web
+    * LSP4J is using Future, the goal is to provide an API which is completely asynchronous for a better User Experience, see [Future javadoc](https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/Future.html) and [Vogella doc about CompletableFuture](https://www.vogella.com/tutorials/JavaConcurrency/article.html#completablefuture) and there is also a lot of tutorial on the web
 * information about Camel
-    * see [official website](http://camel.apache.org/)
+    * see [official website](https://camel.apache.org/)
 
 ## LSP for Apache Camel architecture explanations
 
