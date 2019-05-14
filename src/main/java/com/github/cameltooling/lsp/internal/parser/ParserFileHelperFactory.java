@@ -30,10 +30,20 @@ public class ParserFileHelperFactory {
 			if (javaParser.getCorrespondingMethodName(textDocumentItem, line) != null) {
 				return javaParser;
 			}
+		} else if(isCamelKGroovyDSL(uri)) {
+			CamelKGroovyDSLParser camelKGroovyDSLParser = new CamelKGroovyDSLParser();
+			if (camelKGroovyDSLParser.getCorrespondingMethodName(textDocumentItem, line) != null) {
+				return camelKGroovyDSLParser;
+			}
 		}
 		return null;
 	}
 	
+	private boolean isCamelKGroovyDSL(String uri) {
+		//improve this method to provide better heuristic to detect if it is a Camel file or not
+		return uri.endsWith(".kamel.groovy");
+	}
+
 	private boolean isCamelJavaDSL(TextDocumentItem textDocumentItem, String uri) {
 		//improve this method to provide better heuristic to detect if it is a Camel file or not
 		return uri.endsWith(".java") && textDocumentItem.getText().contains("camel");
