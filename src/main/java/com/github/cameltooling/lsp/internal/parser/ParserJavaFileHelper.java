@@ -27,16 +27,17 @@ import com.github.cameltooling.lsp.internal.instancemodel.CamelURIInstance;
 public class ParserJavaFileHelper extends ParserFileHelper {
 	
 	protected static final List<String> CAMEL_POSSIBLE_TYPES = Arrays.asList("to", "from");
+	private static final char ENCLOSING_STRING_CHARACTER_FOR_JAVA = '\"';
 	
 	@Override
 	public String getCamelComponentUri(String line, int characterPosition) {
 		for (String methodName : CAMEL_POSSIBLE_TYPES) {
-			String beforeCamelURI = methodName+"(\"";
+			String beforeCamelURI = methodName + "(" + getEnclosingStringCharacter();
 			int methodPosition = line.indexOf(beforeCamelURI);
 			if (methodPosition != -1) {
 				int methodNameOffset = methodName.length() + 2;
 				int potentialStartOfCamelURI = methodPosition + methodNameOffset;
-				int nextQuote = line.indexOf('\"', potentialStartOfCamelURI);
+				int nextQuote = line.indexOf(getEnclosingStringCharacter(), potentialStartOfCamelURI);
 				if (isBetween(characterPosition, potentialStartOfCamelURI, nextQuote)) {
 					return line.substring(potentialStartOfCamelURI, nextQuote);
 				}
@@ -45,10 +46,14 @@ public class ParserJavaFileHelper extends ParserFileHelper {
 		return null;
 	}
 
+	protected char getEnclosingStringCharacter() {
+		return ENCLOSING_STRING_CHARACTER_FOR_JAVA;
+	}
+
 	public String getCorrespondingMethodName(TextDocumentItem textDocumentItem, int line) {
 		String lineString = getLine(textDocumentItem, line);
 		for (String methodName : CAMEL_POSSIBLE_TYPES) {
-			if(lineString.contains(methodName+"(\"")) {
+			if(lineString.contains(methodName + "(" + getEnclosingStringCharacter())) {
 				return methodName;
 			}
 		}
@@ -65,13 +70,13 @@ public class ParserJavaFileHelper extends ParserFileHelper {
 	}
 	
 	private int getStartCharacterInDocumentOnLinePosition(TextDocumentItem textDocumentItem, Position position) {
-		String beforeCamelURI = getCorrespondingMethodName(textDocumentItem, position.getLine()) + "(\"";
+		String beforeCamelURI = getCorrespondingMethodName(textDocumentItem, position.getLine()) + "(" + getEnclosingStringCharacter();
 		return getLine(textDocumentItem, position).indexOf(beforeCamelURI) + beforeCamelURI.length();
 	}
 
 	@Override
 	public int getPositionInCamelURI(TextDocumentItem textDocumentItem, Position position) {
-		String beforeCamelURI = getCorrespondingMethodName(textDocumentItem, position.getLine()) + "(\"";
+		String beforeCamelURI = getCorrespondingMethodName(textDocumentItem, position.getLine()) + "(" + getEnclosingStringCharacter();
 		return position.getCharacter() - getLine(textDocumentItem, position).indexOf(beforeCamelURI) - beforeCamelURI.length();
 	}
 
