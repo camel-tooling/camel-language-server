@@ -88,13 +88,24 @@ public class CamelLanguageServerTest extends AbstractCamelLanguageServerTest {
 	}
 	
 	@Test
-	public void testProvideCompletionForGroovyOnRealFile() throws Exception {
-		File f = new File("src/test/resources/workspace/sample.kamel.groovy");
+	public void testProvideCompletionForGroovyOnRealFileWithCamelKExtension() throws Exception {
+		File f = new File("src/test/resources/workspace/sample.camelk.groovy");
 		assertThat(f).exists();
 		try (FileInputStream fis = new FileInputStream(f)) {
-			CamelLanguageServer cls = initializeLanguageServer(fis, ".kamel.groovy");
+			CamelLanguageServer cls = initializeLanguageServer(fis, ".camelk.groovy");
 			CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = getCompletionFor(cls, new Position(0, 6));
 			assertThat(completions.get().getLeft()).contains(createExpectedAhcCompletionItem(0, 6, 0, 25));
+		}
+	}
+	
+	@Test
+	public void testProvideCompletionForGroovyOnRealFileWithCamelKShebang() throws Exception {
+		File f = new File("src/test/resources/workspace/samplewithshebang.groovy");
+		assertThat(f).exists();
+		try (FileInputStream fis = new FileInputStream(f)) {
+			CamelLanguageServer cls = initializeLanguageServer(fis, ".groovy");
+			CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = getCompletionFor(cls, new Position(2, 6));
+			assertThat(completions.get().getLeft()).contains(createExpectedAhcCompletionItem(2, 6, 2, 25));
 		}
 	}
 	
