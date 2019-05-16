@@ -20,6 +20,9 @@ import org.eclipse.lsp4j.TextDocumentItem;
 
 public class ParserFileHelperFactory {
 	
+	private static final String CAMELK_GROOVY_FILENAME_SUFFIX = ".camelk.groovy";
+	private static final String SHEBANG_CAMEL_K = "#!/usr/bin/env camel-k";
+
 	public ParserFileHelper getCorrespondingParserFileHelper(TextDocumentItem textDocumentItem, int line) {
 		ParserXMLFileHelper xmlParser = new ParserXMLFileHelper();
 		String uri = textDocumentItem.getUri();
@@ -30,7 +33,7 @@ public class ParserFileHelperFactory {
 			if (javaParser.getCorrespondingMethodName(textDocumentItem, line) != null) {
 				return javaParser;
 			}
-		} else if(isCamelKGroovyDSL(uri)) {
+		} else if(isCamelKGroovyDSL(textDocumentItem, uri)) {
 			CamelKGroovyDSLParser camelKGroovyDSLParser = new CamelKGroovyDSLParser();
 			if (camelKGroovyDSLParser.getCorrespondingMethodName(textDocumentItem, line) != null) {
 				return camelKGroovyDSLParser;
@@ -39,9 +42,9 @@ public class ParserFileHelperFactory {
 		return null;
 	}
 	
-	private boolean isCamelKGroovyDSL(String uri) {
+	private boolean isCamelKGroovyDSL(TextDocumentItem textDocumentItem, String uri) {
 		//improve this method to provide better heuristic to detect if it is a Camel file or not
-		return uri.endsWith(".kamel.groovy");
+		return uri.endsWith(CAMELK_GROOVY_FILENAME_SUFFIX) || uri.endsWith(".groovy") && textDocumentItem.getText().startsWith(SHEBANG_CAMEL_K);
 	}
 
 	private boolean isCamelJavaDSL(TextDocumentItem textDocumentItem, String uri) {
