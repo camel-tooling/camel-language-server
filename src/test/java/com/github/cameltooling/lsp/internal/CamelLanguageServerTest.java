@@ -110,6 +110,17 @@ public class CamelLanguageServerTest extends AbstractCamelLanguageServerTest {
 	}
 	
 	@Test
+	public void testProvideCompletionForGroovyOnRealFileWithCamelKCloseToModeline() throws Exception {
+		File f = new File("src/test/resources/workspace/samplewithModelineLike.groovy");
+		assertThat(f).exists();
+		try (FileInputStream fis = new FileInputStream(f)) {
+			CamelLanguageServer cls = initializeLanguageServer(fis, ".groovy");
+			CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = getCompletionFor(cls, new Position(2, 6));
+			assertThat(completions.get().getLeft()).contains(createExpectedAhcCompletionItem(2, 6, 2, 25));
+		}
+	}
+	
+	@Test
 	public void testProvideCompletionforMultilineXmlFile() throws Exception {
 		CamelLanguageServer camelLanguageServer = initializeLanguageServer(
 				"<camelContext xmlns=\"http://camel.apache.org/schema/spring\">\n" + 

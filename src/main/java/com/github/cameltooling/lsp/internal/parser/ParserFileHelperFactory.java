@@ -22,6 +22,7 @@ public class ParserFileHelperFactory {
 	
 	private static final String CAMELK_GROOVY_FILENAME_SUFFIX = ".camelk.groovy";
 	private static final String SHEBANG_CAMEL_K = "#!/usr/bin/env camel-k";
+	private static final String MODELINE_LIKE_CAMEL_K = "// camel-k:";
 
 	public ParserFileHelper getCorrespondingParserFileHelper(TextDocumentItem textDocumentItem, int line) {
 		ParserXMLFileHelper xmlParser = new ParserXMLFileHelper();
@@ -44,7 +45,17 @@ public class ParserFileHelperFactory {
 	
 	private boolean isCamelKGroovyDSL(TextDocumentItem textDocumentItem, String uri) {
 		//improve this method to provide better heuristic to detect if it is a Camel file or not
-		return uri.endsWith(CAMELK_GROOVY_FILENAME_SUFFIX) || uri.endsWith(".groovy") && textDocumentItem.getText().startsWith(SHEBANG_CAMEL_K);
+		return uri.endsWith(CAMELK_GROOVY_FILENAME_SUFFIX)
+				|| isGroovyFileWithCamelKShebang(textDocumentItem, uri)
+				|| isGroovyFileWithCamelKModelineLike(textDocumentItem, uri);
+	}
+
+	private boolean isGroovyFileWithCamelKModelineLike(TextDocumentItem textDocumentItem, String uri) {
+		return uri.endsWith(".groovy") && textDocumentItem.getText().startsWith(MODELINE_LIKE_CAMEL_K);
+	}
+
+	protected boolean isGroovyFileWithCamelKShebang(TextDocumentItem textDocumentItem, String uri) {
+		return uri.endsWith(".groovy") && textDocumentItem.getText().startsWith(SHEBANG_CAMEL_K);
 	}
 
 	private boolean isCamelJavaDSL(TextDocumentItem textDocumentItem, String uri) {
