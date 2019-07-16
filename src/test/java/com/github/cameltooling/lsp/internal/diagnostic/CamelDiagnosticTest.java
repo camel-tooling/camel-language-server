@@ -34,8 +34,8 @@ import org.eclipse.lsp4j.Range;
 import org.eclipse.lsp4j.TextDocumentContentChangeEvent;
 import org.eclipse.lsp4j.TextDocumentIdentifier;
 import org.eclipse.lsp4j.VersionedTextDocumentIdentifier;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
 import com.github.cameltooling.lsp.internal.AbstractCamelLanguageServerTest;
 import com.github.cameltooling.lsp.internal.CamelLanguageServer;
@@ -138,7 +138,7 @@ public class CamelDiagnosticTest extends AbstractCamelLanguageServerTest {
 	}
 	
 	@Test
-	@Ignore("Not yet supported by Camel, see CAMEL-13382")
+	@Disabled("Not yet supported by Camel, see CAMEL-13382")
 	public void testNoErrorWithProperty() throws Exception {
 		testDiagnostic("camel-with-properties", 0, ".xml");
 	}

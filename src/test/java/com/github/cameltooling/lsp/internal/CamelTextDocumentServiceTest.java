@@ -29,9 +29,7 @@ import org.eclipse.lsp4j.Position;
 import org.eclipse.lsp4j.TextDocumentContentChangeEvent;
 import org.eclipse.lsp4j.VersionedTextDocumentIdentifier;
 import org.eclipse.lsp4j.jsonrpc.messages.Either;
-import org.junit.Test;
-
-import com.github.cameltooling.lsp.internal.CamelLanguageServer;
+import org.junit.jupiter.api.Test;
 
 public class CamelTextDocumentServiceTest extends AbstractCamelLanguageServerTest {
 	

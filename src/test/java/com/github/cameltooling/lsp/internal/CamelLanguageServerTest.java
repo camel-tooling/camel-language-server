@@ -29,8 +29,8 @@ import org.eclipse.lsp4j.CompletionItem;
 import org.eclipse.lsp4j.CompletionList;
 import org.eclipse.lsp4j.Position;
 import org.eclipse.lsp4j.jsonrpc.messages.Either;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
 import com.github.cameltooling.lsp.internal.completion.CamelEndpointCompletionProcessor;
 
@@ -100,7 +100,7 @@ public class CamelLanguageServerTest extends AbstractCamelLanguageServerTest {
 	}
 
 	@Test
-	@Ignore("activate when support of multiline is implemented camel-tooling/camel-language-server#34")
+	@Disabled("activate when support of multiline is implemented camel-tooling/camel-language-server#34")
 	public void testProvideCompletionforMultilineURI() throws Exception {
 		CamelLanguageServer camelLanguageServer = initializeLanguageServer(
 				"<camelContext xmlns=\"http://camel.apache.org/schema/spring\">\n" + 

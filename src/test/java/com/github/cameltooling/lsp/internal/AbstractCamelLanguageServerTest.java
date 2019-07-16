@@ -56,7 +56,7 @@ import org.eclipse.lsp4j.TextEdit;
 import org.eclipse.lsp4j.jsonrpc.messages.Either;
 import org.eclipse.lsp4j.services.LanguageClient;
 import org.eclipse.lsp4j.services.TextDocumentService;
-import org.junit.After;
+import org.junit.jupiter.api.AfterEach;
 
 public abstract class AbstractCamelLanguageServerTest {
 
@@ -72,7 +72,7 @@ public abstract class AbstractCamelLanguageServerTest {
 		super();
 	}
 	
-	@After
+	@AfterEach
 	public void tearDown() {
 		if (camelLanguageServer != null) {
 			camelLanguageServer.stopServer();
