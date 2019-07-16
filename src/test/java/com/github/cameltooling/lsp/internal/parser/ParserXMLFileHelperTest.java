@@ -20,7 +20,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import org.apache.log4j.Logger;
 import org.eclipse.lsp4j.TextDocumentItem;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.github.cameltooling.lsp.internal.CamelLanguageServer;
 import com.github.cameltooling.lsp.internal.DummyConstants;

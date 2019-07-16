@@ -17,21 +17,19 @@
 package com.github.cameltooling.lsp.internal.completion;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.params.provider.Arguments.arguments;
 
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.stream.Stream;
 
 import org.eclipse.lsp4j.CompletionItem;
 import org.eclipse.lsp4j.CompletionList;
 import org.eclipse.lsp4j.Position;
 import org.eclipse.lsp4j.jsonrpc.messages.Either;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-import org.junit.runners.Parameterized.Parameter;
-import org.junit.runners.Parameterized.Parameters;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import com.github.cameltooling.lsp.internal.AbstractCamelLanguageServerTest;
 import com.github.cameltooling.lsp.internal.CamelLanguageServer;
@@ -39,34 +37,20 @@ import com.github.cameltooling.lsp.internal.CamelLanguageServer;
 /**
  * @author lheinema
  */
-@RunWith(Parameterized.class)
 public class CamelEndpointOptionDuplicateTest extends AbstractCamelLanguageServerTest {
 	
-	@Parameters(name="{4} - Position ({1},{2})")
-    public static Collection<Object[]> data() {
-    	return Arrays.asList(new Object[][] {
-    		
+    public static Stream<Arguments> data() {
+    	return Stream.of(
     		// test for duplicate filtering of uri params
-    		{ "<from uri=\"file:bla?noop=false&amp;\" xmlns=\"http://camel.apache.org/schema/blueprint\"></from>\n", 						0, 35, "URI with duplicate option noop", 					"noop" },
-    		{ "<from uri=\"file:bla?noop=false&amp;recursive=true&amp;\" xmlns=\"http://camel.apache.org/schema/blueprint\"></from>\n", 	0, 54, "URI with duplicate option recursive", 				"recursive" },
-    		{ "<from uri=\"file:bla?noop=false&amp;recursive=true&amp;\" xmlns=\"http://camel.apache.org/schema/blueprint\"></from>\n", 	0, 54, "URI with duplicate option noop after recursive", 	"noop" },
-    		
-    	});
+    		arguments("<from uri=\"file:bla?noop=false&amp;\" xmlns=\"http://camel.apache.org/schema/blueprint\"></from>\n", 						0, 35, "URI with duplicate option noop", 					"noop"),
+    		arguments("<from uri=\"file:bla?noop=false&amp;recursive=true&amp;\" xmlns=\"http://camel.apache.org/schema/blueprint\"></from>\n", 	0, 54, "URI with duplicate option recursive", 				"recursive"),
+    		arguments("<from uri=\"file:bla?noop=false&amp;recursive=true&amp;\" xmlns=\"http://camel.apache.org/schema/blueprint\"></from>\n", 	0, 54, "URI with duplicate option noop after recursive", 	"noop")
+    	);
     }
-    
-    @Parameter
-    public String textToTest;
-    @Parameter(1)
-    public int line;
-    @Parameter(2)
-    public int character;
-    @Parameter(3)
-    public String testNameQualification;
-    @Parameter(4)
-    public String excludedString;
-	
-	@Test
-	public void testProvideCompletionForCamelBlueprintNamespace() throws Exception {
+    	
+	@ParameterizedTest(name="{4} - Position ({1},{2})")
+	@MethodSource("data")
+	public void testProvideCompletionForCamelBlueprintNamespace(String textToTest, int line, int character, String testNameQualification, String excludedString) throws Exception {
 		CamelLanguageServer camelLanguageServer = initializeLanguageServer(textToTest);
 		
 		CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = getCompletionFor(camelLanguageServer, new Position(line, character));
