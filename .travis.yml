@@ -25,7 +25,7 @@ jobs:
         - mvn test -P !build-extras -B
     - stage: deploy
       name: "Sonar Analysis and Deployment"
-      jdk: oraclejdk8
+      jdk: openjdk8
       before_install: "export VERSION_SUFFIX=`grep '<version>' pom.xml -m 1 | cut -d'>' -f 2 | cut -d'<' -f 1 | cut -d'-' -f 2`"
       script:
         - if [[ $VERSION_SUFFIX == "SNAPSHOT" ]]; then
