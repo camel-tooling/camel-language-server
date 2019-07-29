@@ -110,6 +110,17 @@ public class CamelLanguageServerTest extends AbstractCamelLanguageServerTest {
 	}
 	
 	@Test
+	public void testProvideCompletionForKotlinOnRealFileWithCamelKExtension() throws Exception {
+		File f = new File("src/test/resources/workspace/sample.camelk.kts");
+		assertThat(f).exists();
+		try (FileInputStream fis = new FileInputStream(f)) {
+			CamelLanguageServer cls = initializeLanguageServer(fis, ".camelk.kts");
+			CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = getCompletionFor(cls, new Position(0, 6));
+			assertThat(completions.get().getLeft()).contains(createExpectedAhcCompletionItem(0, 6, 0, 18));
+		}
+	}
+	
+	@Test
 	public void testProvideCompletionForGroovyOnRealFileWithCamelKCloseToModeline() throws Exception {
 		File f = new File("src/test/resources/workspace/samplewithModelineLike.groovy");
 		assertThat(f).exists();
@@ -139,6 +150,16 @@ public class CamelLanguageServerTest extends AbstractCamelLanguageServerTest {
 			CamelLanguageServer cls = initializeLanguageServer(fis, ".properties");
 			CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = getCompletionFor(cls, new Position(8, 17));
 			assertThat(completions.get().getLeft()).contains(createExpectedAhcCompletionItem(8, 17, 8, 32));
+		}
+	}
+
+	public void testProvideCompletionForkotlinOnRealFileWithCamelKCloseToModeline() throws Exception {
+		File f = new File("src/test/resources/workspace/sampleWithModelineLike.kts");
+		assertThat(f).exists();
+		try (FileInputStream fis = new FileInputStream(f)) {
+			CamelLanguageServer cls = initializeLanguageServer(fis, ".kts");
+			CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = getCompletionFor(cls, new Position(2, 6));
+			assertThat(completions.get().getLeft()).contains(createExpectedAhcCompletionItem(2, 6, 2, 18));
 		}
 	}
 	
