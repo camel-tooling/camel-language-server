@@ -21,6 +21,7 @@ import org.eclipse.lsp4j.TextDocumentItem;
 public class ParserFileHelperFactory {
 	
 	private static final String CAMELK_GROOVY_FILENAME_SUFFIX = ".camelk.groovy";
+	private static final String CAMELK_KOTLIN_FILENAME_SUFFIX = ".camelk.kts";
 	private static final String SHEBANG_CAMEL_K = "#!/usr/bin/env camel-k";
 	private static final String MODELINE_LIKE_CAMEL_K = "// camel-k:";
 
@@ -44,6 +45,11 @@ public class ParserFileHelperFactory {
 			if (camelKafkaConnectDSLParser.getCorrespondingMethodName(textDocumentItem, line) != null) {
 				return camelKafkaConnectDSLParser;
 			}
+		} else if(isCamelKKotlinDSL(textDocumentItem, uri)) {
+			CamelKKotlinDSLParser camelKKotlinDSLParser = new CamelKKotlinDSLParser();
+			if (camelKKotlinDSLParser.getCorrespondingMethodName(textDocumentItem, line) != null) {
+				return camelKKotlinDSLParser;
+			}
 		}
 		return null;
 	}
@@ -57,6 +63,16 @@ public class ParserFileHelperFactory {
 		String text = textDocumentItem.getText();
 		return text.contains(CamelKafkaConnectDSLParser.CAMEL_SINK_URL)
 				|| text.contains(CamelKafkaConnectDSLParser.CAMEL_SOURCE_URL);
+	}
+
+	private boolean isCamelKKotlinDSL(TextDocumentItem textDocumentItem, String uri) {
+		//improve this method to provide better heuristic to detect if it is a Camel file or not
+		return uri.endsWith(CAMELK_KOTLIN_FILENAME_SUFFIX)
+				|| isKotlinFileWithCamelKModelineLike(textDocumentItem, uri);
+	}
+
+	private boolean isKotlinFileWithCamelKModelineLike(TextDocumentItem textDocumentItem, String uri) {
+		return uri.endsWith(".kts") && textDocumentItem.getText().startsWith(MODELINE_LIKE_CAMEL_K);
 	}
 
 	private boolean isCamelKGroovyDSL(TextDocumentItem textDocumentItem, String uri) {
