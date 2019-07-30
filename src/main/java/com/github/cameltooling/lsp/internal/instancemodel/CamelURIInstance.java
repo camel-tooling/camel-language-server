@@ -65,6 +65,13 @@ public class CamelURIInstance extends CamelUriElementInstance {
 		init(uriToParse);
 	}
 	
+	public CamelURIInstance(String uriToParse, DSLModelHelper dslModelHelper, TextDocumentItem textDocumentItem) {
+		super(0, uriToParse != null ? uriToParse.length() : 0);
+		setDocument(textDocumentItem);
+		this.dslModelHelper = dslModelHelper;
+		init(uriToParse);
+	}
+	
 	private void init(String uriToParse) {
 		if(uriToParse != null && !uriToParse.isEmpty()) {
 			int posQuestionMark = uriToParse.indexOf('?');
