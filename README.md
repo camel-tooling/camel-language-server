@@ -17,10 +17,14 @@ These clients are available:
 * [Eclipse IDE](https://github.com/camel-tooling/camel-lsp-client-eclipse)
 * [VS Code](https://github.com/camel-tooling/camel-lsp-client-vscode)
 * [Eclipse Che](https://github.com/eclipse/che/pull/8648)
+* [Atom Editor](https://github.com/camel-tooling/camel-lsp-client-atom)
+
+Manual configuration is possible with:
+* [Sublime Text](https://github.com/camel-tooling/camel-lsp-client-sublime)
 
 Help is welcome to provide more client implementations, especially for:
+* [Emacs](https://github.com/camel-tooling/camel-lsp-client-emacs)
 * [Eclipse Theia](https://github.com/camel-tooling/camel-lsp-client-theia)
-
 
 ## Features
 
