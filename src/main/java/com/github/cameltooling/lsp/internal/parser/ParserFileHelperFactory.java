@@ -39,10 +39,26 @@ public class ParserFileHelperFactory {
 			if (camelKGroovyDSLParser.getCorrespondingMethodName(textDocumentItem, line) != null) {
 				return camelKGroovyDSLParser;
 			}
+		} else if(isCamelKafkaConnectDSL(textDocumentItem, uri)) {
+			CamelKafkaConnectDSLParser camelKafkaConnectDSLParser = new CamelKafkaConnectDSLParser();
+			if (camelKafkaConnectDSLParser.getCorrespondingMethodName(textDocumentItem, line) != null) {
+				return camelKafkaConnectDSLParser;
+			}
 		}
 		return null;
 	}
 	
+	private boolean isCamelKafkaConnectDSL(TextDocumentItem textDocumentItem, String uri) {
+		return uri.endsWith(".properties")
+				&& containsCamelKafkaConnectPropertyKey(textDocumentItem);
+	}
+
+	protected boolean containsCamelKafkaConnectPropertyKey(TextDocumentItem textDocumentItem) {
+		String text = textDocumentItem.getText();
+		return text.contains(CamelKafkaConnectDSLParser.CAMEL_SINK_URL)
+				|| text.contains(CamelKafkaConnectDSLParser.CAMEL_SOURCE_URL);
+	}
+
 	private boolean isCamelKGroovyDSL(TextDocumentItem textDocumentItem, String uri) {
 		//improve this method to provide better heuristic to detect if it is a Camel file or not
 		return uri.endsWith(CAMELK_GROOVY_FILENAME_SUFFIX)

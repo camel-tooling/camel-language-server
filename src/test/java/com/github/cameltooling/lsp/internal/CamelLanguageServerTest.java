@@ -121,6 +121,28 @@ public class CamelLanguageServerTest extends AbstractCamelLanguageServerTest {
 	}
 	
 	@Test
+	public void testProvideCompletionForCamelKafkaConnectPropertySink() throws Exception {
+		File f = new File("src/test/resources/workspace/camelKafkaconnectSink.properties");
+		assertThat(f).exists();
+		try (FileInputStream fis = new FileInputStream(f)) {
+			CamelLanguageServer cls = initializeLanguageServer(fis, ".properties");
+			CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = getCompletionFor(cls, new Position(7, 15));
+			assertThat(completions.get().getLeft()).contains(createExpectedAhcCompletionItem(7, 15, 7, 25));
+		}
+	}
+	
+	@Test
+	public void testProvideCompletionForCamelKafkaConnectPropertySource() throws Exception {
+		File f = new File("src/test/resources/workspace/camelKafkaconnectSource.properties");
+		assertThat(f).exists();
+		try (FileInputStream fis = new FileInputStream(f)) {
+			CamelLanguageServer cls = initializeLanguageServer(fis, ".properties");
+			CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = getCompletionFor(cls, new Position(8, 17));
+			assertThat(completions.get().getLeft()).contains(createExpectedAhcCompletionItem(8, 17, 8, 32));
+		}
+	}
+	
+	@Test
 	public void testProvideCompletionforMultilineXmlFile() throws Exception {
 		CamelLanguageServer camelLanguageServer = initializeLanguageServer(
 				"<camelContext xmlns=\"http://camel.apache.org/schema/spring\">\n" + 
