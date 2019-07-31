@@ -16,8 +16,13 @@
  */
 package com.github.cameltooling.lsp.internal;
 
+import java.util.Arrays;
+
 import org.eclipse.lsp4j.jsonrpc.Launcher;
+import org.eclipse.lsp4j.launch.LSPLauncher;
 import org.eclipse.lsp4j.services.LanguageClient;
+
+import com.github.cameltooling.lsp.internal.websocket.WebSocketRunner;
 
 /**
  * @author lhein
@@ -25,9 +30,12 @@ import org.eclipse.lsp4j.services.LanguageClient;
 public class Runner {
 
 	public static void main(String[] args) {
-		CamelLanguageServer server = new CamelLanguageServer();
-		Launcher<LanguageClient> launcher = Launcher.createLauncher(server, LanguageClient.class, System.in, System.out);
-		server.connect(launcher.getRemoteProxy());
-		launcher.startListening();
+		if (Arrays.asList(args).contains("--websocket")) {
+			new WebSocketRunner().runWebSocketServer();
+		} else {
+			CamelLanguageServer server = new CamelLanguageServer();
+			Launcher<LanguageClient> launcher = LSPLauncher.createServerLauncher(server, System.in, System.out);
+			launcher.startListening();
+		}
 	}
 }

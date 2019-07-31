@@ -21,6 +21,7 @@ These clients are available:
 
 Manual configuration is possible with:
 * [Sublime Text](https://github.com/camel-tooling/camel-lsp-client-sublime)
+* [CodeMirror](https://github.com/camel-tooling/camel-lsp-client-codemirror)
 
 Help is welcome to provide more client implementations, especially for:
 * [Emacs](https://github.com/camel-tooling/camel-lsp-client-emacs)
@@ -42,6 +43,11 @@ On hover, the documentation of the Camel component is available.
 
 On save, diagnostics on Camel URIs are updated:
 ![Diagnostic on Camel URI](./images/diagnostic.png "Diagnostic on Camel URI")
+
+### Websocket support
+
+Connection through websocket is supported. The server needs to be launched with `--websocket` option. Then, the connection can be made through
+`ws://<yourHostName>:8025/camel-language-server`
 
 ## Features planned
 
