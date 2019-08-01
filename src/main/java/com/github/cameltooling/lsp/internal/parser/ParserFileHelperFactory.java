@@ -22,6 +22,7 @@ public class ParserFileHelperFactory {
 	
 	private static final String CAMELK_GROOVY_FILENAME_SUFFIX = ".camelk.groovy";
 	private static final String CAMELK_KOTLIN_FILENAME_SUFFIX = ".camelk.kts";
+	private static final String CAMELK_JS_FILENAME_SUFFIX = ".camelk.js";
 	private static final String SHEBANG_CAMEL_K = "#!/usr/bin/env camel-k";
 	private static final String MODELINE_LIKE_CAMEL_K = "// camel-k:";
 
@@ -50,10 +51,25 @@ public class ParserFileHelperFactory {
 			if (camelKKotlinDSLParser.getCorrespondingMethodName(textDocumentItem, line) != null) {
 				return camelKKotlinDSLParser;
 			}
+		} else if(isCamelKJSDSL(textDocumentItem, uri)) {
+			CamelKJSDSLParser camelKJSDSLParser = new CamelKJSDSLParser();
+			if (camelKJSDSLParser.getCorrespondingMethodName(textDocumentItem, line) != null) {
+				return camelKJSDSLParser;
+			}
 		}
 		return null;
 	}
 	
+	private boolean isCamelKJSDSL(TextDocumentItem textDocumentItem, String uri) {
+		//improve this method to provide better heuristic to detect if it is a Camel file or not
+		return uri.endsWith(CAMELK_JS_FILENAME_SUFFIX)
+				|| isJSFileWithCamelKModelineLike(textDocumentItem, uri);
+	}
+
+	private boolean isJSFileWithCamelKModelineLike(TextDocumentItem textDocumentItem, String uri) {
+		return uri.endsWith(".js") && textDocumentItem.getText().startsWith(MODELINE_LIKE_CAMEL_K);
+	}
+
 	private boolean isCamelKafkaConnectDSL(TextDocumentItem textDocumentItem, String uri) {
 		return uri.endsWith(".properties")
 				&& containsCamelKafkaConnectPropertyKey(textDocumentItem);
