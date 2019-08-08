@@ -179,12 +179,12 @@ public class ParserXMLFileHelper extends ParserFileHelper {
 	}
 
 	private int getStartCharacterInDocumentOnLinePosition(TextDocumentItem textDocumentItem, Position position) {
-		return getLine(textDocumentItem, position.getLine()).indexOf(URI_PARAM) + 1 + URI_PARAM.length();
+		return parserFileHelperUtil.getLine(textDocumentItem, position.getLine()).indexOf(URI_PARAM) + 1 + URI_PARAM.length();
 	}
 
 	@Override
 	public int getPositionInCamelURI(TextDocumentItem textDocumentItem, Position position) {
-		return position.getCharacter() - getLine(textDocumentItem, position).indexOf(URI_PARAM) - 5;
+		return position.getCharacter() - parserFileHelperUtil.getLine(textDocumentItem, position).indexOf(URI_PARAM) - 5;
 	}
 
 	public List<Node> getAllEndpoints(TextDocumentItem textDocumentItem) throws Exception {

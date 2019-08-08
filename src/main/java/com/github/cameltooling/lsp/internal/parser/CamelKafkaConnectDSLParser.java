@@ -70,18 +70,18 @@ public class CamelKafkaConnectDSLParser extends ParserFileHelper {
 	}
 
 	private int getStartCharacterInDocumentOnLinePosition(TextDocumentItem textDocumentItem, Position position) {
-		String line = getLine(textDocumentItem, position.getLine());
+		String line = parserFileHelperUtil.getLine(textDocumentItem, position.getLine());
 		return line.indexOf('=') + 1;
 	}
 
 	@Override
 	public int getPositionInCamelURI(TextDocumentItem textDocumentItem, Position position) {
-		String line = getLine(textDocumentItem, position.getLine());
+		String line = parserFileHelperUtil.getLine(textDocumentItem, position.getLine());
 		return position.getCharacter() - line.indexOf('=') - 1;
 	}
 
 	public String getCorrespondingMethodName(TextDocumentItem textDocumentItem, int lineNumber) {
-		String line = getLine(textDocumentItem, lineNumber);
+		String line = parserFileHelperUtil.getLine(textDocumentItem, lineNumber);
 		if (line.startsWith(CAMEL_SINK_URL)) {
 			return "to";
 		} else if(line.startsWith(CAMEL_SOURCE_URL)) {

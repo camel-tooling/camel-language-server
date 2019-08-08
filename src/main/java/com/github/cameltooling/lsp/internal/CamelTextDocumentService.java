@@ -61,6 +61,7 @@ import org.eclipse.lsp4j.services.TextDocumentService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.github.cameltooling.lsp.internal.completion.CamelApplicationPropertiesCompletionProcessor;
 import com.github.cameltooling.lsp.internal.completion.CamelEndpointCompletionProcessor;
 import com.github.cameltooling.lsp.internal.definition.DefinitionProcessor;
 import com.github.cameltooling.lsp.internal.diagnostic.DiagnosticService;
@@ -88,7 +89,11 @@ public class CamelTextDocumentService implements TextDocumentService {
 		String uri = completionParams.getTextDocument().getUri();
 		LOGGER.info("completion: {}", uri);
 		TextDocumentItem textDocumentItem = openedDocuments.get(uri);
-		return new CamelEndpointCompletionProcessor(textDocumentItem, camelCatalog).getCompletions(completionParams.getPosition()).thenApply(Either::forLeft);
+		if(uri.endsWith("application.properties")) {
+			return new CamelApplicationPropertiesCompletionProcessor(textDocumentItem).getCompletions(completionParams.getPosition()).thenApply(Either::forLeft);
+		} else {
+			return new CamelEndpointCompletionProcessor(textDocumentItem, camelCatalog).getCompletions(completionParams.getPosition()).thenApply(Either::forLeft);
+		}
 	}
 
 	@Override

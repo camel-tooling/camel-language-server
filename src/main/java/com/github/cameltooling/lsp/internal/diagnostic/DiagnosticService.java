@@ -51,7 +51,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.github.cameltooling.lsp.internal.CamelLanguageServer;
-import com.github.cameltooling.lsp.internal.parser.ParserXMLFileHelper;
+import com.github.cameltooling.lsp.internal.parser.ParserFileHelperUtil;
 import com.github.cameltooling.model.diagnostic.BooleanErrorMsg;
 import com.github.cameltooling.model.diagnostic.CamelDiagnosticEndpointMessage;
 import com.github.cameltooling.model.diagnostic.EnumErrorMsg;
@@ -160,7 +160,7 @@ public class DiagnosticService {
 
 	private Range computeRange(String fullCamelText, TextDocumentItem textDocumentItem, CamelEndpointDetails camelEndpointDetails) {
 		int endLine = camelEndpointDetails.getLineNumberEnd() != null ? Integer.valueOf(camelEndpointDetails.getLineNumberEnd()) - 1 : findLine(fullCamelText, camelEndpointDetails);
-		String lineContainingTheCamelURI = new ParserXMLFileHelper().getLine(textDocumentItem, endLine);
+		String lineContainingTheCamelURI = new ParserFileHelperUtil().getLine(textDocumentItem, endLine);
 		String endpointUri = camelEndpointDetails.getEndpointUri();
 		int startOfUri = lineContainingTheCamelURI.indexOf(endpointUri);
 		int startLinePosition;

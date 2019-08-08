@@ -23,24 +23,12 @@ import com.github.cameltooling.lsp.internal.instancemodel.CamelURIInstance;
 
 public abstract class ParserFileHelper {
 	
-	public String getLine(TextDocumentItem textDocumentItem, Position position) {
-		int line = position.getLine();
-		return getLine(textDocumentItem, line);
-	}
-	
-	public String getLine(TextDocumentItem textDocumentItem, int line) {
-		String text = textDocumentItem.getText();
-		String[] lines = text.split("\\r?\\n", line + 2);
-		if (lines.length >= line + 1) {
-			return lines[line];
-		}
-		return null;
-	}
+	protected ParserFileHelperUtil parserFileHelperUtil = new ParserFileHelperUtil();
 	
 	public abstract String getCamelComponentUri(String line, int characterPosition);
 	
 	public String getCamelComponentUri(TextDocumentItem textDocumentItem, Position position) {
-		return getCamelComponentUri(getLine(textDocumentItem, position), position.getCharacter());
+		return getCamelComponentUri(parserFileHelperUtil.getLine(textDocumentItem, position), position.getCharacter());
 	}
 	
 	protected boolean isBetween(int position, int start, int end) {

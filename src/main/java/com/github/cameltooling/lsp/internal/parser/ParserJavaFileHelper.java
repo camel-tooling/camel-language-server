@@ -51,7 +51,7 @@ public class ParserJavaFileHelper extends ParserFileHelper {
 	}
 
 	public String getCorrespondingMethodName(TextDocumentItem textDocumentItem, int line) {
-		String lineString = getLine(textDocumentItem, line);
+		String lineString = parserFileHelperUtil.getLine(textDocumentItem, line);
 		for (String methodName : CAMEL_POSSIBLE_TYPES) {
 			if(lineString.contains(methodName + "(" + getEnclosingStringCharacter())) {
 				return methodName;
@@ -71,13 +71,13 @@ public class ParserJavaFileHelper extends ParserFileHelper {
 	
 	private int getStartCharacterInDocumentOnLinePosition(TextDocumentItem textDocumentItem, Position position) {
 		String beforeCamelURI = getCorrespondingMethodName(textDocumentItem, position.getLine()) + "(" + getEnclosingStringCharacter();
-		return getLine(textDocumentItem, position).indexOf(beforeCamelURI) + beforeCamelURI.length();
+		return parserFileHelperUtil.getLine(textDocumentItem, position).indexOf(beforeCamelURI) + beforeCamelURI.length();
 	}
 
 	@Override
 	public int getPositionInCamelURI(TextDocumentItem textDocumentItem, Position position) {
 		String beforeCamelURI = getCorrespondingMethodName(textDocumentItem, position.getLine()) + "(" + getEnclosingStringCharacter();
-		return position.getCharacter() - getLine(textDocumentItem, position).indexOf(beforeCamelURI) - beforeCamelURI.length();
+		return position.getCharacter() - parserFileHelperUtil.getLine(textDocumentItem, position).indexOf(beforeCamelURI) - beforeCamelURI.length();
 	}
 
 }

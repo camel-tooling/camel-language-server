@@ -115,6 +115,10 @@ public abstract class AbstractCamelLanguageServerTest {
 	protected CamelLanguageServer initializeLanguageServer(String text) throws URISyntaxException, InterruptedException, ExecutionException {
 		return initializeLanguageServer(text, ".xml");
 	}
+	
+	protected CamelLanguageServer initializeLanguageServerWithFileName(String text, String filename) throws URISyntaxException, InterruptedException, ExecutionException {
+		return initializeLanguageServer(filename.substring(filename.lastIndexOf('.'), filename.length()), createTestTextDocumentWithFilename(text, filename));
+	}
 
 	protected CamelLanguageServer initializeLanguageServer(String text, String suffixFileName) throws URISyntaxException, InterruptedException, ExecutionException {
 		return initializeLanguageServer(suffixFileName, createTestTextDocument(text, suffixFileName));
@@ -154,16 +158,30 @@ public abstract class AbstractCamelLanguageServerTest {
         }
 	}
 	
+	protected CamelLanguageServer initializeLanguageServerWithFileName(FileInputStream stream, String fileName) {
+		try (BufferedReader buffer = new BufferedReader(new InputStreamReader(stream))) {
+            return initializeLanguageServerWithFileName(buffer.lines().collect(Collectors.joining("\n")), fileName);
+        } catch (ExecutionException | InterruptedException | URISyntaxException | IOException ex) {
+        	return null;
+        }
+	}
+	
 	private TextDocumentItem createTestTextDocument(String text, String suffixFileName) {
-		return new TextDocumentItem(DUMMY_URI + suffixFileName, CamelLanguageServer.LANGUAGE_ID, 0, text);
+		return createTestTextDocumentWithFilename(text, DUMMY_URI + suffixFileName);
+	}
+	
+	private TextDocumentItem createTestTextDocumentWithFilename(String text, String fileName) {
+		return new TextDocumentItem(fileName, CamelLanguageServer.LANGUAGE_ID, 0, text);
 	}
 
 	protected CompletableFuture<Either<List<CompletionItem>, CompletionList>> getCompletionFor(CamelLanguageServer camelLanguageServer, Position position) {
+		return getCompletionFor(camelLanguageServer, position, DUMMY_URI+extensionUsed);
+	}
+	
+	protected CompletableFuture<Either<List<CompletionItem>, CompletionList>> getCompletionFor(CamelLanguageServer camelLanguageServer, Position position, String filename) {
 		TextDocumentService textDocumentService = camelLanguageServer.getTextDocumentService();
-		
-		CompletionParams completionParams = new CompletionParams(new TextDocumentIdentifier(DUMMY_URI+extensionUsed), position);
-		CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = textDocumentService.completion(completionParams);
-		return completions;
+		CompletionParams completionParams = new CompletionParams(new TextDocumentIdentifier(filename), position);
+		return textDocumentService.completion(completionParams);
 	}
 	
 	protected CompletableFuture<List<Either<SymbolInformation,DocumentSymbol>>> getDocumentSymbolFor(CamelLanguageServer camelLanguageServer) {
