@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.cameltooling.lsp.internal.completion;
+package com.github.cameltooling.lsp.internal.completion.camelapplicationproperties;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -33,31 +33,39 @@ import org.junit.jupiter.api.Test;
 import com.github.cameltooling.lsp.internal.AbstractCamelLanguageServerTest;
 import com.github.cameltooling.lsp.internal.CamelLanguageServer;
 
-public class CamelApplicationPropertiesTopLevelCompletionTest extends AbstractCamelLanguageServerTest {
-	
+public class CamelApplicationPropertiesComponentCompletionTest extends AbstractCamelLanguageServerTest {
+
 	@Test
 	public void testProvideCompletion() throws Exception {
-		CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = retrieveCompletion("application.properties", new Position(0, 6));
+		CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = retrieveCompletion("application.properties", new Position(0, 16));
 		
-		assertThat(completions.get().getLeft()).hasSize(4);
+		assertThat(completions.get().getLeft()).contains(createExpectedAhcCompletionItem(0, 16, 0, 19));
 	}
 	
 	@Test
-	public void testProvideNoCompletion() throws Exception {
-		CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = retrieveCompletion("application.properties", new Position(0, 0));
+	public void testProvideCompletionNoCompletionForNonApplicationpropertiesFile() throws Exception {
+		CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = retrieveCompletion("applicationWithDifferentName.properties", new Position(0, 16));
 		
 		assertThat(completions.get().getLeft()).isEmpty();
 	}
 	
 	@Test
-	public void testProvideNoCompletionForNonApplicationProperties() throws Exception {
-		CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = retrieveCompletion("applicationWithDifferentName.properties", new Position(0, 6));
+	public void testProvideCompletionNoCompletionAtWorngPosition() throws Exception {
+		CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = retrieveCompletion("applicationWithDifferentName.properties", new Position(0, 14));
 		
 		assertThat(completions.get().getLeft()).isEmpty();
 	}
 	
 	protected CompletableFuture<Either<List<CompletionItem>, CompletionList>> retrieveCompletion(String fileName, Position position) throws URISyntaxException, InterruptedException, ExecutionException {
-		CamelLanguageServer camelLanguageServer = initializeLanguageServer(".properties", new TextDocumentItem(fileName, CamelLanguageServer.LANGUAGE_ID, 0, "camel."));
+		CamelLanguageServer camelLanguageServer = initializeLanguageServer(".properties", new TextDocumentItem(fileName, CamelLanguageServer.LANGUAGE_ID, 0, "camel.component."));
 		return getCompletionFor(camelLanguageServer, position, fileName);
 	}
+	
+	protected CompletionItem createExpectedAhcCompletionItem(int lineStart, int characterStart, int lineEnd, int characterEnd) {
+		CompletionItem expectedAhcCompletioncompletionItem = new CompletionItem("ahc");
+		expectedAhcCompletioncompletionItem.setDocumentation(AHC_DOCUMENTATION);
+		expectedAhcCompletioncompletionItem.setDeprecated(false);
+		return expectedAhcCompletioncompletionItem;
+	}
+	
 }
