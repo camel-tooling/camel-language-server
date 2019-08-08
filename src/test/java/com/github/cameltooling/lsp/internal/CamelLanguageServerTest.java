@@ -175,6 +175,17 @@ public class CamelLanguageServerTest extends AbstractCamelLanguageServerTest {
 	}
 	
 	@Test
+	public void testProvideCompletionForApplicationProperties() throws Exception {
+		File f = new File("src/test/resources/workspace/application.properties");
+		assertThat(f).exists();
+		try (FileInputStream fis = new FileInputStream(f)) {
+			CamelLanguageServer cls = initializeLanguageServerWithFileName(fis, "application.properties");
+			CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = getCompletionFor(cls, new Position(2, 6), "application.properties");
+			assertThat(completions.get().getLeft()).hasSize(4);
+		}
+	}
+	
+	@Test
 	public void testProvideCompletionForJSOnRealFileWithCamelKCloseToModeline() throws Exception {
 		File f = new File("src/test/resources/workspace/sampleWithModelineLike.js");
 		assertThat(f).exists();
