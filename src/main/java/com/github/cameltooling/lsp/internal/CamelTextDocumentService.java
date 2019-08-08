@@ -90,7 +90,7 @@ public class CamelTextDocumentService implements TextDocumentService {
 		LOGGER.info("completion: {}", uri);
 		TextDocumentItem textDocumentItem = openedDocuments.get(uri);
 		if(uri.endsWith("application.properties")) {
-			return new CamelApplicationPropertiesCompletionProcessor(textDocumentItem).getCompletions(completionParams.getPosition()).thenApply(Either::forLeft);
+			return new CamelApplicationPropertiesCompletionProcessor(textDocumentItem, camelCatalog).getCompletions(completionParams.getPosition()).thenApply(Either::forLeft);
 		} else {
 			return new CamelEndpointCompletionProcessor(textDocumentItem, camelCatalog).getCompletions(completionParams.getPosition()).thenApply(Either::forLeft);
 		}
