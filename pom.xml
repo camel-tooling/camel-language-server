@@ -52,7 +52,7 @@
 		<sonar.jacoco.itReportPath>target/jacoco-it.exec</sonar.jacoco.itReportPath>
 		<sonar.jacoco.reportPaths>${sonar.jacoco.reportPath},${sonar.jacoco.itReportPath}</sonar.jacoco.reportPaths>
 		<lsp4j.version>0.7.2</lsp4j.version>
-		<slf4j.version>1.7.25</slf4j.version>
+		<slf4j.version>1.7.28</slf4j.version>
 		<junit.version>5.5.0</junit.version>
 		<assertj.version>3.11.1</assertj.version>
 		<camel.version>2.24.1</camel.version>
