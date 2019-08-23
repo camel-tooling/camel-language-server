@@ -51,7 +51,7 @@
 		<sonar.jacoco.reportPath>target/jacoco.exec</sonar.jacoco.reportPath>
 		<sonar.jacoco.itReportPath>target/jacoco-it.exec</sonar.jacoco.itReportPath>
 		<sonar.jacoco.reportPaths>${sonar.jacoco.reportPath},${sonar.jacoco.itReportPath}</sonar.jacoco.reportPaths>
-		<lsp4j.version>0.7.2</lsp4j.version>
+		<lsp4j.version>0.8.0</lsp4j.version>
 		<slf4j.version>1.7.28</slf4j.version>
 		<junit.version>5.5.1</junit.version>
 		<assertj.version>3.13.2</assertj.version>
@@ -255,7 +255,7 @@
 		<dependency>
 			<groupId>org.eclipse.xtend</groupId>
 			<artifactId>org.eclipse.xtend.lib</artifactId>
-			<version>2.16.0</version>
+			<version>2.18.0</version>
 		</dependency>
 		<dependency>
 			<groupId>org.slf4j</groupId>
