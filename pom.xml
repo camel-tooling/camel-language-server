@@ -54,7 +54,7 @@
 		<lsp4j.version>0.7.2</lsp4j.version>
 		<slf4j.version>1.7.28</slf4j.version>
 		<junit.version>5.5.1</junit.version>
-		<assertj.version>3.11.1</assertj.version>
+		<assertj.version>3.13.2</assertj.version>
 		<camel.version>2.24.1</camel.version>
 		<camel.tooling.common.version>0.0.3-SNAPSHOT</camel.tooling.common.version>
 		<roaster.version>2.20.1.Final</roaster.version>
