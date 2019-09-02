@@ -66,7 +66,7 @@ public class DocumentSymbolProcessorTest extends AbstractCamelLanguageServerTest
 		assertThat(firstRoute.getName()).isEqualTo("a route");
 		Position expectedStart = new Position(2, 24/* expecting 4 but seems a bug in Camel*/);
 		Position expectedEnd = new Position(8, 12);
-		assertThat(firstRoute.getLocation()).isEqualToComparingFieldByFieldRecursively(new Location(DUMMY_URI+".xml", new Range(expectedStart, expectedEnd)));
+		assertThat(firstRoute.getLocation()).usingRecursiveComparison().isEqualTo(new Location(DUMMY_URI+".xml", new Range(expectedStart, expectedEnd)));
 	}
 
 	@Test
