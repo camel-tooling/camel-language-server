@@ -25,7 +25,7 @@ import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.awaitility.Duration;
+import java.time.Duration;
 import org.eclipse.lsp4j.Diagnostic;
 import org.eclipse.lsp4j.DidChangeTextDocumentParams;
 import org.eclipse.lsp4j.DidCloseTextDocumentParams;
@@ -42,7 +42,7 @@ import com.github.cameltooling.lsp.internal.CamelLanguageServer;
 
 public class CamelDiagnosticTest extends AbstractCamelLanguageServerTest {
 
-	private static final Duration AWAIT_TIMEOUT = Duration.TEN_SECONDS;
+	private static final Duration AWAIT_TIMEOUT = Duration.ofSeconds(10);
 	private CamelLanguageServer camelLanguageServer;
 
 	@Test
