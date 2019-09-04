@@ -6,6 +6,9 @@ cache:
 env:
   global:
   - GPG_DIR="`pwd`/cd"
+branches:
+  except:
+    - /^dependabot.*$/
 jobs:
   include:
     - stage: test
