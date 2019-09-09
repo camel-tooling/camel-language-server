@@ -53,7 +53,7 @@
 		<sonar.jacoco.reportPaths>${sonar.jacoco.reportPath},${sonar.jacoco.itReportPath}</sonar.jacoco.reportPaths>
 		<lsp4j.version>0.8.0</lsp4j.version>
 		<slf4j.version>1.7.28</slf4j.version>
-		<junit.version>5.5.1</junit.version>
+		<junit.version>5.5.2</junit.version>
 		<assertj.version>3.13.2</assertj.version>
 		<camel.version>2.24.1</camel.version>
 		<camel.tooling.common.version>0.0.3-SNAPSHOT</camel.tooling.common.version>
