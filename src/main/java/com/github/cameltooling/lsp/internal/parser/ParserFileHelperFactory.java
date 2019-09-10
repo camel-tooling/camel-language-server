@@ -22,6 +22,7 @@ public class ParserFileHelperFactory {
 	
 	private static final String CAMELK_GROOVY_FILENAME_SUFFIX = ".camelk.groovy";
 	private static final String CAMELK_KOTLIN_FILENAME_SUFFIX = ".camelk.kts";
+	private static final String CAMELK_YAML_FILENAME_SUFFIX = ".camelk.yaml";
 	private static final String CAMELK_JS_FILENAME_SUFFIX = ".camelk.js";
 	private static final String SHEBANG_CAMEL_K = "#!/usr/bin/env camel-k";
 	private static final String MODELINE_LIKE_CAMEL_K = "// camel-k:";
@@ -40,6 +41,11 @@ public class ParserFileHelperFactory {
 			CamelKGroovyDSLParser camelKGroovyDSLParser = new CamelKGroovyDSLParser();
 			if (camelKGroovyDSLParser.getCorrespondingMethodName(textDocumentItem, line) != null) {
 				return camelKGroovyDSLParser;
+			}
+		} else if(isCamelKYamlDSL(textDocumentItem, uri)) {
+			CamelKYamlDSLParser camelKYamlDSLParser = new CamelKYamlDSLParser();
+			if (camelKYamlDSLParser.getCorrespondingLine(textDocumentItem, line) != null) {
+				return camelKYamlDSLParser;
 			}
 		} else if(isCamelKafkaConnectDSL(textDocumentItem, uri)) {
 			CamelKafkaConnectDSLParser camelKafkaConnectDSLParser = new CamelKafkaConnectDSLParser();
@@ -104,6 +110,21 @@ public class ParserFileHelperFactory {
 
 	protected boolean isGroovyFileWithCamelKShebang(TextDocumentItem textDocumentItem, String uri) {
 		return uri.endsWith(".groovy") && textDocumentItem.getText().startsWith(SHEBANG_CAMEL_K);
+	}
+
+	private boolean isCamelKYamlDSL(TextDocumentItem textDocumentItem, String uri) {
+		//improve this method to provide better heuristic to detect if it is a Camel file or not
+		return uri.endsWith(CAMELK_YAML_FILENAME_SUFFIX)
+				|| isYamlFileWithCamelKShebang(textDocumentItem, uri)
+				|| isYamlFileWithCamelKModelineLike(textDocumentItem, uri);
+	}
+
+	private boolean isYamlFileWithCamelKModelineLike(TextDocumentItem textDocumentItem, String uri) {
+		return uri.endsWith(".yaml") && textDocumentItem.getText().startsWith(MODELINE_LIKE_CAMEL_K);
+	}
+
+	protected boolean isYamlFileWithCamelKShebang(TextDocumentItem textDocumentItem, String uri) {
+		return uri.endsWith(".yaml") && textDocumentItem.getText().startsWith(SHEBANG_CAMEL_K);
 	}
 
 	private boolean isCamelJavaDSL(TextDocumentItem textDocumentItem, String uri) {
