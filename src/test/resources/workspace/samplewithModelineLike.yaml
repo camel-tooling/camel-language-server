@@ -1,4 +1,4 @@
-// camel-k: language=yaml
+# camel-k: language=yaml
 - id: "rest"
   group: "routes"
   rest:

@@ -38,11 +38,11 @@ public class CamelKYamlDSLParser extends ParserFileHelper {
 		String camelComponentURI = null;
 		String trLine = line.trim();
 		if (trLine.startsWith(URI_KEY) && URI_KEY.length() < characterPosition) {
-			camelComponentURI = trLine.substring(trLine.indexOf(URI_KEY)+ URI_KEY.length()).trim().replaceAll("\"", "");
+			camelComponentURI = extractCamelCOmponentURI(trLine, URI_KEY);
 		} else if(trLine.startsWith(FROM_KEY) && trLine.indexOf('"') >= trLine.indexOf(':') + 1) {
-			camelComponentURI = trLine.substring(trLine.indexOf(FROM_KEY)+ FROM_KEY.length()).trim().replaceAll("\"", "");
+			camelComponentURI = extractCamelCOmponentURI(trLine, FROM_KEY);
 		} else if(trLine.startsWith(TO_KEY) && trLine.indexOf('"') >= trLine.indexOf(':') + 1) {
-			camelComponentURI = trLine.substring(trLine.indexOf(TO_KEY)+ TO_KEY.length()).trim().replaceAll("\"", "");
+			camelComponentURI = extractCamelCOmponentURI(trLine, TO_KEY);
 		}
 		return camelComponentURI;
 	}
@@ -55,6 +55,10 @@ public class CamelKYamlDSLParser extends ParserFileHelper {
 		uriInstance.setStartPositionInDocument(new Position(position.getLine(), start));
 		uriInstance.setEndPositionInDocument(new Position(position.getLine(), start+camelComponentUri.length()));
 		return uriInstance;
+	}
+
+	private String extractCamelCOmponentURI(String trLine, String key) {
+		return trLine.substring(trLine.indexOf(key)+ key.length()).trim().replaceAll("\"", "");
 	}
 
 	private int getStartCharacterInDocumentOnLinePosition(TextDocumentItem textDocumentItem, Position position) {

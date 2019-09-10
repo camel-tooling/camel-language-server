@@ -26,6 +26,7 @@ public class ParserFileHelperFactory {
 	private static final String CAMELK_JS_FILENAME_SUFFIX = ".camelk.js";
 	private static final String SHEBANG_CAMEL_K = "#!/usr/bin/env camel-k";
 	private static final String MODELINE_LIKE_CAMEL_K = "// camel-k:";
+	private static final String MODELINE_LIKE_CAMEL_K_YAML = "# camel-k: language=yaml";
 
 	public ParserFileHelper getCorrespondingParserFileHelper(TextDocumentItem textDocumentItem, int line) {
 		ParserXMLFileHelper xmlParser = new ParserXMLFileHelper();
@@ -120,7 +121,7 @@ public class ParserFileHelperFactory {
 	}
 
 	private boolean isYamlFileWithCamelKModelineLike(TextDocumentItem textDocumentItem, String uri) {
-		return uri.endsWith(".yaml") && textDocumentItem.getText().startsWith(MODELINE_LIKE_CAMEL_K);
+		return uri.endsWith(".yaml") && textDocumentItem.getText().startsWith(MODELINE_LIKE_CAMEL_K_YAML);
 	}
 
 	protected boolean isYamlFileWithCamelKShebang(TextDocumentItem textDocumentItem, String uri) {
