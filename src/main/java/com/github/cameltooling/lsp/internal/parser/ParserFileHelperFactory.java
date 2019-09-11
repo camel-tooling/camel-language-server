@@ -45,7 +45,7 @@ public class ParserFileHelperFactory {
 			}
 		} else if(isCamelKYamlDSL(textDocumentItem, uri)) {
 			CamelKYamlDSLParser camelKYamlDSLParser = new CamelKYamlDSLParser();
-			if (camelKYamlDSLParser.getCorrespondingLine(textDocumentItem, line) != null) {
+			if (camelKYamlDSLParser.getCorrespondingType(textDocumentItem, line) != null) {
 				return camelKYamlDSLParser;
 			}
 		} else if(isCamelKafkaConnectDSL(textDocumentItem, uri)) {

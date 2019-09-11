@@ -165,6 +165,17 @@ public class CamelLanguageServerTest extends AbstractCamelLanguageServerTest {
 	}
 	
 	@Test
+	public void testProvideCompletionForYamlUsingFromOnRealFileWithCamelKCloseToModeline() throws Exception {
+		File f = new File("src/test/resources/workspace/samplewithModelineLikeUsingFrom.yaml");
+		assertThat(f).exists();
+		try (FileInputStream fis = new FileInputStream(f)) {
+			CamelLanguageServer cls = initializeLanguageServer(fis, ".yaml");
+			CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = getCompletionFor(cls, new Position(4, 14));
+			assertThat(completions.get().getLeft()).contains(createExpectedAhcCompletionItem(4, 14, 4, 24));
+		}
+	}
+
+	@Test
 	public void testProvideCompletionForCamelKafkaConnectPropertySink() throws Exception {
 		File f = new File("src/test/resources/workspace/camelKafkaconnectSink.properties");
 		assertThat(f).exists();
