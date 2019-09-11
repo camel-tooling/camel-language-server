@@ -152,6 +152,17 @@ public class CamelLanguageServerTest extends AbstractCamelLanguageServerTest {
 			assertThat(completions.get().getLeft()).contains(createExpectedAhcCompletionItem(12, 16, 12, 22));
 		}
 	}
+	
+	@Test
+	public void testProvideNoCompletionForYamlOnRealFileWithCamelKCloseToModelineForRestURI() throws Exception {
+		File f = new File("src/test/resources/workspace/samplewithModelineLike.yaml");
+		assertThat(f).exists();
+		try (FileInputStream fis = new FileInputStream(f)) {
+			CamelLanguageServer cls = initializeLanguageServer(fis, ".yaml");
+			CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = getCompletionFor(cls, new Position(5, 10));
+			assertThat(completions.get().getLeft()).isEmpty();
+		}
+	}
 
 	@Test
 	public void testProvideCompletionForYamlUsingShortCutOnRealFileWithCamelKCloseToModeline() throws Exception {
