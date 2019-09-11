@@ -163,7 +163,8 @@ public class CamelLanguageServerTest extends AbstractCamelLanguageServerTest {
 			assertThat(completions.get().getLeft()).contains(createExpectedAhcCompletionItem(8, 17, 8, 32));
 		}
 	}
-
+	
+	@Test
 	public void testProvideCompletionForkotlinOnRealFileWithCamelKCloseToModeline() throws Exception {
 		File f = new File("src/test/resources/workspace/sampleWithModelineLike.kts");
 		assertThat(f).exists();
