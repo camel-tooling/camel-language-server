@@ -30,7 +30,7 @@ public class CamelKYamlDSLParser extends ParserFileHelper {
 	public static final String STEP_KEY = "steps:";
 	public static final String URI_KEY = "uri:";
 	public static final String REST_KEY = "rest:";
-	public static final String FROM_KEY = "- from:";
+	public static final String FROM_KEY = "from:";
 	public static final String TO_KEY = "- to:";
 
 	@Override
@@ -38,11 +38,11 @@ public class CamelKYamlDSLParser extends ParserFileHelper {
 		String camelComponentURI = null;
 		String trLine = line.trim();
 		if (trLine.startsWith(URI_KEY) && URI_KEY.length() < characterPosition) {
-			camelComponentURI = extractCamelCOmponentURI(trLine, URI_KEY);
+			camelComponentURI = extractCamelComponentURI(trLine, URI_KEY);
 		} else if(trLine.startsWith(FROM_KEY) && trLine.indexOf('"') >= trLine.indexOf(':') + 1) {
-			camelComponentURI = extractCamelCOmponentURI(trLine, FROM_KEY);
+			camelComponentURI = extractCamelComponentURI(trLine, FROM_KEY);
 		} else if(trLine.startsWith(TO_KEY) && trLine.indexOf('"') >= trLine.indexOf(':') + 1) {
-			camelComponentURI = extractCamelCOmponentURI(trLine, TO_KEY);
+			camelComponentURI = extractCamelComponentURI(trLine, TO_KEY);
 		}
 		return camelComponentURI;
 	}
@@ -50,14 +50,14 @@ public class CamelKYamlDSLParser extends ParserFileHelper {
 	@Override
 	public CamelURIInstance createCamelURIInstance(TextDocumentItem textDocumentItem, Position position,
 			String camelComponentUri) {
-		CamelURIInstance uriInstance = new CamelURIInstance(camelComponentUri, new YamlDSLModelHelper(getCorrespondingLine(textDocumentItem, position.getLine())), textDocumentItem);
+		CamelURIInstance uriInstance = new CamelURIInstance(camelComponentUri, new YamlDSLModelHelper(getCorrespondingType(textDocumentItem, position.getLine())), textDocumentItem);
 		int start = getStartCharacterInDocumentOnLinePosition(textDocumentItem, position);
 		uriInstance.setStartPositionInDocument(new Position(position.getLine(), start));
 		uriInstance.setEndPositionInDocument(new Position(position.getLine(), start+camelComponentUri.length()));
 		return uriInstance;
 	}
 
-	private String extractCamelCOmponentURI(String trLine, String key) {
+	private String extractCamelComponentURI(String trLine, String key) {
 		return trLine.substring(trLine.indexOf(key)+ key.length()).trim().replaceAll("\"", "");
 	}
 
@@ -72,7 +72,7 @@ public class CamelKYamlDSLParser extends ParserFileHelper {
 		return position.getCharacter() - line.indexOf('"')-1;
 	}
 
-	public String getCorrespondingLine(TextDocumentItem textDocumentItem, int lineNumber) {
+	public String getCorrespondingType(TextDocumentItem textDocumentItem, int lineNumber) {
 		for (int lineNo = lineNumber; lineNo >=0; lineNo--) {
 			String tempLine = parserFileHelperUtil.getLine(textDocumentItem, lineNo).trim();
 			if (tempLine.startsWith(TO_KEY)) {
@@ -80,7 +80,7 @@ public class CamelKYamlDSLParser extends ParserFileHelper {
 			} else if (tempLine.startsWith(FROM_KEY)) {
 				return "from";
 			} else if (tempLine.startsWith(REST_KEY)) {
-				return null;			
+				return null;
 			}
 		}
 		return null;

@@ -18,10 +18,10 @@ package com.github.cameltooling.lsp.internal.instancemodel;
 
 public class YamlDSLModelHelper implements DSLModelHelper {
 	
-	private String line;
+	private String type;
 
-	public YamlDSLModelHelper(String line) {
-		this.line = line;
+	public YamlDSLModelHelper(String type) {
+		this.type = type;
 	}
 
 	@Override
@@ -31,7 +31,7 @@ public class YamlDSLModelHelper implements DSLModelHelper {
 
 	@Override
 	public String getTypeDeterminingProducerConsumer() {
-		return line;
+		return type;
 	}
 	
 }
