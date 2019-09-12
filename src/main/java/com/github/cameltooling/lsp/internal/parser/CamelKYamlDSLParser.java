@@ -39,8 +39,6 @@ public class CamelKYamlDSLParser extends ParserFileHelper {
 		String trLine = line.trim();
 		if (trLine.startsWith(URI_KEY) && URI_KEY.length() < characterPosition) {
 			camelComponentURI = extractCamelComponentURI(trLine, URI_KEY);
-		} else if(trLine.startsWith(FROM_KEY) && trLine.indexOf('"') >= trLine.indexOf(':') + 1) {
-			camelComponentURI = extractCamelComponentURI(trLine, FROM_KEY);
 		} else if(trLine.startsWith(TO_KEY) && trLine.indexOf('"') >= trLine.indexOf(':') + 1) {
 			camelComponentURI = extractCamelComponentURI(trLine, TO_KEY);
 		}
