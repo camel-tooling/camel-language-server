@@ -18,6 +18,10 @@ package com.github.cameltooling.lsp.internal.parser;
 
 import org.eclipse.lsp4j.Position;
 import org.eclipse.lsp4j.TextDocumentItem;
+import org.yaml.snakeyaml.Yaml;
+
+import java.util.List;
+import java.util.Map;
 
 import com.github.cameltooling.lsp.internal.instancemodel.CamelURIInstance;
 import com.github.cameltooling.lsp.internal.instancemodel.YamlDSLModelHelper;
@@ -28,19 +32,19 @@ import com.github.cameltooling.lsp.internal.instancemodel.YamlDSLModelHelper;
 public class CamelKYamlDSLParser extends ParserFileHelper {
 	
 	public static final String STEP_KEY = "steps:";
-	public static final String URI_KEY = "uri:";
-	public static final String REST_KEY = "rest:";
-	public static final String FROM_KEY = "from:";
-	public static final String TO_KEY = "- to:";
+	public static final String URI_KEY = "uri";
+	public static final String REST_KEY = "rest";
+	public static final String FROM_KEY = "from";
+	public static final String TO_KEY = "to";
 
 	@Override
 	public String getCamelComponentUri(String line, int characterPosition) {
 		String camelComponentURI = null;
-		String trLine = line.trim();
-		if (trLine.startsWith(URI_KEY) && URI_KEY.length() < characterPosition) {
-			camelComponentURI = extractCamelComponentURI(trLine, URI_KEY);
-		} else if(trLine.startsWith(TO_KEY) && trLine.indexOf('"') >= trLine.indexOf(':') + 1) {
-			camelComponentURI = extractCamelComponentURI(trLine, TO_KEY);
+		Map data = parseYaml(line);
+		if (data.containsKey(URI_KEY) && URI_KEY.length() < characterPosition) {
+			camelComponentURI = data.get(URI_KEY).toString();
+		} else if(data.containsKey(TO_KEY) && data.get(TO_KEY).toString().trim().length()>0) {
+			camelComponentURI = data.get(TO_KEY).toString();
 		}
 		return camelComponentURI;
 	}
@@ -55,13 +59,10 @@ public class CamelKYamlDSLParser extends ParserFileHelper {
 		return uriInstance;
 	}
 
-	private String extractCamelComponentURI(String trLine, String key) {
-		return trLine.substring(trLine.indexOf(key)+ key.length()).trim().replaceAll("\"", "");
-	}
-
 	private int getStartCharacterInDocumentOnLinePosition(TextDocumentItem textDocumentItem, Position position) {
 		String line = parserFileHelperUtil.getLine(textDocumentItem, position.getLine());
-		return line.indexOf('"') + 1;
+		String uri = extractUriFromYamlData(line);
+		return line.indexOf(uri);
 	}
 
 	@Override
@@ -72,14 +73,40 @@ public class CamelKYamlDSLParser extends ParserFileHelper {
 
 	public String getCorrespondingType(TextDocumentItem textDocumentItem, int lineNumber) {
 		for (int lineNo = lineNumber; lineNo >=0; lineNo--) {
-			String tempLine = parserFileHelperUtil.getLine(textDocumentItem, lineNo).trim();
-			if (tempLine.startsWith(TO_KEY)) {
+			String tempLine = parserFileHelperUtil.getLine(textDocumentItem, lineNo);
+			Map data = parseYaml(tempLine);
+			if (data.containsKey(TO_KEY)) {
 				return "to";
-			} else if (tempLine.startsWith(FROM_KEY)) {
+			} else if (data.containsKey(FROM_KEY)) {
 				return "from";
-			} else if (tempLine.startsWith(REST_KEY)) {
+			} else if (data.containsKey(REST_KEY)) {
 				return null;
 			}
+		}
+		return null;
+	}
+
+	private Map parseYaml(String line) {
+		Yaml yaml = new Yaml();
+		Object obj = yaml.load(line);
+		return extractMapFromYaml(obj);
+	}
+
+	private String extractUriFromYamlData(String line) {
+		Yaml yaml = new Yaml();
+		Object obj = yaml.load(line);
+		Map m = extractMapFromYaml(obj);
+		return (String)m.values().toArray()[0];
+	}
+
+	private Map extractMapFromYaml(Object o) {
+		if (o instanceof List) {
+			List l = (List)o;
+			if (l.get(0) instanceof Map) {
+				return (Map)l.get(0);
+			}
+		} else if (o instanceof Map) {
+			return (Map)o;
 		}
 		return null;
 	}
