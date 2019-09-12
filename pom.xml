@@ -305,6 +305,11 @@
 			<version>${awaitility.version}</version>
 			<scope>test</scope>
 		</dependency>
+		<dependency>
+			<groupId>org.yaml</groupId>
+			<artifactId>snakeyaml</artifactId>
+			<version>1.21</version>            
+		</dependency>
 	</dependencies>
 	
 	<repositories>
