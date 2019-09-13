@@ -28,8 +28,11 @@ import org.apache.log4j.spi.LoggingEvent;
 import org.eclipse.lsp4j.CompletionItem;
 import org.eclipse.lsp4j.CompletionList;
 import org.eclipse.lsp4j.Position;
+import org.eclipse.lsp4j.Range;
+import org.eclipse.lsp4j.TextEdit;
 import org.eclipse.lsp4j.jsonrpc.messages.Either;
 import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 import com.github.cameltooling.lsp.internal.completion.CamelEndpointCompletionProcessor;
@@ -142,47 +145,100 @@ public class CamelLanguageServerTest extends AbstractCamelLanguageServerTest {
 		}
 	}
 	
-	@Test
-	public void testProvideCompletionForYamlOnRealFileWithCamelKCloseToModeline() throws Exception {
-		File f = new File("src/test/resources/workspace/samplewithModelineLike.yaml");
-		assertThat(f).exists();
-		try (FileInputStream fis = new FileInputStream(f)) {
-			CamelLanguageServer cls = initializeLanguageServer(fis, ".yaml");
-			CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = getCompletionFor(cls, new Position(12, 16));
-			assertThat(completions.get().getLeft()).contains(createExpectedAhcCompletionItem(12, 16, 12, 22));
+	@Nested
+	class Yaml {
+		@Test
+		public void testProvideCompletionForYamlOnRealFileWithCamelKCloseToModeline() throws Exception {
+			File f = new File("src/test/resources/workspace/samplewithModelineLike.yaml");
+			assertThat(f).exists();
+			try (FileInputStream fis = new FileInputStream(f)) {
+				CamelLanguageServer cls = initializeLanguageServer(fis, ".yaml");
+				CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = getCompletionFor(cls, new Position(12, 16));
+				assertThat(completions.get().getLeft()).contains(createExpectedAhcCompletionItem(12, 16, 12, 22));
+			}
 		}
-	}
-	
-	@Test
-	public void testProvideNoCompletionForYamlOnRealFileWithCamelKCloseToModelineForRestURI() throws Exception {
-		File f = new File("src/test/resources/workspace/samplewithModelineLike.yaml");
-		assertThat(f).exists();
-		try (FileInputStream fis = new FileInputStream(f)) {
-			CamelLanguageServer cls = initializeLanguageServer(fis, ".yaml");
-			CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = getCompletionFor(cls, new Position(5, 10));
-			assertThat(completions.get().getLeft()).isEmpty();
+		
+		@Test
+		public void testProvideCompletionForYamlOnRealFileWithCamelKCloseToModelineOnEmptyURIAttributes() throws Exception {
+			File f = new File("src/test/resources/workspace/samplewithModelineLikeWithEmtpyAttributes.yaml");
+			assertThat(f).exists();
+			try (FileInputStream fis = new FileInputStream(f)) {
+				CamelLanguageServer cls = initializeLanguageServer(fis, ".yaml");
+				CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = getCompletionFor(cls, new Position(12, 16));
+				assertThat(completions.get().getLeft()).contains(createExpectedAhcCompletionItem(12, 16, 12, 16));
+			}
 		}
-	}
+		
+		@Test
+		public void testProvideCompletionForYamlOnRealFileWithCamelKCloseToModelineOnEmptyURIAttributesAndSingleQuotes() throws Exception {
+			File f = new File("src/test/resources/workspace/samplewithModelineLikeWithEmtpyAttributesAndSingleQuotes.yaml");
+			assertThat(f).exists();
+			try (FileInputStream fis = new FileInputStream(f)) {
+				CamelLanguageServer cls = initializeLanguageServer(fis, ".yaml");
+				CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = getCompletionFor(cls, new Position(12, 16));
+				assertThat(completions.get().getLeft()).contains(createExpectedAhcCompletionItem(12, 16, 12, 16));
+			}
+		}
 
-	@Test
-	public void testProvideCompletionForYamlUsingShortCutOnRealFileWithCamelKCloseToModeline() throws Exception {
-		File f = new File("src/test/resources/workspace/samplewithModelineLikeAndShortCut.yaml");
-		assertThat(f).exists();
-		try (FileInputStream fis = new FileInputStream(f)) {
-			CamelLanguageServer cls = initializeLanguageServer(fis, ".yaml");
-			CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = getCompletionFor(cls, new Position(11, 13));
-			assertThat(completions.get().getLeft()).contains(createExpectedAhcCompletionItem(11, 13, 11, 19));
+		@Test
+		public void testProvideCompletionForYamlOnRealFileWithCamelKCloseToModelineOnEmptyURIAttributesWithoutQuotes() throws Exception {
+			File f = new File("src/test/resources/workspace/samplewithModelineLikeWithEmtpyAttributesWithoutQuotes.yaml");
+			assertThat(f).exists();
+			try (FileInputStream fis = new FileInputStream(f)) {
+				CamelLanguageServer cls = initializeLanguageServer(fis, ".yaml");
+				CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = getCompletionFor(cls, new Position(12, 15));
+				assertThat(completions.get().getLeft()).contains(createExpectedAhcCompletionItem(12, 15, 12, 15));
+			}
 		}
-	}
-	
-	@Test
-	public void testProvideCompletionForYamlUsingFromOnRealFileWithCamelKCloseToModeline() throws Exception {
-		File f = new File("src/test/resources/workspace/samplewithModelineLikeUsingFrom.yaml");
-		assertThat(f).exists();
-		try (FileInputStream fis = new FileInputStream(f)) {
-			CamelLanguageServer cls = initializeLanguageServer(fis, ".yaml");
-			CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = getCompletionFor(cls, new Position(4, 14));
-			assertThat(completions.get().getLeft()).contains(createExpectedAhcCompletionItem(4, 14, 4, 24));
+
+		@Test
+		public void testProvideCompletionForYamlOnRealFileWithCamelKCloseToModelineWithURiContainingDoubleQuotes() throws Exception {
+			File f = new File("src/test/resources/workspace/samplewithModelineLikeWithDoubleQuotesInsideURI.yaml");
+			assertThat(f).exists();
+			try (FileInputStream fis = new FileInputStream(f)) {
+				CamelLanguageServer cls = initializeLanguageServer(fis, ".yaml");
+				CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = getCompletionFor(cls, new Position(12, 39));
+				CompletionItem expectedanyOrderAttributeCompletionItem = new CompletionItem("anyOrder");
+				expectedanyOrderAttributeCompletionItem.setDocumentation("Whether the expected messages should arrive in the same order or can be in any order.");
+				expectedanyOrderAttributeCompletionItem.setDeprecated(false);
+				expectedanyOrderAttributeCompletionItem.setDetail("boolean");
+				expectedanyOrderAttributeCompletionItem.setInsertText("anyOrder=false");
+				expectedanyOrderAttributeCompletionItem.setTextEdit(new TextEdit(new Range(new Position(12, 39), new Position(12, 39)), "anyOrder=false"));
+				assertThat(completions.get().getLeft()).contains(expectedanyOrderAttributeCompletionItem);
+			}
+		}
+
+		@Test
+		public void testProvideNoCompletionForYamlOnRealFileWithCamelKCloseToModelineForRestURI() throws Exception {
+			File f = new File("src/test/resources/workspace/samplewithModelineLike.yaml");
+			assertThat(f).exists();
+			try (FileInputStream fis = new FileInputStream(f)) {
+				CamelLanguageServer cls = initializeLanguageServer(fis, ".yaml");
+				CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = getCompletionFor(cls, new Position(5, 10));
+				assertThat(completions.get().getLeft()).isEmpty();
+			}
+		}
+
+		@Test
+		public void testProvideCompletionForYamlUsingShortCutOnRealFileWithCamelKCloseToModeline() throws Exception {
+			File f = new File("src/test/resources/workspace/samplewithModelineLikeAndShortCut.yaml");
+			assertThat(f).exists();
+			try (FileInputStream fis = new FileInputStream(f)) {
+				CamelLanguageServer cls = initializeLanguageServer(fis, ".yaml");
+				CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = getCompletionFor(cls, new Position(11, 13));
+				assertThat(completions.get().getLeft()).contains(createExpectedAhcCompletionItem(11, 13, 11, 19));
+			}
+		}
+
+		@Test
+		public void testProvideCompletionForYamlUsingFromOnRealFileWithCamelKCloseToModeline() throws Exception {
+			File f = new File("src/test/resources/workspace/samplewithModelineLikeUsingFrom.yaml");
+			assertThat(f).exists();
+			try (FileInputStream fis = new FileInputStream(f)) {
+				CamelLanguageServer cls = initializeLanguageServer(fis, ".yaml");
+				CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = getCompletionFor(cls, new Position(4, 14));
+				assertThat(completions.get().getLeft()).contains(createExpectedAhcCompletionItem(4, 14, 4, 24));
+			}
 		}
 	}
 
