@@ -181,6 +181,17 @@ public class CamelLanguageServerTest extends AbstractCamelLanguageServerTest {
 		}
 
 		@Test
+		public void testProvideCompletionForYamlOnRealFileWithCamelKCloseToModelineWithDoubleQuotesInSingleQuotesInsideURI() throws Exception {
+			File f = new File("src/test/resources/workspace/samplewithModelineLikeWithDoubleQuotesInSingleQuotesInsideURI.yaml");
+			assertThat(f).exists();
+			try (FileInputStream fis = new FileInputStream(f)) {
+				CamelLanguageServer cls = initializeLanguageServer(fis, ".yaml");
+				CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = getCompletionFor(cls, new Position(12, 16));
+				assertThat(completions.get().getLeft()).contains(createExpectedAhcCompletionItem(12, 16, 12, 25));
+			}
+		}
+
+		@Test
 		public void testProvideCompletionForYamlOnRealFileWithCamelKCloseToModelineOnEmptyURIAttributesWithoutQuotes() throws Exception {
 			File f = new File("src/test/resources/workspace/samplewithModelineLikeWithEmtpyAttributesWithoutQuotes.yaml");
 			assertThat(f).exists();
@@ -192,7 +203,7 @@ public class CamelLanguageServerTest extends AbstractCamelLanguageServerTest {
 		}
 
 		@Test
-		public void testProvideCompletionForYamlOnRealFileWithCamelKCloseToModelineWithURiContainingDoubleQuotes() throws Exception {
+		public void testProvideCompletionForYamlOnRealFileWithCamelKCloseToModelineWithURIContainingDoubleQuotes() throws Exception {
 			File f = new File("src/test/resources/workspace/samplewithModelineLikeWithDoubleQuotesInsideURI.yaml");
 			assertThat(f).exists();
 			try (FileInputStream fis = new FileInputStream(f)) {
@@ -204,6 +215,74 @@ public class CamelLanguageServerTest extends AbstractCamelLanguageServerTest {
 				expectedanyOrderAttributeCompletionItem.setDetail("boolean");
 				expectedanyOrderAttributeCompletionItem.setInsertText("anyOrder=false");
 				expectedanyOrderAttributeCompletionItem.setTextEdit(new TextEdit(new Range(new Position(12, 39), new Position(12, 39)), "anyOrder=false"));
+				assertThat(completions.get().getLeft()).contains(expectedanyOrderAttributeCompletionItem);
+			}
+		}
+
+		@Test
+		public void testProvideCompletionForYamlOnRealFileWithCamelKCloseToModelineWithURIContainingSingleQuotes() throws Exception {
+			File f = new File("src/test/resources/workspace/samplewithModelineLikeWithSingleQuotesInsideURI.yaml");
+			assertThat(f).exists();
+			try (FileInputStream fis = new FileInputStream(f)) {
+				CamelLanguageServer cls = initializeLanguageServer(fis, ".yaml");
+				CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = getCompletionFor(cls, new Position(12, 38));
+				CompletionItem expectedanyOrderAttributeCompletionItem = new CompletionItem("anyOrder");
+				expectedanyOrderAttributeCompletionItem.setDocumentation("Whether the expected messages should arrive in the same order or can be in any order.");
+				expectedanyOrderAttributeCompletionItem.setDeprecated(false);
+				expectedanyOrderAttributeCompletionItem.setDetail("boolean");
+				expectedanyOrderAttributeCompletionItem.setInsertText("anyOrder=false");
+				expectedanyOrderAttributeCompletionItem.setTextEdit(new TextEdit(new Range(new Position(12, 38), new Position(12, 38)), "anyOrder=false"));
+				assertThat(completions.get().getLeft()).contains(expectedanyOrderAttributeCompletionItem);
+			}
+		}
+
+		@Test
+		public void testProvideCompletionForYamlOnRealFileWithCamelKCloseToModelineWithURIContainingSingleQuotesInSingleQuotes() throws Exception {
+			File f = new File("src/test/resources/workspace/samplewithModelineLikeWithSingleQuotesInSingleQuotesInsideURI.yaml");
+			assertThat(f).exists();
+			try (FileInputStream fis = new FileInputStream(f)) {
+				CamelLanguageServer cls = initializeLanguageServer(fis, ".yaml");
+				CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = getCompletionFor(cls, new Position(12, 39));
+				CompletionItem expectedanyOrderAttributeCompletionItem = new CompletionItem("anyOrder");
+				expectedanyOrderAttributeCompletionItem.setDocumentation("Whether the expected messages should arrive in the same order or can be in any order.");
+				expectedanyOrderAttributeCompletionItem.setDeprecated(false);
+				expectedanyOrderAttributeCompletionItem.setDetail("boolean");
+				expectedanyOrderAttributeCompletionItem.setInsertText("anyOrder=false");
+				expectedanyOrderAttributeCompletionItem.setTextEdit(new TextEdit(new Range(new Position(12, 39), new Position(12, 39)), "anyOrder=false"));
+				assertThat(completions.get().getLeft()).contains(expectedanyOrderAttributeCompletionItem);
+			}
+		}
+
+		@Test
+		public void testProvideCompletionForYamlOnRealFileWithCamelKCloseToModelineWithURIContainingSingleQuotesInPlain() throws Exception {
+			File f = new File("src/test/resources/workspace/samplewithModelineLikeWithSingleQuotesInPlainInsideURI.yaml");
+			assertThat(f).exists();
+			try (FileInputStream fis = new FileInputStream(f)) {
+				CamelLanguageServer cls = initializeLanguageServer(fis, ".yaml");
+				CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = getCompletionFor(cls, new Position(12, 37));
+				CompletionItem expectedanyOrderAttributeCompletionItem = new CompletionItem("anyOrder");
+				expectedanyOrderAttributeCompletionItem.setDocumentation("Whether the expected messages should arrive in the same order or can be in any order.");
+				expectedanyOrderAttributeCompletionItem.setDeprecated(false);
+				expectedanyOrderAttributeCompletionItem.setDetail("boolean");
+				expectedanyOrderAttributeCompletionItem.setInsertText("anyOrder=false");
+				expectedanyOrderAttributeCompletionItem.setTextEdit(new TextEdit(new Range(new Position(12, 37), new Position(12, 37)), "anyOrder=false"));
+				assertThat(completions.get().getLeft()).contains(expectedanyOrderAttributeCompletionItem);
+			}
+		}
+
+		@Test
+		public void testProvideCompletionForYamlOnRealFileWithCamelKCloseToModelineWithURIContainingDoubleQuotesInPlain() throws Exception {
+			File f = new File("src/test/resources/workspace/samplewithModelineLikeWithDoubleQuotesInPlainInsideURI.yaml");
+			assertThat(f).exists();
+			try (FileInputStream fis = new FileInputStream(f)) {
+				CamelLanguageServer cls = initializeLanguageServer(fis, ".yaml");
+				CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = getCompletionFor(cls, new Position(12, 37));
+				CompletionItem expectedanyOrderAttributeCompletionItem = new CompletionItem("anyOrder");
+				expectedanyOrderAttributeCompletionItem.setDocumentation("Whether the expected messages should arrive in the same order or can be in any order.");
+				expectedanyOrderAttributeCompletionItem.setDeprecated(false);
+				expectedanyOrderAttributeCompletionItem.setDetail("boolean");
+				expectedanyOrderAttributeCompletionItem.setInsertText("anyOrder=false");
+				expectedanyOrderAttributeCompletionItem.setTextEdit(new TextEdit(new Range(new Position(12, 37), new Position(12, 37)), "anyOrder=false"));
 				assertThat(completions.get().getLeft()).contains(expectedanyOrderAttributeCompletionItem);
 			}
 		}

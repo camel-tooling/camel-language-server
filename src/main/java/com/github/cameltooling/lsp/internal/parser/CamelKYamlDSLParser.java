@@ -40,9 +40,9 @@ public class CamelKYamlDSLParser extends ParserFileHelper {
 	public String getCamelComponentUri(String line, int characterPosition) {
 		String camelComponentURI = null;
 		Map<?, ?> data = parseYaml(line);
-		if (data.containsKey(URI_KEY) && URI_KEY.length() < characterPosition) {
+		if (data != null && data.containsKey(URI_KEY) && URI_KEY.length() < characterPosition) {
 			camelComponentURI = getNonNullValue(data.get(URI_KEY));
-		} else if(data.containsKey(TO_KEY) && data.get(TO_KEY).toString().trim().length()>0) {
+		} else if(data != null && data.containsKey(TO_KEY) && data.get(TO_KEY).toString().trim().length()>0) {
 			camelComponentURI = getNonNullValue(data.get(TO_KEY));
 		}
 		return camelComponentURI;
@@ -51,10 +51,12 @@ public class CamelKYamlDSLParser extends ParserFileHelper {
 	@Override
 	public CamelURIInstance createCamelURIInstance(TextDocumentItem textDocumentItem, Position position,
 			String camelComponentUri) {
-		CamelURIInstance uriInstance = new CamelURIInstance(repairLostEscapeChars(camelComponentUri), new YamlDSLModelHelper(getCorrespondingType(textDocumentItem, position.getLine())), textDocumentItem);
+		String line = parserFileHelperUtil.getLine(textDocumentItem, position.getLine());
+		String stringEncloser = getStringEncloser(line);
+		CamelURIInstance uriInstance = new CamelURIInstance(repairLostEscapeChars(stringEncloser, camelComponentUri), new YamlDSLModelHelper(getCorrespondingType(textDocumentItem, position.getLine())), textDocumentItem);
 		int start = getStartCharacterInDocumentOnLinePosition(textDocumentItem, position);
 		uriInstance.setStartPositionInDocument(new Position(position.getLine(), start));
-		uriInstance.setEndPositionInDocument(new Position(position.getLine(), start+repairLostEscapeChars(camelComponentUri).length()));
+		uriInstance.setEndPositionInDocument(new Position(position.getLine(), start+repairLostEscapeChars(stringEncloser, camelComponentUri).length()));
 		return uriInstance;
 	}
 
@@ -67,45 +69,98 @@ public class CamelKYamlDSLParser extends ParserFileHelper {
 
 	private int getStartCharacterInDocumentOnLinePosition(TextDocumentItem textDocumentItem, Position position) {
 		String line = parserFileHelperUtil.getLine(textDocumentItem, position.getLine());
+		String stringEncloser = getStringEncloser(line);
 		String uri = extractUriFromYamlData(line);
 		if (uri.length()==0) {
 			// empty uri
-			return findStartPositionOfEmptyURI(line);
+			return findStartPositionOfURI(line);
 		}
-		uri = repairLostEscapeChars(uri);
+		uri = repairLostEscapeChars(stringEncloser, uri);
 		return line.indexOf(uri);
 	}
 
 	@Override
 	public int getPositionInCamelURI(TextDocumentItem textDocumentItem, Position position) {
 		String line = parserFileHelperUtil.getLine(textDocumentItem, position.getLine());
-		return position.getCharacter() - findStartPositionOfEmptyURI(line);
+		return position.getCharacter() - findStartPositionOfURI(line);
 	}
 
-	private String repairLostEscapeChars(String line) {
-		String[] parts = line.split("\"");
-		String res = "";
+	private String getStringEncloser(String line) {
+		int idx = determineQuoteStartPos(line, line.indexOf(':'));
+		if (idx != -1) {
+			String stringEncloser = new Character(line.charAt(idx)).toString();
+			if (stringEncloser.equals("\"") || stringEncloser.equals("'")) {
+				return stringEncloser;
+			}
+		}
+		return null;
+	}
+
+	private String repairLostEscapeChars(String stringEncloser, String line) {
+		if (stringEncloser == null) {
+			return line;
+		}
+		String[] parts = line.split(stringEncloser);
+		StringBuilder res = new StringBuilder();
 		for (int i = 0; i < parts.length; i++) {
 			if (i>0) {
-				res += "\\\"";
+				if (stringEncloser.equals("\"")) {
+					res.append(String.format("\\%s", stringEncloser));
+				} else {
+					res.append(String.format("%s%s", stringEncloser, stringEncloser));
+				}
 			}
-			res += parts[i];
+			res.append(parts[i]);
 		}
-		return res;
+		return res.toString();
 	}
 
-	private int findStartPositionOfEmptyURI(String line) {
-		int startPos = line.indexOf(':')+2;
-		if (line.indexOf("'", startPos) != -1) {
-			// we use single quotes
-			return line.indexOf("'", startPos)+1;
-		} else if (line.indexOf('"', startPos) != -1) {
-			// we use double quotes
-			return line.indexOf('"', startPos)+1;
+	private int findStartPositionOfURI(String line) {
+		int separatorPos = line.indexOf(':')+2;
+		int start = determineQuoteStartPos(line, separatorPos);
+		if (isStartOfUri(separatorPos, start, line)) {
+			return start + 1;
 		} else {
-			// we don't use any quotes
-			return startPos;
+			return separatorPos;
 		}
+	}
+
+	private int determineQuoteStartPos(String line, int separatorPos) {
+		int singleQuotePos = line.indexOf('\'', separatorPos);
+		int doubleQuotePos = line.indexOf('"', separatorPos);
+		int startPos = -1;
+		if (singleQuotePos == -1) {
+			if (doubleQuotePos != -1) {
+				startPos = doubleQuotePos;
+			}
+		} else {
+			if (doubleQuotePos == -1) {
+				startPos = singleQuotePos;
+			} else {
+				startPos = Math.min(singleQuotePos, doubleQuotePos);
+			}
+		}
+		if (startPos != -1 && startPos > separatorPos) {
+			for (int i = startPos; i > separatorPos; i--) {
+				if (line.charAt(i) != '"' && line.charAt(i) != '\'' && line.charAt(i) != ' ') {
+					// there should no other char next to a string encloser, otherwise we might be in plain mode
+					return -1;
+				}
+			}
+		}
+		return startPos;
+	}
+
+	private boolean isStartOfUri(int separatorPos, int pos, String line) {
+		if (pos == -1) {
+			return false;
+		}
+		for (int i = pos; i > separatorPos; i--) {
+			if (line.charAt(i) != ' ' && line.charAt(i) != ':') {
+				return false;
+			}
+		}
+		return true;
 	}
 
 	public String getCorrespondingType(TextDocumentItem textDocumentItem, int lineNumber) {
@@ -133,13 +188,16 @@ public class CamelKYamlDSLParser extends ParserFileHelper {
 		Yaml yaml = new Yaml();
 		Object obj = yaml.load(line);
 		Map<?, ?> m = extractMapFromYaml(obj);
-		return getNonNullValue(m.values().toArray()[0]);
+		if (m != null && !m.values().isEmpty()) {
+			return getNonNullValue(m.values().toArray()[0]);
+		}
+		return null;
 	}
 
 	private Map<?, ?> extractMapFromYaml(Object o) {
 		if (o instanceof List) {
 			List<?> l = (List<?>)o;
-			if (l.size()>0 && l.get(0) instanceof Map) {
+			if (!l.isEmpty() && l.get(0) instanceof Map) {
 				return (Map<?, ?>)l.get(0);
 			}
 		} else if (o instanceof Map) {
