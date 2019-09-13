@@ -1,0 +1,13 @@
+# camel-k: language=yaml
+- id: "rest"
+  group: "routes"
+  rest:
+    verb: "post"
+    uri: "/api/route"
+    accepts: "text/plain"
+    binding-mode: "off"
+    steps:
+      - convert-body:
+          type: "java.lang.String"
+      - to:
+          uri: "test:name?delimiter=\"&"
