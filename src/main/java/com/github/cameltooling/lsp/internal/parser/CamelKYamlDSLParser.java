@@ -71,7 +71,7 @@ public class CamelKYamlDSLParser extends ParserFileHelper {
 		String line = parserFileHelperUtil.getLine(textDocumentItem, position.getLine());
 		String stringEncloser = getStringEncloser(line);
 		String uri = extractUriFromYamlData(line);
-		if (uri.length()==0) {
+		if (uri == null || uri.isEmpty()) {
 			// empty uri
 			return findStartPositionOfURI(line);
 		}
@@ -88,7 +88,7 @@ public class CamelKYamlDSLParser extends ParserFileHelper {
 	private String getStringEncloser(String line) {
 		int idx = determineQuoteStartPos(line, line.indexOf(':'));
 		if (idx != -1) {
-			String stringEncloser = new Character(line.charAt(idx)).toString();
+			String stringEncloser = String.valueOf(line.charAt(idx));
 			if (stringEncloser.equals("\"") || stringEncloser.equals("'")) {
 				return stringEncloser;
 			}
@@ -97,14 +97,14 @@ public class CamelKYamlDSLParser extends ParserFileHelper {
 	}
 
 	private String repairLostEscapeChars(String stringEncloser, String line) {
-		if (stringEncloser == null) {
+		if (stringEncloser == null || line == null) {
 			return line;
 		}
 		String[] parts = line.split(stringEncloser);
 		StringBuilder res = new StringBuilder();
 		for (int i = 0; i < parts.length; i++) {
 			if (i>0) {
-				if (stringEncloser.equals("\"")) {
+				if ("\"".equals(stringEncloser)) {
 					res.append(String.format("\\%s", stringEncloser));
 				} else {
 					res.append(String.format("%s%s", stringEncloser, stringEncloser));
@@ -116,12 +116,20 @@ public class CamelKYamlDSLParser extends ParserFileHelper {
 	}
 
 	private int findStartPositionOfURI(String line) {
-		int separatorPos = line.indexOf(':')+2;
+		int separatorPos = line.indexOf(':')+1;
 		int start = determineQuoteStartPos(line, separatorPos);
 		if (isStartOfUri(separatorPos, start, line)) {
 			return start + 1;
 		} else {
-			return separatorPos;
+			int spaceCnt = 0;
+			for (int i = separatorPos; i<line.length(); i++) {
+				if (line.charAt(i) == ' ') {
+					spaceCnt++;
+				} else {
+					break;
+				}
+			}
+			return separatorPos + spaceCnt;
 		}
 	}
 
@@ -155,7 +163,7 @@ public class CamelKYamlDSLParser extends ParserFileHelper {
 		if (pos == -1) {
 			return false;
 		}
-		for (int i = pos; i > separatorPos; i--) {
+		for (int i = pos-1; i > separatorPos; i--) {
 			if (line.charAt(i) != ' ' && line.charAt(i) != ':') {
 				return false;
 			}
@@ -167,12 +175,14 @@ public class CamelKYamlDSLParser extends ParserFileHelper {
 		for (int lineNo = lineNumber; lineNo >=0; lineNo--) {
 			String tempLine = parserFileHelperUtil.getLine(textDocumentItem, lineNo);
 			Map<?, ?> data = parseYaml(tempLine);
-			if (data.containsKey(TO_KEY)) {
-				return "to";
-			} else if (data.containsKey(FROM_KEY)) {
-				return "from";
-			} else if (data.containsKey(REST_KEY)) {
-				return null;
+			if (data != null) {
+				if (data.containsKey(TO_KEY)) {
+					return "to";
+				} else if (data.containsKey(FROM_KEY)) {
+					return "from";
+				} else if (data.containsKey(REST_KEY)) {
+					return null;
+				}
 			}
 		}
 		return null;
