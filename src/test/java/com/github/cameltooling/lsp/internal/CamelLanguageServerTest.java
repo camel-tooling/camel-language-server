@@ -288,6 +288,23 @@ public class CamelLanguageServerTest extends AbstractCamelLanguageServerTest {
 		}
 
 		@Test
+		public void testProvideCompletionForYamlOnRealFileWithCamelKCloseToModelineWithURIContainingDoubleQuotesInPlainUsingMoreSpaces() throws Exception {
+			File f = new File("src/test/resources/workspace/samplewithModelineLikeWithDoubleQuotesInPlainInsideURIUsingMoreSpaces.yaml");
+			assertThat(f).exists();
+			try (FileInputStream fis = new FileInputStream(f)) {
+				CamelLanguageServer cls = initializeLanguageServer(fis, ".yaml");
+				CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = getCompletionFor(cls, new Position(12, 42));
+				CompletionItem expectedanyOrderAttributeCompletionItem = new CompletionItem("anyOrder");
+				expectedanyOrderAttributeCompletionItem.setDocumentation("Whether the expected messages should arrive in the same order or can be in any order.");
+				expectedanyOrderAttributeCompletionItem.setDeprecated(false);
+				expectedanyOrderAttributeCompletionItem.setDetail("boolean");
+				expectedanyOrderAttributeCompletionItem.setInsertText("anyOrder=false");
+				expectedanyOrderAttributeCompletionItem.setTextEdit(new TextEdit(new Range(new Position(12, 42), new Position(12, 42)), "anyOrder=false"));
+				assertThat(completions.get().getLeft()).contains(expectedanyOrderAttributeCompletionItem);
+			}
+		}
+
+		@Test
 		public void testProvideNoCompletionForYamlOnRealFileWithCamelKCloseToModelineForRestURI() throws Exception {
 			File f = new File("src/test/resources/workspace/samplewithModelineLike.yaml");
 			assertThat(f).exists();
