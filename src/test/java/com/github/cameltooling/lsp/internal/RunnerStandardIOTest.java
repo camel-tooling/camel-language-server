@@ -16,32 +16,27 @@
  */
 package com.github.cameltooling.lsp.internal;
 
-import java.util.Arrays;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.awaitility.Awaitility.await;
 
-import org.eclipse.lsp4j.jsonrpc.Launcher;
-import org.eclipse.lsp4j.launch.LSPLauncher;
-import org.eclipse.lsp4j.services.LanguageClient;
+import org.junit.jupiter.api.Test;
 
-import com.github.cameltooling.lsp.internal.websocket.WebSocketRunner;
+public class RunnerStandardIOTest {
 
-/**
- * @author lhein
- */
-public class Runner {
+	@Test
+	void testClientProxyAvailable() throws Exception {
+		startRunnerWithoutOption();
+		await("Await that Server has started and have a remote proxy client").untilAsserted(() -> assertThat(Runner.server).isNotNull());
+		await("Await that Server has started and have a remote proxy client").untilAsserted(() -> assertThat(Runner.server.getClient()).isNotNull());
+	}
 
-	/**
-	 * For test only
-	 */
-	static CamelLanguageServer server;
-
-	public static void main(String[] args) {
-		if (Arrays.asList(args).contains("--websocket")) {
-			new WebSocketRunner().runWebSocketServer();
-		} else {
-			server = new CamelLanguageServer();
-			Launcher<LanguageClient> launcher = LSPLauncher.createServerLauncher(server, System.in, System.out);
-			server.connect(launcher.getRemoteProxy());
-			launcher.startListening();
-		}
+	private void startRunnerWithoutOption() {
+		new Thread(new Runnable() {
+			
+			@Override
+			public void run() {
+				Runner.main(new String[]{});
+			}
+		}).start();
 	}
 }
