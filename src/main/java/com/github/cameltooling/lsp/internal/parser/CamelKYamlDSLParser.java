@@ -96,9 +96,12 @@ public class CamelKYamlDSLParser extends ParserFileHelper {
 		return null;
 	}
 
-	private String repairLostEscapeChars(String stringEncloser, String line) {
-		if (stringEncloser == null || line == null) {
+	String repairLostEscapeChars(String stringEncloser, String line) {
+		if (stringEncloser == null) {
 			return line;
+		}
+		if(line == null) {
+			return "";
 		}
 		String[] parts = line.split(stringEncloser);
 		StringBuilder res = new StringBuilder();
