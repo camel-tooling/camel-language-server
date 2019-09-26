@@ -24,10 +24,18 @@ import org.slf4j.LoggerFactory;
 
 public class WebSocketRunner {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(WebSocketRunner.class);
 
-	public void runWebSocketServer() {
-		Server server = new Server("localhost", 8025, "/", null, CamelLSPWebSocketServerConfigProvider.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(WebSocketRunner.class);
+	
+	private static final String DEFAULT_HOSTNAME = "localhost";
+	private static final int DEFAULT_PORT = 8025;
+	private static final String DEFAULT_CONTEXT_PATH = "/";
+
+	public void runWebSocketServer(String hostname, int port, String contextPath) {
+		hostname = hostname != null ? hostname : DEFAULT_HOSTNAME;
+		port = port != -1 ? port : DEFAULT_PORT;
+		contextPath = contextPath != null ? contextPath : DEFAULT_CONTEXT_PATH;
+		Server server = new Server(hostname, port, contextPath, null, CamelLSPWebSocketServerConfigProvider.class);
 		Runtime.getRuntime().addShutdownHook(new Thread(server::stop, "camel-lsp-websocket-server-shutdown-hook"));
 
 		try {
