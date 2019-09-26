@@ -44,10 +44,19 @@ On hover, the documentation of the Camel component is available.
 On save, diagnostics on Camel URIs are updated:
 ![Diagnostic on Camel URI](./images/diagnostic.png "Diagnostic on Camel URI")
 
-### Websocket support
+### WebSocket support
 
-Connection through websocket is supported. The server needs to be launched with `--websocket` option. Then, the connection can be made through
-`ws://<yourHostName>:8025/camel-language-server`
+Connection through WebSocket is supported. The server needs to be launched with `--websocket` option.
+
+The following extra parameters can be used:
+* `--port=<port>`, default value is `8025`
+* `--hostname=<hostname>`, default value `localhost`
+* `--contextPath=<contextPath>`, default value `/`. It must start with a `/`.
+
+Then, the connection can be made through
+`ws://<hostname>:<port><contextPath>/camel-language-server`.
+
+For information, with all defaults, it is `ws://localhost:8025/camel-language-server`.
 
 ## Features planned
 
