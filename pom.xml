@@ -59,7 +59,7 @@
 		<camel.tooling.common.version>0.0.3-SNAPSHOT</camel.tooling.common.version>
 		<roaster.version>2.20.1.Final</roaster.version>
 		<awaitility.version>4.0.1</awaitility.version>
-		<tyrus.version>1.12</tyrus.version>
+		<tyrus.version>1.15</tyrus.version>
 	</properties>
 
 	<distributionManagement>
