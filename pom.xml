@@ -44,8 +44,6 @@
 		<maven.compiler.source>1.8</maven.compiler.source>
 		<maven.compiler.target>1.8</maven.compiler.target>
 		<!-- sonar properties -->
-		<sonar.code.codeCoveragePlugin>jacoco</sonar.code.codeCoveragePlugin>
-		<sonar.dynamicAnalysis>reuseReports</sonar.dynamicAnalysis>
 		<sonar.test.inclusions>**/*Test.*,**/test/**/*,**/*IT.*</sonar.test.inclusions>
 		<lsp4j.version>0.8.1</lsp4j.version>
 		<slf4j.version>1.7.28</slf4j.version>
@@ -150,45 +148,7 @@
         			<nexusUrl>https://oss.sonatype.org/</nexusUrl>
         			<autoReleaseAfterClose>true</autoReleaseAfterClose>
       			</configuration>
-    		</plugin>
-		
-			<!-- Jacoco -->
-			<plugin>
-				<groupId>org.jacoco</groupId>
-				<artifactId>jacoco-maven-plugin</artifactId>
-				<version>0.8.4</version>
-				<configuration>
-					<append>true</append>
-					<includes>com.github.cameltooling.*</includes>
-				</configuration>
-				<executions>
-					<execution>
-						<id>agent-for-ut</id>
-						<goals>
-							<goal>prepare-agent</goal>
-						</goals>
-						<configuration>
-							<destFile>${sonar.jacoco.reportPath}</destFile>
-						</configuration>
-					</execution>
-					<execution>
-						<id>agent-for-it</id>
-						<goals>
-							<goal>prepare-agent-integration</goal>
-						</goals>
-						<configuration>
-							<destFile>${sonar.jacoco.itReportPath}</destFile>
-						</configuration>
-					</execution>
-					<execution>
-						<id>report</id>
-						<goals>
-							<goal>report</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
-			
+    		</plugin>			
 			<!-- SureFire -->
 			<plugin>
 				<artifactId>maven-surefire-plugin</artifactId>
