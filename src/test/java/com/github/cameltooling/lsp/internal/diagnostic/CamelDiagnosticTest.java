@@ -103,6 +103,11 @@ public class CamelDiagnosticTest extends AbstractCamelLanguageServerTest {
 	}
 	
 	@Test
+	public void testNoErrorWithPropertyForWholeURI() throws Exception {
+		testDiagnostic("camel-with-properties", 0, ".java");
+	}
+	
+	@Test
 	public void testValidationErrorForJavaFile() throws Exception {
 		testDiagnostic("camel-with-endpoint-error", 1, ".java");
 		Range range = lastPublishedDiagnostics.getDiagnostics().get(0).getRange();

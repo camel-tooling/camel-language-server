@@ -111,7 +111,7 @@ public class DiagnosticService {
 			CamelCatalog camelCatalogResolved = camelCatalog.get();
 			for (CamelEndpointDetails camelEndpointDetails : endpoints) {
 				EndpointValidationResult validateEndpointProperties = camelCatalogResolved.validateEndpointProperties(camelEndpointDetails.getEndpointUri(), false);
-				if (validateEndpointProperties.hasErrors()) {
+				if (validateEndpointProperties.hasErrors() && wasCapableToValidate(validateEndpointProperties)) {
 					endpointErrors.put(camelEndpointDetails, validateEndpointProperties);
 				}
 			}
@@ -122,6 +122,10 @@ public class DiagnosticService {
 			logExceptionValidatingDocument(uri, e);
 		}
 		return endpointErrors;
+	}
+
+	private boolean wasCapableToValidate(EndpointValidationResult validateEndpointProperties) {
+		return validateEndpointProperties.getIncapable() == null;
 	}
 
 	private List<CamelEndpointDetails> retrieveEndpoints(String uri, String camelText) {
