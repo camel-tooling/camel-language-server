@@ -58,6 +58,18 @@ Then, the connection can be made through
 
 For information, with all defaults, it is `ws://localhost:8025/camel-language-server`.
 
+## Specific version of Camel catalog
+
+It is possible to specify a specific version of the Camel catalog. This can be provided as Initialization Option or Workspace Configuration. The format is the same for both:
+
+```
+{
+	"camel": {
+		"Camel catalog version" : ...
+	}
+}
+```
+
 ## Features planned
 
 * As you type reporting of parsing and compilation errors

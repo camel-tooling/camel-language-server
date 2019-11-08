@@ -25,6 +25,7 @@ import java.util.concurrent.CompletableFuture;
 
 import org.apache.camel.catalog.CamelCatalog;
 import org.apache.camel.catalog.DefaultCamelCatalog;
+import org.apache.camel.catalog.maven.MavenVersionManager;
 import org.eclipse.lsp4j.CodeAction;
 import org.eclipse.lsp4j.CodeActionParams;
 import org.eclipse.lsp4j.CodeLens;
@@ -83,6 +84,19 @@ public class CamelTextDocumentService implements TextDocumentService {
 		this.camelLanguageServer = camelLanguageServer;
 		camelCatalog = CompletableFuture.supplyAsync(() -> new DefaultCamelCatalog(true));
 	}
+	
+	public void updateCatalog(String camelVersion) {
+		camelCatalog = CompletableFuture.supplyAsync(() -> {
+			DefaultCamelCatalog catalog = new DefaultCamelCatalog(true);
+			if (camelVersion != null && !camelVersion.isEmpty()) {
+				catalog.setVersionManager(new MavenVersionManager());
+				if (!catalog.loadVersion(camelVersion)) {
+					LOGGER.warn("Cannot load Camel catalog with version {}", camelVersion);
+				}
+			}
+			return catalog;
+		});
+	}
 
 	@Override
 	public CompletableFuture<Either<List<CompletionItem>, CompletionList>> completion(CompletionParams completionParams) {
@@ -90,9 +104,9 @@ public class CamelTextDocumentService implements TextDocumentService {
 		LOGGER.info("completion: {}", uri);
 		TextDocumentItem textDocumentItem = openedDocuments.get(uri);
 		if(uri.endsWith("application.properties")) {
-			return new CamelApplicationPropertiesCompletionProcessor(textDocumentItem, camelCatalog).getCompletions(completionParams.getPosition()).thenApply(Either::forLeft);
+			return new CamelApplicationPropertiesCompletionProcessor(textDocumentItem, getCamelCatalog()).getCompletions(completionParams.getPosition()).thenApply(Either::forLeft);
 		} else {
-			return new CamelEndpointCompletionProcessor(textDocumentItem, camelCatalog).getCompletions(completionParams.getPosition()).thenApply(Either::forLeft);
+			return new CamelEndpointCompletionProcessor(textDocumentItem, getCamelCatalog()).getCompletions(completionParams.getPosition()).thenApply(Either::forLeft);
 		}
 	}
 
@@ -106,7 +120,7 @@ public class CamelTextDocumentService implements TextDocumentService {
 	public CompletableFuture<Hover> hover(TextDocumentPositionParams position) {
 		LOGGER.info("hover: {}", position.getTextDocument());
 		TextDocumentItem textDocumentItem = openedDocuments.get(position.getTextDocument().getUri());
-		return new HoverProcessor(textDocumentItem, camelCatalog).getHover(position.getPosition());
+		return new HoverProcessor(textDocumentItem, getCamelCatalog()).getHover(position.getPosition());
 	}
 
 	@Override
@@ -188,7 +202,7 @@ public class CamelTextDocumentService implements TextDocumentService {
 		TextDocumentItem textDocument = params.getTextDocument();
 		LOGGER.info("didOpen: {}", textDocument);
 		openedDocuments.put(textDocument.getUri(), textDocument);
-		new DiagnosticService(camelCatalog, camelLanguageServer).compute(params);
+		new DiagnosticService(getCamelCatalog(), camelLanguageServer).compute(params);
 	}
 
 	@Override
@@ -198,7 +212,7 @@ public class CamelTextDocumentService implements TextDocumentService {
 		TextDocumentItem textDocumentItem = openedDocuments.get(params.getTextDocument().getUri());
 		if (!contentChanges.isEmpty()) {
 			textDocumentItem.setText(contentChanges.get(0).getText());
-			new DiagnosticService(camelCatalog, camelLanguageServer).compute(params);
+			new DiagnosticService(getCamelCatalog(), camelLanguageServer).compute(params);
 		}
 	}
 
@@ -210,13 +224,13 @@ public class CamelTextDocumentService implements TextDocumentService {
 		/* The rule observed by VS Code servers as explained in LSP specification is to clear the Diagnostic when it is related to a single file.
 		 * https://microsoft.github.io/language-server-protocol/specification#textDocument_publishDiagnostics
 		 * */
-		new DiagnosticService(camelCatalog, camelLanguageServer).clear(uri);
+		new DiagnosticService(getCamelCatalog(), camelLanguageServer).clear(uri);
 	}
 
 	@Override
 	public void didSave(DidSaveTextDocumentParams params) {
 		LOGGER.info("didSave: {}", params.getTextDocument());
-		new DiagnosticService(camelCatalog, camelLanguageServer).compute(params);
+		new DiagnosticService(getCamelCatalog(), camelLanguageServer).compute(params);
 	}
 
 	public TextDocumentItem getOpenedDocument(String uri) {
@@ -225,5 +239,13 @@ public class CamelTextDocumentService implements TextDocumentService {
 	
 	public Collection<TextDocumentItem> getAllOpenedDocuments() {
 		return openedDocuments.values();
+	}
+
+	/**
+	 * /!\ public for test purpose
+	 * @return
+	 */
+	public CompletableFuture<CamelCatalog> getCamelCatalog() {
+		return camelCatalog;
 	}
 }
