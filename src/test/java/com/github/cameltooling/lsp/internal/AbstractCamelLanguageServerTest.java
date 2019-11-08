@@ -143,7 +143,7 @@ public abstract class AbstractCamelLanguageServerTest {
 		assertThat(initialize.get().getCapabilities().getCompletionProvider().getResolveProvider()).isTrue();
 	}
 	
-	private InitializeParams getInitParams() throws URISyntaxException {
+	protected InitializeParams getInitParams() throws URISyntaxException {
 		InitializeParams params = new InitializeParams();
 		params.setProcessId(new Random().nextInt());
 		params.setRootUri(getTestResource("/workspace/").toURI().toString());

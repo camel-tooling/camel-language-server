@@ -29,12 +29,19 @@ import org.eclipse.lsp4j.services.WorkspaceService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.github.cameltooling.lsp.internal.settings.SettingsManager;
+
 /**
  * @author lhein
  */
 public class CamelWorkspaceService implements WorkspaceService {
 	
 	private static final Logger LOGGER = LoggerFactory.getLogger(CamelWorkspaceService.class);
+	private SettingsManager settingsManager;
+
+	public CamelWorkspaceService(CamelTextDocumentService textDocumentService) {
+		settingsManager = new SettingsManager(textDocumentService);
+	}
 
 	@Override
 	public CompletableFuture<List<? extends SymbolInformation>> symbol(WorkspaceSymbolParams params) {
@@ -45,6 +52,7 @@ public class CamelWorkspaceService implements WorkspaceService {
 	@Override
 	public void didChangeConfiguration(DidChangeConfigurationParams params) {
 		Object settings = params.getSettings();
+		settingsManager.apply(params);
 		LOGGER.info("SERVER: changeConfig: settings -> {}", settings);
 	}
 

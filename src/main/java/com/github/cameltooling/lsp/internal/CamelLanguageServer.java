@@ -33,6 +33,8 @@ import org.eclipse.lsp4j.services.WorkspaceService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.github.cameltooling.lsp.internal.settings.SettingsManager;
+
 /**
  * this is the actual server implementation
  * 
@@ -47,7 +49,7 @@ public class CamelLanguageServer extends AbstractLanguageServer implements Langu
 	
 	public CamelLanguageServer() {
 		super.setTextDocumentService(new CamelTextDocumentService(this));
-		super.setWorkspaceService(new CamelWorkspaceService());
+		super.setWorkspaceService(new CamelWorkspaceService(getTextDocumentService()));
 	}
 
 	@Override
@@ -70,6 +72,8 @@ public class CamelLanguageServer extends AbstractLanguageServer implements Langu
 			LOGGER.info("Missing Parent process ID!!");
 			setParentProcessId(0);
 		}
+		
+		new SettingsManager(getTextDocumentService()).apply(params);
 		
 		ServerCapabilities capabilities = createServerCapabilities();
 		InitializeResult result = new InitializeResult(capabilities);
