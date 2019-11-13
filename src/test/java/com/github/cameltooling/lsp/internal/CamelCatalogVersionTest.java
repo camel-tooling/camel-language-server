@@ -73,9 +73,14 @@ public class CamelCatalogVersionTest extends AbstractCamelLanguageServerTest {
 	public void testCompletionFallbackWithInvalidVersion() throws Exception {
 		camelCatalogVersion = "invalid";
 		
-		CamelLanguageServer camelLanguageServer = basicCompletionCheck();
+		basicCompletionCheck();
+	}
+	
+	@Test
+	public void testCompletionFallbackWithNullVersion() throws Exception {
+		camelCatalogVersion = null;
 		
-		assertThat(camelLanguageServer.getTextDocumentService().getCamelCatalog().get().getLoadedVersion()).isNull();
+		basicCompletionCheck();
 	}
 	
 	private CamelLanguageServer basicCompletionCheck() throws URISyntaxException, InterruptedException, ExecutionException {
