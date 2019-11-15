@@ -18,7 +18,7 @@ package com.github.cameltooling.lsp.internal;
 
 import org.junit.jupiter.api.Test;
 
-public class CamelLanguageServerRobustnesstest {
+public class CamelLanguageServerRobustnessTest {
 	
 	@Test
 	public void testStopWithoutErrorIfStopCalledWithoutConnection() throws Exception {
