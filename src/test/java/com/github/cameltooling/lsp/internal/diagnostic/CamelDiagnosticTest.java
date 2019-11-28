@@ -54,20 +54,14 @@ public class CamelDiagnosticTest extends AbstractCamelLanguageServerTest {
 	public void testValidationError() throws Exception {
 		testDiagnostic("camel-with-endpoint-error", 1, ".xml");
 		Range range = lastPublishedDiagnostics.getDiagnostics().get(0).getRange();
-		assertThat(range.getStart().getLine()).isEqualTo(8);
-		assertThat(range.getStart().getCharacter()).isEqualTo(16);
-		assertThat(range.getEnd().getLine()).isEqualTo(8);
-		assertThat(range.getEnd().getCharacter()).isEqualTo(39);
+		checkRange(range, 8, 16, 8, 39);
 	}
 	
 	@Test
 	public void testValidationErrorWithNamespacePrefix() throws Exception {
 		testDiagnostic("camel-with-endpoint-error-withNamespacePrefix", 1, ".xml");
 		Range range = lastPublishedDiagnostics.getDiagnostics().get(0).getRange();
-		assertThat(range.getStart().getLine()).isEqualTo(8);
-		assertThat(range.getStart().getCharacter()).isEqualTo(25);
-		assertThat(range.getEnd().getLine()).isEqualTo(8);
-		assertThat(range.getEnd().getCharacter()).isEqualTo(48);
+		checkRange(range, 8, 25, 8, 48);
 	}
 	
 	@Test
@@ -91,10 +85,7 @@ public class CamelDiagnosticTest extends AbstractCamelLanguageServerTest {
 		Diagnostic diagnostic = lastPublishedDiagnostics.getDiagnostics().get(0);
 		assertThat(diagnostic.getMessage()).isNotNull();
 		Range range = diagnostic.getRange();
-		assertThat(range.getStart().getLine()).isEqualTo(8);
-		assertThat(range.getStart().getCharacter()).isEqualTo(16);
-		assertThat(range.getEnd().getLine()).isEqualTo(8);
-		assertThat(range.getEnd().getCharacter()).isEqualTo(43);
+		checkRange(range, 8, 16, 8, 43);
 	}
 	
 	@Test
@@ -111,10 +102,7 @@ public class CamelDiagnosticTest extends AbstractCamelLanguageServerTest {
 	public void testValidationErrorForJavaFile() throws Exception {
 		testDiagnostic("camel-with-endpoint-error", 1, ".java");
 		Range range = lastPublishedDiagnostics.getDiagnostics().get(0).getRange();
-		assertThat(range.getStart().getLine()).isEqualTo(12);
-		assertThat(range.getStart().getCharacter()).isEqualTo(14);
-		assertThat(range.getEnd().getLine()).isEqualTo(12);
-		assertThat(range.getEnd().getCharacter()).isEqualTo(37);
+		checkRange(range, 12, 14, 12, 37);
 	}
 	
 	@Test
@@ -151,6 +139,29 @@ public class CamelDiagnosticTest extends AbstractCamelLanguageServerTest {
 	@Test
 	public void testUnknowPropertyOnNonLenientPropertiesComponent() throws Exception {
 		testDiagnostic("camel-with-unknownParameter", 1, ".xml");
+		Range range = lastPublishedDiagnostics.getDiagnostics().get(0).getRange();
+		checkRange(range, 9, 33, 9, 45);
+	}
+
+	void checkRange(Range range, int startLine, int startCharacter, int endLine, int endCharacter) {
+		assertThat(range.getStart().getLine()).isEqualTo(startLine);
+		assertThat(range.getStart().getCharacter()).isEqualTo(startCharacter);
+		assertThat(range.getEnd().getLine()).isEqualTo(endLine );
+		assertThat(range.getEnd().getCharacter()).isEqualTo(endCharacter);
+	}
+	
+	@Test
+	public void testSeveralUnknowPropertyOnNonLenientPropertiesComponent() throws Exception {
+		testDiagnostic("camel-with-2-unknownParameters", 2, ".xml");
+		Range range1 = lastPublishedDiagnostics.getDiagnostics().get(0).getRange();
+		checkRange(range1, 9, 33, 9, 46);
+		Range range2 = lastPublishedDiagnostics.getDiagnostics().get(1).getRange();
+		checkRange(range2, 9, 56, 9, 69);
+	}
+	
+	@Test
+	public void testSeveralUnknowPropertyAndAnotherError() throws Exception {
+		testDiagnostic("camel-with-unknownParameterAndAnotherError", 2, ".xml");
 	}
 	
 	@Test
