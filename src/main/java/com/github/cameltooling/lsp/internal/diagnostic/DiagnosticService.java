@@ -64,6 +64,7 @@ public class DiagnosticService {
 	
 	private static final String APACHE_CAMEL_VALIDATION = "Apache Camel validation";
 	private static final Logger LOGGER = LoggerFactory.getLogger(DiagnosticService.class);
+	public static final String ERROR_CODE_UNKNOWN_PROPERTIES = "camel.diagnostic.unknown.properties";
 	
 	private CompletableFuture<CamelCatalog> camelCatalog;
 	private CamelLanguageServer camelLanguageServer;
@@ -160,9 +161,8 @@ public class DiagnosticService {
 							new UnknownErrorMsg().getErrorMessage(validationResult, unknownParameter),
 							DiagnosticSeverity.Error,
 							APACHE_CAMEL_VALIDATION,
-							null));
+							ERROR_CODE_UNKNOWN_PROPERTIES));
 				}
-				
 			}
 			if(unknownParameters == null || unknownParameters.size() < validationResult.getNumberOfErrors()) {
 				lspDiagnostics.add(new Diagnostic(
