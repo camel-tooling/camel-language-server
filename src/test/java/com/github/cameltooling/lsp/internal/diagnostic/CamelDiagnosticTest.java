@@ -39,6 +39,7 @@ import org.junit.jupiter.api.Test;
 
 import com.github.cameltooling.lsp.internal.AbstractCamelLanguageServerTest;
 import com.github.cameltooling.lsp.internal.CamelLanguageServer;
+import com.github.cameltooling.lsp.internal.RangeChecker;
 
 public class CamelDiagnosticTest extends AbstractCamelLanguageServerTest {
 
@@ -143,11 +144,8 @@ public class CamelDiagnosticTest extends AbstractCamelLanguageServerTest {
 		checkRange(range, 9, 33, 9, 45);
 	}
 
-	void checkRange(Range range, int startLine, int startCharacter, int endLine, int endCharacter) {
-		assertThat(range.getStart().getLine()).isEqualTo(startLine);
-		assertThat(range.getStart().getCharacter()).isEqualTo(startCharacter);
-		assertThat(range.getEnd().getLine()).isEqualTo(endLine );
-		assertThat(range.getEnd().getCharacter()).isEqualTo(endCharacter);
+	private void checkRange(Range range, int startLine, int startCharacter, int endLine, int endCharacter) {
+		new RangeChecker().check(range, startLine, startCharacter, endLine, endCharacter);
 	}
 	
 	@Test

@@ -19,6 +19,8 @@ package com.github.cameltooling.lsp.internal;
 import java.util.Arrays;
 import java.util.concurrent.CompletableFuture;
 
+import org.eclipse.lsp4j.CodeActionKind;
+import org.eclipse.lsp4j.CodeActionOptions;
 import org.eclipse.lsp4j.CompletionOptions;
 import org.eclipse.lsp4j.InitializeParams;
 import org.eclipse.lsp4j.InitializeResult;
@@ -88,6 +90,7 @@ public class CamelLanguageServer extends AbstractLanguageServer implements Langu
 		capabilities.setDocumentSymbolProvider(Boolean.TRUE);
 		capabilities.setReferencesProvider(Boolean.TRUE);
 		capabilities.setDefinitionProvider(Boolean.TRUE);
+		capabilities.setCodeActionProvider(new CodeActionOptions(Arrays.asList(CodeActionKind.QuickFix)));
 		return capabilities;
 	}
 
