@@ -152,14 +152,42 @@ public class DiagnosticService {
 		for (Map.Entry<CamelEndpointDetails, EndpointValidationResult> endpointError : endpointErrors.entrySet()) {
 			EndpointValidationResult validationResult = endpointError.getValue();
 			CamelEndpointDetails camelEndpointDetails = endpointError.getKey();
-			lspDiagnostics.add(new Diagnostic(
-					computeRange(fullCamelText, textDocumentItem, camelEndpointDetails),
-					computeErrorMessage(validationResult),
-					DiagnosticSeverity.Error,
-					APACHE_CAMEL_VALIDATION,
-					null));
+			Set<String> unknownParameters = validationResult.getUnknown();
+			if (unknownParameters != null && !unknownParameters.isEmpty()) {
+				for (String unknownParameter : unknownParameters) {
+					lspDiagnostics.add(new Diagnostic(
+							computeRange(fullCamelText, textDocumentItem, camelEndpointDetails, unknownParameter),
+							new UnknownErrorMsg().getErrorMessage(validationResult, unknownParameter),
+							DiagnosticSeverity.Error,
+							APACHE_CAMEL_VALIDATION,
+							null));
+				}
+				
+			}
+			if(unknownParameters == null || unknownParameters.size() < validationResult.getNumberOfErrors()) {
+				lspDiagnostics.add(new Diagnostic(
+						computeRange(fullCamelText, textDocumentItem, camelEndpointDetails),
+						computeErrorMessage(validationResult),
+						DiagnosticSeverity.Error,
+						APACHE_CAMEL_VALIDATION,
+						null));
+			}
 		}
 		return lspDiagnostics;
+	}
+
+	private Range computeRange(String fullCamelText, TextDocumentItem textDocumentItem, CamelEndpointDetails camelEndpointDetails, String unknownParameter) {
+		int endLine = camelEndpointDetails.getLineNumberEnd() != null ? Integer.valueOf(camelEndpointDetails.getLineNumberEnd()) - 1 : findLine(fullCamelText, camelEndpointDetails);
+		int startLine = camelEndpointDetails.getLineNumber() != null ? Integer.valueOf(camelEndpointDetails.getLineNumber()) - 1 : findLine(fullCamelText, camelEndpointDetails);
+		if(startLine == endLine) {
+			String lineContainingTheCamelURI = new ParserFileHelperUtil().getLine(textDocumentItem, endLine);
+			int startCharacter = lineContainingTheCamelURI.indexOf(unknownParameter);
+			if (startCharacter != -1) {
+				int endCharacter = startCharacter + unknownParameter.length();
+				return new Range(new Position(startLine, startCharacter), new Position(endLine, endCharacter));
+			}
+		}
+		return computeRange(fullCamelText, textDocumentItem, camelEndpointDetails);
 	}
 
 	private Range computeRange(String fullCamelText, TextDocumentItem textDocumentItem, CamelEndpointDetails camelEndpointDetails) {
@@ -211,7 +239,6 @@ public class DiagnosticService {
 		computeErrorMessage(validationResult, sb, validationResult.getInvalidBoolean(), new BooleanErrorMsg());
 		computeErrorMessage(validationResult, sb, validationResult.getInvalidReference(), new ReferenceErrorMsg());
 		computeErrorMessage(validationResult, sb, validationResult.getInvalidEnum(), new EnumErrorMsg());
-		computeErrorMessage(validationResult, sb, validationResult.getUnknown(), new UnknownErrorMsg());
 		computeErrorMessage(sb, validationResult.getSyntaxError());
 		return sb.toString();
 	}
@@ -225,14 +252,6 @@ public class DiagnosticService {
 	private void computeErrorMessage(EndpointValidationResult validationResult, StringBuilder sb, Map<String, String> mapEntryErrors, CamelDiagnosticEndpointMessage<Entry<String, String>> errorMsgComputer) {
 		if (mapEntryErrors != null) {
 			for (Map.Entry<String, String> invalid : mapEntryErrors.entrySet()) {
-				sb.append(errorMsgComputer.getErrorMessage(validationResult, invalid)).append("\n");
-			}
-		}
-	}
-
-	private void computeErrorMessage(EndpointValidationResult validationResult, StringBuilder sb, Set<String> entryErrors, CamelDiagnosticEndpointMessage<String> errorMsgComputer) {
-		if (entryErrors != null) {
-			for (String invalid : entryErrors) {
 				sb.append(errorMsgComputer.getErrorMessage(validationResult, invalid)).append("\n");
 			}
 		}
