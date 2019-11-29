@@ -81,6 +81,24 @@ public class CamelDiagnosticTest extends AbstractCamelLanguageServerTest {
 	}
 	
 	@Test
+	public void testInvalidEnum() throws Exception {
+		testDiagnostic("camel-with-invalid-enum", 1, ".xml");
+		Diagnostic diagnostic = lastPublishedDiagnostics.getDiagnostics().get(0);
+		assertThat(diagnostic.getMessage()).isNotNull();
+		Range range = diagnostic.getRange();
+		checkRange(range, 9, 49, 9, 65);
+	}
+	
+	@Test
+	public void testInvalidEnumWithSameStringOnSameLine() throws Exception {
+		testDiagnostic("camel-with-invalid-enum-with-same-string-in-camel-uri", 1, ".xml");
+		Diagnostic diagnostic = lastPublishedDiagnostics.getDiagnostics().get(0);
+		assertThat(diagnostic.getMessage()).isNotNull();
+		Range range = diagnostic.getRange();
+		checkRange(range, 9, 56, 9, 72);
+	}
+	
+	@Test
 	public void testValidationErrorWithSyntaxError() throws Exception {
 		testDiagnostic("camel-with-endpoint-error-withampersand", 1, ".xml");
 		Diagnostic diagnostic = lastPublishedDiagnostics.getDiagnostics().get(0);
@@ -157,6 +175,17 @@ public class CamelDiagnosticTest extends AbstractCamelLanguageServerTest {
 		checkRange(range2, 9, 56, 9, 69);
 	}
 	
+	@Test
+	public void testSeveralErrorsWithPreciseSpecificrange() throws Exception {
+		testDiagnostic("camel-with-several-errors-with-precise-specific-range", 3, ".xml");
+		Range range1 = lastPublishedDiagnostics.getDiagnostics().get(0).getRange();
+		checkRange(range1, 9, 33, 9, 46);
+		Range range2 = lastPublishedDiagnostics.getDiagnostics().get(1).getRange();
+		checkRange(range2, 9, 56, 9, 69);
+		Range range3 = lastPublishedDiagnostics.getDiagnostics().get(2).getRange();
+		checkRange(range3, 9, 95, 9, 111);
+	}
+
 	@Test
 	public void testSeveralUnknowPropertyAndAnotherError() throws Exception {
 		testDiagnostic("camel-with-unknownParameterAndAnotherError", 2, ".xml");

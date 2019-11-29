@@ -153,18 +153,11 @@ public class DiagnosticService {
 		for (Map.Entry<CamelEndpointDetails, EndpointValidationResult> endpointError : endpointErrors.entrySet()) {
 			EndpointValidationResult validationResult = endpointError.getValue();
 			CamelEndpointDetails camelEndpointDetails = endpointError.getKey();
-			Set<String> unknownParameters = validationResult.getUnknown();
-			if (unknownParameters != null && !unknownParameters.isEmpty()) {
-				for (String unknownParameter : unknownParameters) {
-					lspDiagnostics.add(new Diagnostic(
-							computeRange(fullCamelText, textDocumentItem, camelEndpointDetails, unknownParameter),
-							new UnknownErrorMsg().getErrorMessage(validationResult, unknownParameter),
-							DiagnosticSeverity.Error,
-							APACHE_CAMEL_VALIDATION,
-							ERROR_CODE_UNKNOWN_PROPERTIES));
-				}
-			}
-			if(unknownParameters == null || unknownParameters.size() < validationResult.getNumberOfErrors()) {
+			List<Diagnostic> unknownParameterDiagnostics = computeUnknowParameters(fullCamelText, textDocumentItem, validationResult, camelEndpointDetails);
+			lspDiagnostics.addAll(unknownParameterDiagnostics);
+			List<Diagnostic> invalidEnumDiagnostics = computeInvalidEnumsDiagnostic(fullCamelText, textDocumentItem, validationResult, camelEndpointDetails);
+			lspDiagnostics.addAll(invalidEnumDiagnostics);
+			if (invalidEnumDiagnostics.size() + unknownParameterDiagnostics.size() < validationResult.getNumberOfErrors()) {
 				lspDiagnostics.add(new Diagnostic(
 						computeRange(fullCamelText, textDocumentItem, camelEndpointDetails),
 						computeErrorMessage(validationResult),
@@ -174,6 +167,55 @@ public class DiagnosticService {
 			}
 		}
 		return lspDiagnostics;
+	}
+
+	private List<Diagnostic> computeInvalidEnumsDiagnostic(String fullCamelText, TextDocumentItem textDocumentItem, EndpointValidationResult validationResult, CamelEndpointDetails camelEndpointDetails) {
+		List<Diagnostic> lspDiagnostics = new ArrayList<>();
+		Map<String, String> invalidEnums = validationResult.getInvalidEnum();
+		if (invalidEnums != null) {
+			for (Entry<String, String> invalidEnum : invalidEnums.entrySet()) {
+				lspDiagnostics.add(new Diagnostic(
+						computeRange(fullCamelText, textDocumentItem, camelEndpointDetails, invalidEnum),
+						new EnumErrorMsg().getErrorMessage(validationResult, invalidEnum),
+						DiagnosticSeverity.Error,
+						APACHE_CAMEL_VALIDATION,
+						null));
+			}
+		}
+		return lspDiagnostics;
+	}
+
+	private List<Diagnostic> computeUnknowParameters(String fullCamelText, TextDocumentItem textDocumentItem, EndpointValidationResult validationResult, CamelEndpointDetails camelEndpointDetails) {
+		List<Diagnostic> lspDiagnostics = new ArrayList<>();
+		Set<String> unknownParameters = validationResult.getUnknown();
+		if (unknownParameters != null) {
+			for (String unknownParameter : unknownParameters) {
+				lspDiagnostics.add(new Diagnostic(
+						computeRange(fullCamelText, textDocumentItem, camelEndpointDetails, unknownParameter),
+						new UnknownErrorMsg().getErrorMessage(validationResult, unknownParameter),
+						DiagnosticSeverity.Error,
+						APACHE_CAMEL_VALIDATION,
+						ERROR_CODE_UNKNOWN_PROPERTIES));
+			}
+		}
+		return lspDiagnostics;
+	}
+	
+	private Range computeRange(String fullCamelText, TextDocumentItem textDocumentItem, CamelEndpointDetails camelEndpointDetails, Entry<String, String> invalidEnum) {
+		int endLine = camelEndpointDetails.getLineNumberEnd() != null ? Integer.valueOf(camelEndpointDetails.getLineNumberEnd()) - 1 : findLine(fullCamelText, camelEndpointDetails);
+		int startLine = camelEndpointDetails.getLineNumber() != null ? Integer.valueOf(camelEndpointDetails.getLineNumber()) - 1 : findLine(fullCamelText, camelEndpointDetails);
+		if(startLine == endLine) {
+			String lineContainingTheCamelURI = new ParserFileHelperUtil().getLine(textDocumentItem, endLine);
+			int startCharacterOfProperty = lineContainingTheCamelURI.indexOf(invalidEnum.getKey());
+			if (startCharacterOfProperty != -1) {
+				int startCharacter = lineContainingTheCamelURI.indexOf(invalidEnum.getValue(), startCharacterOfProperty);
+				if (startCharacter != -1) {
+					int endCharacter = startCharacter + invalidEnum.getValue().length();
+					return new Range(new Position(startLine, startCharacter), new Position(endLine, endCharacter));
+				}
+			}
+		}
+		return computeRange(fullCamelText, textDocumentItem, camelEndpointDetails);
 	}
 
 	private Range computeRange(String fullCamelText, TextDocumentItem textDocumentItem, CamelEndpointDetails camelEndpointDetails, String unknownParameter) {
@@ -238,7 +280,6 @@ public class DiagnosticService {
 		computeErrorMessage(validationResult, sb, validationResult.getInvalidNumber(), new NumberErrorMsg());
 		computeErrorMessage(validationResult, sb, validationResult.getInvalidBoolean(), new BooleanErrorMsg());
 		computeErrorMessage(validationResult, sb, validationResult.getInvalidReference(), new ReferenceErrorMsg());
-		computeErrorMessage(validationResult, sb, validationResult.getInvalidEnum(), new EnumErrorMsg());
 		computeErrorMessage(sb, validationResult.getSyntaxError());
 		return sb.toString();
 	}
