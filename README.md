@@ -70,6 +70,21 @@ It is possible to specify a specific version of the Camel catalog. This can be p
 }
 ```
 
+## Additional Camel components
+
+It is possible to specify a list of additional Camel components. This can be provided as Initialization Option or Workspace Configuration. The format is the same for both:
+
+```
+{
+	"camel": {
+		"extra-components" : [
+			...
+		]
+	}
+}
+
+```
+
 ## Features planned
 
 * As you type reporting of parsing and compilation errors

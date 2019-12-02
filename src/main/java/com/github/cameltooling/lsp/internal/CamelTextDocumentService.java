@@ -72,6 +72,8 @@ import com.github.cameltooling.lsp.internal.diagnostic.DiagnosticService;
 import com.github.cameltooling.lsp.internal.documentsymbol.DocumentSymbolProcessor;
 import com.github.cameltooling.lsp.internal.hover.HoverProcessor;
 import com.github.cameltooling.lsp.internal.references.ReferencesProcessor;
+import com.github.cameltooling.lsp.internal.settings.JSONUtility;
+import com.google.gson.Gson;
 
 /**
  * @author lhein
@@ -88,13 +90,23 @@ public class CamelTextDocumentService implements TextDocumentService {
 		camelCatalog = CompletableFuture.supplyAsync(() -> new DefaultCamelCatalog(true));
 	}
 	
-	public void updateCatalog(String camelVersion) {
+	public void updateCatalog(String camelVersion, List<Map<?,?>> extraComponents) {
 		camelCatalog = CompletableFuture.supplyAsync(() -> {
 			DefaultCamelCatalog catalog = new DefaultCamelCatalog(true);
 			if (camelVersion != null && !camelVersion.isEmpty()) {
 				catalog.setVersionManager(new MavenVersionManager());
 				if (!catalog.loadVersion(camelVersion)) {
 					LOGGER.warn("Cannot load Camel catalog with version {}", camelVersion);
+				}
+			}
+			if (extraComponents != null) {
+				for (Map<?,?> extraComponent : extraComponents) {
+					JSONUtility jsonUtility = new JSONUtility();
+					Map<?,?> extraComponentTopLevel = jsonUtility.toModel(extraComponent, Map.class);
+					Map<?,?> componentAttributes = jsonUtility.toModel(extraComponentTopLevel.get("component"), Map.class);
+					String name = (String) componentAttributes.get("scheme");
+					String className = (String) componentAttributes.get("javaType");
+					catalog.addComponent(name, className, new Gson().toJson(extraComponent));
 				}
 			}
 			return catalog;
