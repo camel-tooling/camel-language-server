@@ -17,6 +17,7 @@
 package com.github.cameltooling.lsp.internal.settings;
 
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
 import org.eclipse.lsp4j.DidChangeConfigurationParams;
@@ -28,6 +29,7 @@ public class SettingsManager {
 
 	private static final String CAMEL_CATALOG_VERSION = "Camel catalog version";
 	private static final String TOP_LEVEL_SETTINGS_ID = "camel";
+	private static final String EXTRA_COMPONENTS = "extra-components";
 	private CamelTextDocumentService textDocumentService;
 
 	public SettingsManager(CamelTextDocumentService textDocumentService) {
@@ -45,7 +47,9 @@ public class SettingsManager {
 	private void applySettings(Object settings) {
 		Map<?,?> mapSettings = getSettings(settings);
 		Map<?, ?> camelSetting = getSetting(mapSettings, TOP_LEVEL_SETTINGS_ID, Map.class);
-		textDocumentService.updateCatalog(getSetting(camelSetting, CAMEL_CATALOG_VERSION, String.class));
+		String camelCatalogVersion = getSetting(camelSetting, CAMEL_CATALOG_VERSION, String.class);
+		List<?> extraComponents = getSetting(camelSetting, EXTRA_COMPONENTS, List.class);
+		textDocumentService.updateCatalog(camelCatalogVersion, (List<Map<?, ?>>) extraComponents);
 	}
 
 	private Map<?, ?> getSettings(Object settings) {
