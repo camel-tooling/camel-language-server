@@ -7,7 +7,7 @@
 
   <camelContext id="camel" xmlns="http://camel.apache.org/schema/spring">
     <route id="a route">
-      <from uri="timer:timerName?unknownParam=1000"/>
+      <from uri="timer:timerName?decy=1000"/>
       <to uri="direct:drink"/>
     </route>
   </camelContext>

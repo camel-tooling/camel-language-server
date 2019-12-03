@@ -27,6 +27,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
 import org.apache.camel.catalog.CamelCatalog;
+import org.apache.commons.text.similarity.LevenshteinDistance;
 import org.eclipse.lsp4j.CodeAction;
 import org.eclipse.lsp4j.CodeActionKind;
 import org.eclipse.lsp4j.CodeActionParams;
@@ -44,6 +45,7 @@ import org.slf4j.LoggerFactory;
 import com.github.cameltooling.lsp.internal.CamelTextDocumentService;
 import com.github.cameltooling.lsp.internal.completion.CamelEndpointCompletionProcessor;
 import com.github.cameltooling.lsp.internal.diagnostic.DiagnosticService;
+import com.github.cameltooling.lsp.internal.parser.ParserFileHelperUtil;
 
 public class UnknownPropertyQuickfix {
 	
@@ -55,22 +57,32 @@ public class UnknownPropertyQuickfix {
 	}
 
 	public CompletableFuture<List<Either<Command, CodeAction>>> apply(CodeActionParams params) {
-		
 		return CompletableFuture.supplyAsync(() -> {
 			TextDocumentItem openedDocument = camelTextDocumentService.getOpenedDocument(params.getTextDocument().getUri());
 			List<Diagnostic> diagnostics = params.getContext().getDiagnostics();
 			List<Either<Command, CodeAction>> res = new ArrayList<>();
 			for (Diagnostic diagnostic : diagnostics) {
+				CharSequence currentValueInError = retrieveCurrentErrorValue(openedDocument, diagnostic);
 				if(DiagnosticService.ERROR_CODE_UNKNOWN_PROPERTIES.equals(diagnostic.getCode())) {
 					List<String> possibleProperties = retrievePossibleProperties(openedDocument, camelTextDocumentService.getCamelCatalog(), diagnostic.getRange().getStart());
-					for (String possibleProperty : possibleProperties) {
-						res.add(Either.forRight(createCodeAction(params, diagnostic, possibleProperty)));
+					int distanceThreshold = Math.round(currentValueInError.length() * 0.4f);
+					LevenshteinDistance levenshteinDistance = new LevenshteinDistance(distanceThreshold);
+					List<String> mostProbableProperties = possibleProperties.stream()
+							.filter(possibleProperty -> levenshteinDistance.apply(possibleProperty, currentValueInError) != -1)
+							.collect(Collectors.toList());
+					for (String mostProbableProperty : mostProbableProperties) {
+						res.add(Either.forRight(createCodeAction(params, diagnostic, mostProbableProperty)));
 					}
 				}
 			}
 			
 			return res;
 		});
+	}
+
+	private String retrieveCurrentErrorValue(TextDocumentItem openedDocument, Diagnostic diagnostic) {
+		String line = new ParserFileHelperUtil().getLine(openedDocument, diagnostic.getRange().getStart().getLine());
+		return line.substring(diagnostic.getRange().getStart().getCharacter(), diagnostic.getRange().getEnd().getCharacter());
 	}
 
 	private CodeAction createCodeAction(CodeActionParams params, Diagnostic diagnostic, String possibleProperty) {
