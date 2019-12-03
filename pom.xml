@@ -53,6 +53,7 @@
 		<roaster.version>2.20.1.Final</roaster.version>
 		<awaitility.version>4.0.1</awaitility.version>
 		<tyrus.version>1.15</tyrus.version>
+		<commons-text.version>1.8</commons-text.version>
 	</properties>
 
 	<distributionManagement>
@@ -288,6 +289,11 @@
   			<groupId>org.glassfish.tyrus</groupId>
 			<artifactId>tyrus-container-grizzly-server</artifactId>
 			<version>${tyrus.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-text</artifactId>
+			<version>${commons-text.version}</version>
 		</dependency>
 	</dependencies>
 	

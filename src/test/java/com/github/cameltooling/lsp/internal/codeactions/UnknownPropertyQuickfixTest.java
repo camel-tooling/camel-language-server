@@ -91,7 +91,7 @@ public class UnknownPropertyQuickfixTest extends AbstractCamelLanguageServerTest
 	
 	private void checkRetrievedCodeAction(TextDocumentIdentifier textDocumentIdentifier, Diagnostic diagnostic, CompletableFuture<List<Either<Command, CodeAction>>> codeActions)
 			throws InterruptedException, ExecutionException {
-		assertThat(codeActions.get()).isNotEmpty();
+		assertThat(codeActions.get()).hasSize(1);
 		CodeAction codeAction = codeActions.get().get(0).getRight();
 		assertThat(codeAction.getDiagnostics()).containsOnly(diagnostic);
 		assertThat(codeAction.getKind()).isEqualTo(CodeActionKind.QuickFix);
@@ -99,8 +99,8 @@ public class UnknownPropertyQuickfixTest extends AbstractCamelLanguageServerTest
 		assertThat(createdChanges).isNotEmpty();
 		TextEdit textEdit = createdChanges.get(0);
 		Range range = textEdit.getRange();
-		new RangeChecker().check(range, 9, 33, 9, 45);
-		assertThat(textEdit.getNewText()).isEqualTo("bridgeErrorHandler");
+		new RangeChecker().check(range, 9, 33, 9, 37);
+		assertThat(textEdit.getNewText()).isEqualTo("delay");
 	}
 
 	private TextDocumentIdentifier initAnLaunchDiagnostic() throws FileNotFoundException {

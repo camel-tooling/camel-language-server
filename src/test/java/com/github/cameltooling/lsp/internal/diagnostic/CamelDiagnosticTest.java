@@ -166,7 +166,7 @@ public class CamelDiagnosticTest extends AbstractCamelLanguageServerTest {
 	public void testUnknowPropertyOnNonLenientPropertiesComponent() throws Exception {
 		testDiagnostic("camel-with-unknownParameter", 1, ".xml");
 		Range range = lastPublishedDiagnostics.getDiagnostics().get(0).getRange();
-		checkRange(range, 9, 33, 9, 45);
+		checkRange(range, 9, 33, 9, 37);
 	}
 
 	private void checkRange(Range range, int startLine, int startCharacter, int endLine, int endCharacter) {
