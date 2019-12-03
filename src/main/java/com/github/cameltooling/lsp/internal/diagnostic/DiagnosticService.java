@@ -236,6 +236,9 @@ public class DiagnosticService {
 		int endLine = camelEndpointDetails.getLineNumberEnd() != null ? Integer.valueOf(camelEndpointDetails.getLineNumberEnd()) - 1 : findLine(fullCamelText, camelEndpointDetails);
 		String lineContainingTheCamelURI = new ParserFileHelperUtil().getLine(textDocumentItem, endLine);
 		String endpointUri = camelEndpointDetails.getEndpointUri();
+		if(textDocumentItem.getUri().endsWith(".xml")) {
+			endpointUri = endpointUri.replace("&", "&amp;");
+		}
 		int startOfUri = lineContainingTheCamelURI.indexOf(endpointUri);
 		int startLinePosition;
 		int endLinePosition;

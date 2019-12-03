@@ -71,6 +71,13 @@ public class CamelDiagnosticTest extends AbstractCamelLanguageServerTest {
 	}
 	
 	@Test
+	public void testValidationForNonFirstParameters() throws Exception {
+		testDiagnostic("camel-with-endpoint-error-on-second-parameter", 1, ".xml");
+		Range range = lastPublishedDiagnostics.getDiagnostics().get(0).getRange();
+		checkRange(range, 8, 16, 8, 61);
+	}
+	
+	@Test
 	public void testInvalidBoolean() throws Exception {
 		testDiagnostic("camel-with-endpoint-boolean-error", 1, ".xml");
 	}
@@ -104,7 +111,7 @@ public class CamelDiagnosticTest extends AbstractCamelLanguageServerTest {
 		Diagnostic diagnostic = lastPublishedDiagnostics.getDiagnostics().get(0);
 		assertThat(diagnostic.getMessage()).isNotNull();
 		Range range = diagnostic.getRange();
-		checkRange(range, 8, 16, 8, 43);
+		checkRange(range, 8, 16, 8, 47);
 	}
 	
 	@Test
