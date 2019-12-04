@@ -187,7 +187,7 @@ public class CamelLanguageServerTest extends AbstractCamelLanguageServerTest {
 			try (FileInputStream fis = new FileInputStream(f)) {
 				CamelLanguageServer cls = initializeLanguageServer(fis, ".yaml");
 				CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = getCompletionFor(cls, new Position(12, 16));
-				assertThat(completions.get().getLeft()).contains(createExpectedAhcCompletionItem(12, 16, 12, 25));
+				assertThat(completions.get().getLeft()).contains(createExpectedAhcCompletionItem(12, 16, 12, 33));
 			}
 		}
 
@@ -208,13 +208,13 @@ public class CamelLanguageServerTest extends AbstractCamelLanguageServerTest {
 			assertThat(f).exists();
 			try (FileInputStream fis = new FileInputStream(f)) {
 				CamelLanguageServer cls = initializeLanguageServer(fis, ".yaml");
-				CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = getCompletionFor(cls, new Position(12, 39));
+				CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = getCompletionFor(cls, new Position(12, 47));
 				CompletionItem expectedanyOrderAttributeCompletionItem = new CompletionItem("anyOrder");
 				expectedanyOrderAttributeCompletionItem.setDocumentation("Whether the expected messages should arrive in the same order or can be in any order.");
 				expectedanyOrderAttributeCompletionItem.setDeprecated(false);
 				expectedanyOrderAttributeCompletionItem.setDetail("boolean");
 				expectedanyOrderAttributeCompletionItem.setInsertText("anyOrder=false");
-				expectedanyOrderAttributeCompletionItem.setTextEdit(new TextEdit(new Range(new Position(12, 39), new Position(12, 39)), "anyOrder=false"));
+				expectedanyOrderAttributeCompletionItem.setTextEdit(new TextEdit(new Range(new Position(12, 47), new Position(12, 47)), "anyOrder=false"));
 				assertThat(completions.get().getLeft()).contains(expectedanyOrderAttributeCompletionItem);
 			}
 		}
@@ -225,13 +225,13 @@ public class CamelLanguageServerTest extends AbstractCamelLanguageServerTest {
 			assertThat(f).exists();
 			try (FileInputStream fis = new FileInputStream(f)) {
 				CamelLanguageServer cls = initializeLanguageServer(fis, ".yaml");
-				CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = getCompletionFor(cls, new Position(12, 38));
+				CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = getCompletionFor(cls, new Position(12, 46));
 				CompletionItem expectedanyOrderAttributeCompletionItem = new CompletionItem("anyOrder");
 				expectedanyOrderAttributeCompletionItem.setDocumentation("Whether the expected messages should arrive in the same order or can be in any order.");
 				expectedanyOrderAttributeCompletionItem.setDeprecated(false);
 				expectedanyOrderAttributeCompletionItem.setDetail("boolean");
 				expectedanyOrderAttributeCompletionItem.setInsertText("anyOrder=false");
-				expectedanyOrderAttributeCompletionItem.setTextEdit(new TextEdit(new Range(new Position(12, 38), new Position(12, 38)), "anyOrder=false"));
+				expectedanyOrderAttributeCompletionItem.setTextEdit(new TextEdit(new Range(new Position(12, 46), new Position(12, 46)), "anyOrder=false"));
 				assertThat(completions.get().getLeft()).contains(expectedanyOrderAttributeCompletionItem);
 			}
 		}
@@ -242,13 +242,13 @@ public class CamelLanguageServerTest extends AbstractCamelLanguageServerTest {
 			assertThat(f).exists();
 			try (FileInputStream fis = new FileInputStream(f)) {
 				CamelLanguageServer cls = initializeLanguageServer(fis, ".yaml");
-				CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = getCompletionFor(cls, new Position(12, 39));
+				CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = getCompletionFor(cls, new Position(12, 47));
 				CompletionItem expectedanyOrderAttributeCompletionItem = new CompletionItem("anyOrder");
 				expectedanyOrderAttributeCompletionItem.setDocumentation("Whether the expected messages should arrive in the same order or can be in any order.");
 				expectedanyOrderAttributeCompletionItem.setDeprecated(false);
 				expectedanyOrderAttributeCompletionItem.setDetail("boolean");
 				expectedanyOrderAttributeCompletionItem.setInsertText("anyOrder=false");
-				expectedanyOrderAttributeCompletionItem.setTextEdit(new TextEdit(new Range(new Position(12, 39), new Position(12, 39)), "anyOrder=false"));
+				expectedanyOrderAttributeCompletionItem.setTextEdit(new TextEdit(new Range(new Position(12, 47), new Position(12, 47)), "anyOrder=false"));
 				assertThat(completions.get().getLeft()).contains(expectedanyOrderAttributeCompletionItem);
 			}
 		}
@@ -259,13 +259,13 @@ public class CamelLanguageServerTest extends AbstractCamelLanguageServerTest {
 			assertThat(f).exists();
 			try (FileInputStream fis = new FileInputStream(f)) {
 				CamelLanguageServer cls = initializeLanguageServer(fis, ".yaml");
-				CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = getCompletionFor(cls, new Position(12, 37));
+				CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = getCompletionFor(cls, new Position(12, 45));
 				CompletionItem expectedanyOrderAttributeCompletionItem = new CompletionItem("anyOrder");
 				expectedanyOrderAttributeCompletionItem.setDocumentation("Whether the expected messages should arrive in the same order or can be in any order.");
 				expectedanyOrderAttributeCompletionItem.setDeprecated(false);
 				expectedanyOrderAttributeCompletionItem.setDetail("boolean");
 				expectedanyOrderAttributeCompletionItem.setInsertText("anyOrder=false");
-				expectedanyOrderAttributeCompletionItem.setTextEdit(new TextEdit(new Range(new Position(12, 37), new Position(12, 37)), "anyOrder=false"));
+				expectedanyOrderAttributeCompletionItem.setTextEdit(new TextEdit(new Range(new Position(12, 45), new Position(12, 45)), "anyOrder=false"));
 				assertThat(completions.get().getLeft()).contains(expectedanyOrderAttributeCompletionItem);
 			}
 		}
@@ -276,13 +276,13 @@ public class CamelLanguageServerTest extends AbstractCamelLanguageServerTest {
 			assertThat(f).exists();
 			try (FileInputStream fis = new FileInputStream(f)) {
 				CamelLanguageServer cls = initializeLanguageServer(fis, ".yaml");
-				CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = getCompletionFor(cls, new Position(12, 37));
+				CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = getCompletionFor(cls, new Position(12, 45));
 				CompletionItem expectedanyOrderAttributeCompletionItem = new CompletionItem("anyOrder");
 				expectedanyOrderAttributeCompletionItem.setDocumentation("Whether the expected messages should arrive in the same order or can be in any order.");
 				expectedanyOrderAttributeCompletionItem.setDeprecated(false);
 				expectedanyOrderAttributeCompletionItem.setDetail("boolean");
 				expectedanyOrderAttributeCompletionItem.setInsertText("anyOrder=false");
-				expectedanyOrderAttributeCompletionItem.setTextEdit(new TextEdit(new Range(new Position(12, 37), new Position(12, 37)), "anyOrder=false"));
+				expectedanyOrderAttributeCompletionItem.setTextEdit(new TextEdit(new Range(new Position(12, 45), new Position(12, 45)), "anyOrder=false"));
 				assertThat(completions.get().getLeft()).contains(expectedanyOrderAttributeCompletionItem);
 			}
 		}
@@ -293,13 +293,13 @@ public class CamelLanguageServerTest extends AbstractCamelLanguageServerTest {
 			assertThat(f).exists();
 			try (FileInputStream fis = new FileInputStream(f)) {
 				CamelLanguageServer cls = initializeLanguageServer(fis, ".yaml");
-				CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = getCompletionFor(cls, new Position(12, 42));
+				CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = getCompletionFor(cls, new Position(12, 50));
 				CompletionItem expectedanyOrderAttributeCompletionItem = new CompletionItem("anyOrder");
 				expectedanyOrderAttributeCompletionItem.setDocumentation("Whether the expected messages should arrive in the same order or can be in any order.");
 				expectedanyOrderAttributeCompletionItem.setDeprecated(false);
 				expectedanyOrderAttributeCompletionItem.setDetail("boolean");
 				expectedanyOrderAttributeCompletionItem.setInsertText("anyOrder=false");
-				expectedanyOrderAttributeCompletionItem.setTextEdit(new TextEdit(new Range(new Position(12, 42), new Position(12, 42)), "anyOrder=false"));
+				expectedanyOrderAttributeCompletionItem.setTextEdit(new TextEdit(new Range(new Position(12, 50), new Position(12, 50)), "anyOrder=false"));
 				assertThat(completions.get().getLeft()).contains(expectedanyOrderAttributeCompletionItem);
 			}
 		}
