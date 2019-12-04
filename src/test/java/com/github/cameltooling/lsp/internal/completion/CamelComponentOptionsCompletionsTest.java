@@ -46,7 +46,7 @@ public class CamelComponentOptionsCompletionsTest extends AbstractCamelLanguageS
     	CompletionItem completionItem = new CompletionItem("bridgeErrorHandler");
     	completionItem.setInsertText("bridgeErrorHandler=false");
     	completionItem.setTextEdit(new TextEdit(new Range(new Position(0, 27), new Position(0, 27)), "bridgeErrorHandler=false"));
-    	completionItem.setDocumentation("Allows for bridging the consumer to the Camel routing Error Handler, which mean any exceptions occurred while the consumer is trying to pickup incoming messages, or the likes, will now be processed as a message and handled by the routing Error Handler. By default the consumer will use the org.apache.camel.spi.ExceptionHandler to deal with exceptions, that will be logged at WARN/ERROR level and ignored.");
+    	completionItem.setDocumentation("Allows for bridging the consumer to the Camel routing Error Handler, which mean any exceptions occurred while the consumer is trying to pickup incoming messages, or the likes, will now be processed as a message and handled by the routing Error Handler. By default the consumer will use the org.apache.camel.spi.ExceptionHandler to deal with exceptions, that will be logged at WARN or ERROR level and ignored.");
     	completionItem.setDetail("boolean");
     	completionItem.setDeprecated(false);
 		testProvideCamelOptions("<from uri=\"timer:timerName?\" xmlns=\"http://camel.apache.org/schema/blueprint\"></from>\n", 0, 27, completionItem);
@@ -57,7 +57,7 @@ public class CamelComponentOptionsCompletionsTest extends AbstractCamelLanguageS
     	CompletionItem completionItem = new CompletionItem("bridgeErrorHandler");
     	completionItem.setInsertText("bridgeErrorHandler=false");
     	completionItem.setTextEdit(new TextEdit(new Range(new Position(0, 22), new Position(0, 22)), "bridgeErrorHandler=false"));
-    	completionItem.setDocumentation("Allows for bridging the consumer to the Camel routing Error Handler, which mean any exceptions occurred while the consumer is trying to pickup incoming messages, or the likes, will now be processed as a message and handled by the routing Error Handler. By default the consumer will use the org.apache.camel.spi.ExceptionHandler to deal with exceptions, that will be logged at WARN/ERROR level and ignored.");
+    	completionItem.setDocumentation("Allows for bridging the consumer to the Camel routing Error Handler, which mean any exceptions occurred while the consumer is trying to pickup incoming messages, or the likes, will now be processed as a message and handled by the routing Error Handler. By default the consumer will use the org.apache.camel.spi.ExceptionHandler to deal with exceptions, that will be logged at WARN or ERROR level and ignored.");
     	completionItem.setDetail("boolean");
     	completionItem.setDeprecated(false);
 		testProvideCamelOptions("from(\"timer:timerName?\")//camel", 0, 22, completionItem, ".java");
