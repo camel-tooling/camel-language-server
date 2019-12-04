@@ -48,13 +48,8 @@ public class CamelComponentOptionEnumerationValuesTest extends AbstractCamelLang
 
 		assertThat(completions.get().getLeft()).contains(
 				createExpectedCompletionItem("InOnly"),
-				createExpectedCompletionItem("RobustInOnly"),
 				createExpectedCompletionItem("InOut"),
-				createExpectedCompletionItem("InOptionalOut"),
-				createExpectedCompletionItem("OutOnly"),
-				createExpectedCompletionItem("RobustOutOnly"),
-				createExpectedCompletionItem("OutIn"),
-				createExpectedCompletionItem("OutOptionalIn"));
+				createExpectedCompletionItem("InOptionalOut"));
 	}
 
 	private CompletionItem createExpectedCompletionItem(String enumOption) {
