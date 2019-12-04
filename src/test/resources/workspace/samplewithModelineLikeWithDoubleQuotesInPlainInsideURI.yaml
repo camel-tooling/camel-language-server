@@ -10,4 +10,4 @@
       - convert-body:
           type: java.lang.String
       - to:
-          uri: test:name?delimiter="&
+          uri: dataset-test:name?delimiter="&
