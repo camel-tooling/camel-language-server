@@ -26,16 +26,17 @@ import org.eclipse.lsp4j.CompletionItem;
 import org.eclipse.lsp4j.Position;
 import org.eclipse.lsp4j.TextDocumentItem;
 
+import com.github.cameltooling.lsp.internal.parser.CamelKafkaConnectDSLParser;
 import com.github.cameltooling.lsp.internal.parser.ParserFileHelperUtil;
 
-public class CamelApplicationPropertiesCompletionProcessor {
+public class CamelPropertiesCompletionProcessor {
 
 	private static final String CAMEL_KEY_PREFIX = "camel.";
 	private static final String CAMEL_COMPONENT_KEY_PREFIX = "camel.component.";
 	private TextDocumentItem textDocumentItem;
 	private CompletableFuture<CamelCatalog> camelCatalog;
 
-	public CamelApplicationPropertiesCompletionProcessor(TextDocumentItem textDocumentItem, CompletableFuture<CamelCatalog> camelCatalog) {
+	public CamelPropertiesCompletionProcessor(TextDocumentItem textDocumentItem, CompletableFuture<CamelCatalog> camelCatalog) {
 		this.textDocumentItem = textDocumentItem;
 		this.camelCatalog = camelCatalog;
 	}
@@ -48,6 +49,8 @@ public class CamelApplicationPropertiesCompletionProcessor {
 				return getTopLevelCamelCompletion();
 			} else if(CAMEL_COMPONENT_KEY_PREFIX.equals(prefix)) {
 				return camelCatalog.thenApply(new CamelComponentIdsCompletionsFuture());
+			} else if (new CamelKafkaConnectDSLParser().getCamelComponentUri(line, position.getCharacter()) != null) {
+				return new CamelEndpointCompletionProcessor(textDocumentItem, camelCatalog).getCompletions(position);
 			}
 		}
 		return CompletableFuture.completedFuture(Collections.emptyList());
