@@ -33,31 +33,25 @@ import org.junit.jupiter.api.Test;
 import com.github.cameltooling.lsp.internal.AbstractCamelLanguageServerTest;
 import com.github.cameltooling.lsp.internal.CamelLanguageServer;
 
-public class CamelApplicationPropertiesTopLevelCompletionTest extends AbstractCamelLanguageServerTest {
+public class CamelPropertiesTopLevelCompletionTest extends AbstractCamelLanguageServerTest {
 	
 	@Test
 	public void testProvideCompletion() throws Exception {
-		CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = retrieveCompletion("application.properties", new Position(0, 6));
+		CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = retrieveCompletion(new Position(0, 6));
 		
 		assertThat(completions.get().getLeft()).hasSize(4);
 	}
 	
 	@Test
 	public void testProvideNoCompletion() throws Exception {
-		CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = retrieveCompletion("application.properties", new Position(0, 0));
+		CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = retrieveCompletion(new Position(0, 0));
 		
 		assertThat(completions.get().getLeft()).isEmpty();
 	}
 	
-	@Test
-	public void testProvideNoCompletionForNonApplicationProperties() throws Exception {
-		CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = retrieveCompletion("applicationWithDifferentName.properties", new Position(0, 6));
-		
-		assertThat(completions.get().getLeft()).isEmpty();
-	}
-	
-	protected CompletableFuture<Either<List<CompletionItem>, CompletionList>> retrieveCompletion(String fileName, Position position) throws URISyntaxException, InterruptedException, ExecutionException {
-		CamelLanguageServer camelLanguageServer = initializeLanguageServer(".properties", new TextDocumentItem(fileName, CamelLanguageServer.LANGUAGE_ID, 0, "camel."));
+	protected CompletableFuture<Either<List<CompletionItem>, CompletionList>> retrieveCompletion(Position position) throws URISyntaxException, InterruptedException, ExecutionException {
+		String fileName = "a.properties";
+		CamelLanguageServer camelLanguageServer = initializeLanguageServer(fileName, new TextDocumentItem(fileName, CamelLanguageServer.LANGUAGE_ID, 0, "camel."));
 		return getCompletionFor(camelLanguageServer, position, fileName);
 	}
 }

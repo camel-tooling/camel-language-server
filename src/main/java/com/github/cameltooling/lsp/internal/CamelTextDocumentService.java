@@ -65,8 +65,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.github.cameltooling.lsp.internal.codeactions.UnknownPropertyQuickfix;
-import com.github.cameltooling.lsp.internal.completion.CamelApplicationPropertiesCompletionProcessor;
 import com.github.cameltooling.lsp.internal.completion.CamelEndpointCompletionProcessor;
+import com.github.cameltooling.lsp.internal.completion.CamelPropertiesCompletionProcessor;
 import com.github.cameltooling.lsp.internal.definition.DefinitionProcessor;
 import com.github.cameltooling.lsp.internal.diagnostic.DiagnosticService;
 import com.github.cameltooling.lsp.internal.documentsymbol.DocumentSymbolProcessor;
@@ -118,8 +118,8 @@ public class CamelTextDocumentService implements TextDocumentService {
 		String uri = completionParams.getTextDocument().getUri();
 		LOGGER.info("completion: {}", uri);
 		TextDocumentItem textDocumentItem = openedDocuments.get(uri);
-		if(uri.endsWith("application.properties")) {
-			return new CamelApplicationPropertiesCompletionProcessor(textDocumentItem, getCamelCatalog()).getCompletions(completionParams.getPosition()).thenApply(Either::forLeft);
+		if (uri.endsWith(".properties")){
+			return new CamelPropertiesCompletionProcessor(textDocumentItem, getCamelCatalog()).getCompletions(completionParams.getPosition()).thenApply(Either::forLeft);
 		} else {
 			return new CamelEndpointCompletionProcessor(textDocumentItem, getCamelCatalog()).getCompletions(completionParams.getPosition()).thenApply(Either::forLeft);
 		}
