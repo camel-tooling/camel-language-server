@@ -16,7 +16,6 @@
  */
 package com.github.cameltooling.lsp.internal.completion;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -26,13 +25,12 @@ import org.eclipse.lsp4j.CompletionItem;
 import org.eclipse.lsp4j.Position;
 import org.eclipse.lsp4j.TextDocumentItem;
 
+import com.github.cameltooling.lsp.internal.instancemodel.propertiesfile.CamelPropertyFileEntryInstance;
 import com.github.cameltooling.lsp.internal.parser.CamelKafkaConnectDSLParser;
 import com.github.cameltooling.lsp.internal.parser.ParserFileHelperUtil;
 
 public class CamelPropertiesCompletionProcessor {
 
-	private static final String CAMEL_KEY_PREFIX = "camel.";
-	private static final String CAMEL_COMPONENT_KEY_PREFIX = "camel.component.";
 	private TextDocumentItem textDocumentItem;
 	private CompletableFuture<CamelCatalog> camelCatalog;
 
@@ -44,25 +42,17 @@ public class CamelPropertiesCompletionProcessor {
 	public CompletableFuture<List<CompletionItem>> getCompletions(Position position) {
 		if (textDocumentItem != null) {
 			String line = new ParserFileHelperUtil().getLine(textDocumentItem, position);
-			String prefix = line.substring(0, position.getCharacter());
-			if (CAMEL_KEY_PREFIX.equals(prefix)) {
-				return getTopLevelCamelCompletion();
-			} else if(CAMEL_COMPONENT_KEY_PREFIX.equals(prefix)) {
-				return camelCatalog.thenApply(new CamelComponentIdsCompletionsFuture());
-			} else if (new CamelKafkaConnectDSLParser().getCamelComponentUri(line, position.getCharacter()) != null) {
+			if (isInsideCamelURI(position, line)) {
 				return new CamelEndpointCompletionProcessor(textDocumentItem, camelCatalog).getCompletions(position);
+			} else {
+				return new CamelPropertyFileEntryInstance(camelCatalog, line).getCompletions(position.getCharacter());
 			}
 		}
 		return CompletableFuture.completedFuture(Collections.emptyList());
 	}
 
-	protected CompletableFuture<List<CompletionItem>> getTopLevelCamelCompletion() {
-		List<CompletionItem> completions = new ArrayList<>();
-		completions.add(new CompletionItem("component"));
-		completions.add(new CompletionItem("main"));
-		completions.add(new CompletionItem("rest"));
-		completions.add(new CompletionItem("hystrix"));
-		return CompletableFuture.completedFuture(completions);
+	private boolean isInsideCamelURI(Position position, String line) {
+		return new CamelKafkaConnectDSLParser().getCamelComponentUri(line, position.getCharacter()) != null;
 	}
 	
 }
