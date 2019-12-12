@@ -40,8 +40,7 @@ public class CamelKafkaConnectDSLParser extends ParserFileHelper {
 
 	@Override
 	public String getCamelComponentUri(String line, int characterPosition) {
-		if (line.startsWith(CAMEL_SOURCE_URL) && CAMEL_SOURCE_URL.length() < characterPosition 
-				|| line.startsWith(CAMEL_SINK_URL) && CAMEL_SINK_URL.length() < characterPosition) {
+		if (isInsideACamelUri(line, characterPosition)) {
 			Properties properties = new Properties();
 			try {
 				properties.load(new StringReader(line));
@@ -57,6 +56,11 @@ public class CamelKafkaConnectDSLParser extends ParserFileHelper {
 			}
 		}
 		return null;
+	}
+
+	public boolean isInsideACamelUri(String line, int characterPosition) {
+		return line.startsWith(CAMEL_SOURCE_URL) && CAMEL_SOURCE_URL.length() < characterPosition 
+				|| line.startsWith(CAMEL_SINK_URL) && CAMEL_SINK_URL.length() < characterPosition;
 	}
 
 	@Override

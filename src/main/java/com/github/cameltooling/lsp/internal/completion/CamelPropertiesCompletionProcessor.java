@@ -42,17 +42,13 @@ public class CamelPropertiesCompletionProcessor {
 	public CompletableFuture<List<CompletionItem>> getCompletions(Position position) {
 		if (textDocumentItem != null) {
 			String line = new ParserFileHelperUtil().getLine(textDocumentItem, position);
-			if (isInsideCamelURI(position, line)) {
+			if (new CamelKafkaConnectDSLParser().isInsideACamelUri(line, position.getCharacter())) {
 				return new CamelEndpointCompletionProcessor(textDocumentItem, camelCatalog).getCompletions(position);
 			} else {
 				return new CamelPropertyFileEntryInstance(camelCatalog, line).getCompletions(position.getCharacter());
 			}
 		}
 		return CompletableFuture.completedFuture(Collections.emptyList());
-	}
-
-	private boolean isInsideCamelURI(Position position, String line) {
-		return new CamelKafkaConnectDSLParser().getCamelComponentUri(line, position.getCharacter()) != null;
 	}
 	
 }
