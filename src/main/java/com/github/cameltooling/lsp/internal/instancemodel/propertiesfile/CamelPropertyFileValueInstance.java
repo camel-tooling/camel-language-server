@@ -16,7 +16,6 @@
  */
 package com.github.cameltooling.lsp.internal.instancemodel.propertiesfile;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
@@ -25,6 +24,7 @@ import org.eclipse.lsp4j.CompletionItem;
 import org.eclipse.lsp4j.Position;
 import org.eclipse.lsp4j.TextDocumentItem;
 
+import com.github.cameltooling.lsp.internal.completion.CamelComponentOptionValuesCompletionsFuture;
 import com.github.cameltooling.lsp.internal.completion.CamelEndpointCompletionProcessor;
 import com.github.cameltooling.lsp.internal.parser.CamelKafkaUtil;
 
@@ -38,6 +38,7 @@ public class CamelPropertyFileValueInstance {
 	private CompletableFuture<CamelCatalog> camelCatalog;
 	private String camelPropertyFileValue;
 	private CamelPropertyFileKeyInstance key;
+
 	private TextDocumentItem textDocumentItem;
 
 	public CamelPropertyFileValueInstance(CompletableFuture<CamelCatalog> camelCatalog, String camelPropertyFileValue, CamelPropertyFileKeyInstance key, TextDocumentItem textDocumentItem) {
@@ -50,12 +51,17 @@ public class CamelPropertyFileValueInstance {
 	public CompletableFuture<List<CompletionItem>> getCompletions(Position position) {
 		if (new CamelKafkaUtil().isCamelURIForKafka(key.getValue())) {
 			return new CamelEndpointCompletionProcessor(textDocumentItem, camelCatalog).getCompletions(position);
+		} else {
+			return camelCatalog.thenApply(new CamelComponentOptionValuesCompletionsFuture(this));
 		}
-		return CompletableFuture.completedFuture(Collections.emptyList());
 	}
 
 	public String getCamelPropertyFileValue() {
 		return camelPropertyFileValue;
+	}
+	
+	public CamelPropertyFileKeyInstance getKey() {
+		return key;
 	}
 
 }

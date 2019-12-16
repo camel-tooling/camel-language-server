@@ -38,6 +38,7 @@ public class CamelComponentPropertyFilekey {
 	private CompletableFuture<CamelCatalog> camelCatalog;
 	private String fullCamelComponentPropertyFileKey;
 	private String componentId;
+	private String componentProperty;
 
 	public CamelComponentPropertyFilekey(CompletableFuture<CamelCatalog> camelCatalog, String camelComponentPropertyFileKey) {
 		this.camelCatalog = camelCatalog;
@@ -45,6 +46,7 @@ public class CamelComponentPropertyFilekey {
 		int firstDotIndex = camelComponentPropertyFileKey.indexOf('.');
 		if(firstDotIndex != -1) {
 			componentId = camelComponentPropertyFileKey.substring(0, firstDotIndex);
+			componentProperty = camelComponentPropertyFileKey.substring(firstDotIndex+1);
 		} else {
 			componentId = camelComponentPropertyFileKey;
 		}
@@ -63,6 +65,14 @@ public class CamelComponentPropertyFilekey {
 		} else {
 			return CompletableFuture.completedFuture(Collections.emptyList());
 		}
+	}
+
+	public String getComponentId() {
+		return componentId;
+	}
+
+	public String getComponentProperty() {
+		return componentProperty;
 	}
 
 }
