@@ -73,4 +73,8 @@ public class CamelPropertyFileKeyInstance {
 		return camelPropertyFileKey;
 	}
 
+	public CamelComponentPropertyFilekey getCamelComponentPropertyFilekey() {
+		return camelComponentPropertyFilekey;
+	}
+
 }
