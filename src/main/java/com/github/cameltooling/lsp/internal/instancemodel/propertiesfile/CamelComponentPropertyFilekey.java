@@ -22,6 +22,7 @@ import java.util.concurrent.CompletableFuture;
 
 import org.apache.camel.catalog.CamelCatalog;
 import org.eclipse.lsp4j.CompletionItem;
+import org.eclipse.lsp4j.Position;
 
 import com.github.cameltooling.lsp.internal.completion.CamelComponentIdsCompletionsFuture;
 import com.github.cameltooling.lsp.internal.completion.CamelComponentOptionNamesCompletionFuture;
@@ -54,10 +55,10 @@ public class CamelComponentPropertyFilekey {
 				&& positionChar <= fullCamelComponentPropertyFileKey.length() + CamelPropertyFileKeyInstance.CAMEL_COMPONENT_KEY_PREFIX.length();
 	}
 
-	public CompletableFuture<List<CompletionItem>> getCompletions(int positionChar) {
-		if(CamelPropertyFileKeyInstance.CAMEL_COMPONENT_KEY_PREFIX.length() == positionChar) {
+	public CompletableFuture<List<CompletionItem>> getCompletions(Position position) {
+		if(CamelPropertyFileKeyInstance.CAMEL_COMPONENT_KEY_PREFIX.length() == position.getCharacter()) {
 			return camelCatalog.thenApply(new CamelComponentIdsCompletionsFuture());
-		} else if(componentId != null && CamelPropertyFileKeyInstance.CAMEL_COMPONENT_KEY_PREFIX.length() + componentId.length() + 1 == positionChar){
+		} else if(componentId != null && CamelPropertyFileKeyInstance.CAMEL_COMPONENT_KEY_PREFIX.length() + componentId.length() + 1 == position.getCharacter()){
 			return camelCatalog.thenApply(new CamelComponentOptionNamesCompletionFuture(componentId));
 		} else {
 			return CompletableFuture.completedFuture(Collections.emptyList());

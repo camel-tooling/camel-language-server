@@ -84,8 +84,8 @@ public class ParserFileHelperFactory {
 
 	protected boolean containsCamelKafkaConnectPropertyKey(TextDocumentItem textDocumentItem) {
 		String text = textDocumentItem.getText();
-		return text.contains(CamelKafkaConnectDSLParser.CAMEL_SINK_URL)
-				|| text.contains(CamelKafkaConnectDSLParser.CAMEL_SOURCE_URL);
+		return text.contains(CamelKafkaUtil.CAMEL_SINK_URL)
+				|| text.contains(CamelKafkaUtil.CAMEL_SOURCE_URL);
 	}
 
 	private boolean isCamelKKotlinDSL(TextDocumentItem textDocumentItem, String uri) {

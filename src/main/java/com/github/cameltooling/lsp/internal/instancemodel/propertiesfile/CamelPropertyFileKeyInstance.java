@@ -23,6 +23,7 @@ import java.util.concurrent.CompletableFuture;
 
 import org.apache.camel.catalog.CamelCatalog;
 import org.eclipse.lsp4j.CompletionItem;
+import org.eclipse.lsp4j.Position;
 
 /**
  * Represents one key in properties file.
@@ -49,11 +50,11 @@ public class CamelPropertyFileKeyInstance {
 		return camelPropertyFileKey.length();
 	}
 
-	public CompletableFuture<List<CompletionItem>> getCompletions(int positionChar) {
-		if (CAMEL_KEY_PREFIX.length() == positionChar && camelPropertyFileKey.startsWith(CAMEL_KEY_PREFIX)) {
+	public CompletableFuture<List<CompletionItem>> getCompletions(Position position) {
+		if (CAMEL_KEY_PREFIX.length() == position.getCharacter() && camelPropertyFileKey.startsWith(CAMEL_KEY_PREFIX)) {
 			return getTopLevelCamelCompletion();
-		} else if(camelComponentPropertyFilekey != null && camelComponentPropertyFilekey.isInRange(positionChar)) {
-			return camelComponentPropertyFilekey.getCompletions(positionChar);
+		} else if(camelComponentPropertyFilekey != null && camelComponentPropertyFilekey.isInRange(position.getCharacter())) {
+			return camelComponentPropertyFilekey.getCompletions(position);
 		}
 		return CompletableFuture.completedFuture(Collections.emptyList());
 	}
@@ -66,6 +67,10 @@ public class CamelPropertyFileKeyInstance {
 		completions.add(new CompletionItem("rest"));
 		completions.add(new CompletionItem("hystrix"));
 		return CompletableFuture.completedFuture(completions);
+	}
+
+	public String getValue() {
+		return camelPropertyFileKey;
 	}
 
 }
