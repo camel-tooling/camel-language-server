@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.cameltooling.lsp.internal.completion;
+package com.github.cameltooling.lsp.internal.instancemodel.propertiesfile;
 
 import java.util.Collections;
 import java.util.List;
@@ -25,25 +25,37 @@ import org.eclipse.lsp4j.CompletionItem;
 import org.eclipse.lsp4j.Position;
 import org.eclipse.lsp4j.TextDocumentItem;
 
-import com.github.cameltooling.lsp.internal.instancemodel.propertiesfile.CamelPropertyFileEntryInstance;
-import com.github.cameltooling.lsp.internal.parser.ParserFileHelperUtil;
+import com.github.cameltooling.lsp.internal.completion.CamelEndpointCompletionProcessor;
+import com.github.cameltooling.lsp.internal.parser.CamelKafkaUtil;
 
-public class CamelPropertiesCompletionProcessor {
+/**
+ * Represents one value in properties file.
+ * For instance, with "camel.component.timer.delay=1000",
+ * it is used to represents "1000"
+ */
+public class CamelPropertyFileValueInstance {
 
-	private TextDocumentItem textDocumentItem;
 	private CompletableFuture<CamelCatalog> camelCatalog;
+	private String camelPropertyFileValue;
+	private CamelPropertyFileKeyInstance key;
+	private TextDocumentItem textDocumentItem;
 
-	public CamelPropertiesCompletionProcessor(TextDocumentItem textDocumentItem, CompletableFuture<CamelCatalog> camelCatalog) {
-		this.textDocumentItem = textDocumentItem;
+	public CamelPropertyFileValueInstance(CompletableFuture<CamelCatalog> camelCatalog, String camelPropertyFileValue, CamelPropertyFileKeyInstance key, TextDocumentItem textDocumentItem) {
 		this.camelCatalog = camelCatalog;
+		this.camelPropertyFileValue = camelPropertyFileValue;
+		this.key = key;
+		this.textDocumentItem = textDocumentItem;
 	}
 
 	public CompletableFuture<List<CompletionItem>> getCompletions(Position position) {
-		if (textDocumentItem != null) {
-			String line = new ParserFileHelperUtil().getLine(textDocumentItem, position);
-			return new CamelPropertyFileEntryInstance(camelCatalog, line, textDocumentItem).getCompletions(position);
+		if (new CamelKafkaUtil().isCamelURIForKafka(key.getValue())) {
+			return new CamelEndpointCompletionProcessor(textDocumentItem, camelCatalog).getCompletions(position);
 		}
 		return CompletableFuture.completedFuture(Collections.emptyList());
 	}
-	
+
+	public String getCamelPropertyFileValue() {
+		return camelPropertyFileValue;
+	}
+
 }

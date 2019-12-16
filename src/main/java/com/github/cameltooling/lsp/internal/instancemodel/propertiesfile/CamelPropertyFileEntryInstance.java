@@ -16,12 +16,13 @@
  */
 package com.github.cameltooling.lsp.internal.instancemodel.propertiesfile;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 import org.apache.camel.catalog.CamelCatalog;
 import org.eclipse.lsp4j.CompletionItem;
+import org.eclipse.lsp4j.Position;
+import org.eclipse.lsp4j.TextDocumentItem;
 
 /**
  * Represents one entry in properties file. For instance, the whole entry "camel.component.timer.delay=1000"
@@ -30,22 +31,36 @@ import org.eclipse.lsp4j.CompletionItem;
 public class CamelPropertyFileEntryInstance {
 	
 	private CamelPropertyFileKeyInstance camelPropertyFileKeyInstance;
+	private CamelPropertyFileValueInstance camelPropertyFileValueInstance;
 
-	public CamelPropertyFileEntryInstance(CompletableFuture<CamelCatalog> camelCatalog, String line) {
+	public CamelPropertyFileEntryInstance(CompletableFuture<CamelCatalog> camelCatalog, String line, TextDocumentItem textDocumentItem) {
 		int indexOf = line.indexOf('=');
 		String camelPropertyFileKeyInstanceString;
+		String camelPropertyFileValueInstanceString;
 		if (indexOf != -1) {
 			camelPropertyFileKeyInstanceString = line.substring(0, indexOf);
+			camelPropertyFileValueInstanceString = line.substring(indexOf+1);
 		} else {
 			camelPropertyFileKeyInstanceString = line;
+			camelPropertyFileValueInstanceString = null;
 		}
 		camelPropertyFileKeyInstance = new CamelPropertyFileKeyInstance(camelCatalog, camelPropertyFileKeyInstanceString);
+		camelPropertyFileValueInstance = new CamelPropertyFileValueInstance(camelCatalog, camelPropertyFileValueInstanceString, camelPropertyFileKeyInstance, textDocumentItem);
 	}
 	
-	public CompletableFuture<List<CompletionItem>> getCompletions(int positionChar) {
-		if (positionChar <= camelPropertyFileKeyInstance.getEndposition()) {
-			return camelPropertyFileKeyInstance.getCompletions(positionChar);
+	public CompletableFuture<List<CompletionItem>> getCompletions(Position position) {
+		if (position.getCharacter() <= camelPropertyFileKeyInstance.getEndposition()) {
+			return camelPropertyFileKeyInstance.getCompletions(position);
+		} else {
+			return camelPropertyFileValueInstance.getCompletions(position);
 		}
-		return CompletableFuture.completedFuture(Collections.emptyList());
+	}
+	
+	CamelPropertyFileKeyInstance getCamelPropertyFileKeyInstance() {
+		return camelPropertyFileKeyInstance;
+	}
+
+	CamelPropertyFileValueInstance getCamelPropertyFileValueInstance() {
+		return camelPropertyFileValueInstance;
 	}
 }
