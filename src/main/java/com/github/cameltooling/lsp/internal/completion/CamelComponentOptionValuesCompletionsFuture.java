@@ -17,6 +17,7 @@
 package com.github.cameltooling.lsp.internal.completion;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -31,7 +32,9 @@ import com.github.cameltooling.model.ComponentOptionModel;
 import com.github.cameltooling.model.util.ModelHelper;
 
 public class CamelComponentOptionValuesCompletionsFuture implements Function<CamelCatalog, List<CompletionItem>> {
-
+	
+	private static final String BOOLEAN_TYPE = "boolean";
+	
 	private CamelPropertyFileValueInstance camelPropertyFileValueInstance;
 
 	public CamelComponentOptionValuesCompletionsFuture(CamelPropertyFileValueInstance camelPropertyFileValueInstance) {
@@ -46,6 +49,8 @@ public class CamelComponentOptionValuesCompletionsFuture implements Function<Cam
 			String enums = endpointOptionModel.getEnums();
 			if (enums != null && !enums.isEmpty()) {
 				return computeCompletionForEnums(enums);
+			} else if(BOOLEAN_TYPE.equals(endpointOptionModel.getType())) {
+				return Arrays.asList(new CompletionItem(Boolean.TRUE.toString()), new CompletionItem(Boolean.FALSE.toString()));
 			}
 		}
 		return Collections.emptyList();
