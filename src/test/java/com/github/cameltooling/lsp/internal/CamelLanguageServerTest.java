@@ -336,6 +336,17 @@ public class CamelLanguageServerTest extends AbstractCamelLanguageServerTest {
 				assertThat(completions.get().getLeft()).contains(createExpectedAhcCompletionItem(4, 14, 4, 24));
 			}
 		}
+		
+		@Test
+		public void testProvideCompletionForYamlKNative() throws Exception {
+			File f = new File("src/test/resources/workspace/knative.yaml");
+			assertThat(f).exists();
+			try (FileInputStream fis = new FileInputStream(f)) {
+				CamelLanguageServer cls = initializeLanguageServer(fis, ".yaml");
+				CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = getCompletionFor(cls, new Position(9, 13));
+				assertThat(completions.get().getLeft()).contains(createExpectedAhcCompletionItem(9, 13, 9, 23));
+			}
+		}
 	}
 
 	@Test
