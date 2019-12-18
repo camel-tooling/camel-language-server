@@ -49,7 +49,7 @@ public class CamelPropertyFileValueInstance {
 	}
 
 	public CompletableFuture<List<CompletionItem>> getCompletions(Position position) {
-		if (new CamelKafkaUtil().isCamelURIForKafka(key.getValue())) {
+		if (new CamelKafkaUtil().isCamelURIForKafka(key.getCamelPropertyFileKey())) {
 			return new CamelEndpointCompletionProcessor(textDocumentItem, camelCatalog).getCompletions(position);
 		} else {
 			return camelCatalog.thenApply(new CamelComponentOptionValuesCompletionsFuture(this));

@@ -24,15 +24,18 @@ import java.util.stream.Stream;
 import org.apache.camel.catalog.CamelCatalog;
 import org.eclipse.lsp4j.CompletionItem;
 
+import com.github.cameltooling.lsp.internal.instancemodel.propertiesfile.CamelPropertyFileValueInstance;
 import com.github.cameltooling.model.ComponentOptionModel;
 import com.github.cameltooling.model.util.ModelHelper;
 
 public class CamelComponentOptionNamesCompletionFuture implements Function<CamelCatalog, List<CompletionItem>> {
 
 	private String componentId;
+	private CamelPropertyFileValueInstance camelPropertyFileValueInstance;
 
-	public CamelComponentOptionNamesCompletionFuture(String componentId) {
+	public CamelComponentOptionNamesCompletionFuture(String componentId, CamelPropertyFileValueInstance camelPropertyFileValueInstance) {
 		this.componentId = componentId;
+		this.camelPropertyFileValueInstance = camelPropertyFileValueInstance;
 	}
 
 	@Override
@@ -44,9 +47,18 @@ public class CamelComponentOptionNamesCompletionFuture implements Function<Camel
 					completionItem.setDocumentation(parameter.getDescription());
 					completionItem.setDetail(parameter.getJavaType());
 					completionItem.setDeprecated(Boolean.valueOf(parameter.getDeprecated()));
+					String insertText = parameter.getName();
+					if (hasValueProvided() && parameter.getDefaultValue() != null) {
+						insertText += String.format("=%s", parameter.getDefaultValue());
+					}
+					completionItem.setInsertText(insertText);
 					return completionItem;
 				})
 				.collect(Collectors.toList());
+	}
+
+	private boolean hasValueProvided() {
+		return camelPropertyFileValueInstance == null || camelPropertyFileValueInstance.getCamelPropertyFileValue() == null;
 	}
 
 }

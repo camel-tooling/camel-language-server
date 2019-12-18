@@ -31,19 +31,19 @@ public class CamelPropertyFileEntryInstanceTest {
 	@Test
 	void testEmpty() throws Exception {
 		CamelPropertyFileEntryInstance cpfei = createModel("");
-		assertThat(cpfei.getCamelPropertyFileKeyInstance().getValue()).isEqualTo("");
+		assertThat(cpfei.getCamelPropertyFileKeyInstance().getCamelPropertyFileKey()).isEqualTo("");
 	}
 	
 	@Test
 	void testKey() throws Exception {
 		CamelPropertyFileEntryInstance cpfei = createModel("camel.akey=avalue");
-		assertThat(cpfei.getCamelPropertyFileKeyInstance().getValue()).isEqualTo("camel.akey");
+		assertThat(cpfei.getCamelPropertyFileKeyInstance().getCamelPropertyFileKey()).isEqualTo("camel.akey");
 	}
 	
 	@Test
 	void testComponent() throws Exception {
 		CamelPropertyFileEntryInstance cpfei = createModel("camel.component.acomponentid.akey=avalue");
-		assertThat(cpfei.getCamelPropertyFileKeyInstance().getValue()).isEqualTo("camel.component.acomponentid.akey");
+		assertThat(cpfei.getCamelPropertyFileKeyInstance().getCamelPropertyFileKey()).isEqualTo("camel.component.acomponentid.akey");
 		assertThat(cpfei.getCamelPropertyFileKeyInstance().getCamelComponentPropertyFilekey().getComponentId()).isEqualTo("acomponentid");
 		assertThat(cpfei.getCamelPropertyFileKeyInstance().getCamelComponentPropertyFilekey().getComponentProperty()).isEqualTo("akey");
 	}
