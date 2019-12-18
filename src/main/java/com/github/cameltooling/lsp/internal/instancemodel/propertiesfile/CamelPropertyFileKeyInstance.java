@@ -38,11 +38,13 @@ public class CamelPropertyFileKeyInstance {
 	
 	private String camelPropertyFileKey;
 	private CamelComponentPropertyFilekey camelComponentPropertyFilekey;
+	private CamelPropertyFileEntryInstance camelPropertyFileEntryInstance;
 
-	public CamelPropertyFileKeyInstance(CompletableFuture<CamelCatalog> camelCatalog, String camelPropertyFileKey) {
+	public CamelPropertyFileKeyInstance(CompletableFuture<CamelCatalog> camelCatalog, String camelPropertyFileKey, CamelPropertyFileEntryInstance camelPropertyFileEntryInstance) {
 		this.camelPropertyFileKey = camelPropertyFileKey;
+		this.camelPropertyFileEntryInstance = camelPropertyFileEntryInstance;
 		if (camelPropertyFileKey.startsWith(CAMEL_COMPONENT_KEY_PREFIX)) {
-			camelComponentPropertyFilekey = new CamelComponentPropertyFilekey(camelCatalog, camelPropertyFileKey.substring(CAMEL_COMPONENT_KEY_PREFIX.length()));
+			camelComponentPropertyFilekey = new CamelComponentPropertyFilekey(camelCatalog, camelPropertyFileKey.substring(CAMEL_COMPONENT_KEY_PREFIX.length()), this);
 		}
 	}
 
@@ -69,12 +71,16 @@ public class CamelPropertyFileKeyInstance {
 		return CompletableFuture.completedFuture(completions);
 	}
 
-	public String getValue() {
+	public String getCamelPropertyFileKey() {
 		return camelPropertyFileKey;
 	}
 
 	public CamelComponentPropertyFilekey getCamelComponentPropertyFilekey() {
 		return camelComponentPropertyFilekey;
+	}
+
+	public CamelPropertyFileEntryInstance getCamelPropertyFileEntryInstance() {
+		return camelPropertyFileEntryInstance;
 	}
 
 }

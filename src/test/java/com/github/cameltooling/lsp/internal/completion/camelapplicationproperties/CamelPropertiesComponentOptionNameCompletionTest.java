@@ -42,21 +42,35 @@ public class CamelPropertiesComponentOptionNameCompletionTest extends AbstractCa
 	
 	@Test
 	public void testProvideCompletion() throws Exception {
-		CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = retrieveCompletion(new Position(0, 27));
+		CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = retrieveCompletion(new Position(0, 27), "camel.component.acomponent.");
 		
 		assertThat(completions.get().getLeft()).hasSize(1);
 	}
 	
 	@Test
+	public void testProvideCompletionHasDefaultValue() throws Exception {
+		CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = retrieveCompletion(new Position(0, 27), "camel.component.acomponent.");
+		
+		assertThat(completions.get().getLeft().get(0).getInsertText()).isEqualTo("aComponentProperty=aDefaultValue");
+	}
+	
+	@Test
+	public void testProvideCompletionWithoutDefaultValueIfAValueAlreadyProvided() throws Exception {
+		CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = retrieveCompletion(new Position(0, 27), "camel.component.acomponent.aComponentProperty=aValue");
+		
+		assertThat(completions.get().getLeft().get(0).getInsertText()).isEqualTo("aComponentProperty");
+	}
+	
+	@Test
 	public void testProvideNoCompletionAfterComponentproperty() throws Exception {
-		CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = retrieveCompletion(new Position(0, 46));
+		CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = retrieveCompletion(new Position(0, 46), "camel.component.acomponent.aComponentProperty.");
 		
 		assertThat(completions.get().getLeft()).isEmpty();
 	}
 		
-	protected CompletableFuture<Either<List<CompletionItem>, CompletionList>> retrieveCompletion(Position position) throws URISyntaxException, InterruptedException, ExecutionException {
+	protected CompletableFuture<Either<List<CompletionItem>, CompletionList>> retrieveCompletion(Position position, String propertyEntry) throws URISyntaxException, InterruptedException, ExecutionException {
 		String fileName = "a.properties";
-		CamelLanguageServer camelLanguageServer = initializeLanguageServer(fileName, new TextDocumentItem(fileName, CamelLanguageServer.LANGUAGE_ID, 0, "camel.component.acomponent.aComponentProperty."));
+		CamelLanguageServer camelLanguageServer = initializeLanguageServer(fileName, new TextDocumentItem(fileName, CamelLanguageServer.LANGUAGE_ID, 0, propertyEntry));
 		return getCompletionFor(camelLanguageServer, position, fileName);
 	}
 	
@@ -84,7 +98,7 @@ public class CamelPropertiesComponentOptionNameCompletionTest extends AbstractCa
 				"    \"version\": \"3.0.0\"\n" + 
 				"  },\n" + 
 				"  \"componentProperties\": {\n" + 
-				"\"aComponentProperty\": { \"kind\": \"parameter\", \"displayName\": \"A Component property \", \"group\": \"common\", \"required\": false, \"type\": \"string\", \"javaType\": \"java.lang.String\", \"deprecated\": false, \"secret\": false, \"defaultValue\": \"org.apache.camel.event\", \"configurationClass\": \"org.apache.camel.component.knative.KnativeConfiguration\", \"configurationField\": \"configuration\", \"description\": \"A parameter description\" }\n" + 
+				"\"aComponentProperty\": { \"kind\": \"parameter\", \"displayName\": \"A Component property \", \"group\": \"common\", \"required\": false, \"type\": \"string\", \"javaType\": \"java.lang.String\", \"deprecated\": false, \"secret\": false, \"defaultValue\": \"aDefaultValue\", \"configurationClass\": \"org.apache.camel.component.knative.KnativeConfiguration\", \"configurationField\": \"configuration\", \"description\": \"A parameter description\" }\n" + 
 				"  },\n" + 
 				"  \"properties\": {\n" +
 				"  }\n" + 

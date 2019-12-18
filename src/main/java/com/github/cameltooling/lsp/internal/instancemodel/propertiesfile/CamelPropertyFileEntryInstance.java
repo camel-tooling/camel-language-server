@@ -44,7 +44,7 @@ public class CamelPropertyFileEntryInstance {
 			camelPropertyFileKeyInstanceString = line;
 			camelPropertyFileValueInstanceString = null;
 		}
-		camelPropertyFileKeyInstance = new CamelPropertyFileKeyInstance(camelCatalog, camelPropertyFileKeyInstanceString);
+		camelPropertyFileKeyInstance = new CamelPropertyFileKeyInstance(camelCatalog, camelPropertyFileKeyInstanceString, this);
 		camelPropertyFileValueInstance = new CamelPropertyFileValueInstance(camelCatalog, camelPropertyFileValueInstanceString, camelPropertyFileKeyInstance, textDocumentItem);
 	}
 	

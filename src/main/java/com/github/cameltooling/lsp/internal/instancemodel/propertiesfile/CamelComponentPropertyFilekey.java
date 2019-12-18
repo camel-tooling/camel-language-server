@@ -39,10 +39,12 @@ public class CamelComponentPropertyFilekey {
 	private String fullCamelComponentPropertyFileKey;
 	private String componentId;
 	private String componentProperty;
+	private CamelPropertyFileKeyInstance camelPropertyFileKeyInstance;
 
-	public CamelComponentPropertyFilekey(CompletableFuture<CamelCatalog> camelCatalog, String camelComponentPropertyFileKey) {
+	public CamelComponentPropertyFilekey(CompletableFuture<CamelCatalog> camelCatalog, String camelComponentPropertyFileKey, CamelPropertyFileKeyInstance camelPropertyFileKeyInstance) {
 		this.camelCatalog = camelCatalog;
 		this.fullCamelComponentPropertyFileKey = camelComponentPropertyFileKey;
+		this.camelPropertyFileKeyInstance = camelPropertyFileKeyInstance;
 		int firstDotIndex = camelComponentPropertyFileKey.indexOf('.');
 		if(firstDotIndex != -1) {
 			componentId = camelComponentPropertyFileKey.substring(0, firstDotIndex);
@@ -61,7 +63,7 @@ public class CamelComponentPropertyFilekey {
 		if(CamelPropertyFileKeyInstance.CAMEL_COMPONENT_KEY_PREFIX.length() == position.getCharacter()) {
 			return camelCatalog.thenApply(new CamelComponentIdsCompletionsFuture());
 		} else if(componentId != null && CamelPropertyFileKeyInstance.CAMEL_COMPONENT_KEY_PREFIX.length() + componentId.length() + 1 == position.getCharacter()){
-			return camelCatalog.thenApply(new CamelComponentOptionNamesCompletionFuture(componentId));
+			return camelCatalog.thenApply(new CamelComponentOptionNamesCompletionFuture(componentId, camelPropertyFileKeyInstance.getCamelPropertyFileEntryInstance().getCamelPropertyFileValueInstance()));
 		} else {
 			return CompletableFuture.completedFuture(Collections.emptyList());
 		}
