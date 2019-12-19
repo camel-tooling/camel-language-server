@@ -18,7 +18,6 @@ package com.github.cameltooling.lsp.internal;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
@@ -26,7 +25,6 @@ import java.util.concurrent.CompletableFuture;
 import org.eclipse.lsp4j.CompletionItem;
 import org.eclipse.lsp4j.CompletionList;
 import org.eclipse.lsp4j.DidChangeConfigurationParams;
-import org.eclipse.lsp4j.InitializeParams;
 import org.eclipse.lsp4j.Position;
 import org.eclipse.lsp4j.Range;
 import org.eclipse.lsp4j.TextEdit;
@@ -42,7 +40,6 @@ public class CamelExtraComponentTest extends AbstractCamelLanguageServerTest {
 		assertThat(completions.get().getLeft()).contains(createBasicExpectedCompletionItem());
 	}
 
-	
 	@Test
 	public void testUpdateOfConfig() throws Exception {
 		CamelLanguageServer camelLanguageServer = initializeLanguageServer("<from uri=\"\" xmlns=\"http://camel.apache.org/schema/blueprint\"></from>\n");
@@ -93,10 +90,9 @@ public class CamelExtraComponentTest extends AbstractCamelLanguageServerTest {
 	private CompletionItem createBasicExpectedCompletionItem() {
 		return createExpectedExtraComponentCompletionItem(0, 11, 0, 11, "acomponent:withsyntax", "Description of my component.");
 	}
-
+	
 	@Override
-	protected InitializeParams getInitParams() throws URISyntaxException {
-		InitializeParams initParams = super.getInitParams();
+	protected Map<Object, Object> getInitializationOptions() {
 		String component = "{\n" + 
 				" \"component\": {\n" + 
 				"    \"kind\": \"component\",\n" + 
@@ -122,8 +118,6 @@ public class CamelExtraComponentTest extends AbstractCamelLanguageServerTest {
 				"  \"properties\": {\n" + 
 				"  }\n" + 
 				"}";
-		Map<Object, Object> initializationOptions = createMapSettingsWithComponent(component);
-		initParams.setInitializationOptions(initializationOptions);
-		return initParams;
+		return createMapSettingsWithComponent(component);
 	}
 }
