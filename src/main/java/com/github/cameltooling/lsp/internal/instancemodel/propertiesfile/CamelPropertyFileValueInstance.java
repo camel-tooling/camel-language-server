@@ -26,6 +26,7 @@ import org.eclipse.lsp4j.TextDocumentItem;
 
 import com.github.cameltooling.lsp.internal.completion.CamelComponentOptionValuesCompletionsFuture;
 import com.github.cameltooling.lsp.internal.completion.CamelEndpointCompletionProcessor;
+import com.github.cameltooling.lsp.internal.instancemodel.ILineRangeDefineable;
 import com.github.cameltooling.lsp.internal.parser.CamelKafkaUtil;
 
 /**
@@ -33,7 +34,7 @@ import com.github.cameltooling.lsp.internal.parser.CamelKafkaUtil;
  * For instance, with "camel.component.timer.delay=1000",
  * it is used to represents "1000"
  */
-public class CamelPropertyFileValueInstance {
+public class CamelPropertyFileValueInstance implements ILineRangeDefineable {
 
 	private CompletableFuture<CamelCatalog> camelCatalog;
 	private String camelPropertyFileValue;
@@ -63,6 +64,21 @@ public class CamelPropertyFileValueInstance {
 	
 	public CamelPropertyFileKeyInstance getKey() {
 		return key;
+	}
+
+	@Override
+	public int getLine() {
+		return key.getLine();
+	}
+
+	@Override
+	public int getStartPositionInLine() {
+		return key.getEndposition() + 1;
+	}
+
+	@Override
+	public int getEndPositionInLine() {
+		return getStartPositionInLine() + (camelPropertyFileValue != null ? camelPropertyFileValue.length() : 0);
 	}
 
 }

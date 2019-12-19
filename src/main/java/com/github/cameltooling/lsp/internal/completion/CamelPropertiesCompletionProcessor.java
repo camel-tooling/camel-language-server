@@ -41,7 +41,7 @@ public class CamelPropertiesCompletionProcessor {
 	public CompletableFuture<List<CompletionItem>> getCompletions(Position position) {
 		if (textDocumentItem != null) {
 			String line = new ParserFileHelperUtil().getLine(textDocumentItem, position);
-			return new CamelPropertyFileEntryInstance(camelCatalog, line, textDocumentItem).getCompletions(position);
+			return new CamelPropertyFileEntryInstance(camelCatalog, line, position.getLine(), textDocumentItem).getCompletions(position);
 		}
 		return CompletableFuture.completedFuture(Collections.emptyList());
 	}

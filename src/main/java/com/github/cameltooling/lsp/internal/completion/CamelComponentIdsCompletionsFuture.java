@@ -23,13 +23,16 @@ import java.util.stream.Collectors;
 import org.apache.camel.catalog.CamelCatalog;
 import org.eclipse.lsp4j.CompletionItem;
 
+import com.github.cameltooling.lsp.internal.instancemodel.propertiesfile.CamelComponentNamePropertyFileInstance;
 import com.github.cameltooling.model.util.ModelHelper;
 
 public class CamelComponentIdsCompletionsFuture implements Function<CamelCatalog, List<CompletionItem>> {
 
 	private String startFilter;
+	private CamelComponentNamePropertyFileInstance camelComponentNamePropertyFileInstance;
 
-	public CamelComponentIdsCompletionsFuture(String startFilter) {
+	public CamelComponentIdsCompletionsFuture(CamelComponentNamePropertyFileInstance camelComponentNamePropertyFileInstance, String startFilter) {
+		this.camelComponentNamePropertyFileInstance = camelComponentNamePropertyFileInstance;
 		this.startFilter = startFilter;
 	}
 
@@ -41,6 +44,7 @@ public class CamelComponentIdsCompletionsFuture implements Function<CamelCatalog
 				CompletionItem completionItem = new CompletionItem(componentModel.getScheme());
 				completionItem.setDocumentation(componentModel.getDescription());
 				completionItem.setDeprecated(Boolean.valueOf(componentModel.getDeprecated()));
+				CompletionResolverUtils.applyTextEditToCompletionItem(camelComponentNamePropertyFileInstance, completionItem);
 				return completionItem;
 			})
 			.filter(FilterPredicateUtils.matchesCompletionFilter(startFilter))

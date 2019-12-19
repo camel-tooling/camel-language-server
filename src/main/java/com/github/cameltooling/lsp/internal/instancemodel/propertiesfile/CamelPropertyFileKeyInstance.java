@@ -25,13 +25,15 @@ import org.apache.camel.catalog.CamelCatalog;
 import org.eclipse.lsp4j.CompletionItem;
 import org.eclipse.lsp4j.Position;
 
+import com.github.cameltooling.lsp.internal.instancemodel.ILineRangeDefineable;
+
 /**
  * Represents one key in properties file.
  * For instance, with "camel.component.timer.delay=1000",
  * it is used to represents "camel.component.timer.delay"
  * 
  */
-public class CamelPropertyFileKeyInstance {
+public class CamelPropertyFileKeyInstance implements ILineRangeDefineable {
 	
 	private static final String CAMEL_KEY_PREFIX = "camel.";
 	static final String CAMEL_COMPONENT_KEY_PREFIX = "camel.component.";
@@ -81,6 +83,20 @@ public class CamelPropertyFileKeyInstance {
 
 	public CamelPropertyFileEntryInstance getCamelPropertyFileEntryInstance() {
 		return camelPropertyFileEntryInstance;
+	}
+
+	public int getLine() {
+		return camelPropertyFileEntryInstance.getLine();
+	}
+
+	@Override
+	public int getStartPositionInLine() {
+		return 0;
+	}
+
+	@Override
+	public int getEndPositionInLine() {
+		return camelPropertyFileKey.length();
 	}
 
 }

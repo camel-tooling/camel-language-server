@@ -28,7 +28,7 @@ import org.eclipse.lsp4j.TextEdit;
 import org.w3c.dom.Node;
 
 import com.github.cameltooling.lsp.internal.instancemodel.CamelURIInstance;
-import com.github.cameltooling.lsp.internal.instancemodel.CamelUriElementInstance;
+import com.github.cameltooling.lsp.internal.instancemodel.ILineRangeDefineable;
 import com.github.cameltooling.lsp.internal.instancemodel.ReferenceUtils;
 import com.github.cameltooling.lsp.internal.parser.ParserXMLFileHelper;
 
@@ -41,11 +41,11 @@ public class CompletionResolverUtils {
 		// util class
 	}
 	
-	public static void applyTextEditToCompletionItem(CamelUriElementInstance uriInstance, CompletionItem item) {
-		if (uriInstance != null && uriInstance.getCamelUriInstance().getAbsoluteBounds() != null) {
-			int line = uriInstance.getCamelUriInstance().getAbsoluteBounds().getStart().getLine();
-			Position pStart = new Position(line, uriInstance.getStartPositionInLine());
-			Position pEnd = new Position(line, uriInstance.getEndPositionInLine());
+	public static void applyTextEditToCompletionItem(ILineRangeDefineable lineRangeDefineable, CompletionItem item) {
+		if (lineRangeDefineable != null) {
+			int line = lineRangeDefineable.getLine();
+			Position pStart = new Position(line, lineRangeDefineable.getStartPositionInLine());
+			Position pEnd = new Position(line, lineRangeDefineable.getEndPositionInLine());
 			
 			Range range = new Range(pStart, pEnd);
 			

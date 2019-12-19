@@ -54,7 +54,11 @@ public class CamelComponentOptionValuesCompletionsFuture implements Function<Cam
 			if (enums != null && !enums.isEmpty()) {
 				return computeCompletionForEnums(enums);
 			} else if(BOOLEAN_TYPE.equals(endpointOptionModel.getType())) {
-				Stream<CompletionItem> values = Stream.of(new CompletionItem(Boolean.TRUE.toString()), new CompletionItem(Boolean.FALSE.toString()));
+				CompletionItem trueCompletion = new CompletionItem(Boolean.TRUE.toString());
+				CompletionResolverUtils.applyTextEditToCompletionItem(camelPropertyFileValueInstance, trueCompletion);
+				CompletionItem falseCompletion = new CompletionItem(Boolean.FALSE.toString());
+				CompletionResolverUtils.applyTextEditToCompletionItem(camelPropertyFileValueInstance, falseCompletion);
+				Stream<CompletionItem> values = Stream.of(trueCompletion, falseCompletion);
 				return values.filter(FilterPredicateUtils.matchesCompletionFilter(startFilter)).collect(Collectors.toList());
 			}
 		}
@@ -65,6 +69,7 @@ public class CamelComponentOptionValuesCompletionsFuture implements Function<Cam
 		List<CompletionItem> completionItems = new ArrayList<>();
 		for(String enumValue : enums.split(",")) {
 			CompletionItem item = new CompletionItem(enumValue);
+			CompletionResolverUtils.applyTextEditToCompletionItem(camelPropertyFileValueInstance, item);
 			completionItems.add(item);
 		}
 		return completionItems.stream().filter(FilterPredicateUtils.matchesCompletionFilter(startFilter)).collect(Collectors.toList());
