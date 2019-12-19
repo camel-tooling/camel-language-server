@@ -52,7 +52,8 @@ public class CamelPropertyFileValueInstance {
 		if (new CamelKafkaUtil().isCamelURIForKafka(key.getCamelPropertyFileKey())) {
 			return new CamelEndpointCompletionProcessor(textDocumentItem, camelCatalog).getCompletions(position);
 		} else {
-			return camelCatalog.thenApply(new CamelComponentOptionValuesCompletionsFuture(this));
+			String startFilter = camelPropertyFileValue.substring(0, position.getCharacter() - key.getEndposition() -1);
+			return camelCatalog.thenApply(new CamelComponentOptionValuesCompletionsFuture(this, startFilter));
 		}
 	}
 

@@ -32,10 +32,12 @@ public class CamelComponentOptionNamesCompletionFuture implements Function<Camel
 
 	private String componentId;
 	private CamelPropertyFileValueInstance camelPropertyFileValueInstance;
+	private String startFilter;
 
-	public CamelComponentOptionNamesCompletionFuture(String componentId, CamelPropertyFileValueInstance camelPropertyFileValueInstance) {
+	public CamelComponentOptionNamesCompletionFuture(String componentId, CamelPropertyFileValueInstance camelPropertyFileValueInstance, String startFilter) {
 		this.componentId = componentId;
 		this.camelPropertyFileValueInstance = camelPropertyFileValueInstance;
+		this.startFilter = startFilter;
 	}
 
 	@Override
@@ -54,6 +56,7 @@ public class CamelComponentOptionNamesCompletionFuture implements Function<Camel
 					completionItem.setInsertText(insertText);
 					return completionItem;
 				})
+				.filter(FilterPredicateUtils.matchesCompletionFilter(startFilter))
 				.collect(Collectors.toList());
 	}
 

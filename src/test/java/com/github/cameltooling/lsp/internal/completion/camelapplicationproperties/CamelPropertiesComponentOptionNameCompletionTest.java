@@ -40,7 +40,7 @@ public class CamelPropertiesComponentOptionNameCompletionTest extends AbstractCa
 	public void testProvideCompletion() throws Exception {
 		CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = retrieveCompletion(new Position(0, 27), "camel.component.acomponent.");
 		
-		assertThat(completions.get().getLeft()).hasSize(1);
+		assertThat(completions.get().getLeft()).hasSize(2);
 	}
 	
 	@Test
@@ -62,6 +62,14 @@ public class CamelPropertiesComponentOptionNameCompletionTest extends AbstractCa
 		CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = retrieveCompletion(new Position(0, 46), "camel.component.acomponent.aComponentProperty.");
 		
 		assertThat(completions.get().getLeft()).isEmpty();
+	}
+	
+	@Test
+	public void testProvideFilteredCompletionWhenInsideValue() throws Exception {
+		CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = retrieveCompletion(new Position(0, 29), "camel.component.acomponent.aComponentProperty.");
+		
+		assertThat(completions.get().getLeft()).hasSize(1);
+		assertThat(completions.get().getLeft().get(0).getInsertText()).isEqualTo("aComponentProperty=aDefaultValue");
 	}
 		
 	protected CompletableFuture<Either<List<CompletionItem>, CompletionList>> retrieveCompletion(Position position, String propertyEntry) throws URISyntaxException, InterruptedException, ExecutionException {
@@ -93,7 +101,8 @@ public class CamelPropertiesComponentOptionNameCompletionTest extends AbstractCa
 				"    \"version\": \"3.0.0\"\n" + 
 				"  },\n" + 
 				"  \"componentProperties\": {\n" + 
-				"\"aComponentProperty\": { \"kind\": \"parameter\", \"displayName\": \"A Component property \", \"group\": \"common\", \"required\": false, \"type\": \"string\", \"javaType\": \"java.lang.String\", \"deprecated\": false, \"secret\": false, \"defaultValue\": \"aDefaultValue\", \"configurationClass\": \"org.apache.camel.component.knative.KnativeConfiguration\", \"configurationField\": \"configuration\", \"description\": \"A parameter description\" }\n" + 
+				"\"aComponentProperty\": { \"kind\": \"parameter\", \"displayName\": \"A Component property \", \"group\": \"common\", \"required\": false, \"type\": \"string\", \"javaType\": \"java.lang.String\", \"deprecated\": false, \"secret\": false, \"defaultValue\": \"aDefaultValue\", \"configurationClass\": \"org.apache.camel.component.knative.KnativeConfiguration\", \"configurationField\": \"configuration\", \"description\": \"A parameter description\" },\n" +
+				"\"aSecondComponentProperty\": { \"kind\": \"parameter\", \"displayName\": \"A Second Component property \", \"group\": \"common\", \"required\": false, \"type\": \"string\", \"javaType\": \"java.lang.String\", \"deprecated\": false, \"secret\": false, \"defaultValue\": \"aDefaultValue\", \"configurationClass\": \"org.apache.camel.component.knative.KnativeConfiguration\", \"configurationField\": \"configuration\", \"description\": \"A second parameter description\" }\n" +
 				"  },\n" + 
 				"  \"properties\": {\n" +
 				"  }\n" + 

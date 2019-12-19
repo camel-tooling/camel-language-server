@@ -20,6 +20,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.net.URISyntaxException;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
@@ -39,7 +40,14 @@ public class CamelPropertiesComponentCompletionTest extends AbstractCamelLanguag
 	public void testProvideCompletion() throws Exception {
 		CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = retrieveCompletion(new Position(0, 16));
 		
-		assertThat(completions.get().getLeft()).contains(createExpectedAhcCompletionItem(0, 16, 0, 19));
+		assertThat(completions.get().getLeft()).contains(createExpectedCompletionItem());
+	}
+	
+	@Test
+	public void testProvideCompletionFilteredWithBeginningTyped() throws Exception {
+		CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = retrieveCompletion(new Position(0, 20));
+		
+		assertThat(completions.get().getLeft()).containsOnly(createExpectedCompletionItem());
 	}
 	
 	@Test
@@ -51,15 +59,33 @@ public class CamelPropertiesComponentCompletionTest extends AbstractCamelLanguag
 	
 	protected CompletableFuture<Either<List<CompletionItem>, CompletionList>> retrieveCompletion(Position position) throws URISyntaxException, InterruptedException, ExecutionException {
 		String fileName = "a.properties";
-		CamelLanguageServer camelLanguageServer = initializeLanguageServer(".properties", new TextDocumentItem(fileName, CamelLanguageServer.LANGUAGE_ID, 0, "camel.component."));
+		CamelLanguageServer camelLanguageServer = initializeLanguageServer(".properties", new TextDocumentItem(fileName, CamelLanguageServer.LANGUAGE_ID, 0, "camel.component.acomp"));
 		return getCompletionFor(camelLanguageServer, position, fileName);
 	}
 	
-	protected CompletionItem createExpectedAhcCompletionItem(int lineStart, int characterStart, int lineEnd, int characterEnd) {
-		CompletionItem expectedAhcCompletioncompletionItem = new CompletionItem("ahc");
-		expectedAhcCompletioncompletionItem.setDocumentation(AHC_DOCUMENTATION);
+	protected CompletionItem createExpectedCompletionItem() {
+		CompletionItem expectedAhcCompletioncompletionItem = new CompletionItem("acomponent");
+		expectedAhcCompletioncompletionItem.setDocumentation("Description of my component.");
 		expectedAhcCompletioncompletionItem.setDeprecated(false);
 		return expectedAhcCompletioncompletionItem;
+	}
+	
+	@Override
+	protected Map<Object, Object> getInitializationOptions() {
+		String component = "{\n" + 
+				" \"component\": {\n" + 
+				"    \"kind\": \"component\",\n" + 
+				"    \"scheme\": \"acomponent\",\n" + 
+				"    \"syntax\": \"acomponent:withsyntax\",\n" + 
+				"    \"description\": \"Description of my component.\",\n" + 
+				"    \"deprecated\": false\n" + 
+				"  },\n" + 
+				"  \"componentProperties\": {\n" + 
+				"  },\n" + 
+				"  \"properties\": {\n" +
+				"  }\n" + 
+				"}";
+		return createMapSettingsWithComponent(component);
 	}
 	
 }
