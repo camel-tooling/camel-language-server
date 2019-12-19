@@ -28,7 +28,6 @@ import java.util.concurrent.ExecutionException;
 import org.eclipse.lsp4j.CompletionItem;
 import org.eclipse.lsp4j.CompletionList;
 import org.eclipse.lsp4j.DidChangeConfigurationParams;
-import org.eclipse.lsp4j.InitializeParams;
 import org.eclipse.lsp4j.Position;
 import org.eclipse.lsp4j.jsonrpc.messages.Either;
 import org.junit.jupiter.api.Test;
@@ -91,11 +90,8 @@ public class CamelCatalogVersionTest extends AbstractCamelLanguageServerTest {
 	}
 	
 	@Override
-	protected InitializeParams getInitParams() throws URISyntaxException {
-		InitializeParams initParams = super.getInitParams();
-		Map<Object, Object> initializationOptions = createMapSettingsWithVersion(camelCatalogVersion);
-		initParams.setInitializationOptions(initializationOptions);
-		return initParams;
+	protected Map<Object, Object> getInitializationOptions() {
+		return createMapSettingsWithVersion(camelCatalogVersion);
 	}
 
 	private Map<Object, Object> createMapSettingsWithVersion(String camelCatalogVersion) {

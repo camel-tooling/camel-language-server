@@ -26,7 +26,6 @@ import java.util.concurrent.ExecutionException;
 
 import org.eclipse.lsp4j.CompletionItem;
 import org.eclipse.lsp4j.CompletionList;
-import org.eclipse.lsp4j.InitializeParams;
 import org.eclipse.lsp4j.Position;
 import org.eclipse.lsp4j.TextDocumentItem;
 import org.eclipse.lsp4j.jsonrpc.messages.Either;
@@ -49,10 +48,9 @@ public class CamelPropertiesComponentOptionBooleanValuesCompletionTest extends A
 		CamelLanguageServer camelLanguageServer = initializeLanguageServer(fileName, new TextDocumentItem(fileName, CamelLanguageServer.LANGUAGE_ID, 0, "camel.component.acomponent.aBooleanProperty="));
 		return getCompletionFor(camelLanguageServer, position, fileName);
 	}
-
+	
 	@Override
-	protected InitializeParams getInitParams() throws URISyntaxException {
-		InitializeParams initParams = super.getInitParams();
+	protected Map<Object, Object> getInitializationOptions() {
 		String component = "{\n" + 
 				" \"component\": {\n" + 
 				"    \"kind\": \"component\",\n" + 
@@ -79,9 +77,7 @@ public class CamelPropertiesComponentOptionBooleanValuesCompletionTest extends A
 				"  \"properties\": {\n" +
 				"  }\n" + 
 				"}";
-		Map<Object, Object> initializationOptions = createMapSettingsWithComponent(component);
-		initParams.setInitializationOptions(initializationOptions);
-		return initParams;
+		return createMapSettingsWithComponent(component);
 	}
 	
 }

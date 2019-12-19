@@ -148,11 +148,16 @@ public abstract class AbstractCamelLanguageServerTest {
 		assertThat(initialize.get().getCapabilities().getCompletionProvider().getResolveProvider()).isTrue();
 	}
 	
-	protected InitializeParams getInitParams() throws URISyntaxException {
+	private InitializeParams getInitParams() throws URISyntaxException {
 		InitializeParams params = new InitializeParams();
 		params.setProcessId(new Random().nextInt());
 		params.setRootUri(getTestResource("/workspace/").toURI().toString());
+		params.setInitializationOptions(getInitializationOptions());
 		return params;
+	}
+	
+	protected Map<Object, Object> getInitializationOptions() {
+		return Collections.emptyMap();
 	}
 	
 	protected CamelLanguageServer initializeLanguageServer(FileInputStream stream, String suffixFileName) {
