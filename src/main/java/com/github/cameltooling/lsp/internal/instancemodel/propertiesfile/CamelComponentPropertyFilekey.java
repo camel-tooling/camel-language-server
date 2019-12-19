@@ -24,33 +24,30 @@ import org.apache.camel.catalog.CamelCatalog;
 import org.eclipse.lsp4j.CompletionItem;
 import org.eclipse.lsp4j.Position;
 
-import com.github.cameltooling.lsp.internal.completion.CamelComponentIdsCompletionsFuture;
-import com.github.cameltooling.lsp.internal.completion.CamelComponentOptionNamesCompletionFuture;
+import com.github.cameltooling.lsp.internal.instancemodel.ILineRangeDefineable;
 
 /**
- * Represents the subpart component key.
+ * Represents the subpart of the key after camel.component.
  * For instance, with "camel.component.timer.delay=1000",
  * it is used to represents "timer.delay"
  * 
  */
-public class CamelComponentPropertyFilekey {
+public class CamelComponentPropertyFilekey implements ILineRangeDefineable {
 
-	private CompletableFuture<CamelCatalog> camelCatalog;
 	private String fullCamelComponentPropertyFileKey;
-	private String componentId;
-	private String componentProperty;
+	private CamelComponentNamePropertyFileInstance componentName;
+	private CamelComponentParameterPropertyFileInstance componentProperty;
 	private CamelPropertyFileKeyInstance camelPropertyFileKeyInstance;
 
 	public CamelComponentPropertyFilekey(CompletableFuture<CamelCatalog> camelCatalog, String camelComponentPropertyFileKey, CamelPropertyFileKeyInstance camelPropertyFileKeyInstance) {
-		this.camelCatalog = camelCatalog;
 		this.fullCamelComponentPropertyFileKey = camelComponentPropertyFileKey;
 		this.camelPropertyFileKeyInstance = camelPropertyFileKeyInstance;
 		int firstDotIndex = camelComponentPropertyFileKey.indexOf('.');
 		if(firstDotIndex != -1) {
-			componentId = camelComponentPropertyFileKey.substring(0, firstDotIndex);
-			componentProperty = camelComponentPropertyFileKey.substring(firstDotIndex+1);
+			componentName = new CamelComponentNamePropertyFileInstance(camelCatalog, camelComponentPropertyFileKey.substring(0, firstDotIndex), this);
+			componentProperty = new CamelComponentParameterPropertyFileInstance(camelCatalog, camelComponentPropertyFileKey.substring(firstDotIndex+1), componentName.getEndPositionInLine() + 1, this);
 		} else {
-			componentId = camelComponentPropertyFileKey;
+			componentName = new CamelComponentNamePropertyFileInstance(camelCatalog, camelComponentPropertyFileKey, this);
 		}
 	}
 
@@ -61,51 +58,44 @@ public class CamelComponentPropertyFilekey {
 
 	public CompletableFuture<List<CompletionItem>> getCompletions(Position position) {
 		int characterPosition = position.getCharacter();
-		if(isInsideComponentId(characterPosition)) {
-			String componentIdBeforePosition = fullCamelComponentPropertyFileKey.substring(0, characterPosition - getStartPositionInLine());
-			return camelCatalog.thenApply(new CamelComponentIdsCompletionsFuture(componentIdBeforePosition));
-		} else if(isInsideComponentProperty(characterPosition)){
-			CamelPropertyFileValueInstance camelPropertyFileValueInstance = camelPropertyFileKeyInstance.getCamelPropertyFileEntryInstance().getCamelPropertyFileValueInstance();
-			String startComponentProperty = fullCamelComponentPropertyFileKey.substring(componentId.length() + 1, characterPosition - getStartPositionInLine());
-			return camelCatalog.thenApply(new CamelComponentOptionNamesCompletionFuture(componentId, camelPropertyFileValueInstance, startComponentProperty));
+		if(isInside(componentName, characterPosition)) {
+			return componentName.getCompletions(position);
+		} else if(isInside(componentProperty, characterPosition)){
+			return componentProperty.getCompletions(position);
 		} else {
 			return CompletableFuture.completedFuture(Collections.emptyList());
 		}
 	}
 
-	private boolean isInsideComponentProperty(int characterPosition) {
-		return componentId != null
-				&& isAfterComponentIdAndDot(characterPosition)
-				&& isInsideKeyAndBeforeNextDot(characterPosition);
+	private boolean isInside(ILineRangeDefineable lineRangeDefineable, int characterPosition) {
+		return lineRangeDefineable.getStartPositionInLine() <= characterPosition && lineRangeDefineable.getEndPositionInLine() >= characterPosition;
 	}
 
-	private boolean isInsideKeyAndBeforeNextDot(int characterPosition) {
-		return componentProperty == null
-				|| componentProperty.indexOf('.') == -1
-				|| componentProperty.indexOf('.') + 1 + getStartPositionInLine() + componentId.length() + 1 >= characterPosition;
-	}
-
-	private boolean isAfterComponentIdAndDot(int characterPosition) {
-		return getStartPositionInLine() + componentId.length() + 1 <= characterPosition;
-	}
-
-
-	private boolean isInsideComponentId(int characterPosition) {
-		return getStartPositionInLine() <= characterPosition
-				&& componentId != null
-				&& getStartPositionInLine() + componentId.length() >= characterPosition;
-	}
-	
-	private int getStartPositionInLine() {
+	@Override
+	public int getStartPositionInLine() {
 		return CamelPropertyFileKeyInstance.CAMEL_COMPONENT_KEY_PREFIX.length();
 	}
 
 	public String getComponentId() {
-		return componentId;
+		return componentName.getName();
 	}
 
 	public String getComponentProperty() {
-		return componentProperty;
+		return componentProperty.getProperty();
+	}
+
+	@Override
+	public int getLine() {
+		return getCamelPropertyFileKeyInstance().getLine();
+	}
+
+	@Override
+	public int getEndPositionInLine() {
+		return getStartPositionInLine() + fullCamelComponentPropertyFileKey.length();
+	}
+
+	public CamelPropertyFileKeyInstance getCamelPropertyFileKeyInstance() {
+		return camelPropertyFileKeyInstance;
 	}
 
 }

@@ -24,16 +24,22 @@ import org.eclipse.lsp4j.CompletionItem;
 import org.eclipse.lsp4j.Position;
 import org.eclipse.lsp4j.TextDocumentItem;
 
+import com.github.cameltooling.lsp.internal.instancemodel.ILineRangeDefineable;
+
 /**
  * Represents one entry in properties file. For instance, the whole entry "camel.component.timer.delay=1000"
  *
  */
-public class CamelPropertyFileEntryInstance {
+public class CamelPropertyFileEntryInstance implements ILineRangeDefineable {
 	
 	private CamelPropertyFileKeyInstance camelPropertyFileKeyInstance;
 	private CamelPropertyFileValueInstance camelPropertyFileValueInstance;
+	private String line;
+	private int lineNumber;
 
-	public CamelPropertyFileEntryInstance(CompletableFuture<CamelCatalog> camelCatalog, String line, TextDocumentItem textDocumentItem) {
+	public CamelPropertyFileEntryInstance(CompletableFuture<CamelCatalog> camelCatalog, String line, int lineNumber, TextDocumentItem textDocumentItem) {
+		this.line = line;
+		this.lineNumber = lineNumber;
 		int indexOf = line.indexOf('=');
 		String camelPropertyFileKeyInstanceString;
 		String camelPropertyFileValueInstanceString;
@@ -62,5 +68,19 @@ public class CamelPropertyFileEntryInstance {
 
 	CamelPropertyFileValueInstance getCamelPropertyFileValueInstance() {
 		return camelPropertyFileValueInstance;
+	}
+
+	public int getLine() {
+		return lineNumber;
+	}
+
+	@Override
+	public int getStartPositionInLine() {
+		return 0;
+	}
+
+	@Override
+	public int getEndPositionInLine() {
+		return line.length();
 	}
 }

@@ -27,7 +27,9 @@ import java.util.concurrent.ExecutionException;
 import org.eclipse.lsp4j.CompletionItem;
 import org.eclipse.lsp4j.CompletionList;
 import org.eclipse.lsp4j.Position;
+import org.eclipse.lsp4j.Range;
 import org.eclipse.lsp4j.TextDocumentItem;
+import org.eclipse.lsp4j.TextEdit;
 import org.eclipse.lsp4j.jsonrpc.messages.Either;
 import org.junit.jupiter.api.Test;
 
@@ -47,7 +49,9 @@ public class CamelPropertiesComponentOptionBooleanValuesCompletionTest extends A
 	public void testProvideCompletionInsideValue() throws Exception {
 		CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = retrieveCompletion(new Position(0, 45));
 		
-		assertThat(completions.get().getLeft()).hasSize(1);
+		CompletionItem expectedCompletionItem = new CompletionItem("true");
+		expectedCompletionItem.setTextEdit(new TextEdit(new Range(new Position(0, 44), new Position(0, 45)), "true"));
+		assertThat(completions.get().getLeft()).containsOnly(expectedCompletionItem);
 	}
 		
 	protected CompletableFuture<Either<List<CompletionItem>, CompletionList>> retrieveCompletion(Position position) throws URISyntaxException, InterruptedException, ExecutionException {

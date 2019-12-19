@@ -24,6 +24,7 @@ import java.util.stream.Stream;
 import org.apache.camel.catalog.CamelCatalog;
 import org.eclipse.lsp4j.CompletionItem;
 
+import com.github.cameltooling.lsp.internal.instancemodel.propertiesfile.CamelComponentParameterPropertyFileInstance;
 import com.github.cameltooling.lsp.internal.instancemodel.propertiesfile.CamelPropertyFileValueInstance;
 import com.github.cameltooling.model.ComponentOptionModel;
 import com.github.cameltooling.model.util.ModelHelper;
@@ -33,9 +34,11 @@ public class CamelComponentOptionNamesCompletionFuture implements Function<Camel
 	private String componentId;
 	private CamelPropertyFileValueInstance camelPropertyFileValueInstance;
 	private String startFilter;
+	private CamelComponentParameterPropertyFileInstance camelComponentParameterPropertyFileInstance;
 
-	public CamelComponentOptionNamesCompletionFuture(String componentId, CamelPropertyFileValueInstance camelPropertyFileValueInstance, String startFilter) {
+	public CamelComponentOptionNamesCompletionFuture(String componentId, CamelComponentParameterPropertyFileInstance camelComponentParameterPropertyFileInstance, CamelPropertyFileValueInstance camelPropertyFileValueInstance, String startFilter) {
 		this.componentId = componentId;
+		this.camelComponentParameterPropertyFileInstance = camelComponentParameterPropertyFileInstance;
 		this.camelPropertyFileValueInstance = camelPropertyFileValueInstance;
 		this.startFilter = startFilter;
 	}
@@ -54,6 +57,7 @@ public class CamelComponentOptionNamesCompletionFuture implements Function<Camel
 						insertText += String.format("=%s", parameter.getDefaultValue());
 					}
 					completionItem.setInsertText(insertText);
+					CompletionResolverUtils.applyTextEditToCompletionItem(camelComponentParameterPropertyFileInstance, completionItem);
 					return completionItem;
 				})
 				.filter(FilterPredicateUtils.matchesCompletionFilter(startFilter))

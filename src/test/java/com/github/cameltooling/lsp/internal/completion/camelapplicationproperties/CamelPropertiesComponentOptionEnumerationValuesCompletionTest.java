@@ -27,7 +27,9 @@ import java.util.concurrent.ExecutionException;
 import org.eclipse.lsp4j.CompletionItem;
 import org.eclipse.lsp4j.CompletionList;
 import org.eclipse.lsp4j.Position;
+import org.eclipse.lsp4j.Range;
 import org.eclipse.lsp4j.TextDocumentItem;
+import org.eclipse.lsp4j.TextEdit;
 import org.eclipse.lsp4j.jsonrpc.messages.Either;
 import org.junit.jupiter.api.Test;
 
@@ -47,7 +49,10 @@ public class CamelPropertiesComponentOptionEnumerationValuesCompletionTest exten
 	public void testProvideCompletionIsFilteredWhenInsideValue() throws Exception {
 		CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = retrieveCompletion(new Position(0, 53));
 		
-		assertThat(completions.get().getLeft()).hasSize(1);
+		CompletionItem expectedCompletionItem = new CompletionItem("TRACE");
+		expectedCompletionItem.setTextEdit(new TextEdit(new Range(new Position(0, 52), new Position(0, 53)), "TRACE"));
+		
+		assertThat(completions.get().getLeft()).containsOnly(expectedCompletionItem);
 	}
 		
 	protected CompletableFuture<Either<List<CompletionItem>, CompletionList>> retrieveCompletion(Position position) throws URISyntaxException, InterruptedException, ExecutionException {
@@ -79,7 +84,7 @@ public class CamelPropertiesComponentOptionEnumerationValuesCompletionTest exten
 				"    \"version\": \"3.0.0\"\n" + 
 				"  },\n" + 
 				"  \"componentProperties\": {\n" + 
-				"\"errorHandlerLoggingLevel\": {\"kind\":\"property\",\"displayName\":\"Error Handler Logging Level\",\"group\":\"logging\",\"label\":\"consumer,logging\",\"required\":false,\"type\":\"object\",\"javaType\":\"org.apache.camel.LoggingLevel\",\"enum\":[\"TRACE\",\"DEBUG\",\"INFO\",\"WARN\",\"ERROR\",\"OFF\"],\"deprecated\":false,\"secret\":false,\"defaultValue\":\"WARN\",\"description\":\"Allows to configure the default errorHandler logging level for logging uncaught exceptions.\"}" + 
+				"\"errorHandlerLoggingLevel\": {\"kind\":\"property\",\"displayName\":\"Error Handler Logging Level\",\"group\":\"logging\",\"label\":\"consumer,logging\",\"required\":false,\"type\":\"object\",\"javaType\":\"org.apache.camel.LoggingLevel\",\"enum\":[\"TRACE\",\"DEBUG\",\"INFO\",\"WARN\",\"ERROR\",\"OFF\"],\"deprecated\":false,\"secret\":false,\"defaultValue\":\"WARN\",\"description\":\"A component property description.\"}" + 
 				"  },\n" + 
 				"  \"properties\": {\n" +
 				"  }\n" + 

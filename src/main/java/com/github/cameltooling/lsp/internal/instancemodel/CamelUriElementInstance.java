@@ -25,7 +25,7 @@ import org.eclipse.lsp4j.TextDocumentItem;
 
 import com.github.cameltooling.model.ComponentModel;
 
-public abstract class CamelUriElementInstance {
+public abstract class CamelUriElementInstance implements ILineRangeDefineable{
 	
 	private int startPositionInUri;
 	private int endPositionInUri;
@@ -62,6 +62,10 @@ public abstract class CamelUriElementInstance {
 	
 	public int getEndPositionInLine() {
 		return getCamelUriInstance().getStartPositionInDocument().getCharacter() + getEndPositionInUri();
+	}
+	
+	public int getLine() {
+		return getCamelUriInstance().getAbsoluteBounds().getStart().getLine();
 	}
 	
 	public abstract CompletableFuture<List<CompletionItem>> getCompletions(CompletableFuture<CamelCatalog> camelCatalog, int positionInCamelUri, TextDocumentItem docItem);

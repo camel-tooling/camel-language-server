@@ -55,7 +55,7 @@ public class CamelPropertyFileEntryInstanceTest {
 	}
 
 	private CamelPropertyFileEntryInstance createModel(String lineToTest) {
-		return new CamelPropertyFileEntryInstance(CompletableFuture.completedFuture((CamelCatalog)null), lineToTest, createTextDocumentItem(lineToTest));
+		return new CamelPropertyFileEntryInstance(CompletableFuture.completedFuture((CamelCatalog)null), lineToTest, 0, createTextDocumentItem(lineToTest));
 	}
 
 	private TextDocumentItem createTextDocumentItem(String value) {

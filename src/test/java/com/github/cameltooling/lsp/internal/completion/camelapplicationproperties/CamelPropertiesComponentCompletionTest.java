@@ -27,7 +27,9 @@ import java.util.concurrent.ExecutionException;
 import org.eclipse.lsp4j.CompletionItem;
 import org.eclipse.lsp4j.CompletionList;
 import org.eclipse.lsp4j.Position;
+import org.eclipse.lsp4j.Range;
 import org.eclipse.lsp4j.TextDocumentItem;
+import org.eclipse.lsp4j.TextEdit;
 import org.eclipse.lsp4j.jsonrpc.messages.Either;
 import org.junit.jupiter.api.Test;
 
@@ -64,10 +66,11 @@ public class CamelPropertiesComponentCompletionTest extends AbstractCamelLanguag
 	}
 	
 	protected CompletionItem createExpectedCompletionItem() {
-		CompletionItem expectedAhcCompletioncompletionItem = new CompletionItem("acomponent");
-		expectedAhcCompletioncompletionItem.setDocumentation("Description of my component.");
-		expectedAhcCompletioncompletionItem.setDeprecated(false);
-		return expectedAhcCompletioncompletionItem;
+		CompletionItem expectedCompletionItem = new CompletionItem("acomponent");
+		expectedCompletionItem.setDocumentation("Description of my component.");
+		expectedCompletionItem.setDeprecated(false);
+		expectedCompletionItem.setTextEdit(new TextEdit(new Range(new Position(0, 16), new Position(0, 21)), "acomponent"));
+		return expectedCompletionItem;
 	}
 	
 	@Override

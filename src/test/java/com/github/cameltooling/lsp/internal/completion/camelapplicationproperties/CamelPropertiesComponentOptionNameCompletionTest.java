@@ -27,7 +27,9 @@ import java.util.concurrent.ExecutionException;
 import org.eclipse.lsp4j.CompletionItem;
 import org.eclipse.lsp4j.CompletionList;
 import org.eclipse.lsp4j.Position;
+import org.eclipse.lsp4j.Range;
 import org.eclipse.lsp4j.TextDocumentItem;
+import org.eclipse.lsp4j.TextEdit;
 import org.eclipse.lsp4j.jsonrpc.messages.Either;
 import org.junit.jupiter.api.Test;
 
@@ -53,8 +55,25 @@ public class CamelPropertiesComponentOptionNameCompletionTest extends AbstractCa
 	@Test
 	public void testProvideCompletionWithoutDefaultValueIfAValueAlreadyProvided() throws Exception {
 		CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = retrieveCompletion(new Position(0, 27), "camel.component.acomponent.aComponentProperty=aValue");
-		
-		assertThat(completions.get().getLeft().get(0).getInsertText()).isEqualTo("aComponentProperty");
+		CompletionItem expectedCompletionItem = new CompletionItem("aComponentProperty");
+		expectedCompletionItem.setInsertText("aComponentProperty");
+		expectedCompletionItem.setDocumentation("A parameter description");
+		expectedCompletionItem.setDeprecated(false);
+		expectedCompletionItem.setDetail(String.class.getName());
+		expectedCompletionItem.setTextEdit(new TextEdit(new Range(new Position(0, 27), new Position(0, 45)), "aComponentProperty"));
+		assertThat(completions.get().getLeft()).contains(expectedCompletionItem);
+	}
+	
+	@Test
+	public void testInsertAndReplace() throws Exception {
+		CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = retrieveCompletion(new Position(0, 27), "camel.component.acomponent.awrongtoreplace=aValue");
+		CompletionItem expectedCompletionItem = new CompletionItem("aComponentProperty");
+		expectedCompletionItem.setInsertText("aComponentProperty");
+		expectedCompletionItem.setDocumentation("A parameter description");
+		expectedCompletionItem.setDeprecated(false);
+		expectedCompletionItem.setDetail(String.class.getName());
+		expectedCompletionItem.setTextEdit(new TextEdit(new Range(new Position(0, 27), new Position(0, 42)), "aComponentProperty"));
+		assertThat(completions.get().getLeft()).contains(expectedCompletionItem);
 	}
 	
 	@Test
