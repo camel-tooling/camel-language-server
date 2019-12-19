@@ -25,7 +25,10 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URISyntaxException;
 import java.nio.file.Paths;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
@@ -57,6 +60,8 @@ import org.eclipse.lsp4j.jsonrpc.messages.Either;
 import org.eclipse.lsp4j.services.LanguageClient;
 import org.eclipse.lsp4j.services.TextDocumentService;
 import org.junit.jupiter.api.AfterEach;
+
+import com.google.gson.Gson;
 
 public abstract class AbstractCamelLanguageServerTest {
 
@@ -216,6 +221,14 @@ public abstract class AbstractCamelLanguageServerTest {
 	
 	protected boolean hasTextEdit(CompletionItem item) {
 		return item != null && item.getTextEdit() != null;
+	}
+
+	protected Map<Object, Object> createMapSettingsWithComponent(String component) {
+		Map<Object, Object> camelIntializationOptions = new HashMap<>();
+		camelIntializationOptions.put("extra-components", Collections.singletonList(new Gson().fromJson(component, Map.class)));
+		HashMap<Object, Object> initializationOptions = new HashMap<>();
+		initializationOptions.put("camel", camelIntializationOptions);
+		return initializationOptions;
 	}
 	
 }
