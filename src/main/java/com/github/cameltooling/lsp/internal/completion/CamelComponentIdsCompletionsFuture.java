@@ -27,6 +27,12 @@ import com.github.cameltooling.model.util.ModelHelper;
 
 public class CamelComponentIdsCompletionsFuture implements Function<CamelCatalog, List<CompletionItem>> {
 
+	private String startFilter;
+
+	public CamelComponentIdsCompletionsFuture(String startFilter) {
+		this.startFilter = startFilter;
+	}
+
 	@Override
 	public List<CompletionItem> apply(CamelCatalog catalog) {
 		return catalog.findComponentNames().stream()
@@ -37,6 +43,7 @@ public class CamelComponentIdsCompletionsFuture implements Function<CamelCatalog
 				completionItem.setDeprecated(Boolean.valueOf(componentModel.getDeprecated()));
 				return completionItem;
 			})
+			.filter(FilterPredicateUtils.matchesCompletionFilter(startFilter))
 			.collect(Collectors.toList());
 	}
 

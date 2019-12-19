@@ -17,11 +17,12 @@
 package com.github.cameltooling.lsp.internal.completion;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.apache.camel.catalog.CamelCatalog;
 import org.eclipse.lsp4j.CompletionItem;
@@ -37,8 +38,11 @@ public class CamelComponentOptionValuesCompletionsFuture implements Function<Cam
 	
 	private CamelPropertyFileValueInstance camelPropertyFileValueInstance;
 
-	public CamelComponentOptionValuesCompletionsFuture(CamelPropertyFileValueInstance camelPropertyFileValueInstance) {
+	private String startFilter;
+
+	public CamelComponentOptionValuesCompletionsFuture(CamelPropertyFileValueInstance camelPropertyFileValueInstance, String startFilter) {
 		this.camelPropertyFileValueInstance = camelPropertyFileValueInstance;
+		this.startFilter = startFilter;
 	}
 
 	@Override
@@ -50,7 +54,8 @@ public class CamelComponentOptionValuesCompletionsFuture implements Function<Cam
 			if (enums != null && !enums.isEmpty()) {
 				return computeCompletionForEnums(enums);
 			} else if(BOOLEAN_TYPE.equals(endpointOptionModel.getType())) {
-				return Arrays.asList(new CompletionItem(Boolean.TRUE.toString()), new CompletionItem(Boolean.FALSE.toString()));
+				Stream<CompletionItem> values = Stream.of(new CompletionItem(Boolean.TRUE.toString()), new CompletionItem(Boolean.FALSE.toString()));
+				return values.filter(FilterPredicateUtils.matchesCompletionFilter(startFilter)).collect(Collectors.toList());
 			}
 		}
 		return Collections.emptyList();
@@ -62,7 +67,7 @@ public class CamelComponentOptionValuesCompletionsFuture implements Function<Cam
 			CompletionItem item = new CompletionItem(enumValue);
 			completionItems.add(item);
 		}
-		return completionItems;
+		return completionItems.stream().filter(FilterPredicateUtils.matchesCompletionFilter(startFilter)).collect(Collectors.toList());
 	}
 
 	private Optional<ComponentOptionModel> retrieveEndpointOptionModel(CamelCatalog camelCatalog) {

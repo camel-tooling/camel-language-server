@@ -42,10 +42,17 @@ public class CamelPropertiesComponentOptionBooleanValuesCompletionTest extends A
 		
 		assertThat(completions.get().getLeft()).hasSize(2);
 	}
+	
+	@Test
+	public void testProvideCompletionInsideValue() throws Exception {
+		CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = retrieveCompletion(new Position(0, 45));
+		
+		assertThat(completions.get().getLeft()).hasSize(1);
+	}
 		
 	protected CompletableFuture<Either<List<CompletionItem>, CompletionList>> retrieveCompletion(Position position) throws URISyntaxException, InterruptedException, ExecutionException {
 		String fileName = "a.properties";
-		CamelLanguageServer camelLanguageServer = initializeLanguageServer(fileName, new TextDocumentItem(fileName, CamelLanguageServer.LANGUAGE_ID, 0, "camel.component.acomponent.aBooleanProperty="));
+		CamelLanguageServer camelLanguageServer = initializeLanguageServer(fileName, new TextDocumentItem(fileName, CamelLanguageServer.LANGUAGE_ID, 0, "camel.component.acomponent.aBooleanProperty=t"));
 		return getCompletionFor(camelLanguageServer, position, fileName);
 	}
 	

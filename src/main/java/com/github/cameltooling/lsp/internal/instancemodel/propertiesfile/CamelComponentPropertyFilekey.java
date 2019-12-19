@@ -55,18 +55,49 @@ public class CamelComponentPropertyFilekey {
 	}
 
 	public boolean isInRange(int positionChar) {
-		return CamelPropertyFileKeyInstance.CAMEL_COMPONENT_KEY_PREFIX.length() <= positionChar
-				&& positionChar <= fullCamelComponentPropertyFileKey.length() + CamelPropertyFileKeyInstance.CAMEL_COMPONENT_KEY_PREFIX.length();
+		return getStartPositionInLine() <= positionChar
+				&& positionChar <= fullCamelComponentPropertyFileKey.length() + getStartPositionInLine();
 	}
 
 	public CompletableFuture<List<CompletionItem>> getCompletions(Position position) {
-		if(CamelPropertyFileKeyInstance.CAMEL_COMPONENT_KEY_PREFIX.length() == position.getCharacter()) {
-			return camelCatalog.thenApply(new CamelComponentIdsCompletionsFuture());
-		} else if(componentId != null && CamelPropertyFileKeyInstance.CAMEL_COMPONENT_KEY_PREFIX.length() + componentId.length() + 1 == position.getCharacter()){
-			return camelCatalog.thenApply(new CamelComponentOptionNamesCompletionFuture(componentId, camelPropertyFileKeyInstance.getCamelPropertyFileEntryInstance().getCamelPropertyFileValueInstance()));
+		int characterPosition = position.getCharacter();
+		if(isInsideComponentId(characterPosition)) {
+			String componentIdBeforePosition = fullCamelComponentPropertyFileKey.substring(0, characterPosition - getStartPositionInLine());
+			return camelCatalog.thenApply(new CamelComponentIdsCompletionsFuture(componentIdBeforePosition));
+		} else if(isInsideComponentProperty(characterPosition)){
+			CamelPropertyFileValueInstance camelPropertyFileValueInstance = camelPropertyFileKeyInstance.getCamelPropertyFileEntryInstance().getCamelPropertyFileValueInstance();
+			String startComponentProperty = fullCamelComponentPropertyFileKey.substring(componentId.length() + 1, characterPosition - getStartPositionInLine());
+			return camelCatalog.thenApply(new CamelComponentOptionNamesCompletionFuture(componentId, camelPropertyFileValueInstance, startComponentProperty));
 		} else {
 			return CompletableFuture.completedFuture(Collections.emptyList());
 		}
+	}
+
+	private boolean isInsideComponentProperty(int characterPosition) {
+		return componentId != null
+				&& isAfterComponentIdAndDot(characterPosition)
+				&& isInsideKeyAndBeforeNextDot(characterPosition);
+	}
+
+	private boolean isInsideKeyAndBeforeNextDot(int characterPosition) {
+		return componentProperty == null
+				|| componentProperty.indexOf('.') == -1
+				|| componentProperty.indexOf('.') + 1 + getStartPositionInLine() + componentId.length() + 1 >= characterPosition;
+	}
+
+	private boolean isAfterComponentIdAndDot(int characterPosition) {
+		return getStartPositionInLine() + componentId.length() + 1 <= characterPosition;
+	}
+
+
+	private boolean isInsideComponentId(int characterPosition) {
+		return getStartPositionInLine() <= characterPosition
+				&& componentId != null
+				&& getStartPositionInLine() + componentId.length() >= characterPosition;
+	}
+	
+	private int getStartPositionInLine() {
+		return CamelPropertyFileKeyInstance.CAMEL_COMPONENT_KEY_PREFIX.length();
 	}
 
 	public String getComponentId() {

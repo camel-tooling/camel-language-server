@@ -42,10 +42,17 @@ public class CamelPropertiesComponentOptionEnumerationValuesCompletionTest exten
 		
 		assertThat(completions.get().getLeft()).hasSize(6);
 	}
+	
+	@Test
+	public void testProvideCompletionIsFilteredWhenInsideValue() throws Exception {
+		CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = retrieveCompletion(new Position(0, 53));
+		
+		assertThat(completions.get().getLeft()).hasSize(1);
+	}
 		
 	protected CompletableFuture<Either<List<CompletionItem>, CompletionList>> retrieveCompletion(Position position) throws URISyntaxException, InterruptedException, ExecutionException {
 		String fileName = "a.properties";
-		CamelLanguageServer camelLanguageServer = initializeLanguageServer(fileName, new TextDocumentItem(fileName, CamelLanguageServer.LANGUAGE_ID, 0, "camel.component.acomponent.errorHandlerLoggingLevel="));
+		CamelLanguageServer camelLanguageServer = initializeLanguageServer(fileName, new TextDocumentItem(fileName, CamelLanguageServer.LANGUAGE_ID, 0, "camel.component.acomponent.errorHandlerLoggingLevel=T"));
 		return getCompletionFor(camelLanguageServer, position, fileName);
 	}
 	
