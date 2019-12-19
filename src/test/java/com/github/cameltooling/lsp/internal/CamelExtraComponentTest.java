@@ -19,8 +19,6 @@ package com.github.cameltooling.lsp.internal;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.net.URISyntaxException;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
@@ -34,8 +32,6 @@ import org.eclipse.lsp4j.Range;
 import org.eclipse.lsp4j.TextEdit;
 import org.eclipse.lsp4j.jsonrpc.messages.Either;
 import org.junit.jupiter.api.Test;
-
-import com.google.gson.Gson;
 
 public class CamelExtraComponentTest extends AbstractCamelLanguageServerTest {
 	
@@ -129,13 +125,5 @@ public class CamelExtraComponentTest extends AbstractCamelLanguageServerTest {
 		Map<Object, Object> initializationOptions = createMapSettingsWithComponent(component);
 		initParams.setInitializationOptions(initializationOptions);
 		return initParams;
-	}
-
-	private Map<Object, Object> createMapSettingsWithComponent(String component) {
-		Map<Object, Object> camelIntializationOptions = new HashMap<>();
-		camelIntializationOptions.put("extra-components", Collections.singletonList(new Gson().fromJson(component, Map.class)));
-		HashMap<Object, Object> initializationOptions = new HashMap<>();
-		initializationOptions.put("camel", camelIntializationOptions);
-		return initializationOptions;
 	}
 }
