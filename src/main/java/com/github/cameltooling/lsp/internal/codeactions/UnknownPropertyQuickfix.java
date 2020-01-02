@@ -35,6 +35,7 @@ import org.eclipse.lsp4j.Command;
 import org.eclipse.lsp4j.CompletionItem;
 import org.eclipse.lsp4j.Diagnostic;
 import org.eclipse.lsp4j.Position;
+import org.eclipse.lsp4j.Range;
 import org.eclipse.lsp4j.TextDocumentItem;
 import org.eclipse.lsp4j.TextEdit;
 import org.eclipse.lsp4j.WorkspaceEdit;
@@ -61,17 +62,19 @@ public class UnknownPropertyQuickfix {
 			TextDocumentItem openedDocument = camelTextDocumentService.getOpenedDocument(params.getTextDocument().getUri());
 			List<Diagnostic> diagnostics = params.getContext().getDiagnostics();
 			List<Either<Command, CodeAction>> res = new ArrayList<>();
-			for (Diagnostic diagnostic : diagnostics) {
-				CharSequence currentValueInError = retrieveCurrentErrorValue(openedDocument, diagnostic);
+			for(Diagnostic diagnostic : diagnostics) {
 				if(DiagnosticService.ERROR_CODE_UNKNOWN_PROPERTIES.equals(diagnostic.getCode())) {
-					List<String> possibleProperties = retrievePossibleProperties(openedDocument, camelTextDocumentService.getCamelCatalog(), diagnostic.getRange().getStart());
-					int distanceThreshold = Math.round(currentValueInError.length() * 0.4f);
-					LevenshteinDistance levenshteinDistance = new LevenshteinDistance(distanceThreshold);
-					List<String> mostProbableProperties = possibleProperties.stream()
-							.filter(possibleProperty -> levenshteinDistance.apply(possibleProperty, currentValueInError) != -1)
-							.collect(Collectors.toList());
-					for (String mostProbableProperty : mostProbableProperties) {
-						res.add(Either.forRight(createCodeAction(params, diagnostic, mostProbableProperty)));
+					CharSequence currentValueInError = retrieveCurrentErrorValue(openedDocument, diagnostic);
+					if(currentValueInError != null) {
+						List<String> possibleProperties = retrievePossibleProperties(openedDocument, camelTextDocumentService.getCamelCatalog(), diagnostic.getRange().getStart());
+						int distanceThreshold = Math.round(currentValueInError.length() * 0.4f);
+						LevenshteinDistance levenshteinDistance = new LevenshteinDistance(distanceThreshold);
+						List<String> mostProbableProperties = possibleProperties.stream()
+								.filter(possibleProperty -> levenshteinDistance.apply(possibleProperty, currentValueInError) != -1)
+								.collect(Collectors.toList());
+						for (String mostProbableProperty : mostProbableProperties) {
+							res.add(Either.forRight(createCodeAction(params, diagnostic, mostProbableProperty)));
+						}
 					}
 				}
 			}
@@ -81,8 +84,14 @@ public class UnknownPropertyQuickfix {
 	}
 
 	private String retrieveCurrentErrorValue(TextDocumentItem openedDocument, Diagnostic diagnostic) {
-		String line = new ParserFileHelperUtil().getLine(openedDocument, diagnostic.getRange().getStart().getLine());
-		return line.substring(diagnostic.getRange().getStart().getCharacter(), diagnostic.getRange().getEnd().getCharacter());
+		Range diagnosticRange = diagnostic.getRange();
+		String line = new ParserFileHelperUtil().getLine(openedDocument, diagnosticRange.getStart().getLine());
+		int endCharacter = diagnosticRange.getEnd().getCharacter();
+		if (line.length() > endCharacter) {
+			return line.substring(diagnosticRange.getStart().getCharacter(), endCharacter);
+		} else {
+			return null;
+		}
 	}
 
 	private CodeAction createCodeAction(CodeActionParams params, Diagnostic diagnostic, String possibleProperty) {
