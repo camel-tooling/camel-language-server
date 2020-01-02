@@ -23,6 +23,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.time.Duration;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -37,6 +38,7 @@ import org.eclipse.lsp4j.CodeActionParams;
 import org.eclipse.lsp4j.Command;
 import org.eclipse.lsp4j.Diagnostic;
 import org.eclipse.lsp4j.DidSaveTextDocumentParams;
+import org.eclipse.lsp4j.Position;
 import org.eclipse.lsp4j.Range;
 import org.eclipse.lsp4j.TextDocumentIdentifier;
 import org.eclipse.lsp4j.TextEdit;
@@ -46,6 +48,7 @@ import org.junit.jupiter.api.Test;
 import com.github.cameltooling.lsp.internal.AbstractCamelLanguageServerTest;
 import com.github.cameltooling.lsp.internal.CamelLanguageServer;
 import com.github.cameltooling.lsp.internal.RangeChecker;
+import com.github.cameltooling.lsp.internal.diagnostic.DiagnosticService;
 
 public class UnknownPropertyQuickfixTest extends AbstractCamelLanguageServerTest {
 
@@ -86,7 +89,24 @@ public class UnknownPropertyQuickfixTest extends AbstractCamelLanguageServerTest
 		CompletableFuture<List<Either<Command,CodeAction>>> codeActions = camelLanguageServer.getTextDocumentService().codeAction(new CodeActionParams(textDocumentIdentifier, diagnostic.getRange(), context));
 		
 		assertThat(codeActions.get()).isEmpty();
-
+	}
+	
+	@Test
+	public void testReturnCodeActionForQuickfixEvenWithInvalidRangeDiagnostic() throws FileNotFoundException, InterruptedException, ExecutionException {
+		TextDocumentIdentifier textDocumentIdentifier = initAnLaunchDiagnostic();
+		
+		Diagnostic diagnostic = lastPublishedDiagnostics.getDiagnostics().get(0);
+	
+		List<Diagnostic> diagnostics = new ArrayList<Diagnostic>();
+		Diagnostic diagnosticWithInvalidRange = new Diagnostic(new Range(new Position(9,100), new Position(9,101)), "a different diagnostic coming with an invalid range.");
+		diagnosticWithInvalidRange.setCode(DiagnosticService.ERROR_CODE_UNKNOWN_PROPERTIES);
+		diagnostics.add(diagnosticWithInvalidRange);
+		diagnostics.addAll(lastPublishedDiagnostics.getDiagnostics());
+		
+		CodeActionContext context = new CodeActionContext(diagnostics, Collections.singletonList(CodeActionKind.QuickFix));
+		CompletableFuture<List<Either<Command,CodeAction>>> codeActions = camelLanguageServer.getTextDocumentService().codeAction(new CodeActionParams(textDocumentIdentifier, diagnostic.getRange(), context));
+		
+		checkRetrievedCodeAction(textDocumentIdentifier, diagnostic, codeActions);
 	}
 	
 	private void checkRetrievedCodeAction(TextDocumentIdentifier textDocumentIdentifier, Diagnostic diagnostic, CompletableFuture<List<Either<Command, CodeAction>>> codeActions)
