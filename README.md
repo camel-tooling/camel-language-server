@@ -85,6 +85,14 @@ It is possible to specify a list of additional Camel components. This can be pro
 
 ```
 
+## Document symbol support
+
+There is document symbol for Camel Contexts and routes, on XML and Java DSL. In UI, for instance with VS Code, it means there are an outline, a breadcrumb and a Go To Document Symbol command.
+
+![Outline](./images/outline.png "Outline")
+![Go to Symbol](./images/goToSymbol.gif "Go To Symbol")
+![Breadcrumb](./images/breadCrumbXml.gif "Breadcrumb")
+
 ## Features planned
 
 * As you type reporting of parsing and compilation errors
