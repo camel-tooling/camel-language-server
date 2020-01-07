@@ -34,6 +34,7 @@ public class Runner {
 	 * For test only
 	 */
 	static CamelLanguageServer server;
+	static WebSocketRunner webSocketRunner;
 	
 	private static final String WEBSOCKET_PARAMETER = "--websocket";
 	private static final String PORT_PARAMETER = "--port=";
@@ -57,8 +58,9 @@ public class Runner {
 		} else if (arguments.contains(WEBSOCKET_PARAMETER)) {
 			int port = extractPort(arguments);
 			String hostname = extractHostname(arguments);
+			webSocketRunner = new WebSocketRunner();
 			String contextPath = extractContextPath(arguments);
-			new WebSocketRunner().runWebSocketServer(hostname, port, contextPath);
+			webSocketRunner.runWebSocketServer(hostname, port, contextPath);
 		} else {
 			server = new CamelLanguageServer();
 			Launcher<LanguageClient> launcher = LSPLauncher.createServerLauncher(server, System.in, System.out);
