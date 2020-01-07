@@ -17,6 +17,7 @@
 package com.github.cameltooling.lsp.internal;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.awaitility.Awaitility.await;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assumptions.assumeFalse;
 
@@ -26,7 +27,6 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.UnknownHostException;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
 
 import javax.websocket.ClientEndpointConfig;
 import javax.websocket.DeploymentException;
@@ -104,9 +104,8 @@ public class RunnerWebSocketTest {
 	private void testWebSocketServerConnection(String[] arguments, String expectedConnectionURI)
 			throws InterruptedException, DeploymentException, IOException, URISyntaxException {
 		startRunnerWithWebsocketOption(arguments);
-
-		//TODO: improve this condition which always expire on timeout, see https://github.com/camel-tooling/camel-language-server/issues/307
-		messageLatch.await(1, TimeUnit.SECONDS);
+		
+		await("WebSocket Server has not been started.").until(() -> {return Runner.webSocketRunner != null && Runner.webSocketRunner.isStarted(); });
 
 		final ClientEndpointConfig cec = ClientEndpointConfig.Builder.create().build();
 		ClientManager client = ClientManager.createClient();

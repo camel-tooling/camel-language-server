@@ -24,12 +24,13 @@ import org.slf4j.LoggerFactory;
 
 public class WebSocketRunner {
 
-
 	private static final Logger LOGGER = LoggerFactory.getLogger(WebSocketRunner.class);
 	
 	private static final String DEFAULT_HOSTNAME = "localhost";
 	private static final int DEFAULT_PORT = 8025;
 	private static final String DEFAULT_CONTEXT_PATH = "/";
+	
+	private boolean isStarted = false;
 
 	public void runWebSocketServer(String hostname, int port, String contextPath) {
 		hostname = hostname != null ? hostname : DEFAULT_HOSTNAME;
@@ -40,6 +41,7 @@ public class WebSocketRunner {
 
 		try {
 			server.start();
+			isStarted = true;
 			Thread.currentThread().join();
 		} catch (InterruptedException e) {
 			LOGGER.error("Camel LSP Websocket server has been interrupted.", e);
@@ -49,6 +51,10 @@ public class WebSocketRunner {
 		} finally {
 			server.stop();
 		}
+	}
+
+	public boolean isStarted() {
+		return isStarted;
 	}
 
 }
