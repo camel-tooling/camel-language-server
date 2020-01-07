@@ -26,7 +26,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class RunnerStandardIOTest {
+public class RunnerHelpTest {
 
 	private PrintStream sysOut;
 	private final ByteArrayOutputStream outContent = new ByteArrayOutputStream();
@@ -44,21 +44,19 @@ public class RunnerStandardIOTest {
 
 	@Test
 	void testClientProxyAvailable() throws Exception {
-		startRunnerWithoutOption();
-		await("Wait for Server to start with a remote proxy client")
-				.untilAsserted(() -> assertThat(Runner.server).isNotNull());
-		await("Wait for Server to start with a remote proxy client")
-				.untilAsserted(() -> assertThat(Runner.server.getClient()).isNotNull());
-		assertThat(outContent.toString()).doesNotContain("help");
+		startRunnerWithHelpOption();
+		await("Wait for output to be written")
+				.untilAsserted(() -> assertThat(outContent.toString()).contains(Runner.HELP_MESSAGE));
 	}
 
-	private void startRunnerWithoutOption() {
+	private void startRunnerWithHelpOption() {
 		new Thread(new Runnable() {
 
 			@Override
 			public void run() {
-				Runner.main(new String[] {});
+				Runner.main(new String[] { Runner.HELP_PARAMETER });
 			}
 		}).start();
 	}
+
 }

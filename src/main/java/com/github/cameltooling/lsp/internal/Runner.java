@@ -39,10 +39,22 @@ public class Runner {
 	private static final String PORT_PARAMETER = "--port=";
 	private static final String HOSTNAME_PARAMETER = "--hostname=";
 	private static final String CONTEXTPATH_PARAMETER = "--contextPath=";
+	static final String HELP_PARAMETER = "--help";
+	
+	static final String HELP_MESSAGE =
+			"`--help` to display this message\n\n"
+			+ "When launching without parameter, the Language Client can use Standard Input and Ouput to connect to the Camel Language Server.\n\n"
+			+ "To use a websocket connection, the parameter `--websocket` must be provided.\n"
+			+ "If you are using a websocket connection, 3 other parameters are available:\n"
+			+ "  `--port=<port>` default value is `8025`\n"
+			+ "  `--hostname=<hostname>`, default value `localhost`\n"
+			+ "  `--contextPath=<contextPath>`, default value `/`. It must start with a `/`.";
 
 	public static void main(String[] args) {
 		List<String> arguments = Arrays.asList(args);
-		if (arguments.contains(WEBSOCKET_PARAMETER)) {
+		if (arguments.contains(HELP_PARAMETER)) {
+			System.out.println(HELP_MESSAGE);
+		} else if (arguments.contains(WEBSOCKET_PARAMETER)) {
 			int port = extractPort(arguments);
 			String hostname = extractHostname(arguments);
 			String contextPath = extractContextPath(arguments);
