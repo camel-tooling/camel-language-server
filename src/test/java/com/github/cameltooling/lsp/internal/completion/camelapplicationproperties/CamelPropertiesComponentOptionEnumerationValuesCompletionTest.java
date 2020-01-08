@@ -40,24 +40,31 @@ public class CamelPropertiesComponentOptionEnumerationValuesCompletionTest exten
 
 	@Test
 	public void testProvideCompletion() throws Exception {
-		CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = retrieveCompletion(new Position(0, 52));
+		CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = retrieveCompletion(new Position(0, 52), "camel.component.acomponent.errorHandlerLoggingLevel=T");
 		
 		assertThat(completions.get().getLeft()).hasSize(6);
 	}
 	
 	@Test
 	public void testProvideCompletionIsFilteredWhenInsideValue() throws Exception {
-		CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = retrieveCompletion(new Position(0, 53));
+		CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = retrieveCompletion(new Position(0, 53), "camel.component.acomponent.errorHandlerLoggingLevel=T");
 		
 		CompletionItem expectedCompletionItem = new CompletionItem("TRACE");
 		expectedCompletionItem.setTextEdit(new TextEdit(new Range(new Position(0, 52), new Position(0, 53)), "TRACE"));
 		
 		assertThat(completions.get().getLeft()).containsOnly(expectedCompletionItem);
 	}
+	
+	@Test
+	public void testProvideNoCompletionOnInvalidKeys() throws Exception {
+		CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = retrieveCompletion(new Position(0, 27), "camel.component.acomponent=");
 		
-	protected CompletableFuture<Either<List<CompletionItem>, CompletionList>> retrieveCompletion(Position position) throws URISyntaxException, InterruptedException, ExecutionException {
+		assertThat(completions.get().getLeft()).isEmpty();
+	}
+		
+	protected CompletableFuture<Either<List<CompletionItem>, CompletionList>> retrieveCompletion(Position position, String text) throws URISyntaxException, InterruptedException, ExecutionException {
 		String fileName = "a.properties";
-		CamelLanguageServer camelLanguageServer = initializeLanguageServer(fileName, new TextDocumentItem(fileName, CamelLanguageServer.LANGUAGE_ID, 0, "camel.component.acomponent.errorHandlerLoggingLevel=T"));
+		CamelLanguageServer camelLanguageServer = initializeLanguageServer(fileName, new TextDocumentItem(fileName, CamelLanguageServer.LANGUAGE_ID, 0, text));
 		return getCompletionFor(camelLanguageServer, position, fileName);
 	}
 	

@@ -81,7 +81,7 @@ public class CamelComponentPropertyFilekey implements ILineRangeDefineable {
 	}
 
 	public String getComponentProperty() {
-		return componentProperty.getProperty();
+		return componentProperty != null ? componentProperty.getProperty() : null;
 	}
 
 	@Override
