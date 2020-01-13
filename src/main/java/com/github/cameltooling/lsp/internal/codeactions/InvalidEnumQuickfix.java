@@ -33,23 +33,20 @@ import com.github.cameltooling.lsp.internal.CamelTextDocumentService;
 import com.github.cameltooling.lsp.internal.completion.CamelEndpointCompletionProcessor;
 import com.github.cameltooling.lsp.internal.diagnostic.DiagnosticService;
 
-public class UnknownPropertyQuickfix extends AbstractQuickfix {
+public class InvalidEnumQuickfix extends AbstractQuickfix {
 	
-	private static final Logger LOGGER = LoggerFactory.getLogger(UnknownPropertyQuickfix.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(InvalidEnumQuickfix.class);
 
-	public UnknownPropertyQuickfix(CamelTextDocumentService camelTextDocumentService) {
+	public InvalidEnumQuickfix(CamelTextDocumentService camelTextDocumentService) {
 		super(camelTextDocumentService);
 	}
 
-	protected String getDiagnosticId() {
-		return DiagnosticService.ERROR_CODE_UNKNOWN_PROPERTIES;
-	}
-
+	@Override
 	protected List<String> retrievePossibleValues(TextDocumentItem textDocumentItem, CompletableFuture<CamelCatalog> camelCatalog, Position position) {
 		try {
 			return new CamelEndpointCompletionProcessor(textDocumentItem, camelCatalog)
 					.getCompletions(position)
-					.thenApply(completionItems -> completionItems.stream().map(CompletionItem::getInsertText).collect(Collectors.toList()))
+					.thenApply(completionItems -> completionItems.stream().map(CompletionItem::getLabel).collect(Collectors.toList()))
 					.get();
 		} catch (InterruptedException e) {
 			LOGGER.error("Interruption while computing possible properties for quickfix", e);
@@ -60,5 +57,11 @@ public class UnknownPropertyQuickfix extends AbstractQuickfix {
 			return Collections.emptyList();
 		}
 	}
+
+	@Override
+	protected String getDiagnosticId() {
+		return DiagnosticService.ERROR_CODE_INVALID_ENUM;
+	}
+
 
 }

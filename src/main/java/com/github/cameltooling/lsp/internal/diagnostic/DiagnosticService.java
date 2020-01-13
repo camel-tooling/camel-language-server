@@ -65,6 +65,7 @@ public class DiagnosticService {
 	private static final String APACHE_CAMEL_VALIDATION = "Apache Camel validation";
 	private static final Logger LOGGER = LoggerFactory.getLogger(DiagnosticService.class);
 	public static final String ERROR_CODE_UNKNOWN_PROPERTIES = "camel.diagnostic.unknown.properties";
+	public static final String ERROR_CODE_INVALID_ENUM = "camel.diagnostic.invalid.enum";
 	
 	private CompletableFuture<CamelCatalog> camelCatalog;
 	private CamelLanguageServer camelLanguageServer;
@@ -179,7 +180,7 @@ public class DiagnosticService {
 						new EnumErrorMsg().getErrorMessage(validationResult, invalidEnum),
 						DiagnosticSeverity.Error,
 						APACHE_CAMEL_VALIDATION,
-						null));
+						ERROR_CODE_INVALID_ENUM));
 			}
 		}
 		return lspDiagnostics;

@@ -7,7 +7,7 @@
 
   <camelContext id="camel" xmlns="http://camel.apache.org/schema/spring">
     <route id="a route">
-      <from uri="timer:timerName?exchangePattern=InvalidEnumValue"/>
+      <from uri="timer:timerName?exchangePattern=IOnly"/><!-- IOnly is the error that needs to be detected, it should be InOnly. -->
       <to uri="timer:timerName?delay=10"></to>
     </route>
   </camelContext>
