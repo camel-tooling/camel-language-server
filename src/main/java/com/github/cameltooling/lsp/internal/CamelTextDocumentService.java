@@ -16,6 +16,7 @@
  */
 package com.github.cameltooling.lsp.internal;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -64,6 +65,7 @@ import org.eclipse.lsp4j.services.TextDocumentService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.github.cameltooling.lsp.internal.codeactions.InvalidEnumQuickfix;
 import com.github.cameltooling.lsp.internal.codeactions.UnknownPropertyQuickfix;
 import com.github.cameltooling.lsp.internal.completion.CamelEndpointCompletionProcessor;
 import com.github.cameltooling.lsp.internal.completion.CamelPropertiesCompletionProcessor;
@@ -175,7 +177,12 @@ public class CamelTextDocumentService implements TextDocumentService {
 		LOGGER.info("codeAction: {}", params.getTextDocument());
 		CodeActionContext context = params.getContext();
 		if (context != null && (context.getOnly() == null || context.getOnly().contains(CodeActionKind.QuickFix))) {
-			return new UnknownPropertyQuickfix(this).apply(params);
+			return CompletableFuture.supplyAsync(() -> {
+				List<Either<Command, CodeAction>> allQuickfixes = new ArrayList<>();
+				allQuickfixes.addAll(new UnknownPropertyQuickfix(this).apply(params));
+				allQuickfixes.addAll(new InvalidEnumQuickfix(this).apply(params));
+				return allQuickfixes;
+			});
 		} else {
 			return CompletableFuture.completedFuture(Collections.emptyList());
 		}

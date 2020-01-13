@@ -93,7 +93,7 @@ public class CamelDiagnosticTest extends AbstractCamelLanguageServerTest {
 		Diagnostic diagnostic = lastPublishedDiagnostics.getDiagnostics().get(0);
 		assertThat(diagnostic.getMessage()).isNotNull();
 		Range range = diagnostic.getRange();
-		checkRange(range, 9, 49, 9, 65);
+		checkRange(range, 9, 49, 9, 54);
 	}
 	
 	@Test
