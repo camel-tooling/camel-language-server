@@ -62,9 +62,7 @@ public abstract class AbstractQuickfix {
 					int distanceThreshold = Math.round(currentValueInError.length() * 0.4f);
 					LevenshteinDistance levenshteinDistance = new LevenshteinDistance(distanceThreshold);
 					List<String> mostProbableProperties = possibleProperties.stream()
-							.filter(possibleProperty -> {
-								return levenshteinDistance.apply(possibleProperty, currentValueInError) != -1;
-							})
+							.filter(possibleProperty -> levenshteinDistance.apply(possibleProperty, currentValueInError) != -1)
 							.collect(Collectors.toList());
 					for (String mostProbableProperty : mostProbableProperties) {
 						res.add(Either.forRight(createCodeAction(params, diagnostic, mostProbableProperty)));
