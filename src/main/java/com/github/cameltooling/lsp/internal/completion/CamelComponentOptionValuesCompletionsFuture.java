@@ -50,7 +50,7 @@ public class CamelComponentOptionValuesCompletionsFuture implements Function<Cam
 		Optional<ComponentOptionModel> endpointModel = retrieveEndpointOptionModel(camelCatalog);
 		if(endpointModel.isPresent()) {
 			ComponentOptionModel endpointOptionModel = endpointModel.get();
-			String enums = endpointOptionModel.getEnums();
+			List<String> enums = endpointOptionModel.getEnums();
 			if (enums != null && !enums.isEmpty()) {
 				return computeCompletionForEnums(enums);
 			} else if(BOOLEAN_TYPE.equals(endpointOptionModel.getType())) {
@@ -65,9 +65,9 @@ public class CamelComponentOptionValuesCompletionsFuture implements Function<Cam
 		return Collections.emptyList();
 	}
 	
-	private List<CompletionItem> computeCompletionForEnums(String enums) {
+	private List<CompletionItem> computeCompletionForEnums(List<String> enums) {
 		List<CompletionItem> completionItems = new ArrayList<>();
-		for(String enumValue : enums.split(",")) {
+		for(String enumValue : enums) {
 			CompletionItem item = new CompletionItem(enumValue);
 			CompletionResolverUtils.applyTextEditToCompletionItem(camelPropertyFileValueInstance, item);
 			completionItems.add(item);

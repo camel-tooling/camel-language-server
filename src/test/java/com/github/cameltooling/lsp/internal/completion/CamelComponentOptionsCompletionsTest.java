@@ -69,7 +69,7 @@ public class CamelComponentOptionsCompletionsTest extends AbstractCamelLanguageS
     	completionItem.setInsertText("clientConfigOptions=");
     	completionItem.setTextEdit(new TextEdit(new Range(new Position(0, 23), new Position(0, 23)), "clientConfigOptions="));
     	completionItem.setDocumentation("To configure the AsyncHttpClientConfig using the key/values from the Map.");
-    	completionItem.setDetail("java.util.Map<java.lang.String,java.lang.Object>");
+    	completionItem.setDetail("java.util.Map<java.lang.String, java.lang.Object>");
     	completionItem.setDeprecated(false);
 		testProvideCamelOptions("<from uri=\"ahc:httpUri?\" xmlns=\"http://camel.apache.org/schema/blueprint\"></from>\n", 0, 23, completionItem);
 	}
