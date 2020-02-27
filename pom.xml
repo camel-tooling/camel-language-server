@@ -48,9 +48,9 @@
 		<slf4j.version>1.7.30</slf4j.version>
 		<junit.version>5.6.0</junit.version>
 		<assertj.version>3.15.0</assertj.version>
-		<camel.version>3.0.1</camel.version>
+		<camel.version>3.1.0</camel.version>
 		<camel.tooling.common.version>0.0.3-SNAPSHOT</camel.tooling.common.version>
-		<roaster.version>2.20.1.Final</roaster.version>
+		<roaster.version>2.21.1.Final</roaster.version>
 		<awaitility.version>4.0.2</awaitility.version>
 		<tyrus.version>1.15</tyrus.version>
 		<commons-text.version>1.8</commons-text.version>
