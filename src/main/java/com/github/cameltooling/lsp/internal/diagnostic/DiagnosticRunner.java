@@ -39,7 +39,7 @@ public class DiagnosticRunner {
 	}
 	
 	private void calculate() {
-		Map<CamelEndpointDetails, EndpointValidationResult> endpointErrors = diagnosticServer.computeCamelErrors(camelText, uri);
+		Map<CamelEndpointDetails, EndpointValidationResult> endpointErrors = diagnosticServer.computeCamelEndpointErrors(camelText, uri);
 		List<Diagnostic> diagnostics = diagnosticServer.converToLSPDiagnostics(camelText, endpointErrors, camelLanguageServer.getTextDocumentService().getOpenedDocument(uri));
 		camelLanguageServer.getClient().publishDiagnostics(new PublishDiagnosticsParams(uri, diagnostics));
 	}

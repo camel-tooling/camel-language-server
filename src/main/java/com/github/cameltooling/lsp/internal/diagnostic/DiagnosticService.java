@@ -94,7 +94,7 @@ public class DiagnosticService {
 		CompletableFuture.supplyAsync(() -> new DiagnosticRunner(this, camelLanguageServer, camelText, uri));
 	}
 	
-	Map<CamelEndpointDetails, EndpointValidationResult> computeCamelErrors(String camelText, String uri) {
+	Map<CamelEndpointDetails, EndpointValidationResult> computeCamelEndpointErrors(String camelText, String uri) {
 		List<CamelEndpointDetails> endpoints = retrieveEndpoints(uri, camelText);
 		return diagnoseEndpoints(uri, endpoints);
 	}
