@@ -73,7 +73,7 @@ import com.github.cameltooling.lsp.internal.codeactions.UnknownPropertyQuickfix;
 import com.github.cameltooling.lsp.internal.completion.CamelEndpointCompletionProcessor;
 import com.github.cameltooling.lsp.internal.completion.CamelPropertiesCompletionProcessor;
 import com.github.cameltooling.lsp.internal.definition.DefinitionProcessor;
-import com.github.cameltooling.lsp.internal.diagnostic.DiagnosticService;
+import com.github.cameltooling.lsp.internal.diagnostic.DiagnosticRunner;
 import com.github.cameltooling.lsp.internal.documentsymbol.DocumentSymbolProcessor;
 import com.github.cameltooling.lsp.internal.hover.HoverProcessor;
 import com.github.cameltooling.lsp.internal.references.ReferencesProcessor;
@@ -232,7 +232,7 @@ public class CamelTextDocumentService implements TextDocumentService {
 		TextDocumentItem textDocument = params.getTextDocument();
 		LOGGER.info("didOpen: {}", textDocument);
 		openedDocuments.put(textDocument.getUri(), textDocument);
-		new DiagnosticService(getCamelCatalog(), camelLanguageServer).compute(params);
+		new DiagnosticRunner(getCamelCatalog(), camelLanguageServer).compute(params);
 	}
 
 	@Override
@@ -242,7 +242,7 @@ public class CamelTextDocumentService implements TextDocumentService {
 		TextDocumentItem textDocumentItem = openedDocuments.get(params.getTextDocument().getUri());
 		if (!contentChanges.isEmpty()) {
 			textDocumentItem.setText(contentChanges.get(0).getText());
-			new DiagnosticService(getCamelCatalog(), camelLanguageServer).compute(params);
+			new DiagnosticRunner(getCamelCatalog(), camelLanguageServer).compute(params);
 		}
 	}
 
@@ -254,13 +254,13 @@ public class CamelTextDocumentService implements TextDocumentService {
 		/* The rule observed by VS Code servers as explained in LSP specification is to clear the Diagnostic when it is related to a single file.
 		 * https://microsoft.github.io/language-server-protocol/specification#textDocument_publishDiagnostics
 		 * */
-		new DiagnosticService(getCamelCatalog(), camelLanguageServer).clear(uri);
+		new DiagnosticRunner(getCamelCatalog(), camelLanguageServer).clear(uri);
 	}
 
 	@Override
 	public void didSave(DidSaveTextDocumentParams params) {
 		LOGGER.info("didSave: {}", params.getTextDocument());
-		new DiagnosticService(getCamelCatalog(), camelLanguageServer).compute(params);
+		new DiagnosticRunner(getCamelCatalog(), camelLanguageServer).compute(params);
 	}
 
 	public TextDocumentItem getOpenedDocument(String uri) {
