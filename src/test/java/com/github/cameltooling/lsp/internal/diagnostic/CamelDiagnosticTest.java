@@ -19,17 +19,12 @@ package com.github.cameltooling.lsp.internal.diagnostic;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 
-import java.time.Duration;
 import org.eclipse.lsp4j.Diagnostic;
 import org.eclipse.lsp4j.DidChangeTextDocumentParams;
 import org.eclipse.lsp4j.DidCloseTextDocumentParams;
-import org.eclipse.lsp4j.DidSaveTextDocumentParams;
 import org.eclipse.lsp4j.Range;
 import org.eclipse.lsp4j.TextDocumentContentChangeEvent;
 import org.eclipse.lsp4j.TextDocumentIdentifier;
@@ -37,14 +32,7 @@ import org.eclipse.lsp4j.VersionedTextDocumentIdentifier;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
-import com.github.cameltooling.lsp.internal.AbstractCamelLanguageServerTest;
-import com.github.cameltooling.lsp.internal.CamelLanguageServer;
-import com.github.cameltooling.lsp.internal.RangeChecker;
-
-public class CamelDiagnosticTest extends AbstractCamelLanguageServerTest {
-
-	private static final Duration AWAIT_TIMEOUT = Duration.ofSeconds(10);
-	private CamelLanguageServer camelLanguageServer;
+public class CamelDiagnosticTest extends AbstractDiagnosticTest {
 
 	@Test
 	public void testNoValidationError() throws Exception {
@@ -169,10 +157,6 @@ public class CamelDiagnosticTest extends AbstractCamelLanguageServerTest {
 		checkRange(range, 9, 33, 9, 37);
 	}
 
-	private void checkRange(Range range, int startLine, int startCharacter, int endLine, int endCharacter) {
-		new RangeChecker().check(range, startLine, startCharacter, endLine, endCharacter);
-	}
-	
 	@Test
 	public void testSeveralUnknowPropertyOnNonLenientPropertiesComponent() throws Exception {
 		testDiagnostic("camel-with-2-unknownParameters", 2, ".xml");
@@ -202,16 +186,4 @@ public class CamelDiagnosticTest extends AbstractCamelLanguageServerTest {
 	public void testUnknowPropertyOnLenientPropertiesComponent() throws Exception {
 		testDiagnostic("camel-with-unknownParameter-forlenientcomponent", 0, ".xml");
 	}
-	
-	private void testDiagnostic(String fileUnderTest, int expectedNumberOfError, String extension) throws FileNotFoundException {
-		File f = new File("src/test/resources/workspace/diagnostic/" + fileUnderTest + extension);
-		camelLanguageServer = initializeLanguageServer(new FileInputStream(f), extension);
-		
-		DidSaveTextDocumentParams params = new DidSaveTextDocumentParams(new TextDocumentIdentifier(DUMMY_URI+extension));
-		camelLanguageServer.getTextDocumentService().didSave(params);
-		
-		await().timeout(AWAIT_TIMEOUT).untilAsserted(() -> assertThat(lastPublishedDiagnostics).isNotNull());
-		await().timeout(AWAIT_TIMEOUT).untilAsserted(() -> assertThat(lastPublishedDiagnostics.getDiagnostics()).hasSize(expectedNumberOfError));
-	}
-	
 }

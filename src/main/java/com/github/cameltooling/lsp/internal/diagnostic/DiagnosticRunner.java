@@ -10,13 +10,21 @@
  ******************************************************************************/
 package com.github.cameltooling.lsp.internal.diagnostic;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 
+import org.apache.camel.catalog.CamelCatalog;
+import org.apache.camel.catalog.ConfigurationPropertiesValidationResult;
 import org.apache.camel.catalog.EndpointValidationResult;
 import org.apache.camel.parser.model.CamelEndpointDetails;
 import org.eclipse.lsp4j.Diagnostic;
+import org.eclipse.lsp4j.DidChangeTextDocumentParams;
+import org.eclipse.lsp4j.DidOpenTextDocumentParams;
+import org.eclipse.lsp4j.DidSaveTextDocumentParams;
 import org.eclipse.lsp4j.PublishDiagnosticsParams;
+import org.eclipse.lsp4j.TextDocumentItem;
 
 import com.github.cameltooling.lsp.internal.CamelLanguageServer;
 
@@ -24,23 +32,52 @@ import com.github.cameltooling.lsp.internal.CamelLanguageServer;
  * @author lheinema
  */
 public class DiagnosticRunner {
-	
-	private DiagnosticService diagnosticServer;
+
 	private CamelLanguageServer camelLanguageServer;
-	private String camelText;
-	private String uri;
-	
-	public DiagnosticRunner(DiagnosticService diagnosticServer, CamelLanguageServer camelLanguageServer, String camelText, String uri) {
-		this.diagnosticServer = diagnosticServer;
+	private EndpointDiagnosticService endpointDiagnosticService;
+	private ConfigurationPropertiesDiagnosticService configurationPropertiesDiagnosticService;
+
+	public DiagnosticRunner(CompletableFuture<CamelCatalog> camelCatalog, CamelLanguageServer camelLanguageServer) {
 		this.camelLanguageServer = camelLanguageServer;
-		this.camelText = camelText;
-		this.uri = uri;
-		calculate();
+		endpointDiagnosticService = new EndpointDiagnosticService(camelCatalog);
+		configurationPropertiesDiagnosticService = new ConfigurationPropertiesDiagnosticService(camelCatalog);
 	}
-	
-	private void calculate() {
-		Map<CamelEndpointDetails, EndpointValidationResult> endpointErrors = diagnosticServer.computeCamelEndpointErrors(camelText, uri);
-		List<Diagnostic> diagnostics = diagnosticServer.converToLSPDiagnostics(camelText, endpointErrors, camelLanguageServer.getTextDocumentService().getOpenedDocument(uri));
-		camelLanguageServer.getClient().publishDiagnostics(new PublishDiagnosticsParams(uri, diagnostics));
+
+	public void compute(DidSaveTextDocumentParams params) {
+		String camelText = retrieveFullText(params);
+		computeDiagnostics(camelText, params.getTextDocument().getUri());
+	}
+
+	public void compute(DidChangeTextDocumentParams params) {
+		String camelText = params.getContentChanges().get(0).getText();
+		computeDiagnostics(camelText, params.getTextDocument().getUri());
+	}
+
+	public void compute(DidOpenTextDocumentParams params) {
+		String camelText = params.getTextDocument().getText();
+		computeDiagnostics(camelText, params.getTextDocument().getUri());
+	}
+
+	public void computeDiagnostics(String camelText, String uri) {
+		CompletableFuture.runAsync(() -> {
+			Map<CamelEndpointDetails, EndpointValidationResult> endpointErrors = endpointDiagnosticService.computeCamelEndpointErrors(camelText, uri);
+			TextDocumentItem openedDocument = camelLanguageServer.getTextDocumentService().getOpenedDocument(uri);
+			List<Diagnostic> diagnostics = endpointDiagnosticService.converToLSPDiagnostics(camelText, endpointErrors, openedDocument);
+			Map<String, ConfigurationPropertiesValidationResult> configurationPropertiesErrors = configurationPropertiesDiagnosticService.computeCamelConfigurationPropertiesErrors(camelText, uri);
+			diagnostics.addAll(configurationPropertiesDiagnosticService.converToLSPDiagnostics(configurationPropertiesErrors));
+			camelLanguageServer.getClient().publishDiagnostics(new PublishDiagnosticsParams(uri, diagnostics));
+		});
+	}
+
+	private String retrieveFullText(DidSaveTextDocumentParams params) {
+		String camelText = params.getText();
+		if (camelText == null) {
+			camelText = camelLanguageServer.getTextDocumentService().getOpenedDocument(params.getTextDocument().getUri()).getText();
+		}
+		return camelText;
+	}
+
+	public void clear(String uri) {
+		camelLanguageServer.getClient().publishDiagnostics(new PublishDiagnosticsParams(uri, Collections.emptyList()));
 	}
 }
