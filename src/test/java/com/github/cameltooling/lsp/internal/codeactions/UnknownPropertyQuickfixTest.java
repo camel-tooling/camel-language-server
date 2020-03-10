@@ -109,6 +109,23 @@ public class UnknownPropertyQuickfixTest extends AbstractCamelLanguageServerTest
 		checkRetrievedCodeAction(textDocumentIdentifier, diagnostic, codeActions);
 	}
 	
+	@Test
+	public void testNoErrorWithDiagnosticWithoutCode() throws FileNotFoundException, InterruptedException, ExecutionException {
+		TextDocumentIdentifier textDocumentIdentifier = initAnLaunchDiagnostic();
+		
+		Diagnostic diagnostic = lastPublishedDiagnostics.getDiagnostics().get(0);
+	
+		List<Diagnostic> diagnostics = new ArrayList<Diagnostic>();
+		Diagnostic diagnosticWithoutCode = new Diagnostic(new Range(new Position(9,33), new Position(9,37)), "a different diagnostic coming without code.");
+		diagnostics.add(diagnosticWithoutCode);
+		diagnostics.addAll(lastPublishedDiagnostics.getDiagnostics());
+		
+		CodeActionContext context = new CodeActionContext(diagnostics, Collections.singletonList(CodeActionKind.QuickFix));
+		CompletableFuture<List<Either<Command,CodeAction>>> codeActions = camelLanguageServer.getTextDocumentService().codeAction(new CodeActionParams(textDocumentIdentifier, diagnostic.getRange(), context));
+		
+		checkRetrievedCodeAction(textDocumentIdentifier, diagnostic, codeActions);
+	}
+	
 	private void checkRetrievedCodeAction(TextDocumentIdentifier textDocumentIdentifier, Diagnostic diagnostic, CompletableFuture<List<Either<Command, CodeAction>>> codeActions)
 			throws InterruptedException, ExecutionException {
 		assertThat(codeActions.get()).hasSize(1);

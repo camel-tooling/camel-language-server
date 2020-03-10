@@ -37,6 +37,7 @@ import java.util.stream.Collectors;
 import org.eclipse.lsp4j.CompletionItem;
 import org.eclipse.lsp4j.CompletionList;
 import org.eclipse.lsp4j.CompletionParams;
+import org.eclipse.lsp4j.DefinitionParams;
 import org.eclipse.lsp4j.DidOpenTextDocumentParams;
 import org.eclipse.lsp4j.DocumentSymbol;
 import org.eclipse.lsp4j.DocumentSymbolParams;
@@ -54,7 +55,6 @@ import org.eclipse.lsp4j.ShowMessageRequestParams;
 import org.eclipse.lsp4j.SymbolInformation;
 import org.eclipse.lsp4j.TextDocumentIdentifier;
 import org.eclipse.lsp4j.TextDocumentItem;
-import org.eclipse.lsp4j.TextDocumentPositionParams;
 import org.eclipse.lsp4j.TextEdit;
 import org.eclipse.lsp4j.jsonrpc.messages.Either;
 import org.eclipse.lsp4j.services.LanguageClient;
@@ -214,7 +214,7 @@ public abstract class AbstractCamelLanguageServerTest {
 	
 	protected CompletableFuture<Either<List<? extends Location>,List<? extends LocationLink>>> getDefinitionsFor(CamelLanguageServer camelLanguageServer, Position position) {
 		TextDocumentService textDocumentService = camelLanguageServer.getTextDocumentService();
-		TextDocumentPositionParams params = new TextDocumentPositionParams();
+		DefinitionParams params = new DefinitionParams();
 		params.setPosition(position);
 		params.setTextDocument(new TextDocumentIdentifier(DUMMY_URI+extensionUsed));
 		return textDocumentService.definition(params);
