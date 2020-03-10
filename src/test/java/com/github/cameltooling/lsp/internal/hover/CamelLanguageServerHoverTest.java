@@ -21,9 +21,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.util.concurrent.CompletableFuture;
 
 import org.eclipse.lsp4j.Hover;
+import org.eclipse.lsp4j.HoverParams;
 import org.eclipse.lsp4j.Position;
 import org.eclipse.lsp4j.TextDocumentIdentifier;
-import org.eclipse.lsp4j.TextDocumentPositionParams;
 import org.junit.jupiter.api.Test;
 
 import com.github.cameltooling.lsp.internal.AbstractCamelLanguageServerTest;
@@ -36,8 +36,8 @@ public class CamelLanguageServerHoverTest extends AbstractCamelLanguageServerTes
 	public void testProvideDocumentationOnHover() throws Exception {
 		CamelLanguageServer camelLanguageServer = initializeLanguageServer("<from uri=\"ahc:httpUri\" xmlns=\"http://camel.apache.org/schema/spring\"></from>\n");
 		
-		TextDocumentPositionParams position = new TextDocumentPositionParams(new TextDocumentIdentifier(DUMMY_URI+".xml"), new Position(0, 13));
-		CompletableFuture<Hover> hover = camelLanguageServer.getTextDocumentService().hover(position);
+		HoverParams hoverParams = new HoverParams(new TextDocumentIdentifier(DUMMY_URI+".xml"), new Position(0, 13));
+		CompletableFuture<Hover> hover = camelLanguageServer.getTextDocumentService().hover(hoverParams);
 		
 		assertThat(hover.get().getContents().getLeft().get(0).getLeft()).isEqualTo(AHC_DOCUMENTATION);
 	}
@@ -46,8 +46,8 @@ public class CamelLanguageServerHoverTest extends AbstractCamelLanguageServerTes
 	public void testProvideDocumentationOnHoverWithCamelPrefix() throws Exception {
 		CamelLanguageServer camelLanguageServer = initializeLanguageServer("<camel:from uri=\"ahc:httpUri\" xmlns:camel=\"http://camel.apache.org/schema/spring\"></camel:from>\n");
 		
-		TextDocumentPositionParams position = new TextDocumentPositionParams(new TextDocumentIdentifier(DUMMY_URI+".xml"), new Position(0, 19));
-		CompletableFuture<Hover> hover = camelLanguageServer.getTextDocumentService().hover(position);
+		HoverParams hoverParams = new HoverParams(new TextDocumentIdentifier(DUMMY_URI+".xml"), new Position(0, 19));
+		CompletableFuture<Hover> hover = camelLanguageServer.getTextDocumentService().hover(hoverParams);
 		
 		assertThat(hover.get().getContents().getLeft().get(0).getLeft()).isEqualTo(AHC_DOCUMENTATION);
 	}
@@ -59,8 +59,8 @@ public class CamelLanguageServerHoverTest extends AbstractCamelLanguageServerTes
 				+ "from(\"ahc:httpUri\")",
 				".java");
 		
-		TextDocumentPositionParams position = new TextDocumentPositionParams(new TextDocumentIdentifier(DUMMY_URI+".java"), new Position(1, 7));
-		CompletableFuture<Hover> hover = camelLanguageServer.getTextDocumentService().hover(position);
+		HoverParams hoverParams = new HoverParams(new TextDocumentIdentifier(DUMMY_URI+".java"), new Position(1, 7));
+		CompletableFuture<Hover> hover = camelLanguageServer.getTextDocumentService().hover(hoverParams);
 		
 		assertThat(hover.get().getContents().getLeft().get(0).getLeft()).isEqualTo(AHC_DOCUMENTATION);
 	}
@@ -69,8 +69,8 @@ public class CamelLanguageServerHoverTest extends AbstractCamelLanguageServerTes
 	public void testDontProvideDocumentationOnHoverForBadPlaces() throws Exception {
 		CamelLanguageServer camelLanguageServer = initializeLanguageServer("<from uri=\"ahc:httpUri\" xmlns=\"http://camel.apache.org/schema/spring\"></from>\n");
 		
-		TextDocumentPositionParams position = new TextDocumentPositionParams(new TextDocumentIdentifier(DUMMY_URI+".xml"), new Position(0, 4));
-		CompletableFuture<Hover> hover = camelLanguageServer.getTextDocumentService().hover(position);
+		HoverParams hoverParams = new HoverParams(new TextDocumentIdentifier(DUMMY_URI+".xml"), new Position(0, 4));
+		CompletableFuture<Hover> hover = camelLanguageServer.getTextDocumentService().hover(hoverParams);
 		
 		assertThat(hover.get()).isNull();
 	}
@@ -79,8 +79,8 @@ public class CamelLanguageServerHoverTest extends AbstractCamelLanguageServerTes
 	public void testDontProvideDocumentationOnHoverWhenEndingWithAnd() throws Exception {
 		CamelLanguageServer camelLanguageServer = initializeLanguageServer("<from uri=\"ahc:httpUri?test=test&\" xmlns=\"http://camel.apache.org/schema/spring\"></from>\n");
 		
-		TextDocumentPositionParams position = new TextDocumentPositionParams(new TextDocumentIdentifier(DUMMY_URI+".xml"), new Position(0, 15));
-		CompletableFuture<Hover> hover = camelLanguageServer.getTextDocumentService().hover(position);
+		HoverParams hoverParams = new HoverParams(new TextDocumentIdentifier(DUMMY_URI+".xml"), new Position(0, 15));
+		CompletableFuture<Hover> hover = camelLanguageServer.getTextDocumentService().hover(hoverParams);
 		
 		assertThat(hover.get()).isNull();
 	}
@@ -99,8 +99,8 @@ public class CamelLanguageServerHoverTest extends AbstractCamelLanguageServerTes
 	public void testProvideParameterDocumentationOnHover() throws Exception {
 		CamelLanguageServer camelLanguageServer = initializeLanguageServer("<from uri=\"file:bla?filter=test\" xmlns=\"http://camel.apache.org/schema/spring\"></from>\n");
 		
-		TextDocumentPositionParams position = new TextDocumentPositionParams(new TextDocumentIdentifier(DUMMY_URI+".xml"), new Position(0, 26));
-		CompletableFuture<Hover> hover = camelLanguageServer.getTextDocumentService().hover(position);
+		HoverParams hoverParams = new HoverParams(new TextDocumentIdentifier(DUMMY_URI+".xml"), new Position(0, 26));
+		CompletableFuture<Hover> hover = camelLanguageServer.getTextDocumentService().hover(hoverParams);
 		
 		assertThat(hover.get().getContents().getLeft().get(0).getLeft()).isEqualTo(FILE_FILTER_DOCUMENTATION);		
 	}
@@ -109,8 +109,8 @@ public class CamelLanguageServerHoverTest extends AbstractCamelLanguageServerTes
 	public void testProvideParameterDocumentationForUnknownParamOnHover() throws Exception {
 		CamelLanguageServer camelLanguageServer = initializeLanguageServer("<from uri=\"file:bla?test=test\" xmlns=\"http://camel.apache.org/schema/spring\"></from>\n");
 		
-		TextDocumentPositionParams position = new TextDocumentPositionParams(new TextDocumentIdentifier(DUMMY_URI+".xml"), new Position(0, 26));
-		CompletableFuture<Hover> hover = camelLanguageServer.getTextDocumentService().hover(position);
+		HoverParams hoverParams = new HoverParams(new TextDocumentIdentifier(DUMMY_URI+".xml"), new Position(0, 26));
+		CompletableFuture<Hover> hover = camelLanguageServer.getTextDocumentService().hover(hoverParams);
 		
 		assertThat(hover.get().getContents().getLeft().get(0).getLeft()).isEqualTo(String.format(OptionParamURIInstance.INVALID_URI_OPTION, "test"));		
 	}
@@ -119,8 +119,8 @@ public class CamelLanguageServerHoverTest extends AbstractCamelLanguageServerTes
 	public void testProvideSyntaxForPathParameterOnHover() throws Exception {
 		CamelLanguageServer camelLanguageServer = initializeLanguageServer("<from uri=\"kafka:fl\" xmlns=\"http://camel.apache.org/schema/spring\"></from>\n");
 		
-		TextDocumentPositionParams position = new TextDocumentPositionParams(new TextDocumentIdentifier(DUMMY_URI+".xml"), new Position(0, 19));
-		CompletableFuture<Hover> hover = camelLanguageServer.getTextDocumentService().hover(position);
+		HoverParams hoverParams = new HoverParams(new TextDocumentIdentifier(DUMMY_URI+".xml"), new Position(0, 19));
+		CompletableFuture<Hover> hover = camelLanguageServer.getTextDocumentService().hover(hoverParams);
 		
 		assertThat(hover.get().getContents().getLeft().get(0).getLeft()).isEqualTo(KAFKA_SYNTAX_HOVER);		
 	}
@@ -129,8 +129,8 @@ public class CamelLanguageServerHoverTest extends AbstractCamelLanguageServerTes
 	public void testProvideSyntaxForEmptyPathParameterOnHover() throws Exception {
 		CamelLanguageServer camelLanguageServer = initializeLanguageServer("<from uri=\"kafka:\" xmlns=\"http://camel.apache.org/schema/spring\"></from>\n");
 		
-		TextDocumentPositionParams position = new TextDocumentPositionParams(new TextDocumentIdentifier(DUMMY_URI+".xml"), new Position(0, 17));
-		CompletableFuture<Hover> hover = camelLanguageServer.getTextDocumentService().hover(position);
+		HoverParams hoverParams = new HoverParams(new TextDocumentIdentifier(DUMMY_URI+".xml"), new Position(0, 17));
+		CompletableFuture<Hover> hover = camelLanguageServer.getTextDocumentService().hover(hoverParams);
 		
 		assertThat(hover.get().getContents().getLeft().get(0).getLeft()).isEqualTo(KAFKA_SYNTAX_HOVER);
 	}

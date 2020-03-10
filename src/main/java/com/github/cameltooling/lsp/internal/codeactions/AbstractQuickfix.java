@@ -55,7 +55,7 @@ public abstract class AbstractQuickfix {
 		List<Diagnostic> diagnostics = params.getContext().getDiagnostics();
 		List<Either<Command, CodeAction>> res = new ArrayList<>();
 		for(Diagnostic diagnostic : diagnostics) {
-			if(getDiagnosticId().equals(diagnostic.getCode())) {
+			if(diagnostic.getCode()!= null && getDiagnosticId().equals(diagnostic.getCode().getLeft())) {
 				CharSequence currentValueInError = retrieveCurrentErrorValue(openedDocument, diagnostic);
 				if(currentValueInError != null) {
 					List<String> possibleProperties = retrievePossibleValues(openedDocument, camelTextDocumentService.getCamelCatalog(), diagnostic.getRange().getStart());

@@ -37,27 +37,30 @@ import org.eclipse.lsp4j.Command;
 import org.eclipse.lsp4j.CompletionItem;
 import org.eclipse.lsp4j.CompletionList;
 import org.eclipse.lsp4j.CompletionParams;
+import org.eclipse.lsp4j.DefinitionParams;
 import org.eclipse.lsp4j.DidChangeTextDocumentParams;
 import org.eclipse.lsp4j.DidCloseTextDocumentParams;
 import org.eclipse.lsp4j.DidOpenTextDocumentParams;
 import org.eclipse.lsp4j.DidSaveTextDocumentParams;
 import org.eclipse.lsp4j.DocumentFormattingParams;
 import org.eclipse.lsp4j.DocumentHighlight;
+import org.eclipse.lsp4j.DocumentHighlightParams;
 import org.eclipse.lsp4j.DocumentOnTypeFormattingParams;
 import org.eclipse.lsp4j.DocumentRangeFormattingParams;
 import org.eclipse.lsp4j.DocumentSymbol;
 import org.eclipse.lsp4j.DocumentSymbolParams;
 import org.eclipse.lsp4j.Hover;
+import org.eclipse.lsp4j.HoverParams;
 import org.eclipse.lsp4j.Location;
 import org.eclipse.lsp4j.LocationLink;
 import org.eclipse.lsp4j.ReferenceParams;
 import org.eclipse.lsp4j.RenameParams;
 import org.eclipse.lsp4j.SignatureHelp;
+import org.eclipse.lsp4j.SignatureHelpParams;
 import org.eclipse.lsp4j.SymbolInformation;
 import org.eclipse.lsp4j.TextDocumentContentChangeEvent;
 import org.eclipse.lsp4j.TextDocumentIdentifier;
 import org.eclipse.lsp4j.TextDocumentItem;
-import org.eclipse.lsp4j.TextDocumentPositionParams;
 import org.eclipse.lsp4j.TextEdit;
 import org.eclipse.lsp4j.WorkspaceEdit;
 import org.eclipse.lsp4j.jsonrpc.messages.Either;
@@ -134,20 +137,20 @@ public class CamelTextDocumentService implements TextDocumentService {
 	}
 
 	@Override
-	public CompletableFuture<Hover> hover(TextDocumentPositionParams position) {
-		LOGGER.info("hover: {}", position.getTextDocument());
-		TextDocumentItem textDocumentItem = openedDocuments.get(position.getTextDocument().getUri());
-		return new HoverProcessor(textDocumentItem, getCamelCatalog()).getHover(position.getPosition());
+	public CompletableFuture<Hover> hover(HoverParams hoverParams) {
+		LOGGER.info("hover: {}", hoverParams.getTextDocument());
+		TextDocumentItem textDocumentItem = openedDocuments.get(hoverParams.getTextDocument().getUri());
+		return new HoverProcessor(textDocumentItem, getCamelCatalog()).getHover(hoverParams.getPosition());
 	}
 
 	@Override
-	public CompletableFuture<SignatureHelp> signatureHelp(TextDocumentPositionParams position) {
-		LOGGER.info("signatureHelp: {}", position.getTextDocument());
+	public CompletableFuture<SignatureHelp> signatureHelp(SignatureHelpParams signatureHelpParams) {
+		LOGGER.info("signatureHelp: {}", signatureHelpParams.getTextDocument());
 		return CompletableFuture.completedFuture(null);
 	}
 
 	@Override
-	public CompletableFuture<Either<List<? extends Location>, List<? extends LocationLink>>> definition(TextDocumentPositionParams params) {
+	public CompletableFuture<Either<List<? extends Location>, List<? extends LocationLink>>> definition(DefinitionParams params) {
 		TextDocumentIdentifier textDocument = params.getTextDocument();
 		LOGGER.info("definition: {}", textDocument);
 		TextDocumentItem textDocumentItem = openedDocuments.get(textDocument.getUri());
@@ -161,7 +164,7 @@ public class CamelTextDocumentService implements TextDocumentService {
 	}
 
 	@Override
-	public CompletableFuture<List<? extends DocumentHighlight>> documentHighlight(TextDocumentPositionParams position) {
+	public CompletableFuture<List<? extends DocumentHighlight>> documentHighlight(DocumentHighlightParams position) {
 		LOGGER.info("documentHighlight: {}", position.getTextDocument());
 		return CompletableFuture.completedFuture(Collections.emptyList());
 	}
