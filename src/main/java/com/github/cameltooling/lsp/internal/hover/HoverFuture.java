@@ -37,10 +37,14 @@ public class HoverFuture implements Function<CamelCatalog, Hover> {
 
 	@Override
 	public Hover apply(CamelCatalog camelCatalog) {
-		Hover hover = new Hover();
-		ComponentModel componentModel = ModelHelper.generateComponentModel(camelCatalog.componentJSonSchema(uriElement.getComponentName()), true);
-		hover.setContents(Collections.singletonList((Either.forLeft(uriElement.getDescription(componentModel)))));
-		return hover;
+		String componentJSonSchema = camelCatalog.componentJSonSchema(uriElement.getComponentName());
+		if (componentJSonSchema != null) {
+			Hover hover = new Hover();
+			ComponentModel componentModel = ModelHelper.generateComponentModel(componentJSonSchema, true);
+			hover.setContents(Collections.singletonList((Either.forLeft(uriElement.getDescription(componentModel)))));
+			return hover;
+		}
+		return null;
 	}
 
 }
