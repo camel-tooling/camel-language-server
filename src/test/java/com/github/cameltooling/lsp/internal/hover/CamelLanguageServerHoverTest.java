@@ -89,8 +89,8 @@ public class CamelLanguageServerHoverTest extends AbstractCamelLanguageServerTes
 	public void testDontProvideDocumentationOnUnknownComponent() throws Exception {
 		CamelLanguageServer camelLanguageServer = initializeLanguageServer("<from uri=\"unknowncomponent:\" xmlns=\"http://camel.apache.org/schema/spring\"></from>\n");
 		
-		TextDocumentPositionParams position = new TextDocumentPositionParams(new TextDocumentIdentifier(DUMMY_URI+".xml"), new Position(0, 15));
-		CompletableFuture<Hover> hover = camelLanguageServer.getTextDocumentService().hover(position);
+		HoverParams hoverParams = new HoverParams(new TextDocumentIdentifier(DUMMY_URI+".xml"), new Position(0, 15));
+		CompletableFuture<Hover> hover = camelLanguageServer.getTextDocumentService().hover(hoverParams);
 		
 		assertThat(hover.get()).isNull();
 	}
