@@ -102,6 +102,8 @@ public class ParserXMLFileHelper extends ParserFileHelper {
 	private boolean hasElementFromCamelNamespace(TextDocumentItem textDocumentItem) throws SAXException, IOException, ParserConfigurationException {
 		DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 		dbf.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
+		dbf.setAttribute(XMLConstants.ACCESS_EXTERNAL_DTD, "");
+		dbf.setAttribute(XMLConstants.ACCESS_EXTERNAL_SCHEMA, "");
 		dbf.setNamespaceAware(true);
 		Document xmlParsed = dbf.newDocumentBuilder().parse(new ByteArrayInputStream(textDocumentItem.getText().getBytes(StandardCharsets.UTF_8)));
 		Set<String> interestingCamelNodeType = new HashSet<>(CAMEL_POSSIBLE_TYPES);
