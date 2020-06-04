@@ -40,7 +40,7 @@ public class CamelCatalogVersionTest extends AbstractCamelLanguageServerTest {
 	public void testCompletionWithAnotherCatalog2xVersionLoaded() throws Exception {
 		camelCatalogVersion = "2.23.4";
 		
-		CamelLanguageServer camelLanguageServer = basicCompletionCheck();
+		CamelLanguageServer camelLanguageServer = basicCompletionCheckBefore3_3();
 		
 		checkLoadedCamelCatalogVersion(camelLanguageServer, camelCatalogVersion);
 	}
@@ -49,7 +49,7 @@ public class CamelCatalogVersionTest extends AbstractCamelLanguageServerTest {
 	public void testCompletionWithCatalog3xVersionLoaded() throws Exception {
 		camelCatalogVersion = "3.0.0-RC3";
 		
-		CamelLanguageServer camelLanguageServer = basicCompletionCheck();
+		CamelLanguageServer camelLanguageServer = basicCompletionCheckBefore3_3();
 		
 		checkLoadedCamelCatalogVersion(camelLanguageServer, camelCatalogVersion);
 	}
@@ -58,7 +58,7 @@ public class CamelCatalogVersionTest extends AbstractCamelLanguageServerTest {
 	public void testUpdateOfConfig() throws Exception {
 		camelCatalogVersion = "3.0.0-RC3";
 		
-		CamelLanguageServer camelLanguageServer = basicCompletionCheck();
+		CamelLanguageServer camelLanguageServer = basicCompletionCheckBefore3_3();
 		
 		assertThat(camelLanguageServer.getTextDocumentService().getCamelCatalog().get().getLoadedVersion()).isEqualTo(camelCatalogVersion);
 		
@@ -83,9 +83,17 @@ public class CamelCatalogVersionTest extends AbstractCamelLanguageServerTest {
 	}
 	
 	private CamelLanguageServer basicCompletionCheck() throws URISyntaxException, InterruptedException, ExecutionException {
+		return basicCompletionCheck(createExpectedAhcCompletionItem(0, 11, 0, 11));
+	}
+
+	private CamelLanguageServer basicCompletionCheckBefore3_3() throws URISyntaxException, InterruptedException, ExecutionException {
+		return basicCompletionCheck(createExpectedAhcCompletionItemForVersionPriorTo33(0, 11, 0, 11));
+	}
+	
+	private CamelLanguageServer basicCompletionCheck(CompletionItem expectedCompletionItem) throws URISyntaxException, InterruptedException, ExecutionException {
 		CamelLanguageServer camelLanguageServer = initializeLanguageServer("<from uri=\"\" xmlns=\"http://camel.apache.org/schema/blueprint\"></from>\n");
 		CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = getCompletionFor(camelLanguageServer, new Position(0, 11));
-		assertThat(completions.get().getLeft()).contains(createExpectedAhcCompletionItem(0, 11, 0, 11));
+		assertThat(completions.get().getLeft()).contains(expectedCompletionItem);
 		return camelLanguageServer;
 	}
 	

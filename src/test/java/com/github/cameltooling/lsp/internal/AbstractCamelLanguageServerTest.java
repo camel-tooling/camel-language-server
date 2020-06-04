@@ -66,7 +66,8 @@ import com.google.gson.Gson;
 public abstract class AbstractCamelLanguageServerTest {
 
 	protected static final String KAFKA_SYNTAX_HOVER = "kafka:topic";
-	protected static final String AHC_DOCUMENTATION = "To call external HTTP services using Async Http Client.";
+	protected static final String AHC_DOCUMENTATION_BEFORE_3_3 = "To call external HTTP services using Async Http Client.";
+	protected static final String AHC_DOCUMENTATION = "Call external HTTP services using Async Http Client.";
 	protected static final String FILE_FILTER_DOCUMENTATION = "Pluggable filter as a org.apache.camel.component.file.GenericFileFilter class. Will skip files if filter returns false in its accept() method.";
 	protected static final String DUMMY_URI = "dummyUri";
 	private String extensionUsed;
@@ -89,6 +90,12 @@ public abstract class AbstractCamelLanguageServerTest {
 		expectedAhcCompletioncompletionItem.setDocumentation(AHC_DOCUMENTATION);
 		expectedAhcCompletioncompletionItem.setDeprecated(false);
 		expectedAhcCompletioncompletionItem.setTextEdit(new TextEdit(new Range(new Position(lineStart, characterStart), new Position(lineEnd, characterEnd)), "ahc:httpUri"));
+		return expectedAhcCompletioncompletionItem;
+	}
+	
+	protected CompletionItem createExpectedAhcCompletionItemForVersionPriorTo33(int lineStart, int characterStart, int lineEnd, int characterEnd) {
+		CompletionItem expectedAhcCompletioncompletionItem = createExpectedAhcCompletionItem(lineStart, characterStart, lineEnd, characterEnd);
+		expectedAhcCompletioncompletionItem.setDocumentation(AHC_DOCUMENTATION_BEFORE_3_3);
 		return expectedAhcCompletioncompletionItem;
 	}
 	
