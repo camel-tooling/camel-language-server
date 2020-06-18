@@ -43,14 +43,14 @@ public class CamelDiagnosticTest extends AbstractDiagnosticTest {
 	public void testValidationError() throws Exception {
 		testDiagnostic("camel-with-endpoint-error", 1, ".xml");
 		Range range = lastPublishedDiagnostics.getDiagnostics().get(0).getRange();
-		checkRange(range, 8, 16, 8, 39);
+		checkRange(range, 8, 16, 8, 45);
 	}
 	
 	@Test
 	public void testValidationErrorWithNamespacePrefix() throws Exception {
 		testDiagnostic("camel-with-endpoint-error-withNamespacePrefix", 1, ".xml");
 		Range range = lastPublishedDiagnostics.getDiagnostics().get(0).getRange();
-		checkRange(range, 8, 25, 8, 48);
+		checkRange(range, 8, 25, 8, 54);
 	}
 	
 	@Test
@@ -62,7 +62,7 @@ public class CamelDiagnosticTest extends AbstractDiagnosticTest {
 	public void testValidationForNonFirstParameters() throws Exception {
 		testDiagnostic("camel-with-endpoint-error-on-second-parameter", 1, ".xml");
 		Range range = lastPublishedDiagnostics.getDiagnostics().get(0).getRange();
-		checkRange(range, 8, 16, 8, 61);
+		checkRange(range, 8, 16, 8, 64);
 	}
 	
 	@Test
@@ -73,6 +73,12 @@ public class CamelDiagnosticTest extends AbstractDiagnosticTest {
 	@Test
 	public void testInvalidInteger() throws Exception {
 		testDiagnostic("camel-with-endpoint-integer-error", 1, ".xml");
+	}
+	
+	@Test
+	@Disabled("Disabled due to regression in Camel 3.4.0 - see https://issues.apache.org/jira/browse/CAMEL-15214")
+	public void testInvalidDuration() throws Exception {
+		testDiagnostic("camel-with-endpoint-duration-error", 1, ".xml");
 	}
 	
 	@Test
@@ -99,7 +105,7 @@ public class CamelDiagnosticTest extends AbstractDiagnosticTest {
 		Diagnostic diagnostic = lastPublishedDiagnostics.getDiagnostics().get(0);
 		assertThat(diagnostic.getMessage()).isNotNull();
 		Range range = diagnostic.getRange();
-		checkRange(range, 8, 16, 8, 47);
+		checkRange(range, 8, 16, 8, 50);
 	}
 	
 	@Test
@@ -116,7 +122,7 @@ public class CamelDiagnosticTest extends AbstractDiagnosticTest {
 	public void testValidationErrorForJavaFile() throws Exception {
 		testDiagnostic("camel-with-endpoint-error", 1, ".java");
 		Range range = lastPublishedDiagnostics.getDiagnostics().get(0).getRange();
-		checkRange(range, 12, 14, 12, 37);
+		checkRange(range, 12, 14, 12, 43);
 	}
 	
 	@Test

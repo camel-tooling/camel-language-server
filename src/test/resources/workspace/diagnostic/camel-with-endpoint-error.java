@@ -10,7 +10,7 @@ public class MyRouteBuilder extends RouteBuilder {
      */
     public void configure() {
 
-        from("timer:timerName?delay=p")
+        from("timer:timerName?repeatCount=p")
             .to("direct:drink");
     }
 

@@ -8,7 +8,7 @@
   <camelContext id="camel" xmlns="http://camel.apache.org/schema/spring">
     <route id="a route">
       <from uri="timer:InvalidEnumValue?exchangePattern=InvalidEnumValue"/>
-      <to uri="timer:timerName2?delay=1000"></to>
+      <to uri="timer:timerName2?repeatCount=1"></to>
     </route>
   </camelContext>
 </beans>

@@ -7,7 +7,7 @@
 
   <camelContext id="camel" xmlns="http://camel.apache.org/schema/spring">
     <route id="a route">
-      <from uri="timer:timerName?delay=1000"/>
+      <from uri="timer:timerName?repeatCount=1"/>
       <to uri="timer:timerName?${aProperty}=10"></to>
     </route>
   </camelContext>

@@ -6,9 +6,9 @@
        http://camel.apache.org/schema/spring https://camel.apache.org/schema/spring/camel-spring.xsd">
 
   <camelContext id="camel" xmlns="http://camel.apache.org/schema/spring">
-	<endpoint uri="timer:timerName?delay=p"></endpoint>
+	<endpoint uri="timer:timerName?repeatCount=p"></endpoint>
     <route id="a route">
-      <from uri="timer:timerName?delay=1000&amp;invalidOption=plop"/>
+      <from uri="timer:timerName?repeatCount=1&amp;invalidOption=plop"/>
       <to uri="direct:drink"/>
     </route>
   </camelContext>
