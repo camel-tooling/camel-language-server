@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.cameltooling.lsp.internal.completion;
+package com.github.cameltooling.lsp.internal.completion.modeline;
 
 import java.util.ArrayList;
 import java.util.List;

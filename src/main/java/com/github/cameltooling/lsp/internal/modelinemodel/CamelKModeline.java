@@ -23,7 +23,7 @@ import java.util.concurrent.CompletableFuture;
 
 import org.eclipse.lsp4j.CompletionItem;
 
-import com.github.cameltooling.lsp.internal.completion.CamelKModelineOptionNames;
+import com.github.cameltooling.lsp.internal.completion.modeline.CamelKModelineOptionNames;
 import com.github.cameltooling.lsp.internal.instancemodel.ILineRangeDefineable;
 import com.github.cameltooling.lsp.internal.parser.CamelKModelineParser;
 
@@ -101,7 +101,7 @@ public class CamelKModeline implements ILineRangeDefineable{
 		if(endOfPrefixPositionInline != -1 && character >= endOfPrefixPositionInline) {
 			for (CamelKModelineOption camelKModelineOption : options) {
 				if(camelKModelineOption.isInRange(character)) {
-					return CompletableFuture.completedFuture(Collections.emptyList());
+					return camelKModelineOption.getCompletions(character);
 				}
 			}
 			return CompletableFuture.completedFuture(CamelKModelineOptionNames.getCompletionItems());

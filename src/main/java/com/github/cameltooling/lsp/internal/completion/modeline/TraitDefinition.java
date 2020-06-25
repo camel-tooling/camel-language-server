@@ -14,29 +14,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.cameltooling.lsp.internal.completion;
+package com.github.cameltooling.lsp.internal.completion.modeline;
 
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 
 import org.eclipse.lsp4j.CompletionItem;
-import org.eclipse.lsp4j.Position;
-import org.eclipse.lsp4j.TextDocumentItem;
 
-import com.github.cameltooling.lsp.internal.modelinemodel.CamelKModeline;
-import com.github.cameltooling.lsp.internal.parser.ParserFileHelperUtil;
-
-public class CamelKModelineCompletionprocessor {
-
-	private TextDocumentItem textDocumentItem;
-
-	public CamelKModelineCompletionprocessor(TextDocumentItem textDocumentItem) {
-		this.textDocumentItem = textDocumentItem;
-	}
-
-	public CompletableFuture<List<CompletionItem>>  getCompletions(Position position) {
-		String modelineString = new ParserFileHelperUtil().getLine(textDocumentItem, 0);
-		return new CamelKModeline(modelineString).getCompletions(position.getCharacter());
+public class TraitDefinition {
+	
+	public String name;
+	public String description;
+	public boolean platform;
+	public List<String> profiles;
+	public List<TraitProperty> properties;
+	
+	public CompletionItem createCompletionItem() {
+		CompletionItem completionItem = new CompletionItem(name);
+		completionItem.setDocumentation(description);
+		return completionItem;
 	}
 
 }
