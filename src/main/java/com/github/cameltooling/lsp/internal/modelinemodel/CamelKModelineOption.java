@@ -16,6 +16,13 @@
  */
 package com.github.cameltooling.lsp.internal.modelinemodel;
 
+import java.util.Collections;
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
+
+import org.eclipse.lsp4j.CompletionItem;
+
+import com.github.cameltooling.lsp.internal.completion.modeline.CamelKTraitManager;
 import com.github.cameltooling.lsp.internal.instancemodel.ILineRangeDefineable;
 
 public class CamelKModelineOption implements ILineRangeDefineable {
@@ -56,6 +63,13 @@ public class CamelKModelineOption implements ILineRangeDefineable {
 
 	public boolean isInRange(int positionInLine) {
 		return getStartPositionInLine() <= positionInLine && getEndPositionInLine() >= positionInLine;
+	}
+
+	public CompletableFuture<List<CompletionItem>> getCompletions(int position) {
+		if("trait".equals(optionName) && getStartPositionInLine() + "trait=".length() == position) {
+			return CompletableFuture.completedFuture(CamelKTraitManager.getTraitDefinitionNameCompletionItems());
+		}
+		return CompletableFuture.completedFuture(Collections.emptyList());
 	}
 
 }
