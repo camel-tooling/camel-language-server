@@ -32,10 +32,10 @@ import org.junit.jupiter.api.Test;
 import com.github.cameltooling.lsp.internal.AbstractCamelLanguageServerTest;
 import com.github.cameltooling.lsp.internal.CamelLanguageServer;
 
-public class CamelCompletionInsertAndReplaceTest extends AbstractCamelLanguageServerTest {
+class CamelCompletionInsertAndReplaceTest extends AbstractCamelLanguageServerTest {
 
 	@Test
-	public void testComponent() throws Exception {
+	void testComponent() throws Exception {
 		CamelLanguageServer camelLanguageServer = initializeLanguageServer("<from uri=\"ahc-wss:httpUri?binding=#true&amp;bufferSize=10&amp;synchronous=true\" xmlns=\"http://camel.apache.org/schema/blueprint\"/>\n", ".xml");
 		Position positionInMiddleOfcomponentPart = new Position(0, 15);
 		CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = getCompletionFor(camelLanguageServer, positionInMiddleOfcomponentPart);
@@ -52,7 +52,7 @@ public class CamelCompletionInsertAndReplaceTest extends AbstractCamelLanguageSe
 	}
 	
 	@Test
-	public void testAttribute() throws Exception {
+	void testAttribute() throws Exception {
 		CamelLanguageServer camelLanguageServer = initializeLanguageServer("<from uri=\"ahc-wss:httpUri?binding=#true&amp;bufferSize=10&amp;synchronous=true\" xmlns=\"http://camel.apache.org/schema/blueprint\"/>\n", ".xml");
 		Position positionBeforeBufferSizeAttribute = new Position(0, 45);
 		CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = getCompletionFor(camelLanguageServer, positionBeforeBufferSizeAttribute);

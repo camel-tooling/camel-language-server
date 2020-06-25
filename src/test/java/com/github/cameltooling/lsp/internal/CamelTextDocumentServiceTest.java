@@ -31,10 +31,10 @@ import org.eclipse.lsp4j.VersionedTextDocumentIdentifier;
 import org.eclipse.lsp4j.jsonrpc.messages.Either;
 import org.junit.jupiter.api.Test;
 
-public class CamelTextDocumentServiceTest extends AbstractCamelLanguageServerTest {
+class CamelTextDocumentServiceTest extends AbstractCamelLanguageServerTest {
 	
 	@Test
-	public void testChangeEventUpdatesStoredText() throws Exception {
+	void testChangeEventUpdatesStoredText() throws Exception {
 		CamelLanguageServer camelLanguageServer = initializeLanguageServer("<to uri=\"\" xmlns=\"http://camel.apache.org/schema/blueprint\"></to>\n");
 		
 		DidChangeTextDocumentParams changeEvent = new DidChangeTextDocumentParams();

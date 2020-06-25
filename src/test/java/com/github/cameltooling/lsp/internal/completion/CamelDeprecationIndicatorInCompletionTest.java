@@ -31,10 +31,10 @@ import org.junit.jupiter.api.Test;
 import com.github.cameltooling.lsp.internal.AbstractCamelLanguageServerTest;
 import com.github.cameltooling.lsp.internal.CamelLanguageServer;
 
-public class CamelDeprecationIndicatorInCompletionTest extends AbstractCamelLanguageServerTest {
+class CamelDeprecationIndicatorInCompletionTest extends AbstractCamelLanguageServerTest {
 
 	@Test
-	public void testCamelComponentDeprecation() throws Exception {
+	void testCamelComponentDeprecation() throws Exception {
 		CamelLanguageServer camelLanguageServer = initializeLanguageServer("<from uri=\"acomponent:deprecated\" xmlns=\"http://camel.apache.org/schema/blueprint\"></from>\n");
 		CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = getCompletionFor(camelLanguageServer, new Position(0, 15));
 		List<CompletionItem> items = completions.get().getLeft();
@@ -43,7 +43,7 @@ public class CamelDeprecationIndicatorInCompletionTest extends AbstractCamelLang
 	}
 	
 	@Test
-	public void testParameterDeprecation() throws Exception {
+	void testParameterDeprecation() throws Exception {
 		CamelLanguageServer camelLanguageServer = initializeLanguageServer("<from uri=\"acomponent:withsyntax?aparam\" xmlns=\"http://camel.apache.org/schema/blueprint\"></from>\n");
 		CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = getCompletionFor(camelLanguageServer, new Position(0, 39));
 		List<CompletionItem> items = completions.get().getLeft();

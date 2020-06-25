@@ -31,7 +31,7 @@ import org.eclipse.lsp4j.TextEdit;
 import org.eclipse.lsp4j.jsonrpc.messages.Either;
 import org.junit.jupiter.api.Test;
 
-public class CamelExtraComponentTest extends AbstractCamelLanguageServerTest {
+class CamelExtraComponentTest extends AbstractCamelLanguageServerTest {
 	
 	@Test
 	void testAddExtraComponentToCatalog() throws Exception {
@@ -41,7 +41,7 @@ public class CamelExtraComponentTest extends AbstractCamelLanguageServerTest {
 	}
 
 	@Test
-	public void testUpdateOfConfig() throws Exception {
+	void testUpdateOfConfig() throws Exception {
 		CamelLanguageServer camelLanguageServer = initializeLanguageServer("<from uri=\"\" xmlns=\"http://camel.apache.org/schema/blueprint\"></from>\n");
 		CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = getCompletionFor(camelLanguageServer, new Position(0, 11));
 		assertThat(completions.get().getLeft()).contains(createBasicExpectedCompletionItem());

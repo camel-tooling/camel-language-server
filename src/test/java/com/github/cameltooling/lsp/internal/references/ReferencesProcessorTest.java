@@ -31,7 +31,7 @@ import org.junit.jupiter.api.Test;
 import com.github.cameltooling.lsp.internal.AbstractCamelLanguageServerTest;
 import com.github.cameltooling.lsp.internal.CamelLanguageServer;
 
-public class ReferencesProcessorTest extends AbstractCamelLanguageServerTest {
+class ReferencesProcessorTest extends AbstractCamelLanguageServerTest {
 
 	private static final String SINGLE_REFERENCE = "  <camelContext id=\"myContext\" \r\n" + 
 			"    xmlns=\"http://camel.apache.org/schema/spring\">\r\n" + 
@@ -133,7 +133,7 @@ public class ReferencesProcessorTest extends AbstractCamelLanguageServerTest {
 			"  </camelContext>";
 	
 	@Test
-	public void testRetrieveASingleDirectReferenceFor_to() throws Exception {
+	void testRetrieveASingleDirectReferenceFor_to() throws Exception {
 		Location res = testRetrieveReferences(SINGLE_REFERENCE, 1, new Position(5, 18)).get(0);
 		Range range = res.getRange();
 		assertThat(range.getStart().getLine()).isEqualTo(8);
@@ -141,7 +141,7 @@ public class ReferencesProcessorTest extends AbstractCamelLanguageServerTest {
 	}
 	
 	@Test
-	public void testRetrieveASingleDirectReferenceFor_to_whenUsingCamelNamespacePrefix() throws Exception {
+	void testRetrieveASingleDirectReferenceFor_to_whenUsingCamelNamespacePrefix() throws Exception {
 		Location res = testRetrieveReferences(SINGLE_REFERENCE_WITH_NAMESPACE_PREFIX, 1, new Position(5, 26)).get(0);
 		Range range = res.getRange();
 		assertThat(range.getStart().getLine()).isEqualTo(8);
@@ -149,7 +149,7 @@ public class ReferencesProcessorTest extends AbstractCamelLanguageServerTest {
 	}
 	
 	@Test
-	public void testRetrieveASingleDirectReferenceFor_from() throws Exception {
+	void testRetrieveASingleDirectReferenceFor_from() throws Exception {
 		Location res = testRetrieveReferences(SINGLE_REFERENCE, 1, new Position(8, 18)).get(0);
 		Range range = res.getRange();
 		assertThat(range.getStart().getLine()).isEqualTo(5);
@@ -157,27 +157,27 @@ public class ReferencesProcessorTest extends AbstractCamelLanguageServerTest {
 	}
 	
 	@Test
-	public void testRetrieveSeveralDirectReferenceFor_from() throws Exception {
+	void testRetrieveSeveralDirectReferenceFor_from() throws Exception {
 		testRetrieveReferences(SEVERAL_REFERENCES, 2, new Position(8, 18));
 	}
 	
 	@Test
-	public void testRetrieveNoReferenceWithSameFrom() throws Exception {
+	void testRetrieveNoReferenceWithSameFrom() throws Exception {
 		testRetrieveReferences(SAME_FROM, 0, new Position(4, 18));
 	}
 	
 	@Test
-	public void testRetrieveNoReferenceWithSameTo() throws Exception {
+	void testRetrieveNoReferenceWithSameTo() throws Exception {
 		testRetrieveReferences(SAME_TO, 0, new Position(5, 18));
 	}
 	
 	@Test
-	public void testFindReferencesEvenWhenThereisAnEmptyURiSomewhere() throws Exception {
+	void testFindReferencesEvenWhenThereisAnEmptyURiSomewhere() throws Exception {
 		testRetrieveReferences(SEVERAL_REFERENCES_WITH_AN_EMPTY_URI, 2, new Position(8, 18));
 	}
 	
 	@Test
-	public void testRetrieveNoReferenceWithDifferentDirectIds() throws Exception {
+	void testRetrieveNoReferenceWithDifferentDirectIds() throws Exception {
 		testRetrieveReferences(DIFFERENTIDS, 0, new Position(4, 18));
 		testRetrieveReferences(DIFFERENTIDS, 0, new Position(5, 18));
 		testRetrieveReferences(DIFFERENTIDS, 0, new Position(8, 18));

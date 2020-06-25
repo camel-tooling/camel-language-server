@@ -26,10 +26,10 @@ import com.github.cameltooling.lsp.internal.CamelLanguageServer;
 import com.github.cameltooling.lsp.internal.DummyConstants;
 import com.github.cameltooling.lsp.internal.TestLogAppender;
 
-public class ParserXMLFileHelperTest {
+class ParserXMLFileHelperTest {
 
 	@Test
-	public void testGetCamelComponentUri() throws Exception {
+	void testGetCamelComponentUri() throws Exception {
 		final TestLogAppender appender = new TestLogAppender();
 		final Logger logger = Logger.getRootLogger();
 		logger.addAppender(appender);
@@ -37,7 +37,7 @@ public class ParserXMLFileHelperTest {
 		assertThat(appender.getLog().get(0).getMessage()).isEqualTo("Encountered an unsupported URI closure char !");
 	}
 	
-	public void testGetRouteNodesWithNamespacePrefix() throws Exception {
+	void testGetRouteNodesWithNamespacePrefix() throws Exception {
 		String camel =
 				"<camel:camelContext id=\"camel\" xmlns:camel=\"http://camel.apache.org/schema/spring\">\r\n" + 
 				"\r\n" + 
@@ -61,7 +61,7 @@ public class ParserXMLFileHelperTest {
 	}
 	
 	@Test
-	public void testGetRouteNodes() throws Exception {
+	void testGetRouteNodes() throws Exception {
 		String camel =
 				"<camelContext id=\"camel\" xmlns=\"http://camel.apache.org/schema/spring\">\r\n" + 
 				"\r\n" + 

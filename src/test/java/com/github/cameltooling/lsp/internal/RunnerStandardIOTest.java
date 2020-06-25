@@ -26,19 +26,19 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class RunnerStandardIOTest {
+class RunnerStandardIOTest {
 
 	private PrintStream sysOut;
 	private final ByteArrayOutputStream outContent = new ByteArrayOutputStream();
 
 	@BeforeEach
-	public void beforeClass() {
+	void beforeClass() {
 		sysOut = System.out;
 		System.setOut(new PrintStream(outContent));
 	}
 
 	@AfterEach
-	public void afterClass() {
+	void afterClass() {
 		System.setOut(sysOut);
 	}
 

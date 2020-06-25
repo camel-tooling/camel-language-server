@@ -37,7 +37,7 @@ import com.github.cameltooling.lsp.internal.CamelLanguageServer;
 /**
  * @author lheinema
  */
-public class CamelEndpointOptionDuplicateTest extends AbstractCamelLanguageServerTest {
+class CamelEndpointOptionDuplicateTest extends AbstractCamelLanguageServerTest {
 	
     public static Stream<Arguments> data() {
     	return Stream.of(
@@ -50,7 +50,7 @@ public class CamelEndpointOptionDuplicateTest extends AbstractCamelLanguageServe
     	
 	@ParameterizedTest(name="{4} - Position ({1},{2})")
 	@MethodSource("data")
-	public void testProvideCompletionForCamelBlueprintNamespace(String textToTest, int line, int character, String testNameQualification, String excludedString) throws Exception {
+	void testProvideCompletionForCamelBlueprintNamespace(String textToTest, int line, int character, String testNameQualification, String excludedString) throws Exception {
 		CamelLanguageServer camelLanguageServer = initializeLanguageServer(textToTest);
 		
 		CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = getCompletionFor(camelLanguageServer, new Position(line, character));

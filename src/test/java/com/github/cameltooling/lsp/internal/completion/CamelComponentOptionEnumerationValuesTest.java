@@ -34,10 +34,10 @@ import org.junit.jupiter.api.Test;
 import com.github.cameltooling.lsp.internal.AbstractCamelLanguageServerTest;
 import com.github.cameltooling.lsp.internal.CamelLanguageServer;
 
-public class CamelComponentOptionEnumerationValuesTest extends AbstractCamelLanguageServerTest {
+class CamelComponentOptionEnumerationValuesTest extends AbstractCamelLanguageServerTest {
 
 	@Test
-	public void testProvideEnumValues() throws Exception {
+	void testProvideEnumValues() throws Exception {
 		testProvideCamelOptions("<from uri=\"timer:timerName?exchangePattern=\" xmlns=\"http://camel.apache.org/schema/blueprint\"></from>\n", 0, 43);
 	}
 

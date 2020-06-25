@@ -35,7 +35,7 @@ import com.github.cameltooling.lsp.internal.AbstractCamelLanguageServerTest;
 import com.github.cameltooling.lsp.internal.CamelLanguageServer;
 
 
-public class CamelEndpointUriCompletionTest extends AbstractCamelLanguageServerTest {
+class CamelEndpointUriCompletionTest extends AbstractCamelLanguageServerTest {
 	
     public static Stream<Arguments> data() {
     	return Stream.of(
@@ -126,7 +126,7 @@ public class CamelEndpointUriCompletionTest extends AbstractCamelLanguageServerT
 	
 	@ParameterizedTest(name="{4} - Position ({1},{2}) - {6} - ({0})")
 	@MethodSource("data")
-	public void testProvideCompletionForCamelBlueprintNamespace(String textToTest, int line, int character, String testNameQualification, String filterString, int expectedMinResultSetSize, String extension) throws Exception {
+	void testProvideCompletionForCamelBlueprintNamespace(String textToTest, int line, int character, String testNameQualification, String filterString, int expectedMinResultSetSize, String extension) throws Exception {
 		CamelLanguageServer camelLanguageServer = initializeLanguageServer(textToTest, extension);
 		CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = getCompletionFor(camelLanguageServer, new Position(line, character));
 		List<CompletionItem> items = completions.get().getLeft();

@@ -29,10 +29,10 @@ import com.github.cameltooling.lsp.internal.CamelLanguageServer;
 /**
  * @author lheinema
  */
-public class CompleteIdOnDirectEndpointsTest extends AbstractCamelLanguageServerTest {
+class CompleteIdOnDirectEndpointsTest extends AbstractCamelLanguageServerTest {
 	
 	@Test
-	public void testDirectEndpointCompletion() throws Exception {
+	void testDirectEndpointCompletion() throws Exception {
 		CamelLanguageServer camelLanguageServer = initializeLanguageServer(new FileInputStream("src/test/resources/workspace/direct-endpoint-test.xml"), ".xml");
 		Position positionInMiddleOfcomponentPart = new Position(9, 42);
 		CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = getCompletionFor(camelLanguageServer, positionInMiddleOfcomponentPart);
@@ -45,7 +45,7 @@ public class CompleteIdOnDirectEndpointsTest extends AbstractCamelLanguageServer
 	}
 
 	@Test
-	public void testDirectVMEndpointCompletion() throws Exception {
+	void testDirectVMEndpointCompletion() throws Exception {
 		CamelLanguageServer camelLanguageServer = initializeLanguageServer(new FileInputStream("src/test/resources/workspace/direct-endpoint-test.xml"), ".xml");
 		Position positionInMiddleOfcomponentPart = new Position(17, 45);
 		CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = getCompletionFor(camelLanguageServer, positionInMiddleOfcomponentPart);
@@ -58,7 +58,7 @@ public class CompleteIdOnDirectEndpointsTest extends AbstractCamelLanguageServer
 	}
 	
 	@Test
-	public void testVMEndpointCompletion() throws Exception {
+	void testVMEndpointCompletion() throws Exception {
 		CamelLanguageServer camelLanguageServer = initializeLanguageServer(new FileInputStream("src/test/resources/workspace/direct-endpoint-test.xml"), ".xml");
 		Position positionInMiddleOfcomponentPart = new Position(25, 39);
 		CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = getCompletionFor(camelLanguageServer, positionInMiddleOfcomponentPart);
@@ -71,7 +71,7 @@ public class CompleteIdOnDirectEndpointsTest extends AbstractCamelLanguageServer
 	}
 	
 	@Test
-	public void testSEDAEndpointCompletion() throws Exception {
+	void testSEDAEndpointCompletion() throws Exception {
 		CamelLanguageServer camelLanguageServer = initializeLanguageServer(new FileInputStream("src/test/resources/workspace/direct-endpoint-test.xml"), ".xml");
 		Position positionInMiddleOfcomponentPart = new Position(33, 41);
 		CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = getCompletionFor(camelLanguageServer, positionInMiddleOfcomponentPart);

@@ -39,10 +39,10 @@ import com.github.cameltooling.lsp.internal.AbstractCamelLanguageServerTest;
 import com.github.cameltooling.lsp.internal.CamelLanguageServer;
 import com.github.cameltooling.lsp.internal.TestLogAppender;
 
-public class DocumentSymbolProcessorTest extends AbstractCamelLanguageServerTest {
+class DocumentSymbolProcessorTest extends AbstractCamelLanguageServerTest {
 	
 	@Test
-	public void testRoutesProvidedAsDocumentSymbol() throws Exception {
+	void testRoutesProvidedAsDocumentSymbol() throws Exception {
 		String textTotest =
 				"<camelContext id=\"camel\" xmlns=\"http://camel.apache.org/schema/spring\">\r\n" + 
 				"\r\n" + 
@@ -70,7 +70,7 @@ public class DocumentSymbolProcessorTest extends AbstractCamelLanguageServerTest
 	}
 
 	@Test
-	public void testEmptyCamelContextReturnCamelContextDocumentSymbol() throws Exception {
+	void testEmptyCamelContextReturnCamelContextDocumentSymbol() throws Exception {
 		String textTotest =
 				"<camelContext id=\"camel\" xmlns=\"http://camel.apache.org/schema/spring\">\r\n" + 
 				"</camelContext>\n";
@@ -78,7 +78,7 @@ public class DocumentSymbolProcessorTest extends AbstractCamelLanguageServerTest
 	}
 	
 	@Test
-	public void test2CamelContext() throws Exception {
+	void test2CamelContext() throws Exception {
 		String textTotest =
 				"<beans xmlns=\"http://www.springframework.org/schema/beans\"\n" + 
 				"       xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n" + 
@@ -124,7 +124,7 @@ public class DocumentSymbolProcessorTest extends AbstractCamelLanguageServerTest
 	}
 	
 	@Test
-	public void testEmptyRoutes() throws Exception {
+	void testEmptyRoutes() throws Exception {
 		String textTotest =
 				"<camelContext id=\"camel\" xmlns=\"http://camel.apache.org/schema/spring\">\r\n" + 
 				"\r\n" + 
@@ -138,7 +138,7 @@ public class DocumentSymbolProcessorTest extends AbstractCamelLanguageServerTest
 	}
 	
 	@Test
-	public void testRoutesWithoutId() throws Exception {
+	void testRoutesWithoutId() throws Exception {
 		String textTotest =
 				"<camelContext id=\"camel\" xmlns=\"http://camel.apache.org/schema/spring\">\r\n" + 
 				"\r\n" + 
@@ -167,7 +167,7 @@ public class DocumentSymbolProcessorTest extends AbstractCamelLanguageServerTest
 	}
 	
 	@Test
-	public void testRoutesProvidedAsDocumentSymbolWithNamespaceprefix() throws Exception {
+	void testRoutesProvidedAsDocumentSymbolWithNamespaceprefix() throws Exception {
 		String textTotest =
 				"<camel:camelContext id=\"camel\" xmlns:camel=\"http://camel.apache.org/schema/spring\">\r\n" + 
 				"\r\n" + 
@@ -198,7 +198,7 @@ public class DocumentSymbolProcessorTest extends AbstractCamelLanguageServerTest
 	}
 	
 	@Test
-	public void testNoExceptionWithJavaFile() throws Exception {
+	void testNoExceptionWithJavaFile() throws Exception {
 		final TestLogAppender appender = new TestLogAppender();
 		final Logger logger = Logger.getRootLogger();
 		logger.addAppender(appender);

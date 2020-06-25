@@ -30,10 +30,10 @@ import com.github.cameltooling.lsp.internal.AbstractCamelLanguageServerTest;
 import com.github.cameltooling.lsp.internal.CamelLanguageServer;
 import com.github.cameltooling.lsp.internal.instancemodel.OptionParamURIInstance;
 
-public class CamelLanguageServerHoverTest extends AbstractCamelLanguageServerTest {
+class CamelLanguageServerHoverTest extends AbstractCamelLanguageServerTest {
 	
 	@Test
-	public void testProvideDocumentationOnHover() throws Exception {
+	void testProvideDocumentationOnHover() throws Exception {
 		CamelLanguageServer camelLanguageServer = initializeLanguageServer("<from uri=\"ahc:httpUri\" xmlns=\"http://camel.apache.org/schema/spring\"></from>\n");
 		
 		HoverParams hoverParams = new HoverParams(new TextDocumentIdentifier(DUMMY_URI+".xml"), new Position(0, 13));
@@ -43,7 +43,7 @@ public class CamelLanguageServerHoverTest extends AbstractCamelLanguageServerTes
 	}
 	
 	@Test
-	public void testProvideDocumentationOnHoverWithCamelPrefix() throws Exception {
+	void testProvideDocumentationOnHoverWithCamelPrefix() throws Exception {
 		CamelLanguageServer camelLanguageServer = initializeLanguageServer("<camel:from uri=\"ahc:httpUri\" xmlns:camel=\"http://camel.apache.org/schema/spring\"></camel:from>\n");
 		
 		HoverParams hoverParams = new HoverParams(new TextDocumentIdentifier(DUMMY_URI+".xml"), new Position(0, 19));
@@ -53,7 +53,7 @@ public class CamelLanguageServerHoverTest extends AbstractCamelLanguageServerTes
 	}
 	
 	@Test
-	public void testProvideDocumentationOnHoverForJava() throws Exception {
+	void testProvideDocumentationOnHoverForJava() throws Exception {
 		CamelLanguageServer camelLanguageServer = initializeLanguageServer(
 				"//camel file\n"
 				+ "from(\"ahc:httpUri\")",
@@ -66,7 +66,7 @@ public class CamelLanguageServerHoverTest extends AbstractCamelLanguageServerTes
 	}
 	
 	@Test
-	public void testDontProvideDocumentationOnHoverForBadPlaces() throws Exception {
+	void testDontProvideDocumentationOnHoverForBadPlaces() throws Exception {
 		CamelLanguageServer camelLanguageServer = initializeLanguageServer("<from uri=\"ahc:httpUri\" xmlns=\"http://camel.apache.org/schema/spring\"></from>\n");
 		
 		HoverParams hoverParams = new HoverParams(new TextDocumentIdentifier(DUMMY_URI+".xml"), new Position(0, 4));
@@ -76,7 +76,7 @@ public class CamelLanguageServerHoverTest extends AbstractCamelLanguageServerTes
 	}
 	
 	@Test
-	public void testDontProvideDocumentationOnHoverWhenEndingWithAnd() throws Exception {
+	void testDontProvideDocumentationOnHoverWhenEndingWithAnd() throws Exception {
 		CamelLanguageServer camelLanguageServer = initializeLanguageServer("<from uri=\"ahc:httpUri?test=test&\" xmlns=\"http://camel.apache.org/schema/spring\"></from>\n");
 		
 		HoverParams hoverParams = new HoverParams(new TextDocumentIdentifier(DUMMY_URI+".xml"), new Position(0, 15));
@@ -86,7 +86,7 @@ public class CamelLanguageServerHoverTest extends AbstractCamelLanguageServerTes
 	}
 	
 	@Test
-	public void testDontProvideDocumentationOnUnknownComponent() throws Exception {
+	void testDontProvideDocumentationOnUnknownComponent() throws Exception {
 		CamelLanguageServer camelLanguageServer = initializeLanguageServer("<from uri=\"unknowncomponent:\" xmlns=\"http://camel.apache.org/schema/spring\"></from>\n");
 		
 		HoverParams hoverParams = new HoverParams(new TextDocumentIdentifier(DUMMY_URI+".xml"), new Position(0, 15));
@@ -96,7 +96,7 @@ public class CamelLanguageServerHoverTest extends AbstractCamelLanguageServerTes
 	}
 
 	@Test
-	public void testProvideParameterDocumentationOnHover() throws Exception {
+	void testProvideParameterDocumentationOnHover() throws Exception {
 		CamelLanguageServer camelLanguageServer = initializeLanguageServer("<from uri=\"file:bla?filter=test\" xmlns=\"http://camel.apache.org/schema/spring\"></from>\n");
 		
 		HoverParams hoverParams = new HoverParams(new TextDocumentIdentifier(DUMMY_URI+".xml"), new Position(0, 26));
@@ -106,7 +106,7 @@ public class CamelLanguageServerHoverTest extends AbstractCamelLanguageServerTes
 	}
 	
 	@Test
-	public void testProvideParameterDocumentationForUnknownParamOnHover() throws Exception {
+	void testProvideParameterDocumentationForUnknownParamOnHover() throws Exception {
 		CamelLanguageServer camelLanguageServer = initializeLanguageServer("<from uri=\"file:bla?test=test\" xmlns=\"http://camel.apache.org/schema/spring\"></from>\n");
 		
 		HoverParams hoverParams = new HoverParams(new TextDocumentIdentifier(DUMMY_URI+".xml"), new Position(0, 26));
@@ -116,7 +116,7 @@ public class CamelLanguageServerHoverTest extends AbstractCamelLanguageServerTes
 	}
 	
 	@Test
-	public void testProvideSyntaxForPathParameterOnHover() throws Exception {
+	void testProvideSyntaxForPathParameterOnHover() throws Exception {
 		CamelLanguageServer camelLanguageServer = initializeLanguageServer("<from uri=\"kafka:fl\" xmlns=\"http://camel.apache.org/schema/spring\"></from>\n");
 		
 		HoverParams hoverParams = new HoverParams(new TextDocumentIdentifier(DUMMY_URI+".xml"), new Position(0, 19));
@@ -126,7 +126,7 @@ public class CamelLanguageServerHoverTest extends AbstractCamelLanguageServerTes
 	}
 	
 	@Test
-	public void testProvideSyntaxForEmptyPathParameterOnHover() throws Exception {
+	void testProvideSyntaxForEmptyPathParameterOnHover() throws Exception {
 		CamelLanguageServer camelLanguageServer = initializeLanguageServer("<from uri=\"kafka:\" xmlns=\"http://camel.apache.org/schema/spring\"></from>\n");
 		
 		HoverParams hoverParams = new HoverParams(new TextDocumentIdentifier(DUMMY_URI+".xml"), new Position(0, 17));

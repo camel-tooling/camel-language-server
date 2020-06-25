@@ -32,10 +32,10 @@ import org.junit.jupiter.api.Test;
 import com.github.cameltooling.lsp.internal.AbstractCamelLanguageServerTest;
 import com.github.cameltooling.lsp.internal.CamelLanguageServer;
 
-public class CamelComponentOptionBooleanValuesTest extends AbstractCamelLanguageServerTest {
+class CamelComponentOptionBooleanValuesTest extends AbstractCamelLanguageServerTest {
 
 	@Test
-	public void testProvideBooleanValues() throws Exception {
+	void testProvideBooleanValues() throws Exception {
 		testProvideCamelOptions("<from uri=\"timer:timerName?fixedRate=\" xmlns=\"http://camel.apache.org/schema/blueprint\"></from>\n", 0, 37);
 	}
 

@@ -32,51 +32,51 @@ import org.eclipse.lsp4j.VersionedTextDocumentIdentifier;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
-public class CamelDiagnosticTest extends AbstractDiagnosticTest {
+class CamelDiagnosticTest extends AbstractDiagnosticTest {
 
 	@Test
-	public void testNoValidationError() throws Exception {
+	void testNoValidationError() throws Exception {
 		testDiagnostic("camel-with-endpoint", 0, ".xml");
 	}
 	
 	@Test
-	public void testValidationError() throws Exception {
+	void testValidationError() throws Exception {
 		testDiagnostic("camel-with-endpoint-error", 1, ".xml");
 		Range range = lastPublishedDiagnostics.getDiagnostics().get(0).getRange();
 		checkRange(range, 8, 16, 8, 39);
 	}
 	
 	@Test
-	public void testValidationErrorWithNamespacePrefix() throws Exception {
+	void testValidationErrorWithNamespacePrefix() throws Exception {
 		testDiagnostic("camel-with-endpoint-error-withNamespacePrefix", 1, ".xml");
 		Range range = lastPublishedDiagnostics.getDiagnostics().get(0).getRange();
 		checkRange(range, 8, 25, 8, 48);
 	}
 	
 	@Test
-	public void testValidationSeveralErrors() throws Exception {
+	void testValidationSeveralErrors() throws Exception {
 		testDiagnostic("camel-with-endpoint-2-errors", 2, ".xml");
 	}
 	
 	@Test
-	public void testValidationForNonFirstParameters() throws Exception {
+	void testValidationForNonFirstParameters() throws Exception {
 		testDiagnostic("camel-with-endpoint-error-on-second-parameter", 1, ".xml");
 		Range range = lastPublishedDiagnostics.getDiagnostics().get(0).getRange();
 		checkRange(range, 8, 16, 8, 61);
 	}
 	
 	@Test
-	public void testInvalidBoolean() throws Exception {
+	void testInvalidBoolean() throws Exception {
 		testDiagnostic("camel-with-endpoint-boolean-error", 1, ".xml");
 	}
 	
 	@Test
-	public void testInvalidInteger() throws Exception {
+	void testInvalidInteger() throws Exception {
 		testDiagnostic("camel-with-endpoint-integer-error", 1, ".xml");
 	}
 	
 	@Test
-	public void testInvalidEnum() throws Exception {
+	void testInvalidEnum() throws Exception {
 		testDiagnostic("camel-with-invalid-enum", 1, ".xml");
 		Diagnostic diagnostic = lastPublishedDiagnostics.getDiagnostics().get(0);
 		assertThat(diagnostic.getMessage()).isNotNull();
@@ -85,7 +85,7 @@ public class CamelDiagnosticTest extends AbstractDiagnosticTest {
 	}
 	
 	@Test
-	public void testInvalidEnumWithSameStringOnSameLine() throws Exception {
+	void testInvalidEnumWithSameStringOnSameLine() throws Exception {
 		testDiagnostic("camel-with-invalid-enum-with-same-string-in-camel-uri", 1, ".xml");
 		Diagnostic diagnostic = lastPublishedDiagnostics.getDiagnostics().get(0);
 		assertThat(diagnostic.getMessage()).isNotNull();
@@ -94,7 +94,7 @@ public class CamelDiagnosticTest extends AbstractDiagnosticTest {
 	}
 	
 	@Test
-	public void testValidationErrorWithSyntaxError() throws Exception {
+	void testValidationErrorWithSyntaxError() throws Exception {
 		testDiagnostic("camel-with-endpoint-error-withampersand", 1, ".xml");
 		Diagnostic diagnostic = lastPublishedDiagnostics.getDiagnostics().get(0);
 		assertThat(diagnostic.getMessage()).isNotNull();
@@ -103,24 +103,24 @@ public class CamelDiagnosticTest extends AbstractDiagnosticTest {
 	}
 	
 	@Test
-	public void testNoErrorOnNonCamelFile() throws Exception {
+	void testNoErrorOnNonCamelFile() throws Exception {
 		testDiagnostic("non-camel-file", 0, ".xml");
 	}
 	
 	@Test
-	public void testNoErrorWithPropertyForWholeURI() throws Exception {
+	void testNoErrorWithPropertyForWholeURI() throws Exception {
 		testDiagnostic("camel-with-properties", 0, ".java");
 	}
 	
 	@Test
-	public void testValidationErrorForJavaFile() throws Exception {
+	void testValidationErrorForJavaFile() throws Exception {
 		testDiagnostic("camel-with-endpoint-error", 1, ".java");
 		Range range = lastPublishedDiagnostics.getDiagnostics().get(0).getRange();
 		checkRange(range, 12, 14, 12, 37);
 	}
 	
 	@Test
-	public void testValidationErrorClearedOnClose() throws Exception {
+	void testValidationErrorClearedOnClose() throws Exception {
 		testDiagnostic("camel-with-endpoint-error", 1, ".xml");
 		
 		DidCloseTextDocumentParams params = new DidCloseTextDocumentParams(new TextDocumentIdentifier(DUMMY_URI+".xml"));
@@ -130,7 +130,7 @@ public class CamelDiagnosticTest extends AbstractDiagnosticTest {
 	}
 	
 	@Test
-	public void testValidationErrorUpdatedOnChange() throws Exception {
+	void testValidationErrorUpdatedOnChange() throws Exception {
 		testDiagnostic("camel-with-endpoint-error", 1, ".xml");
 		
 		camelLanguageServer.getTextDocumentService().getOpenedDocument(DUMMY_URI+".xml").getText();
@@ -146,19 +146,19 @@ public class CamelDiagnosticTest extends AbstractDiagnosticTest {
 	
 	@Test
 	@Disabled("Not yet supported by Camel, see CAMEL-13382")
-	public void testNoErrorWithProperty() throws Exception {
+	void testNoErrorWithProperty() throws Exception {
 		testDiagnostic("camel-with-properties", 0, ".xml");
 	}
 	
 	@Test
-	public void testUnknowPropertyOnNonLenientPropertiesComponent() throws Exception {
+	void testUnknowPropertyOnNonLenientPropertiesComponent() throws Exception {
 		testDiagnostic("camel-with-unknownParameter", 1, ".xml");
 		Range range = lastPublishedDiagnostics.getDiagnostics().get(0).getRange();
 		checkRange(range, 9, 33, 9, 37);
 	}
 
 	@Test
-	public void testSeveralUnknowPropertyOnNonLenientPropertiesComponent() throws Exception {
+	void testSeveralUnknowPropertyOnNonLenientPropertiesComponent() throws Exception {
 		testDiagnostic("camel-with-2-unknownParameters", 2, ".xml");
 		Range range1 = lastPublishedDiagnostics.getDiagnostics().get(0).getRange();
 		checkRange(range1, 9, 33, 9, 46);
@@ -167,7 +167,7 @@ public class CamelDiagnosticTest extends AbstractDiagnosticTest {
 	}
 	
 	@Test
-	public void testSeveralErrorsWithPreciseSpecificrange() throws Exception {
+	void testSeveralErrorsWithPreciseSpecificrange() throws Exception {
 		testDiagnostic("camel-with-several-errors-with-precise-specific-range", 3, ".xml");
 		Range range1 = lastPublishedDiagnostics.getDiagnostics().get(0).getRange();
 		checkRange(range1, 9, 33, 9, 46);
@@ -178,12 +178,12 @@ public class CamelDiagnosticTest extends AbstractDiagnosticTest {
 	}
 
 	@Test
-	public void testSeveralUnknowPropertyAndAnotherError() throws Exception {
+	void testSeveralUnknowPropertyAndAnotherError() throws Exception {
 		testDiagnostic("camel-with-unknownParameterAndAnotherError", 2, ".xml");
 	}
 	
 	@Test
-	public void testUnknowPropertyOnLenientPropertiesComponent() throws Exception {
+	void testUnknowPropertyOnLenientPropertiesComponent() throws Exception {
 		testDiagnostic("camel-with-unknownParameter-forlenientcomponent", 0, ".xml");
 	}
 }
