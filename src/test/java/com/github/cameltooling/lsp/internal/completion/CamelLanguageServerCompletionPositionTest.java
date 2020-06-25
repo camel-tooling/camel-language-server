@@ -35,7 +35,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 import com.github.cameltooling.lsp.internal.AbstractCamelLanguageServerTest;
 import com.github.cameltooling.lsp.internal.CamelLanguageServer;
 
-public class CamelLanguageServerCompletionPositionTest extends AbstractCamelLanguageServerTest {
+class CamelLanguageServerCompletionPositionTest extends AbstractCamelLanguageServerTest {
 	
     public static Stream<Arguments> data() {
     	return Stream.of(
@@ -78,7 +78,7 @@ public class CamelLanguageServerCompletionPositionTest extends AbstractCamelLang
 	
     @ParameterizedTest(name="{6} - Position ({1},{2})")
     @MethodSource("data")
-	public void testProvideCompletionForCamelBlueprintNamespace(
+	void testProvideCompletionForCamelBlueprintNamespace(
 			String textToTest,
 			int line,
 			int characterCallingCompletion,

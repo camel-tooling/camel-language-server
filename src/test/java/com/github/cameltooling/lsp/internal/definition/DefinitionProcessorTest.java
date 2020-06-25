@@ -30,7 +30,7 @@ import org.junit.jupiter.api.Test;
 import com.github.cameltooling.lsp.internal.AbstractCamelLanguageServerTest;
 import com.github.cameltooling.lsp.internal.CamelLanguageServer;
 
-public class DefinitionProcessorTest extends AbstractCamelLanguageServerTest {
+class DefinitionProcessorTest extends AbstractCamelLanguageServerTest {
 	
 	private static final String SIMPLE_DEFINITION = "<camelContext id=\"myContext\" \r\n" + 
 			"    xmlns=\"http://camel.apache.org/schema/spring\">\r\n" + 
@@ -60,7 +60,7 @@ public class DefinitionProcessorTest extends AbstractCamelLanguageServerTest {
 			"</camelContext>";
 	
 	@Test
-	public void testRetrieveDefinitionSimple() throws Exception {
+	void testRetrieveDefinitionSimple() throws Exception {
 		CamelLanguageServer camelLanguageServer = initializeLanguageServer(SIMPLE_DEFINITION);
 		CompletableFuture<Either<List<? extends Location>,List<? extends LocationLink>>> definitions = getDefinitionsFor(camelLanguageServer, new Position(5, 22));
 		Location location = definitions.get().getLeft().get(0);
@@ -69,7 +69,7 @@ public class DefinitionProcessorTest extends AbstractCamelLanguageServerTest {
 	}
 	
 	@Test
-	public void testRetrieveNoDefinitionWhenEndpointContainsNoId() throws Exception {
+	void testRetrieveNoDefinitionWhenEndpointContainsNoId() throws Exception {
 		CamelLanguageServer camelLanguageServer = initializeLanguageServer(ENDPOINT_UNMATCH_ID);
 		CompletableFuture<Either<List<? extends Location>,List<? extends LocationLink>>> definitions = getDefinitionsFor(camelLanguageServer, new Position(5, 22));
 		assertThat(definitions.get().getLeft()).isNullOrEmpty();
@@ -77,7 +77,7 @@ public class DefinitionProcessorTest extends AbstractCamelLanguageServerTest {
 	}
 	
 	@Test
-	public void testRetrieveNoDefinitionWhenEndpointContainsNotMatchingIds() throws Exception {
+	void testRetrieveNoDefinitionWhenEndpointContainsNotMatchingIds() throws Exception {
 		CamelLanguageServer camelLanguageServer = initializeLanguageServer(ENDPOINT_WITHOUT_ID);
 		CompletableFuture<Either<List<? extends Location>,List<? extends LocationLink>>> definitions = getDefinitionsFor(camelLanguageServer, new Position(5, 22));
 		assertThat(definitions.get().getLeft()).isNullOrEmpty();
@@ -85,7 +85,7 @@ public class DefinitionProcessorTest extends AbstractCamelLanguageServerTest {
 	}
 	
 	@Test
-	public void testRetrieveNoDefinitionWhenOnAnotherPlace() throws Exception {
+	void testRetrieveNoDefinitionWhenOnAnotherPlace() throws Exception {
 		CamelLanguageServer camelLanguageServer = initializeLanguageServer(SIMPLE_DEFINITION);
 		CompletableFuture<Either<List<? extends Location>,List<? extends LocationLink>>> definitions = getDefinitionsFor(camelLanguageServer, new Position(6, 22));
 		assertThat(definitions.get().getLeft()).isNullOrEmpty();

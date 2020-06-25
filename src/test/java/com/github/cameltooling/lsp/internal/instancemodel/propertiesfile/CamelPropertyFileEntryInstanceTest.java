@@ -26,7 +26,7 @@ import org.junit.jupiter.api.Test;
 
 import com.github.cameltooling.lsp.internal.CamelLanguageServer;
 
-public class CamelPropertyFileEntryInstanceTest {
+class CamelPropertyFileEntryInstanceTest {
 
 	@Test
 	void testEmpty() throws Exception {

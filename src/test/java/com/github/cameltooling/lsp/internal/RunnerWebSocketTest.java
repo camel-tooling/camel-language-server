@@ -38,41 +38,41 @@ import org.glassfish.tyrus.client.ClientManager;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
-public class RunnerWebSocketTest {
+class RunnerWebSocketTest {
 	
 	private CountDownLatch messageLatch = new CountDownLatch(1);
 	private Thread thread;
 	
 	@AfterEach
-	public void tearDown() {
+	void tearDown() {
 		if(thread != null) {
 			thread.interrupt();
 		}
 	}
 	
 	@Test
-	public void testWebsocketServerStartedWithDefaults() throws Exception {
+	void testWebsocketServerStartedWithDefaults() throws Exception {
 		String[] arguments = new String[] {"--websocket"};
 		String expectedConnectionURI = "ws://localhost:8025/camel-language-server";
 		testWebSocketServerConnection(arguments, expectedConnectionURI);
 	}
 	
 	@Test
-	public void testWebsocketServerStartedWithPortSpecified() throws Exception {
+	void testWebsocketServerStartedWithPortSpecified() throws Exception {
 		String[] arguments = new String[] {"--websocket", "--port=8026"};
 		String expectedConnectionURI = "ws://localhost:8026/camel-language-server";
 		testWebSocketServerConnection(arguments, expectedConnectionURI);
 	}
 	
 	@Test
-	public void testWebsocketServerStartedWithContextPathSpecified() throws Exception {
+	void testWebsocketServerStartedWithContextPathSpecified() throws Exception {
 		String[] arguments = new String[] {"--websocket", "--contextPath=/test"};
 		String expectedConnectionURI = "ws://localhost:8025/test/camel-language-server";
 		testWebSocketServerConnection(arguments, expectedConnectionURI);
 	}
 	
 	@Test
-	public void testWebsocketServerStartedWithHostnameSpecified() throws Exception {
+	void testWebsocketServerStartedWithHostnameSpecified() throws Exception {
 		String localHostname = retrieveLocalHostname();
 		String[] arguments = new String[] {"--websocket", "--hostname="+localHostname};
 		String expectedConnectionURI = "ws://"+localHostname+":8025/camel-language-server";
@@ -80,7 +80,7 @@ public class RunnerWebSocketTest {
 	}
 
 	@Test
-	public void testWebsocketServerStartedWithHostnameAndPortAndContextPathSpecified() throws Exception {
+	void testWebsocketServerStartedWithHostnameAndPortAndContextPathSpecified() throws Exception {
 		String localHostname = retrieveLocalHostname();
 		String[] arguments = new String[] {"--websocket", "--hostname="+localHostname, "--port=8027", "--contextPath=/test"};
 		String expectedConnectionURI = "ws://"+localHostname+":8027/test/camel-language-server";
@@ -94,7 +94,7 @@ public class RunnerWebSocketTest {
 	}
 
 	@Test
-	public void testWebsocketServerWithInvalidPortSpecified() throws Exception {
+	void testWebsocketServerWithInvalidPortSpecified() throws Exception {
 		String[] arguments = new String[] {"--websocket", "--port=invalidport"};
 		assertThrows(IllegalArgumentException.class, () -> {
 			Runner.main(arguments);

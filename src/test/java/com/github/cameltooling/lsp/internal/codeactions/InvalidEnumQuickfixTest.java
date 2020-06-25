@@ -45,13 +45,13 @@ import com.github.cameltooling.lsp.internal.AbstractCamelLanguageServerTest;
 import com.github.cameltooling.lsp.internal.CamelLanguageServer;
 import com.github.cameltooling.lsp.internal.RangeChecker;
 
-public class InvalidEnumQuickfixTest extends AbstractCamelLanguageServerTest {
+class InvalidEnumQuickfixTest extends AbstractCamelLanguageServerTest {
 	
 	private static final Duration AWAIT_TIMEOUT = Duration.ofSeconds(10);
 	private CamelLanguageServer camelLanguageServer;
 	
 	@Test
-	public void testReturnCodeActionForQuickfix() throws FileNotFoundException, InterruptedException, ExecutionException {
+	void testReturnCodeActionForQuickfix() throws FileNotFoundException, InterruptedException, ExecutionException {
 		TextDocumentIdentifier textDocumentIdentifier = initAnLaunchDiagnostic();
 	
 		Diagnostic diagnostic = lastPublishedDiagnostics.getDiagnostics().get(0);

@@ -50,13 +50,13 @@ import com.github.cameltooling.lsp.internal.CamelLanguageServer;
 import com.github.cameltooling.lsp.internal.RangeChecker;
 import com.github.cameltooling.lsp.internal.diagnostic.DiagnosticService;
 
-public class UnknownPropertyQuickfixTest extends AbstractCamelLanguageServerTest {
+class UnknownPropertyQuickfixTest extends AbstractCamelLanguageServerTest {
 
 	private static final Duration AWAIT_TIMEOUT = Duration.ofSeconds(10);
 	private CamelLanguageServer camelLanguageServer;
 	
 	@Test
-	public void testReturnCodeActionForQuickfix() throws FileNotFoundException, InterruptedException, ExecutionException {
+	void testReturnCodeActionForQuickfix() throws FileNotFoundException, InterruptedException, ExecutionException {
 		TextDocumentIdentifier textDocumentIdentifier = initAnLaunchDiagnostic();
 	
 		Diagnostic diagnostic = lastPublishedDiagnostics.getDiagnostics().get(0);
@@ -67,7 +67,7 @@ public class UnknownPropertyQuickfixTest extends AbstractCamelLanguageServerTest
 	}
 	
 	@Test
-	public void testReturnCodeActionForQuickfixWhenNoCodeActionKindSpecified() throws FileNotFoundException, InterruptedException, ExecutionException {
+	void testReturnCodeActionForQuickfixWhenNoCodeActionKindSpecified() throws FileNotFoundException, InterruptedException, ExecutionException {
 		TextDocumentIdentifier textDocumentIdentifier = initAnLaunchDiagnostic();
 	
 		Diagnostic diagnostic = lastPublishedDiagnostics.getDiagnostics().get(0);
@@ -78,7 +78,7 @@ public class UnknownPropertyQuickfixTest extends AbstractCamelLanguageServerTest
 	}
 	
 	@Test
-	public void testReturnNoCodeActionForOtherThanQuickfix() throws FileNotFoundException, InterruptedException, ExecutionException {
+	void testReturnNoCodeActionForOtherThanQuickfix() throws FileNotFoundException, InterruptedException, ExecutionException {
 		TextDocumentIdentifier textDocumentIdentifier = initAnLaunchDiagnostic();
 		
 		 List<String> codeActionKinds = Stream.of(CodeActionKind.Refactor, CodeActionKind.RefactorExtract, CodeActionKind.RefactorInline, CodeActionKind.RefactorRewrite, CodeActionKind.Source, CodeActionKind.SourceOrganizeImports)
@@ -92,7 +92,7 @@ public class UnknownPropertyQuickfixTest extends AbstractCamelLanguageServerTest
 	}
 	
 	@Test
-	public void testReturnCodeActionForQuickfixEvenWithInvalidRangeDiagnostic() throws FileNotFoundException, InterruptedException, ExecutionException {
+	void testReturnCodeActionForQuickfixEvenWithInvalidRangeDiagnostic() throws FileNotFoundException, InterruptedException, ExecutionException {
 		TextDocumentIdentifier textDocumentIdentifier = initAnLaunchDiagnostic();
 		
 		Diagnostic diagnostic = lastPublishedDiagnostics.getDiagnostics().get(0);
@@ -110,7 +110,7 @@ public class UnknownPropertyQuickfixTest extends AbstractCamelLanguageServerTest
 	}
 	
 	@Test
-	public void testNoErrorWithDiagnosticWithoutCode() throws FileNotFoundException, InterruptedException, ExecutionException {
+	void testNoErrorWithDiagnosticWithoutCode() throws FileNotFoundException, InterruptedException, ExecutionException {
 		TextDocumentIdentifier textDocumentIdentifier = initAnLaunchDiagnostic();
 		
 		Diagnostic diagnostic = lastPublishedDiagnostics.getDiagnostics().get(0);

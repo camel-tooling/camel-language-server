@@ -36,17 +36,17 @@ import org.junit.jupiter.api.Test;
 import com.github.cameltooling.lsp.internal.AbstractCamelLanguageServerTest;
 import com.github.cameltooling.lsp.internal.CamelLanguageServer;
 
-public class CamelPropertiesComponentOptionEnumerationValuesCompletionTest extends AbstractCamelLanguageServerTest {
+class CamelPropertiesComponentOptionEnumerationValuesCompletionTest extends AbstractCamelLanguageServerTest {
 
 	@Test
-	public void testProvideCompletion() throws Exception {
+	void testProvideCompletion() throws Exception {
 		CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = retrieveCompletion(new Position(0, 52), "camel.component.acomponent.errorHandlerLoggingLevel=T");
 		
 		assertThat(completions.get().getLeft()).hasSize(6);
 	}
 	
 	@Test
-	public void testProvideCompletionIsFilteredWhenInsideValue() throws Exception {
+	void testProvideCompletionIsFilteredWhenInsideValue() throws Exception {
 		CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = retrieveCompletion(new Position(0, 53), "camel.component.acomponent.errorHandlerLoggingLevel=T");
 		
 		CompletionItem expectedCompletionItem = new CompletionItem("TRACE");
@@ -56,7 +56,7 @@ public class CamelPropertiesComponentOptionEnumerationValuesCompletionTest exten
 	}
 	
 	@Test
-	public void testProvideNoCompletionOnInvalidKeys() throws Exception {
+	void testProvideNoCompletionOnInvalidKeys() throws Exception {
 		CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = retrieveCompletion(new Position(0, 27), "camel.component.acomponent=");
 		
 		assertThat(completions.get().getLeft()).isEmpty();

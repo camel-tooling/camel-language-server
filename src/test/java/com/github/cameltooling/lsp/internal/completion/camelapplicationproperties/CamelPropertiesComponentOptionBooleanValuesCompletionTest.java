@@ -36,17 +36,17 @@ import org.junit.jupiter.api.Test;
 import com.github.cameltooling.lsp.internal.AbstractCamelLanguageServerTest;
 import com.github.cameltooling.lsp.internal.CamelLanguageServer;
 
-public class CamelPropertiesComponentOptionBooleanValuesCompletionTest extends AbstractCamelLanguageServerTest {
+class CamelPropertiesComponentOptionBooleanValuesCompletionTest extends AbstractCamelLanguageServerTest {
 	
 	@Test
-	public void testProvideCompletion() throws Exception {
+	void testProvideCompletion() throws Exception {
 		CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = retrieveCompletion(new Position(0, 44));
 		
 		assertThat(completions.get().getLeft()).hasSize(2);
 	}
 	
 	@Test
-	public void testProvideCompletionInsideValue() throws Exception {
+	void testProvideCompletionInsideValue() throws Exception {
 		CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = retrieveCompletion(new Position(0, 45));
 		
 		CompletionItem expectedCompletionItem = new CompletionItem("true");

@@ -36,24 +36,24 @@ import org.junit.jupiter.api.Test;
 import com.github.cameltooling.lsp.internal.AbstractCamelLanguageServerTest;
 import com.github.cameltooling.lsp.internal.CamelLanguageServer;
 
-public class CamelPropertiesComponentOptionNameCompletionTest extends AbstractCamelLanguageServerTest {
+class CamelPropertiesComponentOptionNameCompletionTest extends AbstractCamelLanguageServerTest {
 	
 	@Test
-	public void testProvideCompletion() throws Exception {
+	void testProvideCompletion() throws Exception {
 		CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = retrieveCompletion(new Position(0, 27), "camel.component.acomponent.");
 		
 		assertThat(completions.get().getLeft()).hasSize(2);
 	}
 	
 	@Test
-	public void testProvideCompletionHasDefaultValue() throws Exception {
+	void testProvideCompletionHasDefaultValue() throws Exception {
 		CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = retrieveCompletion(new Position(0, 27), "camel.component.acomponent.");
 		
 		assertThat(completions.get().getLeft().get(0).getInsertText()).isEqualTo("aComponentProperty=aDefaultValue");
 	}
 	
 	@Test
-	public void testProvideCompletionWithoutDefaultValueIfAValueAlreadyProvided() throws Exception {
+	void testProvideCompletionWithoutDefaultValueIfAValueAlreadyProvided() throws Exception {
 		CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = retrieveCompletion(new Position(0, 27), "camel.component.acomponent.aComponentProperty=aValue");
 		CompletionItem expectedCompletionItem = new CompletionItem("aComponentProperty");
 		expectedCompletionItem.setInsertText("aComponentProperty");
@@ -65,7 +65,7 @@ public class CamelPropertiesComponentOptionNameCompletionTest extends AbstractCa
 	}
 	
 	@Test
-	public void testInsertAndReplace() throws Exception {
+	void testInsertAndReplace() throws Exception {
 		CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = retrieveCompletion(new Position(0, 27), "camel.component.acomponent.awrongtoreplace=aValue");
 		CompletionItem expectedCompletionItem = new CompletionItem("aComponentProperty");
 		expectedCompletionItem.setInsertText("aComponentProperty");
@@ -77,14 +77,14 @@ public class CamelPropertiesComponentOptionNameCompletionTest extends AbstractCa
 	}
 	
 	@Test
-	public void testProvideNoCompletionAfterComponentproperty() throws Exception {
+	void testProvideNoCompletionAfterComponentproperty() throws Exception {
 		CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = retrieveCompletion(new Position(0, 46), "camel.component.acomponent.aComponentProperty.");
 		
 		assertThat(completions.get().getLeft()).isEmpty();
 	}
 	
 	@Test
-	public void testProvideFilteredCompletionWhenInsideValue() throws Exception {
+	void testProvideFilteredCompletionWhenInsideValue() throws Exception {
 		CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = retrieveCompletion(new Position(0, 29), "camel.component.acomponent.aComponentProperty.");
 		
 		assertThat(completions.get().getLeft()).hasSize(1);

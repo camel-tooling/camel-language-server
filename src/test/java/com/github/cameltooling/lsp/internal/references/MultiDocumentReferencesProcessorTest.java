@@ -31,7 +31,7 @@ import org.junit.jupiter.api.Test;
 import com.github.cameltooling.lsp.internal.AbstractCamelLanguageServerTest;
 import com.github.cameltooling.lsp.internal.CamelLanguageServer;
 
-public class MultiDocumentReferencesProcessorTest extends AbstractCamelLanguageServerTest {
+class MultiDocumentReferencesProcessorTest extends AbstractCamelLanguageServerTest {
 	
 	private static final String MULTI_DOCUMENT_REFERENCE_DOC1 = "<camelContext id=\"cbr-example-context\"\n" + 
 			"		xmlns=\"http://camel.apache.org/schema/blueprint\" xmlns:order=\"http://fusesource.com/examples/order/v7\">\n" + 
@@ -66,7 +66,7 @@ public class MultiDocumentReferencesProcessorTest extends AbstractCamelLanguageS
 			"	</camelContext>";
 
 	@Test
-	public void testDirectProducerToConsumersReferences() throws Exception {
+	void testDirectProducerToConsumersReferences() throws Exception {
 		TextDocumentItem item1 = new TextDocumentItem("uri1.xml", CamelLanguageServer.LANGUAGE_ID, 0, MULTI_DOCUMENT_REFERENCE_DOC1);
 		TextDocumentItem item2 = new TextDocumentItem("uri2.xml", CamelLanguageServer.LANGUAGE_ID, 0, MULTI_DOCUMENT_REFERENCE_DOC2);
 		Position pos = new Position(5, 25);
@@ -96,7 +96,7 @@ public class MultiDocumentReferencesProcessorTest extends AbstractCamelLanguageS
 	}
 	
 	@Test
-	public void testDirectConsumerToProducersReferences() throws Exception {
+	void testDirectConsumerToProducersReferences() throws Exception {
 		TextDocumentItem item1 = new TextDocumentItem("uri1.xml", CamelLanguageServer.LANGUAGE_ID, 0, MULTI_DOCUMENT_REFERENCE_DOC2);
 		TextDocumentItem item2 = new TextDocumentItem("uri2.xml", CamelLanguageServer.LANGUAGE_ID, 0, MULTI_DOCUMENT_REFERENCE_DOC1);
 		Position pos = new Position(3, 34);

@@ -34,15 +34,15 @@ import org.junit.jupiter.api.Test;
 import com.github.cameltooling.lsp.internal.AbstractCamelLanguageServerTest;
 import com.github.cameltooling.lsp.internal.CamelLanguageServer;
 
-public class CamelComponentOptionsCompletionsTest extends AbstractCamelLanguageServerTest {
+class CamelComponentOptionsCompletionsTest extends AbstractCamelLanguageServerTest {
 	
     @Test
-	public void testProvideCamelOptions() throws Exception {
+	void testProvideCamelOptions() throws Exception {
 		testProvideCamelOptions("<to uri=\"ahc:httpUri?\" xmlns=\"http://camel.apache.org/schema/blueprint\"></to>\n", 0, 21, getBridgeEndpointExpectedCompletionItem(21,21));
 	}
     
     @Test
-	public void testProvideCamelOptionsForConsumerOnly() throws Exception {
+	void testProvideCamelOptionsForConsumerOnly() throws Exception {
     	CompletionItem completionItem = new CompletionItem("bridgeErrorHandler");
     	completionItem.setInsertText("bridgeErrorHandler=false");
     	completionItem.setTextEdit(new TextEdit(new Range(new Position(0, 27), new Position(0, 27)), "bridgeErrorHandler=false"));
@@ -53,7 +53,7 @@ public class CamelComponentOptionsCompletionsTest extends AbstractCamelLanguageS
 	}
     
     @Test
-	public void testProvideCamelOptionsForConsumerOnlyForJava() throws Exception {
+	void testProvideCamelOptionsForConsumerOnlyForJava() throws Exception {
     	CompletionItem completionItem = new CompletionItem("bridgeErrorHandler");
     	completionItem.setInsertText("bridgeErrorHandler=false");
     	completionItem.setTextEdit(new TextEdit(new Range(new Position(0, 22), new Position(0, 22)), "bridgeErrorHandler=false"));
@@ -64,7 +64,7 @@ public class CamelComponentOptionsCompletionsTest extends AbstractCamelLanguageS
 	}
 
 	@Test
-	public void testProvideCamelOptionsForConsumerOrProducer() throws Exception {
+	void testProvideCamelOptionsForConsumerOrProducer() throws Exception {
     	CompletionItem completionItem = new CompletionItem("clientConfigOptions");
     	completionItem.setInsertText("clientConfigOptions=");
     	completionItem.setTextEdit(new TextEdit(new Range(new Position(0, 23), new Position(0, 23)), "clientConfigOptions="));
@@ -75,7 +75,7 @@ public class CamelComponentOptionsCompletionsTest extends AbstractCamelLanguageS
 	}
     
     @Test
-   	public void testProvideCamelOptionsWhenAlreadyContainOptions() throws Exception {
+   	void testProvideCamelOptionsWhenAlreadyContainOptions() throws Exception {
     	testProvideCamelOptions("<to uri=\"ahc:httpUri?anOption=aValue&amp;\" xmlns=\"http://camel.apache.org/schema/blueprint\"></to>\n", 0, 41, getBridgeEndpointExpectedCompletionItem(41,41));
    	}
     

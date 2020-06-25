@@ -36,24 +36,24 @@ import org.junit.jupiter.api.Test;
 import com.github.cameltooling.lsp.internal.AbstractCamelLanguageServerTest;
 import com.github.cameltooling.lsp.internal.CamelLanguageServer;
 
-public class CamelPropertiesComponentCompletionTest extends AbstractCamelLanguageServerTest {
+class CamelPropertiesComponentCompletionTest extends AbstractCamelLanguageServerTest {
 
 	@Test
-	public void testProvideCompletion() throws Exception {
+	void testProvideCompletion() throws Exception {
 		CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = retrieveCompletion(new Position(0, 16));
 		
 		assertThat(completions.get().getLeft()).contains(createExpectedCompletionItem());
 	}
 	
 	@Test
-	public void testProvideCompletionFilteredWithBeginningTyped() throws Exception {
+	void testProvideCompletionFilteredWithBeginningTyped() throws Exception {
 		CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = retrieveCompletion(new Position(0, 20));
 		
 		assertThat(completions.get().getLeft()).containsOnly(createExpectedCompletionItem());
 	}
 	
 	@Test
-	public void testProvideCompletionNoCompletionAtWrongPosition() throws Exception {
+	void testProvideCompletionNoCompletionAtWrongPosition() throws Exception {
 		CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = retrieveCompletion(new Position(0, 14));
 		
 		assertThat(completions.get().getLeft()).isEmpty();

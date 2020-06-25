@@ -32,12 +32,12 @@ import org.eclipse.lsp4j.Position;
 import org.eclipse.lsp4j.jsonrpc.messages.Either;
 import org.junit.jupiter.api.Test;
 
-public class CamelCatalogVersionTest extends AbstractCamelLanguageServerTest {
+class CamelCatalogVersionTest extends AbstractCamelLanguageServerTest {
 
 	private String camelCatalogVersion;
 
 	@Test
-	public void testCompletionWithAnotherCatalog2xVersionLoaded() throws Exception {
+	void testCompletionWithAnotherCatalog2xVersionLoaded() throws Exception {
 		camelCatalogVersion = "2.23.4";
 		
 		CamelLanguageServer camelLanguageServer = basicCompletionCheckBefore3_3();
@@ -46,7 +46,7 @@ public class CamelCatalogVersionTest extends AbstractCamelLanguageServerTest {
 	}
 	
 	@Test
-	public void testCompletionWithCatalog3xVersionLoaded() throws Exception {
+	void testCompletionWithCatalog3xVersionLoaded() throws Exception {
 		camelCatalogVersion = "3.0.0-RC3";
 		
 		CamelLanguageServer camelLanguageServer = basicCompletionCheckBefore3_3();
@@ -55,7 +55,7 @@ public class CamelCatalogVersionTest extends AbstractCamelLanguageServerTest {
 	}
 	
 	@Test
-	public void testUpdateOfConfig() throws Exception {
+	void testUpdateOfConfig() throws Exception {
 		camelCatalogVersion = "3.0.0-RC3";
 		
 		CamelLanguageServer camelLanguageServer = basicCompletionCheckBefore3_3();
@@ -69,14 +69,14 @@ public class CamelCatalogVersionTest extends AbstractCamelLanguageServerTest {
 	}
 	
 	@Test
-	public void testCompletionFallbackWithInvalidVersion() throws Exception {
+	void testCompletionFallbackWithInvalidVersion() throws Exception {
 		camelCatalogVersion = "invalid";
 		
 		basicCompletionCheck();
 	}
 	
 	@Test
-	public void testCompletionFallbackWithNullVersion() throws Exception {
+	void testCompletionFallbackWithNullVersion() throws Exception {
 		camelCatalogVersion = null;
 		
 		basicCompletionCheck();

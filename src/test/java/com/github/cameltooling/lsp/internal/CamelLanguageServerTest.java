@@ -38,10 +38,10 @@ import org.junit.jupiter.api.Test;
 import com.github.cameltooling.lsp.internal.completion.CamelEndpointCompletionProcessor;
 
 
-public class CamelLanguageServerTest extends AbstractCamelLanguageServerTest {
+class CamelLanguageServerTest extends AbstractCamelLanguageServerTest {
 	
 	@Test
-	public void testProvideCompletionForCamelBlueprintNamespace() throws Exception {
+	void testProvideCompletionForCamelBlueprintNamespace() throws Exception {
 		CamelLanguageServer camelLanguageServer = initializeLanguageServer("<from uri=\"\" xmlns=\"http://camel.apache.org/schema/blueprint\"></from>\n");
 		
 		CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = getCompletionFor(camelLanguageServer, new Position(0, 11));
@@ -50,7 +50,7 @@ public class CamelLanguageServerTest extends AbstractCamelLanguageServerTest {
 	}
 
 	@Test
-	public void testProvideCompletionForToCamelBlueprintNamespace() throws Exception {
+	void testProvideCompletionForToCamelBlueprintNamespace() throws Exception {
 		CamelLanguageServer camelLanguageServer = initializeLanguageServer("<to uri=\"\" xmlns=\"http://camel.apache.org/schema/blueprint\"></to>\n");
 		
 		CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = getCompletionFor(camelLanguageServer, new Position(0, 9));
@@ -59,7 +59,7 @@ public class CamelLanguageServerTest extends AbstractCamelLanguageServerTest {
 	}
 	
 	@Test
-	public void testProvideCompletionForCamelSpringNamespace() throws Exception {
+	void testProvideCompletionForCamelSpringNamespace() throws Exception {
 		CamelLanguageServer camelLanguageServer = initializeLanguageServer("<from uri=\"\" xmlns=\"http://camel.apache.org/schema/spring\"></from>\n");
 		
 		CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = getCompletionFor(camelLanguageServer, new Position(0, 11));
@@ -68,7 +68,7 @@ public class CamelLanguageServerTest extends AbstractCamelLanguageServerTest {
 	}
 	
 	@Test
-	public void testProvideCompletionForJava() throws Exception {
+	void testProvideCompletionForJava() throws Exception {
 		CamelLanguageServer camelLanguageServer = initializeLanguageServer(
 				"//camel file\n"+
 				"from(\"\")\n",
@@ -80,7 +80,7 @@ public class CamelLanguageServerTest extends AbstractCamelLanguageServerTest {
 	}
 	
 	@Test
-	public void testProvideCompletionForJavaOnRealFile() throws Exception {
+	void testProvideCompletionForJavaOnRealFile() throws Exception {
 		File f = new File("src/test/resources/workspace/camel.java");
 		assertThat(f).exists();
 		try (FileInputStream fis = new FileInputStream(f)) {
@@ -91,7 +91,7 @@ public class CamelLanguageServerTest extends AbstractCamelLanguageServerTest {
 	}
 	
 	@Test
-	public void testProvideCompletionForGroovyOnRealFileWithCamelKExtension() throws Exception {
+	void testProvideCompletionForGroovyOnRealFileWithCamelKExtension() throws Exception {
 		File f = new File("src/test/resources/workspace/sample.camelk.groovy");
 		assertThat(f).exists();
 		try (FileInputStream fis = new FileInputStream(f)) {
@@ -102,7 +102,7 @@ public class CamelLanguageServerTest extends AbstractCamelLanguageServerTest {
 	}
 	
 	@Test
-	public void testProvideCompletionForGroovyOnRealFileWithCamelKShebang() throws Exception {
+	void testProvideCompletionForGroovyOnRealFileWithCamelKShebang() throws Exception {
 		File f = new File("src/test/resources/workspace/samplewithshebang.groovy");
 		assertThat(f).exists();
 		try (FileInputStream fis = new FileInputStream(f)) {
@@ -113,7 +113,7 @@ public class CamelLanguageServerTest extends AbstractCamelLanguageServerTest {
 	}
 	
 	@Test
-	public void testProvideCompletionForKotlinOnRealFileWithCamelKExtension() throws Exception {
+	void testProvideCompletionForKotlinOnRealFileWithCamelKExtension() throws Exception {
 		File f = new File("src/test/resources/workspace/sample.camelk.kts");
 		assertThat(f).exists();
 		try (FileInputStream fis = new FileInputStream(f)) {
@@ -124,7 +124,7 @@ public class CamelLanguageServerTest extends AbstractCamelLanguageServerTest {
 	}
 	
 	@Test
-	public void testProvideCompletionForJSOnRealFileWithCamelKExtension() throws Exception {
+	void testProvideCompletionForJSOnRealFileWithCamelKExtension() throws Exception {
 		File f = new File("src/test/resources/workspace/sample.camelk.js");
 		assertThat(f).exists();
 		try (FileInputStream fis = new FileInputStream(f)) {
@@ -135,7 +135,7 @@ public class CamelLanguageServerTest extends AbstractCamelLanguageServerTest {
 	}
 	
 	@Test
-	public void testProvideCompletionForGroovyOnRealFileWithCamelKCloseToModeline() throws Exception {
+	void testProvideCompletionForGroovyOnRealFileWithCamelKCloseToModeline() throws Exception {
 		File f = new File("src/test/resources/workspace/samplewithModelineLike.groovy");
 		assertThat(f).exists();
 		try (FileInputStream fis = new FileInputStream(f)) {
@@ -148,7 +148,7 @@ public class CamelLanguageServerTest extends AbstractCamelLanguageServerTest {
 	@Nested
 	class Yaml {
 		@Test
-		public void testProvideCompletionForYamlOnRealFileWithCamelKCloseToModeline() throws Exception {
+		void testProvideCompletionForYamlOnRealFileWithCamelKCloseToModeline() throws Exception {
 			File f = new File("src/test/resources/workspace/samplewithModelineLike.yaml");
 			assertThat(f).exists();
 			try (FileInputStream fis = new FileInputStream(f)) {
@@ -159,7 +159,7 @@ public class CamelLanguageServerTest extends AbstractCamelLanguageServerTest {
 		}
 		
 		@Test
-		public void testProvideCompletionForYamlOnRealFileWithCamelKCloseToModelineOnEmptyURIAttributes() throws Exception {
+		void testProvideCompletionForYamlOnRealFileWithCamelKCloseToModelineOnEmptyURIAttributes() throws Exception {
 			File f = new File("src/test/resources/workspace/samplewithModelineLikeWithEmtpyAttributes.yaml");
 			assertThat(f).exists();
 			try (FileInputStream fis = new FileInputStream(f)) {
@@ -170,7 +170,7 @@ public class CamelLanguageServerTest extends AbstractCamelLanguageServerTest {
 		}
 		
 		@Test
-		public void testProvideCompletionForYamlOnRealFileWithCamelKCloseToModelineOnEmptyURIAttributesAndSingleQuotes() throws Exception {
+		void testProvideCompletionForYamlOnRealFileWithCamelKCloseToModelineOnEmptyURIAttributesAndSingleQuotes() throws Exception {
 			File f = new File("src/test/resources/workspace/samplewithModelineLikeWithEmtpyAttributesAndSingleQuotes.yaml");
 			assertThat(f).exists();
 			try (FileInputStream fis = new FileInputStream(f)) {
@@ -181,7 +181,7 @@ public class CamelLanguageServerTest extends AbstractCamelLanguageServerTest {
 		}
 
 		@Test
-		public void testProvideCompletionForYamlOnRealFileWithCamelKCloseToModelineWithDoubleQuotesInSingleQuotesInsideURI() throws Exception {
+		void testProvideCompletionForYamlOnRealFileWithCamelKCloseToModelineWithDoubleQuotesInSingleQuotesInsideURI() throws Exception {
 			File f = new File("src/test/resources/workspace/samplewithModelineLikeWithDoubleQuotesInSingleQuotesInsideURI.yaml");
 			assertThat(f).exists();
 			try (FileInputStream fis = new FileInputStream(f)) {
@@ -192,7 +192,7 @@ public class CamelLanguageServerTest extends AbstractCamelLanguageServerTest {
 		}
 
 		@Test
-		public void testProvideCompletionForYamlOnRealFileWithCamelKCloseToModelineOnEmptyURIAttributesWithoutQuotes() throws Exception {
+		void testProvideCompletionForYamlOnRealFileWithCamelKCloseToModelineOnEmptyURIAttributesWithoutQuotes() throws Exception {
 			File f = new File("src/test/resources/workspace/samplewithModelineLikeWithEmtpyAttributesWithoutQuotes.yaml");
 			assertThat(f).exists();
 			try (FileInputStream fis = new FileInputStream(f)) {
@@ -203,7 +203,7 @@ public class CamelLanguageServerTest extends AbstractCamelLanguageServerTest {
 		}
 
 		@Test
-		public void testProvideCompletionForYamlOnRealFileWithCamelKCloseToModelineWithURIContainingDoubleQuotes() throws Exception {
+		void testProvideCompletionForYamlOnRealFileWithCamelKCloseToModelineWithURIContainingDoubleQuotes() throws Exception {
 			File f = new File("src/test/resources/workspace/samplewithModelineLikeWithDoubleQuotesInsideURI.yaml");
 			assertThat(f).exists();
 			try (FileInputStream fis = new FileInputStream(f)) {
@@ -220,7 +220,7 @@ public class CamelLanguageServerTest extends AbstractCamelLanguageServerTest {
 		}
 
 		@Test
-		public void testProvideCompletionForYamlOnRealFileWithCamelKCloseToModelineWithURIContainingSingleQuotes() throws Exception {
+		void testProvideCompletionForYamlOnRealFileWithCamelKCloseToModelineWithURIContainingSingleQuotes() throws Exception {
 			File f = new File("src/test/resources/workspace/samplewithModelineLikeWithSingleQuotesInsideURI.yaml");
 			assertThat(f).exists();
 			try (FileInputStream fis = new FileInputStream(f)) {
@@ -237,7 +237,7 @@ public class CamelLanguageServerTest extends AbstractCamelLanguageServerTest {
 		}
 
 		@Test
-		public void testProvideCompletionForYamlOnRealFileWithCamelKCloseToModelineWithURIContainingSingleQuotesInSingleQuotes() throws Exception {
+		void testProvideCompletionForYamlOnRealFileWithCamelKCloseToModelineWithURIContainingSingleQuotesInSingleQuotes() throws Exception {
 			File f = new File("src/test/resources/workspace/samplewithModelineLikeWithSingleQuotesInSingleQuotesInsideURI.yaml");
 			assertThat(f).exists();
 			try (FileInputStream fis = new FileInputStream(f)) {
@@ -254,7 +254,7 @@ public class CamelLanguageServerTest extends AbstractCamelLanguageServerTest {
 		}
 
 		@Test
-		public void testProvideCompletionForYamlOnRealFileWithCamelKCloseToModelineWithURIContainingSingleQuotesInPlain() throws Exception {
+		void testProvideCompletionForYamlOnRealFileWithCamelKCloseToModelineWithURIContainingSingleQuotesInPlain() throws Exception {
 			File f = new File("src/test/resources/workspace/samplewithModelineLikeWithSingleQuotesInPlainInsideURI.yaml");
 			assertThat(f).exists();
 			try (FileInputStream fis = new FileInputStream(f)) {
@@ -271,7 +271,7 @@ public class CamelLanguageServerTest extends AbstractCamelLanguageServerTest {
 		}
 
 		@Test
-		public void testProvideCompletionForYamlOnRealFileWithCamelKCloseToModelineWithURIContainingDoubleQuotesInPlain() throws Exception {
+		void testProvideCompletionForYamlOnRealFileWithCamelKCloseToModelineWithURIContainingDoubleQuotesInPlain() throws Exception {
 			File f = new File("src/test/resources/workspace/samplewithModelineLikeWithDoubleQuotesInPlainInsideURI.yaml");
 			assertThat(f).exists();
 			try (FileInputStream fis = new FileInputStream(f)) {
@@ -288,7 +288,7 @@ public class CamelLanguageServerTest extends AbstractCamelLanguageServerTest {
 		}
 
 		@Test
-		public void testProvideCompletionForYamlOnRealFileWithCamelKCloseToModelineWithURIContainingDoubleQuotesInPlainUsingMoreSpaces() throws Exception {
+		void testProvideCompletionForYamlOnRealFileWithCamelKCloseToModelineWithURIContainingDoubleQuotesInPlainUsingMoreSpaces() throws Exception {
 			File f = new File("src/test/resources/workspace/samplewithModelineLikeWithDoubleQuotesInPlainInsideURIUsingMoreSpaces.yaml");
 			assertThat(f).exists();
 			try (FileInputStream fis = new FileInputStream(f)) {
@@ -305,7 +305,7 @@ public class CamelLanguageServerTest extends AbstractCamelLanguageServerTest {
 		}
 
 		@Test
-		public void testProvideNoCompletionForYamlOnRealFileWithCamelKCloseToModelineForRestURI() throws Exception {
+		void testProvideNoCompletionForYamlOnRealFileWithCamelKCloseToModelineForRestURI() throws Exception {
 			File f = new File("src/test/resources/workspace/samplewithModelineLike.yaml");
 			assertThat(f).exists();
 			try (FileInputStream fis = new FileInputStream(f)) {
@@ -316,7 +316,7 @@ public class CamelLanguageServerTest extends AbstractCamelLanguageServerTest {
 		}
 
 		@Test
-		public void testProvideCompletionForYamlUsingShortCutOnRealFileWithCamelKCloseToModeline() throws Exception {
+		void testProvideCompletionForYamlUsingShortCutOnRealFileWithCamelKCloseToModeline() throws Exception {
 			File f = new File("src/test/resources/workspace/samplewithModelineLikeAndShortCut.yaml");
 			assertThat(f).exists();
 			try (FileInputStream fis = new FileInputStream(f)) {
@@ -327,7 +327,7 @@ public class CamelLanguageServerTest extends AbstractCamelLanguageServerTest {
 		}
 
 		@Test
-		public void testProvideCompletionForYamlUsingFromOnRealFileWithCamelKCloseToModeline() throws Exception {
+		void testProvideCompletionForYamlUsingFromOnRealFileWithCamelKCloseToModeline() throws Exception {
 			File f = new File("src/test/resources/workspace/samplewithModelineLikeUsingFrom.yaml");
 			assertThat(f).exists();
 			try (FileInputStream fis = new FileInputStream(f)) {
@@ -338,7 +338,7 @@ public class CamelLanguageServerTest extends AbstractCamelLanguageServerTest {
 		}
 		
 		@Test
-		public void testProvideCompletionForYamlKNative() throws Exception {
+		void testProvideCompletionForYamlKNative() throws Exception {
 			File f = new File("src/test/resources/workspace/knative.yaml");
 			assertThat(f).exists();
 			try (FileInputStream fis = new FileInputStream(f)) {
@@ -350,7 +350,7 @@ public class CamelLanguageServerTest extends AbstractCamelLanguageServerTest {
 	}
 
 	@Test
-	public void testProvideCompletionForCamelKafkaConnectPropertySink() throws Exception {
+	void testProvideCompletionForCamelKafkaConnectPropertySink() throws Exception {
 		File f = new File("src/test/resources/workspace/camelKafkaconnectSink.properties");
 		assertThat(f).exists();
 		try (FileInputStream fis = new FileInputStream(f)) {
@@ -361,7 +361,7 @@ public class CamelLanguageServerTest extends AbstractCamelLanguageServerTest {
 	}
 	
 	@Test
-	public void testProvideCompletionForCamelKafkaConnectPropertySource() throws Exception {
+	void testProvideCompletionForCamelKafkaConnectPropertySource() throws Exception {
 		File f = new File("src/test/resources/workspace/camelKafkaconnectSource.properties");
 		assertThat(f).exists();
 		try (FileInputStream fis = new FileInputStream(f)) {
@@ -372,7 +372,7 @@ public class CamelLanguageServerTest extends AbstractCamelLanguageServerTest {
 	}
 	
 	@Test
-	public void testProvideCompletionForkotlinOnRealFileWithCamelKCloseToModeline() throws Exception {
+	void testProvideCompletionForkotlinOnRealFileWithCamelKCloseToModeline() throws Exception {
 		File f = new File("src/test/resources/workspace/sampleWithModelineLike.kts");
 		assertThat(f).exists();
 		try (FileInputStream fis = new FileInputStream(f)) {
@@ -383,7 +383,7 @@ public class CamelLanguageServerTest extends AbstractCamelLanguageServerTest {
 	}
 	
 	@Test
-	public void testProvideCompletionForApplicationProperties() throws Exception {
+	void testProvideCompletionForApplicationProperties() throws Exception {
 		File f = new File("src/test/resources/workspace/application.properties");
 		assertThat(f).exists();
 		try (FileInputStream fis = new FileInputStream(f)) {
@@ -394,7 +394,7 @@ public class CamelLanguageServerTest extends AbstractCamelLanguageServerTest {
 	}
 	
 	@Test
-	public void testProvideCompletionForJSOnRealFileWithCamelKCloseToModeline() throws Exception {
+	void testProvideCompletionForJSOnRealFileWithCamelKCloseToModeline() throws Exception {
 		File f = new File("src/test/resources/workspace/sampleWithModelineLike.js");
 		assertThat(f).exists();
 		try (FileInputStream fis = new FileInputStream(f)) {
@@ -405,7 +405,7 @@ public class CamelLanguageServerTest extends AbstractCamelLanguageServerTest {
 	}
 	
 	@Test
-	public void testProvideCompletionforMultilineXmlFile() throws Exception {
+	void testProvideCompletionforMultilineXmlFile() throws Exception {
 		CamelLanguageServer camelLanguageServer = initializeLanguageServer(
 				"<camelContext xmlns=\"http://camel.apache.org/schema/spring\">\n" + 
 				"<to uri=\"\" ></to>\n" + 
@@ -418,7 +418,7 @@ public class CamelLanguageServerTest extends AbstractCamelLanguageServerTest {
 
 	@Test
 	@Disabled("activate when support of multiline is implemented camel-tooling/camel-language-server#34")
-	public void testProvideCompletionforMultilineURI() throws Exception {
+	void testProvideCompletionforMultilineURI() throws Exception {
 		CamelLanguageServer camelLanguageServer = initializeLanguageServer(
 				"<camelContext xmlns=\"http://camel.apache.org/schema/spring\">\n" + 
 				"<to uri=\"file:myFolder?\n" + 
@@ -432,7 +432,7 @@ public class CamelLanguageServerTest extends AbstractCamelLanguageServerTest {
 	}
 	
 	@Test
-	public void testDONTProvideCompletionForNotCamelnamespace() throws Exception {
+	void testDONTProvideCompletionForNotCamelnamespace() throws Exception {
 		CamelLanguageServer camelLanguageServer = initializeLanguageServer("<from uri=\"\"></from>\n");
 		
 		CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = getCompletionFor(camelLanguageServer, new Position(0, 11));
@@ -442,7 +442,7 @@ public class CamelLanguageServerTest extends AbstractCamelLanguageServerTest {
 	}
 	
 	@Test
-	public void testDONTProvideCompletionWhenNotAfterURIEqualQuote() throws Exception {
+	void testDONTProvideCompletionWhenNotAfterURIEqualQuote() throws Exception {
 		final TestLogAppender appender = new TestLogAppender();
 		final Logger logger = Logger.getRootLogger();
 		logger.addAppender(appender);
@@ -460,7 +460,7 @@ public class CamelLanguageServerTest extends AbstractCamelLanguageServerTest {
 	}
 	
 	@Test
-	public void testLoadCamelContextFromFile() throws Exception {
+	void testLoadCamelContextFromFile() throws Exception {
 		File f = new File("src/test/resources/workspace/cbr-blueprint.xml");
 		assertThat(f).exists();
 		try (FileInputStream fis = new FileInputStream(f)) {
@@ -470,7 +470,7 @@ public class CamelLanguageServerTest extends AbstractCamelLanguageServerTest {
 	}
 	
 	@Test
-	public void testLoadJavaCamelContextFromFile() throws Exception {
+	void testLoadJavaCamelContextFromFile() throws Exception {
 		File f = new File("src/test/resources/workspace/camel.java");
 		assertThat(f).exists();
 		try (FileInputStream fis = new FileInputStream(f)) {
