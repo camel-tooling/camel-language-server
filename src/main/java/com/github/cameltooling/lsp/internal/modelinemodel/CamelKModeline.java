@@ -17,24 +17,30 @@
 package com.github.cameltooling.lsp.internal.modelinemodel;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
+import org.eclipse.lsp4j.CompletionItem;
+
+import com.github.cameltooling.lsp.internal.completion.CamelKModelineOptionNames;
 import com.github.cameltooling.lsp.internal.instancemodel.ILineRangeDefineable;
+import com.github.cameltooling.lsp.internal.parser.CamelKModelineParser;
 
 public class CamelKModeline implements ILineRangeDefineable{
 	
-	public static final String MODELINE_LIKE_CAMEL_K = "// camel-k:";
-	public static final String MODELINE_LIKE_CAMEL_K_YAML = "# camel-k:";
-	public static final String MODELINE_LIKE_CAMEL_K_XML = "<!-- camel-k:";
-	
 	private String fullModeline;
 	private List<CamelKModelineOption> options = new ArrayList<>();
+	private int endOfPrefixPositionInline;
 
 	public CamelKModeline(String fullModeline) {
 		this.fullModeline = fullModeline;
-		String modelineCamelkStart = retrieveModelineCamelKStart(fullModeline);
+		String modelineCamelkStart = new CamelKModelineParser().retrieveModelineCamelKStart(fullModeline);
 		if(modelineCamelkStart != null) {
+			endOfPrefixPositionInline = modelineCamelkStart.length();
 			parseOptions(fullModeline, modelineCamelkStart);
+		} else {
+			endOfPrefixPositionInline = -1;
 		}
 	}
 
@@ -48,7 +54,7 @@ public class CamelKModeline implements ILineRangeDefineable{
 				remainingModeline = remainingModeline.substring(nextSpaceLikeCharacter);
 				currentPosition += nextSpaceLikeCharacter; 
 			} else {
-				if(!isEnfOfXmlModeline(remainingModeline)) {
+				if(!remainingModeline.trim().isEmpty() && !isEnfOfXmlModeline(remainingModeline.trim())) {
 					options.add(new CamelKModelineOption(remainingModeline.substring(1), currentPosition + 1));
 				}
 				remainingModeline = "";
@@ -57,18 +63,7 @@ public class CamelKModeline implements ILineRangeDefineable{
 	}
 
 	private boolean isEnfOfXmlModeline(String remainingModeline) {
-		return "-->".equals(remainingModeline.substring(1));
-	}
-
-	private String retrieveModelineCamelKStart(String fullModeline) {
-		if(fullModeline.startsWith(MODELINE_LIKE_CAMEL_K)) {
-			return MODELINE_LIKE_CAMEL_K;
-		} else if(fullModeline.startsWith(MODELINE_LIKE_CAMEL_K_YAML)) {
-			return MODELINE_LIKE_CAMEL_K_YAML;
-		} else if(fullModeline.startsWith(MODELINE_LIKE_CAMEL_K_XML)) {
-			return MODELINE_LIKE_CAMEL_K_XML;
-		}
-		return null;
+		return "-->".equals(remainingModeline);
 	}
 
 	private int getNextSpaceLikeCharacter(String remainingModeline) {
@@ -101,4 +96,17 @@ public class CamelKModeline implements ILineRangeDefineable{
 	public List<CamelKModelineOption> getOptions() {
 		return options;
 	}
+
+	public CompletableFuture<List<CompletionItem>> getCompletions(int character) {
+		if(endOfPrefixPositionInline != -1 && character >= endOfPrefixPositionInline) {
+			for (CamelKModelineOption camelKModelineOption : options) {
+				if(camelKModelineOption.isInRange(character)) {
+					return CompletableFuture.completedFuture(Collections.emptyList());
+				}
+			}
+			return CompletableFuture.completedFuture(CamelKModelineOptionNames.getCompletionItems());
+		}
+		return CompletableFuture.completedFuture(Collections.emptyList());
+	}
+	
 }

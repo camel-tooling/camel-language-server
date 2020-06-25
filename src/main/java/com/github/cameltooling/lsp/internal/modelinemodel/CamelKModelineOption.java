@@ -54,4 +54,8 @@ public class CamelKModelineOption implements ILineRangeDefineable {
 		return optionValue;
 	}
 
+	public boolean isInRange(int positionInLine) {
+		return getStartPositionInLine() <= positionInLine && getEndPositionInLine() >= positionInLine;
+	}
+
 }

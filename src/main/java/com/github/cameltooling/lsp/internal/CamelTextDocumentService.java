@@ -71,11 +71,14 @@ import org.slf4j.LoggerFactory;
 import com.github.cameltooling.lsp.internal.codeactions.InvalidEnumQuickfix;
 import com.github.cameltooling.lsp.internal.codeactions.UnknownPropertyQuickfix;
 import com.github.cameltooling.lsp.internal.completion.CamelEndpointCompletionProcessor;
+import com.github.cameltooling.lsp.internal.completion.CamelKModelineCompletionprocessor;
 import com.github.cameltooling.lsp.internal.completion.CamelPropertiesCompletionProcessor;
 import com.github.cameltooling.lsp.internal.definition.DefinitionProcessor;
 import com.github.cameltooling.lsp.internal.diagnostic.DiagnosticRunner;
 import com.github.cameltooling.lsp.internal.documentsymbol.DocumentSymbolProcessor;
 import com.github.cameltooling.lsp.internal.hover.HoverProcessor;
+import com.github.cameltooling.lsp.internal.parser.CamelKModelineParser;
+import com.github.cameltooling.lsp.internal.parser.ParserFileHelperUtil;
 import com.github.cameltooling.lsp.internal.references.ReferencesProcessor;
 import com.github.cameltooling.lsp.internal.settings.JSONUtility;
 import com.google.gson.Gson;
@@ -125,9 +128,15 @@ public class CamelTextDocumentService implements TextDocumentService {
 		TextDocumentItem textDocumentItem = openedDocuments.get(uri);
 		if (uri.endsWith(".properties")){
 			return new CamelPropertiesCompletionProcessor(textDocumentItem, getCamelCatalog()).getCompletions(completionParams.getPosition()).thenApply(Either::forLeft);
+		} else if(isOnCamelKModeline(completionParams, textDocumentItem)){
+			return new CamelKModelineCompletionprocessor(textDocumentItem).getCompletions(completionParams.getPosition()).thenApply(Either::forLeft);
 		} else {
 			return new CamelEndpointCompletionProcessor(textDocumentItem, getCamelCatalog()).getCompletions(completionParams.getPosition()).thenApply(Either::forLeft);
 		}
+	}
+
+	private boolean isOnCamelKModeline(CompletionParams completionParams, TextDocumentItem textDocumentItem) {
+		return completionParams.getPosition().getLine() == 0 && new CamelKModelineParser().retrieveModelineCamelKStart(new ParserFileHelperUtil().getLine(textDocumentItem, 0)) != null;
 	}
 
 	@Override
