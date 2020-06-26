@@ -33,7 +33,14 @@ class CamelKModelineOptionTest {
 		assertThat(options).hasSize(1);
 		CamelKModelineOption languageOption = options.get(0);
 		assertThat(languageOption.getOptionName()).isEqualTo("language");
-		assertThat(languageOption.getOptionValue()).isEqualTo("groovy");
+		assertThat(languageOption.getOptionValue().getValueAsString()).isEqualTo("groovy");
+	}
+	
+	@Test
+	void testOptionTraitWithIncompleteTraitContent() throws Exception {
+		String modelineWithMixedSeparator = "// camel-k: language=groovy trait=quarkus";
+		List<CamelKModelineOption> options = new CamelKModeline(modelineWithMixedSeparator).getOptions();
+		assertThat(options).hasSize(2);
 	}
 	
 	@Test
@@ -72,12 +79,12 @@ class CamelKModelineOptionTest {
 		assertThat(options).hasSize(2);
 		CamelKModelineOption languageGroovyOption = options.get(0);
 		assertThat(languageGroovyOption.getOptionName()).isEqualTo("language");
-		assertThat(languageGroovyOption.getOptionValue()).isEqualTo("groovy");
+		assertThat(languageGroovyOption.getOptionValue().getValueAsString()).isEqualTo("groovy");
 		assertThat(languageGroovyOption.getStartPositionInLine()).isEqualTo(12);
 		assertThat(languageGroovyOption.getEndPositionInLine()).isEqualTo(27);
 		CamelKModelineOption traitOption = options.get(1);
 		assertThat(traitOption.getOptionName()).isEqualTo("trait");
-		assertThat(traitOption.getOptionValue()).isEqualTo("quarkus.enabled=true");
+		assertThat(traitOption.getOptionValue().getValueAsString()).isEqualTo("quarkus.enabled=true");
 		assertThat(traitOption.getStartPositionInLine()).isEqualTo(28);
 		assertThat(traitOption.getEndPositionInLine()).isEqualTo(modelineWith2Options.length());
 	}

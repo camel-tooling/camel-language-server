@@ -22,20 +22,33 @@ import java.util.concurrent.CompletableFuture;
 
 import org.eclipse.lsp4j.CompletionItem;
 
-import com.github.cameltooling.lsp.internal.completion.modeline.CamelKTraitManager;
 import com.github.cameltooling.lsp.internal.instancemodel.ILineRangeDefineable;
 
 public class CamelKModelineOption implements ILineRangeDefineable {
 	
 	private String optionName;
-	private String optionValue;
+	private ICamelKModelineOptionValue optionValue;
 	private int startCharacter;
 
 	public CamelKModelineOption(String option, int startCharacter) {
 		int nameValueIndexSeparator = option.indexOf('=');
-		this.optionName = option.substring(0, nameValueIndexSeparator != -1 ? nameValueIndexSeparator : option.length());
-		this.optionValue = nameValueIndexSeparator != -1 ? option.substring(nameValueIndexSeparator+1) : null;
 		this.startCharacter = startCharacter;
+		this.optionName = option.substring(0, nameValueIndexSeparator != -1 ? nameValueIndexSeparator : option.length());
+		this.optionValue = createOptionValue(option, nameValueIndexSeparator);
+	}
+
+	private ICamelKModelineOptionValue createOptionValue(String option, int nameValueIndexSeparator){
+		if(nameValueIndexSeparator != -1) {
+			String value = option.substring(nameValueIndexSeparator+1);
+			int startPosition = getStartPositionInLine() + optionName.length() + 1;
+			if("trait".equals(optionName)) {
+				return new CamelKModelineTraitOption(value, startPosition);
+			} else {
+				return new GenericCamelKModelineOptionValue(value, startPosition);
+			}
+		} else {
+			return null;
+		}
 	}
 	
 	@Override
@@ -50,14 +63,18 @@ public class CamelKModelineOption implements ILineRangeDefineable {
 
 	@Override
 	public int getEndPositionInLine() {
-		return startCharacter + optionName.length() + (optionValue != null ? optionValue.length() + 1 : 0);
+		if(optionValue != null) {
+			return optionValue.getEndPositionInLine();
+		} else {
+			return startCharacter + optionName.length();
+		}
 	}
 
 	public String getOptionName() {
 		return optionName;
 	}
 
-	public String getOptionValue() {
+	public ICamelKModelineOptionValue getOptionValue() {
 		return optionValue;
 	}
 
@@ -66,8 +83,8 @@ public class CamelKModelineOption implements ILineRangeDefineable {
 	}
 
 	public CompletableFuture<List<CompletionItem>> getCompletions(int position) {
-		if("trait".equals(optionName) && getStartPositionInLine() + "trait=".length() == position) {
-			return CompletableFuture.completedFuture(CamelKTraitManager.getTraitDefinitionNameCompletionItems());
+		if(optionValue != null && optionValue.isInRange(position)) {
+			return optionValue.getCompletions(position);
 		}
 		return CompletableFuture.completedFuture(Collections.emptyList());
 	}

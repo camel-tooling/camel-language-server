@@ -16,11 +16,19 @@
  */
 package com.github.cameltooling.lsp.internal.completion.modeline;
 
+import org.eclipse.lsp4j.CompletionItem;
+
 public class TraitProperty {
 
 	public String name;
 	public String description;
 	public String type;
 	public Object defaultValue;
+	
+	public CompletionItem createCompletionItem() {
+		CompletionItem completionItem = new CompletionItem(name);
+		completionItem.setDocumentation(description);
+		return completionItem;
+	}
 	
 }

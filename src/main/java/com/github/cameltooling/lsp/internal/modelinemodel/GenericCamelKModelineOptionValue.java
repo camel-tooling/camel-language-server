@@ -14,28 +14,35 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.cameltooling.lsp.internal.completion.modeline;
+package com.github.cameltooling.lsp.internal.modelinemodel;
 
-import java.util.List;
+public class GenericCamelKModelineOptionValue implements ICamelKModelineOptionValue {
 
-import org.eclipse.lsp4j.CompletionItem;
+	private String value;
+	private int startPosition;
 
-public class TraitDefinition {
-	
-	public String name;
-	public String description;
-	public boolean platform;
-	public List<String> profiles;
-	public List<TraitProperty> properties;
-	
-	public CompletionItem createCompletionItem() {
-		CompletionItem completionItem = new CompletionItem(name);
-		completionItem.setDocumentation(description);
-		return completionItem;
+	public GenericCamelKModelineOptionValue(String value, int startPosition) {
+		this.value = value;
+		this.startPosition = startPosition;
 	}
 
-	public List<TraitProperty> getProperties() {
-		return properties;
+	@Override
+	public int getStartPositionInLine() {
+		return startPosition;
+	}
+
+	@Override
+	public int getEndPositionInLine() {
+		return getStartPositionInLine() + value.length();
+	}
+	
+	public String getValueAsString() {
+		return value;
+	}
+	
+	@Override
+	public boolean isInRange(int position) {
+		return startPosition <= position && position <= getEndPositionInLine();
 	}
 
 }
