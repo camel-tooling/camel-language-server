@@ -156,7 +156,7 @@ class CamelURIInstanceTest {
 		OptionParamURIInstance optionParam = camelURIInstance.getOptionParams().iterator().next();
 		assertThat(optionParam.getStartPositionInUri()).isEqualTo(16);
 		assertThat(optionParam.getEndPositionInUri()).isEqualTo(16);
-		assertThat(optionParam.getKey().getKeyName()).isEqualTo("");
+		assertThat(optionParam.getKey().getKeyName()).isEmpty();
 		assertThat(optionParam.getKey().getStartPositionInUri()).isEqualTo(16);
 		assertThat(optionParam.getKey().getEndPositionInUri()).isEqualTo(16);
 		assertThat(optionParam.getValue()).isNull();
@@ -218,7 +218,7 @@ class CamelURIInstanceTest {
 		assertThat(optionParam.getKey().getKeyName()).isEqualTo("delay");
 		assertThat(optionParam.getKey().getStartPositionInUri()).isEqualTo(16);
 		assertThat(optionParam.getKey().getEndPositionInUri()).isEqualTo(21);
-		assertThat(optionParam.getValue().getValueName()).isEqualTo(null);
+		assertThat(optionParam.getValue().getValueName()).isNull();
 		assertThat(optionParam.getValue().getStartPositionInUri()).isEqualTo(22);
 		assertThat(optionParam.getValue().getEndPositionInUri()).isEqualTo(22);
 	}

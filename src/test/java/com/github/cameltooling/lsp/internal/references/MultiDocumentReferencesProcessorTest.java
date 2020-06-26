@@ -121,7 +121,7 @@ class MultiDocumentReferencesProcessorTest extends AbstractCamelLanguageServerTe
 			}
 		}
 		
-		assertThat(foundInFile1).isEqualTo(0);
+		assertThat(foundInFile1).isZero();
 		assertThat(foundInFile2).isEqualTo(2);
 	}
 	
