@@ -28,6 +28,13 @@ public class TraitProperty {
 	public CompletionItem createCompletionItem() {
 		CompletionItem completionItem = new CompletionItem(name);
 		completionItem.setDocumentation(description);
+		if (defaultValue != null) {
+			if("int".equals(type) && defaultValue instanceof Double) {
+				completionItem.setInsertText(name+"="+((Double)defaultValue).intValue());
+			} else {
+				completionItem.setInsertText(name+"="+defaultValue);
+			}
+		}
 		return completionItem;
 	}
 	

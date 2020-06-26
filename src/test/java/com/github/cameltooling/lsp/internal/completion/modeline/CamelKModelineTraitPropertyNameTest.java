@@ -21,6 +21,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 import org.eclipse.lsp4j.CompletionItem;
 import org.eclipse.lsp4j.CompletionList;
@@ -41,16 +42,47 @@ class CamelKModelineTraitPropertyNameTest extends AbstractCamelLanguageServerTes
 		
 		List<CompletionItem> completionItems = completions.get().getLeft();
 		assertThat(completionItems).hasSize(2);
-		Optional<CompletionItem> platformTraitCompletionItem = completionItems.stream()
-				.filter(completionItem ->  "native".equals(completionItem.getLabel()))
-				.findFirst();
-		
-		assertThat(platformTraitCompletionItem).isNotNull();
-		assertThat(platformTraitCompletionItem.get().getDocumentation().getLeft()).isEqualTo("The Quarkus runtime type (reserved for future use)");
+		CompletionItem completionItem = findCompletionItemWithLabel(completions, "native");
+		assertThat(completionItem.getDocumentation().getLeft()).isEqualTo("The Quarkus runtime type (reserved for future use)");
+		assertThat(completionItem.getInsertText()).isEqualTo("native=false");
 	}
 	
 	@Test
-	void testProvideNoCompletionForUnknownTraitDefintionName() throws Exception {
+	void testProvideCompletionWithDefaultValueAString() throws Exception {
+		CamelLanguageServer camelLanguageServer = initializeLanguageServer("// camel-k: trait=container.");
+		CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = getCompletionFor(camelLanguageServer, new Position(0, 28));
+		CompletionItem completionItem = findCompletionItemWithLabel(completions, "port-name");
+		assertThat(completionItem.getInsertText()).isEqualTo("port-name=http");
+	}
+	
+	@Test
+	void testProvideCompletionWithoutDefaultValue() throws Exception {
+		CamelLanguageServer camelLanguageServer = initializeLanguageServer("// camel-k: trait=container.");
+		CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = getCompletionFor(camelLanguageServer, new Position(0, 28));
+		CompletionItem completionItem = findCompletionItemWithLabel(completions, "request-cpu");
+		assertThat(completionItem.getInsertText()).isNull();
+	}
+	
+	@Test
+	void testProvideCompletionWithDefaultValueAnumber() throws Exception {
+		CamelLanguageServer camelLanguageServer = initializeLanguageServer("// camel-k: trait=container.");
+		CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = getCompletionFor(camelLanguageServer, new Position(0, 28));
+		CompletionItem completionItem = findCompletionItemWithLabel(completions, "port");
+		assertThat(completionItem.getInsertText()).isEqualTo("port=8080");
+	}
+
+	private CompletionItem findCompletionItemWithLabel(CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions, String label) throws InterruptedException, ExecutionException {
+		List<CompletionItem> completionItems = completions.get().getLeft();
+		Optional<CompletionItem> platformTraitCompletionItem = completionItems.stream()
+				.filter(completionItem ->  label.equals(completionItem.getLabel()))
+				.findFirst();
+		
+		assertThat(platformTraitCompletionItem).isNotNull();
+		return platformTraitCompletionItem.get();
+	}
+	
+	@Test
+	void testProvideNoCompletionForUnknownTraitDefinitionName() throws Exception {
 		CamelLanguageServer camelLanguageServer = initializeLanguageServer("// camel-k: trait=unknown.");
 		
 		CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = getCompletionFor(camelLanguageServer, new Position(0, 26));
