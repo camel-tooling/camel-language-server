@@ -14,28 +14,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.cameltooling.lsp.internal.completion.modeline;
+package com.github.cameltooling.lsp.internal.modelinemodel;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 import org.eclipse.lsp4j.CompletionItem;
 
-public class TraitDefinition {
-	
-	public String name;
-	public String description;
-	public boolean platform;
-	public List<String> profiles;
-	public List<TraitProperty> properties;
-	
-	public CompletionItem createCompletionItem() {
-		CompletionItem completionItem = new CompletionItem(name);
-		completionItem.setDocumentation(description);
-		return completionItem;
+import com.github.cameltooling.lsp.internal.instancemodel.ILineRangeDefineable;
+
+public interface ICamelKModelineOptionValue extends ILineRangeDefineable {
+
+	public default int getLine() {
+		return 0;
 	}
 
-	public List<TraitProperty> getProperties() {
-		return properties;
+	public String getValueAsString();
+
+	public default CompletableFuture<List<CompletionItem>> getCompletions(int position) {
+		return CompletableFuture.completedFuture(Collections.emptyList());
 	}
+
+	public boolean isInRange(int position);
 
 }
