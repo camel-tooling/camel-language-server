@@ -117,7 +117,7 @@ class RunnerWebSocketTest {
 			}
 
 		}, cec, new URI(expectedConnectionURI));
-		assertThat(messageLatch.getCount()).isEqualTo(0);
+		assertThat(messageLatch.getCount()).isZero();
 	}
 
 	private Thread startRunnerWithWebsocketOption(String[] arguments) {

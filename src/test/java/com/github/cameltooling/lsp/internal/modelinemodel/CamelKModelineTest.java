@@ -40,14 +40,14 @@ class CamelKModelineTest {
 	@MethodSource("data")
 	void testGetLine(String modelineString) throws Exception {
 		CamelKModeline modeline = new CamelKModeline(modelineString);
-		assertThat(modeline.getLine()).isEqualTo(0);
+		assertThat(modeline.getLine()).isZero();
 	}
 
 	@ParameterizedTest
 	@MethodSource("data")
 	void testGetStartPositionInLine(String modelineString) throws Exception {
 		CamelKModeline modeline = new CamelKModeline(modelineString);
-		assertThat(modeline.getStartPositionInLine()).isEqualTo(0);
+		assertThat(modeline.getStartPositionInLine()).isZero();
 	}
 
 	@ParameterizedTest

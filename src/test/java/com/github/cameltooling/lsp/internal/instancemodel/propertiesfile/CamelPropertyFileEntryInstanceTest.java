@@ -31,7 +31,7 @@ class CamelPropertyFileEntryInstanceTest {
 	@Test
 	void testEmpty() throws Exception {
 		CamelPropertyFileEntryInstance cpfei = createModel("");
-		assertThat(cpfei.getCamelPropertyFileKeyInstance().getCamelPropertyFileKey()).isEqualTo("");
+		assertThat(cpfei.getCamelPropertyFileKeyInstance().getCamelPropertyFileKey()).isEmpty();
 	}
 	
 	@Test
