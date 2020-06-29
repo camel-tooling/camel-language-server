@@ -22,6 +22,7 @@ import java.util.concurrent.CompletableFuture;
 
 import org.eclipse.lsp4j.CompletionItem;
 
+import com.github.cameltooling.lsp.internal.completion.modeline.CamelKModelineOptionNames;
 import com.github.cameltooling.lsp.internal.instancemodel.ILineRangeDefineable;
 
 public class CamelKModelineOption implements ILineRangeDefineable {
@@ -41,7 +42,7 @@ public class CamelKModelineOption implements ILineRangeDefineable {
 		if(nameValueIndexSeparator != -1) {
 			String value = option.substring(nameValueIndexSeparator+1);
 			int startPosition = getStartPositionInLine() + optionName.length() + 1;
-			if("trait".equals(optionName)) {
+			if(CamelKModelineOptionNames.OPTION_NAME_TRAIT.equals(optionName)) {
 				return new CamelKModelineTraitOption(value, startPosition);
 			} else {
 				return new GenericCamelKModelineOptionValue(value, startPosition);

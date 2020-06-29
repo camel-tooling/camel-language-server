@@ -26,6 +26,7 @@ public class CamelKModelineOptionNames {
 	private CamelKModelineOptionNames() {}
 
 	private static final List<CompletionItem> COMPLETION_ITEMS;
+	public static final String OPTION_NAME_TRAIT = "trait";
 	
 	static {
 		COMPLETION_ITEMS = new ArrayList<>();
@@ -38,7 +39,7 @@ public class CamelKModelineOptionNames {
 		COMPLETION_ITEMS.add(createCompletionItem("property", "Add a camel property"));
 		COMPLETION_ITEMS.add(createCompletionItem("property-file", "Bind a property file to the integration. E.g. \"property-file=integration.properties\""));
 		COMPLETION_ITEMS.add(createCompletionItem("resource", "Add a resource"));
-		COMPLETION_ITEMS.add(createCompletionItem("trait", "Configure a trait. E.g. \"trait=service.enabled=false\""));
+		COMPLETION_ITEMS.add(createCompletionItem(OPTION_NAME_TRAIT, "Configure a trait. E.g. \"trait=service.enabled=false\""));
 	}
 
 	private static CompletionItem createCompletionItem(String label, String documentation) {
