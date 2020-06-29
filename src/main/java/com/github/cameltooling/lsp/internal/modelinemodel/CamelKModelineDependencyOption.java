@@ -18,10 +18,12 @@ package com.github.cameltooling.lsp.internal.modelinemodel;
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.apache.camel.catalog.CamelCatalog;
 import org.eclipse.lsp4j.CompletionItem;
+import org.eclipse.lsp4j.InsertTextFormat;
 
 import com.github.cameltooling.lsp.internal.completion.CompletionResolverUtils;
 import com.github.cameltooling.model.util.ModelHelper;
@@ -59,18 +61,39 @@ public class CamelKModelineDependencyOption implements ICamelKModelineOptionValu
 	@Override
 	public CompletableFuture<List<CompletionItem>> getCompletions(int position, CompletableFuture<CamelCatalog> camelCatalog) {
 		if(getStartPositionInLine() == position) {
-			return camelCatalog.thenApply(catalog -> catalog.findComponentNames().stream()
-				.map(componentName -> ModelHelper.generateComponentModel(catalog.componentJSonSchema(componentName), true))
-				.map(componentModel -> {
-					CompletionItem completionItem = new CompletionItem(componentModel.getArtifactId());
-					completionItem.setDocumentation(componentModel.getDescription());
-					completionItem.setDeprecated(Boolean.valueOf(componentModel.getDeprecated()));
-					CompletionResolverUtils.applyTextEditToCompletionItem(this, completionItem);
-					return completionItem;
-				})
-				.collect(Collectors.toList()));
+			return camelCatalog
+					.thenApply(retrieveCamelComponentCompletionItems())
+					.thenApply(addMvnDependencyCompletionItem());
 		}
 		return ICamelKModelineOptionValue.super.getCompletions(position, camelCatalog);
+	}
+
+	private Function<List<CompletionItem>, List<CompletionItem>> addMvnDependencyCompletionItem() {
+		return completionItems -> {
+			completionItems.add(createMvnCompletionItem());
+			return completionItems;
+		};
+	}
+
+	private Function<? super CamelCatalog, ? extends List<CompletionItem>> retrieveCamelComponentCompletionItems() {
+		return catalog -> catalog.findComponentNames().stream()
+			.map(componentName -> ModelHelper.generateComponentModel(catalog.componentJSonSchema(componentName), true))
+			.map(componentModel -> {
+				CompletionItem completionItem = new CompletionItem(componentModel.getArtifactId());
+				completionItem.setDocumentation(componentModel.getDescription());
+				completionItem.setDeprecated(Boolean.valueOf(componentModel.getDeprecated()));
+				CompletionResolverUtils.applyTextEditToCompletionItem(this, completionItem);
+				return completionItem;
+			})
+			.collect(Collectors.toList());
+	}
+
+	private CompletionItem createMvnCompletionItem() {
+		CompletionItem completionItem = new CompletionItem("mvn:<groupId>/<artifactId>:<version>");
+		completionItem.setSortText("1"); // allows to be before Camel Components in completion list
+		completionItem.setInsertTextFormat(InsertTextFormat.Snippet);
+		completionItem.setInsertText("mvn:${1:groupId}/${2:artifactId}:${3:version}");
+		return completionItem;
 	}
 
 }
