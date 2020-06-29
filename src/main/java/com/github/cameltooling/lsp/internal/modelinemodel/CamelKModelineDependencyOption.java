@@ -18,33 +18,22 @@ package com.github.cameltooling.lsp.internal.modelinemodel;
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
 
 import org.apache.camel.catalog.CamelCatalog;
 import org.eclipse.lsp4j.CompletionItem;
 
-import com.github.cameltooling.lsp.internal.completion.modeline.CamelKTraitManager;
+import com.github.cameltooling.lsp.internal.completion.CompletionResolverUtils;
+import com.github.cameltooling.model.util.ModelHelper;
 
-public class CamelKModelineTraitOption implements ICamelKModelineOptionValue {
+public class CamelKModelineDependencyOption implements ICamelKModelineOptionValue {
 
+	private String value;
 	private int startPosition;
-	private int endPosition;
-	private String optionValue;
-	private String traitDefinitionName;
 
-	public CamelKModelineTraitOption(String optionValue, int startPosition) {
-		this.optionValue = optionValue;
+	public CamelKModelineDependencyOption(String value, int startPosition) {
+		this.value = value;
 		this.startPosition = startPosition;
-		this.endPosition = startPosition + optionValue.length();
-		this.traitDefinitionName = computeTraitDefinitionName(optionValue);
-	}
-
-	private String computeTraitDefinitionName(String optionValue) {
-		int indexOfDotSeparator = optionValue.indexOf('.');
-		if(indexOfDotSeparator != -1) {
-			return optionValue.substring(0,indexOfDotSeparator);
-		} else {
-			return null;
-		}
 	}
 
 	@Override
@@ -54,31 +43,34 @@ public class CamelKModelineTraitOption implements ICamelKModelineOptionValue {
 
 	@Override
 	public int getEndPositionInLine() {
-		return endPosition;
+		return startPosition + (value != null? value.length() : 0);
 	}
 
 	@Override
 	public String getValueAsString() {
-		return optionValue;
+		return value;
 	}
 
 	@Override
 	public boolean isInRange(int position) {
-		return startPosition <= position && position <= endPosition;
+		return startPosition <= position && position <= getEndPositionInLine();
 	}
 	
 	@Override
 	public CompletableFuture<List<CompletionItem>> getCompletions(int position, CompletableFuture<CamelCatalog> camelCatalog) {
 		if(getStartPositionInLine() == position) {
-			return CompletableFuture.completedFuture(CamelKTraitManager.getTraitDefinitionNameCompletionItems());
-		} else if(isAtTraitPropertyNameStart(position)) {
-			return CompletableFuture.completedFuture(CamelKTraitManager.getTraitPropertyNameCompletionItems(traitDefinitionName));
+			return camelCatalog.thenApply(catalog -> catalog.findComponentNames().stream()
+				.map(componentName -> ModelHelper.generateComponentModel(catalog.componentJSonSchema(componentName), true))
+				.map(componentModel -> {
+					CompletionItem completionItem = new CompletionItem(componentModel.getArtifactId());
+					completionItem.setDocumentation(componentModel.getDescription());
+					completionItem.setDeprecated(Boolean.valueOf(componentModel.getDeprecated()));
+					CompletionResolverUtils.applyTextEditToCompletionItem(this, completionItem);
+					return completionItem;
+				})
+				.collect(Collectors.toList()));
 		}
 		return ICamelKModelineOptionValue.super.getCompletions(position, camelCatalog);
-	}
-
-	private boolean isAtTraitPropertyNameStart(int position) {
-		return traitDefinitionName != null && getStartPositionInLine() + traitDefinitionName.length() + 1 == position;
 	}
 
 }

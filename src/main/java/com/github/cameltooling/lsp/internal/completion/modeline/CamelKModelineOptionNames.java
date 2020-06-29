@@ -30,10 +30,11 @@ public class CamelKModelineOptionNames {
 	private static final Map<String, String> OPTION_NAMES_WITH_DESCRIPTION;
 	private static final List<CompletionItem> COMPLETION_ITEMS;
 	public static final String OPTION_NAME_TRAIT = "trait";
+	public static final String OPTION_NAME_DEPENDENCY = "dependency";
 	
 	static {
 		OPTION_NAMES_WITH_DESCRIPTION = new HashMap<>();
-		OPTION_NAMES_WITH_DESCRIPTION.put("dependency", "An external library that should be included. E.g. for Maven dependencies \"dependency=mvn:org.my/app:1.0\"");
+		OPTION_NAMES_WITH_DESCRIPTION.put(OPTION_NAME_DEPENDENCY, "An external library that should be included. E.g. for Maven dependencies \"dependency=mvn:org.my/app:1.0\"");
 		OPTION_NAMES_WITH_DESCRIPTION.put("env", "Set an environment variable in the integration container. E.g \"env=MY_VAR=my-value\"");
 		OPTION_NAMES_WITH_DESCRIPTION.put("label", "Add a label to the integration. E.g. \"label=my.company=hello\"");
 		OPTION_NAMES_WITH_DESCRIPTION.put("name", "The integration name");
@@ -42,7 +43,7 @@ public class CamelKModelineOptionNames {
 		OPTION_NAMES_WITH_DESCRIPTION.put("property", "Add a camel property");
 		OPTION_NAMES_WITH_DESCRIPTION.put("property-file", "Bind a property file to the integration. E.g. \"property-file=integration.properties\"");
 		OPTION_NAMES_WITH_DESCRIPTION.put("resource", "Add a resource");
-		OPTION_NAMES_WITH_DESCRIPTION.put("trait", "Configure a trait. E.g. \"trait=service.enabled=false\"");
+		OPTION_NAMES_WITH_DESCRIPTION.put(OPTION_NAME_TRAIT, "Configure a trait. E.g. \"trait=service.enabled=false\"");
 		COMPLETION_ITEMS = OPTION_NAMES_WITH_DESCRIPTION.entrySet().stream().map(options -> createCompletionItem(options.getKey(), options.getValue())).collect(Collectors.toList());
 	}
 

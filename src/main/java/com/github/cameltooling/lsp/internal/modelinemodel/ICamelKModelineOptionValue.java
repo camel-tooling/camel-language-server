@@ -20,6 +20,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
+import org.apache.camel.catalog.CamelCatalog;
 import org.eclipse.lsp4j.CompletionItem;
 
 import com.github.cameltooling.lsp.internal.instancemodel.ILineRangeDefineable;
@@ -32,7 +33,7 @@ public interface ICamelKModelineOptionValue extends ILineRangeDefineable {
 
 	public String getValueAsString();
 
-	public default CompletableFuture<List<CompletionItem>> getCompletions(int position) {
+	public default CompletableFuture<List<CompletionItem>> getCompletions(int position, CompletableFuture<CamelCatalog> camelCatalog) {
 		return CompletableFuture.completedFuture(Collections.emptyList());
 	}
 
