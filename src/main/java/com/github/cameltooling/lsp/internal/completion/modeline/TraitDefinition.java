@@ -38,4 +38,8 @@ public class TraitDefinition {
 		return properties;
 	}
 
+	public String getDescription() {
+		return description;
+	}
+
 }

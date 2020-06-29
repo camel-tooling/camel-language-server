@@ -99,6 +99,9 @@ public class CamelKModelineOption implements ILineRangeDefineable {
 				return CompletableFuture.completedFuture(new Hover(Collections.singletonList((Either.forLeft(description)))));
 			}
 		}
+		if(optionValue != null && optionValue.isInRange(characterPosition)) {
+			return optionValue.getHover(characterPosition);
+		}
 		return CompletableFuture.completedFuture(null);
 	}
 
