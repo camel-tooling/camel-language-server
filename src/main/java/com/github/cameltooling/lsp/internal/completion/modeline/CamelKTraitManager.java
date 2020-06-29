@@ -52,11 +52,23 @@ public class CamelKTraitManager {
 	}
 
 	public static List<CompletionItem> getTraitPropertyNameCompletionItems(String traitDefinitionName) {
-		Optional<TraitDefinition> traitDefinition = getTraits().stream().filter(traitdefinition -> traitDefinitionName.equals(traitdefinition.name)).findFirst();
+		Optional<TraitDefinition> traitDefinition = getTrait(traitDefinitionName);
 		if(traitDefinition.isPresent()) {
 			return traitDefinition.get().getProperties().stream().map(TraitProperty::createCompletionItem).collect(Collectors.toList());
 		}
 		return Collections.emptyList();
+	}
+
+	private static Optional<TraitDefinition> getTrait(String traitDefinitionName) {
+		return getTraits().stream().filter(traitdefinition -> traitDefinitionName.equals(traitdefinition.name)).findFirst();
+	}
+
+	public static String getDescription(String traitDefinitionName) {
+		Optional<TraitDefinition> traitDefinition = getTrait(traitDefinitionName);
+		if(traitDefinition.isPresent()) {
+			return traitDefinition.get().getDescription();
+		}
+		return null;
 	}
 
 }
