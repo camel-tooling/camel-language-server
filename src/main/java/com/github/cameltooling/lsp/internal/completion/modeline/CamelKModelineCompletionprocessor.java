@@ -19,6 +19,7 @@ package com.github.cameltooling.lsp.internal.completion.modeline;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
+import org.apache.camel.catalog.CamelCatalog;
 import org.eclipse.lsp4j.CompletionItem;
 import org.eclipse.lsp4j.Position;
 import org.eclipse.lsp4j.TextDocumentItem;
@@ -29,14 +30,16 @@ import com.github.cameltooling.lsp.internal.parser.ParserFileHelperUtil;
 public class CamelKModelineCompletionprocessor {
 
 	private TextDocumentItem textDocumentItem;
+	private CompletableFuture<CamelCatalog> camelCatalog;
 
-	public CamelKModelineCompletionprocessor(TextDocumentItem textDocumentItem) {
+	public CamelKModelineCompletionprocessor(TextDocumentItem textDocumentItem, CompletableFuture<CamelCatalog> camelCatalog) {
 		this.textDocumentItem = textDocumentItem;
+		this.camelCatalog = camelCatalog;
 	}
 
 	public CompletableFuture<List<CompletionItem>>  getCompletions(Position position) {
 		String modelineString = new ParserFileHelperUtil().getLine(textDocumentItem, 0);
-		return new CamelKModeline(modelineString).getCompletions(position.getCharacter());
+		return new CamelKModeline(modelineString).getCompletions(position.getCharacter(), camelCatalog);
 	}
 
 }

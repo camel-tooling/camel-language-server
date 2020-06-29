@@ -130,7 +130,7 @@ public class CamelTextDocumentService implements TextDocumentService {
 		if (uri.endsWith(".properties")){
 			return new CamelPropertiesCompletionProcessor(textDocumentItem, getCamelCatalog()).getCompletions(completionParams.getPosition()).thenApply(Either::forLeft);
 		} else if(isOnCamelKModeline(completionParams.getPosition().getLine(), textDocumentItem)){
-			return new CamelKModelineCompletionprocessor(textDocumentItem).getCompletions(completionParams.getPosition()).thenApply(Either::forLeft);
+			return new CamelKModelineCompletionprocessor(textDocumentItem, getCamelCatalog()).getCompletions(completionParams.getPosition()).thenApply(Either::forLeft);
 		} else {
 			return new CamelEndpointCompletionProcessor(textDocumentItem, getCamelCatalog()).getCompletions(completionParams.getPosition()).thenApply(Either::forLeft);
 		}

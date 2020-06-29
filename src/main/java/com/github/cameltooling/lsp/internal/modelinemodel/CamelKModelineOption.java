@@ -20,6 +20,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
+import org.apache.camel.catalog.CamelCatalog;
 import org.eclipse.lsp4j.CompletionItem;
 import org.eclipse.lsp4j.Hover;
 import org.eclipse.lsp4j.jsonrpc.messages.Either;
@@ -46,6 +47,8 @@ public class CamelKModelineOption implements ILineRangeDefineable {
 			int startPosition = getStartPositionInLine() + optionName.length() + 1;
 			if(CamelKModelineOptionNames.OPTION_NAME_TRAIT.equals(optionName)) {
 				return new CamelKModelineTraitOption(value, startPosition);
+			} else if(CamelKModelineOptionNames.OPTION_NAME_DEPENDENCY.equals(optionName)) {
+				return new CamelKModelineDependencyOption(value, startPosition);
 			} else {
 				return new GenericCamelKModelineOptionValue(value, startPosition);
 			}
@@ -85,9 +88,9 @@ public class CamelKModelineOption implements ILineRangeDefineable {
 		return getStartPositionInLine() <= positionInLine && getEndPositionInLine() >= positionInLine;
 	}
 
-	public CompletableFuture<List<CompletionItem>> getCompletions(int position) {
+	public CompletableFuture<List<CompletionItem>> getCompletions(int position, CompletableFuture<CamelCatalog> camelCatalog) {
 		if(optionValue != null && optionValue.isInRange(position)) {
-			return optionValue.getCompletions(position);
+			return optionValue.getCompletions(position, camelCatalog);
 		}
 		return CompletableFuture.completedFuture(Collections.emptyList());
 	}

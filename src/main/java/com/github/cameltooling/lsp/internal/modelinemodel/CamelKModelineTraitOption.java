@@ -20,6 +20,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
+import org.apache.camel.catalog.CamelCatalog;
 import org.eclipse.lsp4j.CompletionItem;
 import org.eclipse.lsp4j.Hover;
 import org.eclipse.lsp4j.jsonrpc.messages.Either;
@@ -70,13 +71,13 @@ public class CamelKModelineTraitOption implements ICamelKModelineOptionValue {
 	}
 	
 	@Override
-	public CompletableFuture<List<CompletionItem>> getCompletions(int position) {
+	public CompletableFuture<List<CompletionItem>> getCompletions(int position, CompletableFuture<CamelCatalog> camelCatalog) {
 		if(getStartPositionInLine() == position) {
 			return CompletableFuture.completedFuture(CamelKTraitManager.getTraitDefinitionNameCompletionItems());
 		} else if(isAtTraitPropertyNameStart(position)) {
 			return CompletableFuture.completedFuture(CamelKTraitManager.getTraitPropertyNameCompletionItems(traitDefinitionName));
 		}
-		return ICamelKModelineOptionValue.super.getCompletions(position);
+		return ICamelKModelineOptionValue.super.getCompletions(position, camelCatalog);
 	}
 
 	private boolean isAtTraitPropertyNameStart(int position) {
