@@ -67,7 +67,7 @@ public class CamelKTraitManager {
 	}
 
 	private static Optional<TraitDefinition> getTrait(String traitDefinitionName) {
-		return getTraits().stream().filter(traitdefinition -> traitDefinitionName.equals(traitdefinition.name)).findFirst();
+		return getTraits().stream().filter(traitdefinition -> traitDefinitionName.equals(traitdefinition.getName())).findFirst();
 	}
 
 	public static String getDescription(String traitDefinitionName) {
@@ -76,6 +76,21 @@ public class CamelKTraitManager {
 			return traitDefinition.get().getDescription();
 		}
 		return null;
+	}
+
+	public static String getPropertyDescription(String traitDefinitionName, String traitPropertyName) {
+		Optional<TraitDefinition> traitDefinition = getTrait(traitDefinitionName);
+		if(traitDefinition.isPresent()) {
+			Optional<TraitProperty> traitProperty = getTraitProperty(traitDefinition.get(), traitPropertyName);
+			if(traitProperty.isPresent()) {
+				return traitProperty.get().getDescription();
+			}
+		}
+		return null;
+	}
+
+	private static Optional<TraitProperty> getTraitProperty(TraitDefinition traitDefinition, String traitPropertyName) {
+		return traitDefinition.getProperties().stream().filter(traitProperty -> traitPropertyName.equals(traitProperty.getName())).findFirst();
 	}
 
 }

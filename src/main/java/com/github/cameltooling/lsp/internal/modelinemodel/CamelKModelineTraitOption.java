@@ -49,6 +49,8 @@ public class CamelKModelineTraitOption implements ICamelKModelineOptionValue {
 			int indexOfEqualSeparator = optionValue.indexOf('=', indexOfDotSeparator);
 			if(indexOfEqualSeparator != -1) {
 				return optionValue.substring(indexOfDotSeparator + 1, indexOfEqualSeparator);
+			} else {
+				return optionValue.substring(indexOfDotSeparator + 1);
 			}
 		}
 		return null;
@@ -108,8 +110,15 @@ public class CamelKModelineTraitOption implements ICamelKModelineOptionValue {
 	
 	@Override
 	public CompletableFuture<Hover> getHover(int characterPosition, CompletableFuture<CamelCatalog> camelCatalog) {
-		if(getStartPositionInLine() + traitDefinitionName.length() >= characterPosition) {
+		if (isInTraitDefinitionName(characterPosition)) {
 			String description = CamelKTraitManager.getDescription(traitDefinitionName);
+			if (description != null) {
+				Hover hover = new Hover();
+				hover.setContents(Collections.singletonList((Either.forLeft(description))));
+				return CompletableFuture.completedFuture(hover);
+			}
+		} else if (isInTraitPropertyName(characterPosition)) {
+			String description = CamelKTraitManager.getPropertyDescription(traitDefinitionName, traitPropertyName);
 			if (description != null) {
 				Hover hover = new Hover();
 				hover.setContents(Collections.singletonList((Either.forLeft(description))));
