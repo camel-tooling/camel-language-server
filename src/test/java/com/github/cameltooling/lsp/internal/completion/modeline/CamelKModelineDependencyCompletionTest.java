@@ -23,6 +23,7 @@ import java.util.concurrent.CompletableFuture;
 
 import org.eclipse.lsp4j.CompletionItem;
 import org.eclipse.lsp4j.CompletionList;
+import org.eclipse.lsp4j.InsertTextFormat;
 import org.eclipse.lsp4j.Position;
 import org.eclipse.lsp4j.jsonrpc.messages.Either;
 import org.junit.jupiter.api.Test;
@@ -30,18 +31,31 @@ import org.junit.jupiter.api.Test;
 import com.github.cameltooling.lsp.internal.AbstractCamelLanguageServerTest;
 import com.github.cameltooling.lsp.internal.CamelLanguageServer;
 
-class CamelKModelinePropertyCompletionTest extends AbstractCamelLanguageServerTest {
+class CamelKModelineDependencyCompletionTest extends AbstractCamelLanguageServerTest {
 
 	@Test
-	void testProvideCompletionWithOnlyPrefix() throws Exception {
+	void testProvideCompletionForCamelComponentDependency() throws Exception {
 		CamelLanguageServer camelLanguageServer = initializeLanguageServer("// camel-k: dependency=");
 		
 		CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = getCompletionFor(camelLanguageServer, new Position(0, 23));
 		
 		List<CompletionItem> completionItems = completions.get().getLeft();
 		assertThat(completionItems).isNotEmpty();
-		assertThat(completionItems.stream().map(completionitem -> completionitem.getLabel())).allMatch(compleItemLabel -> compleItemLabel.startsWith("camel-"));
+		assertThat(completionItems.stream().filter(completionItem -> !completionItem.getLabel().startsWith("mvn")).map(completionitem -> completionitem.getLabel())).allMatch(compleItemLabel -> compleItemLabel.startsWith("camel-"));
 		CompletionItem timerCompletionItem = completionItems.stream().filter(completionItem -> "camel-timer".equals(completionItem.getLabel())).findFirst().get();
 		assertThat(timerCompletionItem.getDocumentation().getLeft()).isEqualTo("Generate messages in specified intervals using java.util.Timer.");
+	}
+	
+	@Test
+	void testProvideCompletionForMavenComponentDependency() throws Exception {
+		CamelLanguageServer camelLanguageServer = initializeLanguageServer("// camel-k: dependency=");
+		
+		CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = getCompletionFor(camelLanguageServer, new Position(0, 23));
+		
+		List<CompletionItem> completionItems = completions.get().getLeft();
+		assertThat(completionItems).isNotEmpty();
+		CompletionItem timerCompletionItem = completionItems.stream().filter(completionItem -> completionItem.getLabel().startsWith("mvn")).findFirst().get();
+		assertThat(timerCompletionItem.getInsertTextFormat()).isEqualTo(InsertTextFormat.Snippet);
+		assertThat(timerCompletionItem.getInsertText()).isEqualTo("mvn:${1:groupId}/${2:artifactId}:${3:version}");
 	}
 }
