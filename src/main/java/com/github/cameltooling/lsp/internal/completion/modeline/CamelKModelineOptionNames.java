@@ -16,8 +16,10 @@
  */
 package com.github.cameltooling.lsp.internal.completion.modeline;
 
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.eclipse.lsp4j.CompletionItem;
 
@@ -25,21 +27,23 @@ public class CamelKModelineOptionNames {
 	
 	private CamelKModelineOptionNames() {}
 
+	private static final Map<String, String> OPTION_NAMES_WITH_DESCRIPTION;
 	private static final List<CompletionItem> COMPLETION_ITEMS;
 	public static final String OPTION_NAME_TRAIT = "trait";
 	
 	static {
-		COMPLETION_ITEMS = new ArrayList<>();
-		COMPLETION_ITEMS.add(createCompletionItem("dependency", "An external library that should be included. E.g. for Maven dependencies \"dependency=mvn:org.my/app:1.0\""));
-		COMPLETION_ITEMS.add(createCompletionItem("env", "Set an environment variable in the integration container. E.g \"env=MY_VAR=my-value\""));
-		COMPLETION_ITEMS.add(createCompletionItem("label", "Add a label to the integration. E.g. \"label=my.company=hello\""));
-		COMPLETION_ITEMS.add(createCompletionItem("name", "The integration name"));
-		COMPLETION_ITEMS.add(createCompletionItem("open-api", "Add an OpenAPI v2 spec (file path)"));
-		COMPLETION_ITEMS.add(createCompletionItem("profile", "Trait profile used for deployment"));
-		COMPLETION_ITEMS.add(createCompletionItem("property", "Add a camel property"));
-		COMPLETION_ITEMS.add(createCompletionItem("property-file", "Bind a property file to the integration. E.g. \"property-file=integration.properties\""));
-		COMPLETION_ITEMS.add(createCompletionItem("resource", "Add a resource"));
-		COMPLETION_ITEMS.add(createCompletionItem(OPTION_NAME_TRAIT, "Configure a trait. E.g. \"trait=service.enabled=false\""));
+		OPTION_NAMES_WITH_DESCRIPTION = new HashMap<>();
+		OPTION_NAMES_WITH_DESCRIPTION.put("dependency", "An external library that should be included. E.g. for Maven dependencies \"dependency=mvn:org.my/app:1.0\"");
+		OPTION_NAMES_WITH_DESCRIPTION.put("env", "Set an environment variable in the integration container. E.g \"env=MY_VAR=my-value\"");
+		OPTION_NAMES_WITH_DESCRIPTION.put("label", "Add a label to the integration. E.g. \"label=my.company=hello\"");
+		OPTION_NAMES_WITH_DESCRIPTION.put("name", "The integration name");
+		OPTION_NAMES_WITH_DESCRIPTION.put("open-api", "Add an OpenAPI v2 spec (file path)");
+		OPTION_NAMES_WITH_DESCRIPTION.put("profile", "Trait profile used for deployment");
+		OPTION_NAMES_WITH_DESCRIPTION.put("property", "Add a camel property");
+		OPTION_NAMES_WITH_DESCRIPTION.put("property-file", "Bind a property file to the integration. E.g. \"property-file=integration.properties\"");
+		OPTION_NAMES_WITH_DESCRIPTION.put("resource", "Add a resource");
+		OPTION_NAMES_WITH_DESCRIPTION.put("trait", "Configure a trait. E.g. \"trait=service.enabled=false\"");
+		COMPLETION_ITEMS = OPTION_NAMES_WITH_DESCRIPTION.entrySet().stream().map(options -> createCompletionItem(options.getKey(), options.getValue())).collect(Collectors.toList());
 	}
 
 	private static CompletionItem createCompletionItem(String label, String documentation) {
@@ -50,6 +54,10 @@ public class CamelKModelineOptionNames {
 	
 	public static List<CompletionItem> getCompletionItems() {
 		return COMPLETION_ITEMS;
+	}
+
+	public static String getDescription(String optionName) {
+		return OPTION_NAMES_WITH_DESCRIPTION.get(optionName);
 	}
 	
 }

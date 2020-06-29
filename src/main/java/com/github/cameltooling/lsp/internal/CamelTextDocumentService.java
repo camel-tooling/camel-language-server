@@ -76,6 +76,7 @@ import com.github.cameltooling.lsp.internal.completion.modeline.CamelKModelineCo
 import com.github.cameltooling.lsp.internal.definition.DefinitionProcessor;
 import com.github.cameltooling.lsp.internal.diagnostic.DiagnosticRunner;
 import com.github.cameltooling.lsp.internal.documentsymbol.DocumentSymbolProcessor;
+import com.github.cameltooling.lsp.internal.hover.CamelKModelineHoverProcessor;
 import com.github.cameltooling.lsp.internal.hover.HoverProcessor;
 import com.github.cameltooling.lsp.internal.parser.CamelKModelineParser;
 import com.github.cameltooling.lsp.internal.parser.ParserFileHelperUtil;
@@ -128,15 +129,15 @@ public class CamelTextDocumentService implements TextDocumentService {
 		TextDocumentItem textDocumentItem = openedDocuments.get(uri);
 		if (uri.endsWith(".properties")){
 			return new CamelPropertiesCompletionProcessor(textDocumentItem, getCamelCatalog()).getCompletions(completionParams.getPosition()).thenApply(Either::forLeft);
-		} else if(isOnCamelKModeline(completionParams, textDocumentItem)){
+		} else if(isOnCamelKModeline(completionParams.getPosition().getLine(), textDocumentItem)){
 			return new CamelKModelineCompletionprocessor(textDocumentItem).getCompletions(completionParams.getPosition()).thenApply(Either::forLeft);
 		} else {
 			return new CamelEndpointCompletionProcessor(textDocumentItem, getCamelCatalog()).getCompletions(completionParams.getPosition()).thenApply(Either::forLeft);
 		}
 	}
 
-	private boolean isOnCamelKModeline(CompletionParams completionParams, TextDocumentItem textDocumentItem) {
-		return completionParams.getPosition().getLine() == 0 && new CamelKModelineParser().retrieveModelineCamelKStart(new ParserFileHelperUtil().getLine(textDocumentItem, 0)) != null;
+	private boolean isOnCamelKModeline(int line, TextDocumentItem textDocumentItem) {
+		return line == 0 && new CamelKModelineParser().retrieveModelineCamelKStart(new ParserFileHelperUtil().getLine(textDocumentItem, 0)) != null;
 	}
 
 	@Override
@@ -149,7 +150,11 @@ public class CamelTextDocumentService implements TextDocumentService {
 	public CompletableFuture<Hover> hover(HoverParams hoverParams) {
 		LOGGER.info("hover: {}", hoverParams.getTextDocument());
 		TextDocumentItem textDocumentItem = openedDocuments.get(hoverParams.getTextDocument().getUri());
-		return new HoverProcessor(textDocumentItem, getCamelCatalog()).getHover(hoverParams.getPosition());
+		if(isOnCamelKModeline(hoverParams.getPosition().getLine(), textDocumentItem)) {
+			return new CamelKModelineHoverProcessor(textDocumentItem).getHover(hoverParams.getPosition().getCharacter());
+		} else {
+			return new HoverProcessor(textDocumentItem, getCamelCatalog()).getHover(hoverParams.getPosition());
+		}
 	}
 
 	@Override

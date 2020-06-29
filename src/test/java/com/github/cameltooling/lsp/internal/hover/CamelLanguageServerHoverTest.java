@@ -66,6 +66,19 @@ class CamelLanguageServerHoverTest extends AbstractCamelLanguageServerTest {
 	}
 	
 	@Test
+	void testProvideDocumentationOnHoverForJavaWithModeline() throws Exception {
+		CamelLanguageServer camelLanguageServer = initializeLanguageServer(
+				"// camel-k : trait=quarkus.enabled=true\n"
+				+ "from(\"ahc:httpUri\")",
+				".java");
+		
+		HoverParams hoverParams = new HoverParams(new TextDocumentIdentifier(DUMMY_URI+".java"), new Position(1, 7));
+		CompletableFuture<Hover> hover = camelLanguageServer.getTextDocumentService().hover(hoverParams);
+		
+		assertThat(hover.get().getContents().getLeft().get(0).getLeft()).isEqualTo(AHC_DOCUMENTATION);
+	}
+	
+	@Test
 	void testDontProvideDocumentationOnHoverForBadPlaces() throws Exception {
 		CamelLanguageServer camelLanguageServer = initializeLanguageServer("<from uri=\"ahc:httpUri\" xmlns=\"http://camel.apache.org/schema/spring\"></from>\n");
 		

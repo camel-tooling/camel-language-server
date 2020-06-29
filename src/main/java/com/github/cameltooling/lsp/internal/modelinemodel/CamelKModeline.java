@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 import org.eclipse.lsp4j.CompletionItem;
+import org.eclipse.lsp4j.Hover;
 
 import com.github.cameltooling.lsp.internal.completion.modeline.CamelKModelineOptionNames;
 import com.github.cameltooling.lsp.internal.instancemodel.ILineRangeDefineable;
@@ -107,6 +108,15 @@ public class CamelKModeline implements ILineRangeDefineable{
 			return CompletableFuture.completedFuture(CamelKModelineOptionNames.getCompletionItems());
 		}
 		return CompletableFuture.completedFuture(Collections.emptyList());
+	}
+
+	public CompletableFuture<Hover> getHover(int characterPosition) {
+		for (CamelKModelineOption camelKModelineOption : options) {
+			if(camelKModelineOption.isInRange(characterPosition)) {
+				return camelKModelineOption.getHover(characterPosition);
+			}
+		}
+		return CompletableFuture.completedFuture(null);
 	}
 	
 }
