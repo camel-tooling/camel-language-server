@@ -97,7 +97,7 @@ public class CamelKModelineOption implements ILineRangeDefineable {
 		return CompletableFuture.completedFuture(Collections.emptyList());
 	}
 	
-	public CompletableFuture<Hover> getHover(int characterPosition) {
+	public CompletableFuture<Hover> getHover(int characterPosition, CompletableFuture<CamelCatalog> camelCatalog) {
 		if(getStartPositionInLine() <= characterPosition && characterPosition <= getStartPositionInLine() + optionName.length()) {
 			String description = CamelKModelineOptionNames.getDescription(optionName);
 			if(description != null) {
@@ -105,7 +105,7 @@ public class CamelKModelineOption implements ILineRangeDefineable {
 			}
 		}
 		if(optionValue != null && optionValue.isInRange(characterPosition)) {
-			return optionValue.getHover(characterPosition);
+			return optionValue.getHover(characterPosition, camelCatalog);
 		}
 		return CompletableFuture.completedFuture(null);
 	}

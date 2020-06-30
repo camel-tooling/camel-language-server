@@ -16,16 +16,21 @@
  */
 package com.github.cameltooling.lsp.internal.modelinemodel;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.apache.camel.catalog.CamelCatalog;
 import org.eclipse.lsp4j.CompletionItem;
+import org.eclipse.lsp4j.Hover;
 import org.eclipse.lsp4j.InsertTextFormat;
+import org.eclipse.lsp4j.jsonrpc.messages.Either;
 
 import com.github.cameltooling.lsp.internal.completion.CompletionResolverUtils;
+import com.github.cameltooling.model.ComponentModel;
 import com.github.cameltooling.model.util.ModelHelper;
 
 public class CamelKModelineDependencyOption implements ICamelKModelineOptionValue {
@@ -45,14 +50,14 @@ public class CamelKModelineDependencyOption implements ICamelKModelineOptionValu
 
 	@Override
 	public int getEndPositionInLine() {
-		return startPosition + (value != null? value.length() : 0);
+		return startPosition + (value != null ? value.length() : 0);
 	}
 
 	@Override
 	public String getValueAsString() {
 		return value;
 	}
-	
+
 	@Override
 	public CompletableFuture<List<CompletionItem>> getCompletions(int position, CompletableFuture<CamelCatalog> camelCatalog) {
 		if(getStartPositionInLine() == position) {
@@ -89,6 +94,24 @@ public class CamelKModelineDependencyOption implements ICamelKModelineOptionValu
 		completionItem.setInsertTextFormat(InsertTextFormat.Snippet);
 		completionItem.setInsertText("mvn:${1:groupId}/${2:artifactId}:${3:version}");
 		return completionItem;
+	}
+	
+	@Override
+	public CompletableFuture<Hover> getHover(int characterPosition, CompletableFuture<CamelCatalog> camelCatalog) {
+		return camelCatalog.thenApply(catalog -> {
+			Optional<ComponentModel> model = findComponentModel(catalog);
+			if (model.isPresent()) {
+				return new Hover(Collections.singletonList((Either.forLeft(model.get().getDescription()))));
+			} else {
+				return null;
+			}
+		});
+	}
+
+	private Optional<ComponentModel> findComponentModel(CamelCatalog catalog) {
+		return catalog.findComponentNames().stream().map(
+				componentName -> ModelHelper.generateComponentModel(catalog.componentJSonSchema(componentName), true))
+				.filter(componentModel -> value.equals(componentModel.getArtifactId())).findAny();
 	}
 
 }

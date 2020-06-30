@@ -80,7 +80,7 @@ public class CamelKModelineTraitOption implements ICamelKModelineOptionValue {
 	}
 	
 	@Override
-	public CompletableFuture<Hover> getHover(int characterPosition) {
+	public CompletableFuture<Hover> getHover(int characterPosition, CompletableFuture<CamelCatalog> camelCatalog) {
 		if(getStartPositionInLine() + traitDefinitionName.length() >= characterPosition) {
 			String description = CamelKTraitManager.getDescription(traitDefinitionName);
 			if (description != null) {
@@ -89,7 +89,7 @@ public class CamelKModelineTraitOption implements ICamelKModelineOptionValue {
 				return CompletableFuture.completedFuture(hover);
 			}
 		}
-		return ICamelKModelineOptionValue.super.getHover(characterPosition);
+		return ICamelKModelineOptionValue.super.getHover(characterPosition, camelCatalog);
 	}
 
 }

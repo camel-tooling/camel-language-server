@@ -42,7 +42,7 @@ public interface ICamelKModelineOptionValue extends ILineRangeDefineable {
 		return getStartPositionInLine() <= position && position <= getEndPositionInLine();
 	}
 
-	public default CompletableFuture<Hover> getHover(int characterPosition) {
+	public default CompletableFuture<Hover> getHover(int characterPosition, CompletableFuture<CamelCatalog> camelCatalog) {
 		return CompletableFuture.completedFuture(null);
 	}
 

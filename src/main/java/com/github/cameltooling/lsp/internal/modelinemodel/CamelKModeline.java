@@ -29,7 +29,7 @@ import com.github.cameltooling.lsp.internal.completion.modeline.CamelKModelineOp
 import com.github.cameltooling.lsp.internal.instancemodel.ILineRangeDefineable;
 import com.github.cameltooling.lsp.internal.parser.CamelKModelineParser;
 
-public class CamelKModeline implements ILineRangeDefineable{
+public class CamelKModeline implements ILineRangeDefineable {
 	
 	private String fullModeline;
 	private List<CamelKModelineOption> options = new ArrayList<>();
@@ -110,11 +110,11 @@ public class CamelKModeline implements ILineRangeDefineable{
 		}
 		return CompletableFuture.completedFuture(Collections.emptyList());
 	}
-
-	public CompletableFuture<Hover> getHover(int characterPosition) {
+	
+	public CompletableFuture<Hover> getHover(int characterPosition, CompletableFuture<CamelCatalog> camelCatalog) {
 		for (CamelKModelineOption camelKModelineOption : options) {
 			if(camelKModelineOption.isInRange(characterPosition)) {
-				return camelKModelineOption.getHover(characterPosition);
+				return camelKModelineOption.getHover(characterPosition, camelCatalog);
 			}
 		}
 		return CompletableFuture.completedFuture(null);
