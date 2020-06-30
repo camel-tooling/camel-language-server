@@ -42,4 +42,8 @@ public class TraitDefinition {
 		return description;
 	}
 
+	public String getName() {
+		return name;
+	}
+
 }

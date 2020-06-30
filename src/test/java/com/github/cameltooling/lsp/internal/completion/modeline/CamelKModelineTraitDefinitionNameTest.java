@@ -50,6 +50,22 @@ class CamelKModelineTraitDefinitionNameTest extends AbstractCamelLanguageServerT
 	}
 	
 	@Test
+	void testProvideCompletionWithPartialName() throws Exception {
+		CamelLanguageServer camelLanguageServer = initializeLanguageServer("// camel-k: trait=pla");
+		
+		CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = getCompletionFor(camelLanguageServer, new Position(0, 21));
+		
+		List<CompletionItem> completionItems = completions.get().getLeft();
+		assertThat(completionItems).hasSize(1);
+		Optional<CompletionItem> platformTraitCompletionItem = completionItems.stream()
+				.filter(completionItem ->  "platform".equals(completionItem.getLabel()))
+				.findFirst();
+		
+		assertThat(platformTraitCompletionItem).isNotNull();
+		assertThat(platformTraitCompletionItem.get().getDocumentation().getLeft()).isEqualTo("The platform trait is a base trait that is used to assign an integration platform to an integration.In case the platform is missing, the trait is allowed to create a default platform.This feature is especially useful in contexts where there's no need to provide a custom configuration for the platform(e.g. on OpenShift the default settings work, since there's an embedded container image registry).");
+	}
+	
+	@Test
 	void testProvideNoCompletionForNotATrait() throws Exception {
 		CamelLanguageServer camelLanguageServer = initializeLanguageServer("// camel-k: other=");
 		

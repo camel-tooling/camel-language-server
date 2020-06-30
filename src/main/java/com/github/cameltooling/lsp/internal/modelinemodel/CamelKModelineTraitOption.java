@@ -72,16 +72,30 @@ public class CamelKModelineTraitOption implements ICamelKModelineOptionValue {
 	
 	@Override
 	public CompletableFuture<List<CompletionItem>> getCompletions(int position, CompletableFuture<CamelCatalog> camelCatalog) {
-		if(getStartPositionInLine() == position) {
-			return CompletableFuture.completedFuture(CamelKTraitManager.getTraitDefinitionNameCompletionItems());
-		} else if(isAtTraitPropertyNameStart(position)) {
-			return CompletableFuture.completedFuture(CamelKTraitManager.getTraitPropertyNameCompletionItems(traitDefinitionName));
+		if(isInTraitDefinitionName(position)) {
+			String filter = retrieveTraitDefinitionPartBefore(position);
+			return CompletableFuture.completedFuture(CamelKTraitManager.getTraitDefinitionNameCompletionItems(filter));
+		} else if(isInTraitPropertyName(position)) {
+			String filter = retrieveTraitPropertyPartBefore(position);
+			return CompletableFuture.completedFuture(CamelKTraitManager.getTraitPropertyNameCompletionItems(traitDefinitionName, filter));
 		}
 		return ICamelKModelineOptionValue.super.getCompletions(position, camelCatalog);
 	}
 
-	private boolean isAtTraitPropertyNameStart(int position) {
-		return traitDefinitionName != null && getStartPositionInLine() + traitDefinitionName.length() + 1 == position;
+	private String retrieveTraitPropertyPartBefore(int position) {
+		return optionValue.substring(traitDefinitionName.length() + 1, position - getStartPositionInLine());
+	}
+
+	private String retrieveTraitDefinitionPartBefore(int position) {
+		return (traitDefinitionName != null ? traitDefinitionName : optionValue).substring(0, position - getStartPositionInLine());
+	}
+
+	private boolean isInTraitDefinitionName(int position) {
+		return getStartPositionInLine() <= position && position <= getStartPositionInLine() + (traitDefinitionName != null ? traitDefinitionName.length() : optionValue.length());
+	}
+
+	private boolean isInTraitPropertyName(int position) {
+		return traitDefinitionName != null && getStartPositionInLine() + traitDefinitionName.length() + 1 <= position;
 	}
 	
 	@Override
