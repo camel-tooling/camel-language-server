@@ -24,19 +24,19 @@ import java.util.stream.Stream;
 import org.apache.camel.catalog.CamelCatalog;
 import org.eclipse.lsp4j.CompletionItem;
 
-import com.github.cameltooling.lsp.internal.instancemodel.propertiesfile.CamelComponentParameterPropertyFileInstance;
-import com.github.cameltooling.lsp.internal.instancemodel.propertiesfile.CamelPropertyFileValueInstance;
+import com.github.cameltooling.lsp.internal.instancemodel.propertiesfile.CamelComponentParameterPropertyInstance;
+import com.github.cameltooling.lsp.internal.instancemodel.propertiesfile.CamelPropertyValueInstance;
 import com.github.cameltooling.model.ComponentOptionModel;
 import com.github.cameltooling.model.util.ModelHelper;
 
 public class CamelComponentOptionNamesCompletionFuture implements Function<CamelCatalog, List<CompletionItem>> {
 
 	private String componentId;
-	private CamelPropertyFileValueInstance camelPropertyFileValueInstance;
+	private CamelPropertyValueInstance camelPropertyFileValueInstance;
 	private String startFilter;
-	private CamelComponentParameterPropertyFileInstance camelComponentParameterPropertyFileInstance;
+	private CamelComponentParameterPropertyInstance camelComponentParameterPropertyFileInstance;
 
-	public CamelComponentOptionNamesCompletionFuture(String componentId, CamelComponentParameterPropertyFileInstance camelComponentParameterPropertyFileInstance, CamelPropertyFileValueInstance camelPropertyFileValueInstance, String startFilter) {
+	public CamelComponentOptionNamesCompletionFuture(String componentId, CamelComponentParameterPropertyInstance camelComponentParameterPropertyFileInstance, CamelPropertyValueInstance camelPropertyFileValueInstance, String startFilter) {
 		this.componentId = componentId;
 		this.camelComponentParameterPropertyFileInstance = camelComponentParameterPropertyFileInstance;
 		this.camelPropertyFileValueInstance = camelPropertyFileValueInstance;

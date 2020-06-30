@@ -32,38 +32,36 @@ import com.github.cameltooling.lsp.internal.instancemodel.ILineRangeDefineable;
  * it is used to represents "timer"
  * 
  */
-public class CamelComponentNamePropertyFileInstance implements ILineRangeDefineable {
+public class CamelComponentNamePropertyInstance implements ILineRangeDefineable {
 
 	private String componentName;
-	private CamelComponentPropertyFilekey camelComponentPropertyFilekey;
-	private CompletableFuture<CamelCatalog> camelCatalog;
+	private CamelComponentPropertyKey camelComponentPropertyKey;
 
-	public CamelComponentNamePropertyFileInstance(CompletableFuture<CamelCatalog> camelCatalog, String componentName, CamelComponentPropertyFilekey camelComponentPropertyFilekey) {
-		this.camelCatalog = camelCatalog;
+	public CamelComponentNamePropertyInstance(String componentName, CamelComponentPropertyKey camelComponentPropertyKey) {
 		this.componentName = componentName;
-		this.camelComponentPropertyFilekey = camelComponentPropertyFilekey;
+		this.camelComponentPropertyKey = camelComponentPropertyKey;
 	}
 
 	@Override
 	public int getLine() {
-		return camelComponentPropertyFilekey.getLine();
+		return camelComponentPropertyKey.getLine();
 	}
 
 	@Override
 	public int getStartPositionInLine() {
-		return CamelPropertyFileKeyInstance.CAMEL_COMPONENT_KEY_PREFIX.length();
+		return camelComponentPropertyKey.getStartPositionInLine();
 	}
 
 	@Override
 	public int getEndPositionInLine() {
-		return CamelPropertyFileKeyInstance.CAMEL_COMPONENT_KEY_PREFIX.length() + componentName.length();
+		return getStartPositionInLine() + componentName.length();
 	}
 
 	public String getName() {
 		return componentName;
 	}
 	
-	public CompletableFuture<List<CompletionItem>> getCompletions(Position position) {
+	public CompletableFuture<List<CompletionItem>> getCompletions(Position position, CompletableFuture<CamelCatalog> camelCatalog) {
 		int characterPosition = position.getCharacter();
 		String componentIdBeforePosition = componentName.substring(0, characterPosition - getStartPositionInLine());
 		return camelCatalog.thenApply(new CamelComponentIdsCompletionsFuture(this, componentIdBeforePosition));

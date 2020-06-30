@@ -39,10 +39,5 @@ public class GenericCamelKModelineOptionValue implements ICamelKModelineOptionVa
 	public String getValueAsString() {
 		return value;
 	}
-	
-	@Override
-	public boolean isInRange(int position) {
-		return startPosition <= position && position <= getEndPositionInLine();
-	}
 
 }

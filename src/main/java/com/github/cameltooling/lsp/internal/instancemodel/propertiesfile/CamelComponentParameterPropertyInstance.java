@@ -32,23 +32,21 @@ import com.github.cameltooling.lsp.internal.instancemodel.ILineRangeDefineable;
  * it is used to represents "delay"
  * 
  */
-public class CamelComponentParameterPropertyFileInstance implements ILineRangeDefineable {
+public class CamelComponentParameterPropertyInstance implements ILineRangeDefineable {
 
-	private CompletableFuture<CamelCatalog> camelCatalog;
 	private String componentParameter;
-	private CamelComponentPropertyFilekey camelComponentPropertyFilekey;
+	private CamelComponentPropertyKey camelComponentPropertykey;
 	private int startCharacterInLine;
 
-	public CamelComponentParameterPropertyFileInstance(CompletableFuture<CamelCatalog> camelCatalog, String componentParameter, int startCharacterInLine, CamelComponentPropertyFilekey camelComponentPropertyFilekey) {
-		this.camelCatalog = camelCatalog;
+	public CamelComponentParameterPropertyInstance(String componentParameter, int startCharacterInLine, CamelComponentPropertyKey camelComponentPropertyKey) {
 		this.componentParameter = componentParameter;
 		this.startCharacterInLine = startCharacterInLine;
-		this.camelComponentPropertyFilekey = camelComponentPropertyFilekey;
+		this.camelComponentPropertykey = camelComponentPropertyKey;
 	}
 
 	@Override
 	public int getLine() {
-		return camelComponentPropertyFilekey.getLine();
+		return camelComponentPropertykey.getLine();
 	}
 
 	@Override
@@ -61,10 +59,10 @@ public class CamelComponentParameterPropertyFileInstance implements ILineRangeDe
 		return startCharacterInLine + componentParameter.length();
 	}
 
-	public CompletableFuture<List<CompletionItem>> getCompletions(Position position) {
-		CamelPropertyFileValueInstance camelPropertyFileValueInstance = camelComponentPropertyFilekey.getCamelPropertyFileKeyInstance().getCamelPropertyFileEntryInstance().getCamelPropertyFileValueInstance();
+	public CompletableFuture<List<CompletionItem>> getCompletions(Position position, CompletableFuture<CamelCatalog> camelCatalog) {
+		CamelPropertyValueInstance camelPropertyFileValueInstance = camelComponentPropertykey.getCamelPropertyKeyInstance().getCamelPropertyEntryInstance().getCamelPropertyValueInstance();
 		String startComponentProperty = componentParameter.substring(0, position.getCharacter() - getStartPositionInLine());
-		return camelCatalog.thenApply(new CamelComponentOptionNamesCompletionFuture(camelComponentPropertyFilekey.getComponentId(), this, camelPropertyFileValueInstance, startComponentProperty));
+		return camelCatalog.thenApply(new CamelComponentOptionNamesCompletionFuture(camelComponentPropertykey.getComponentId(), this, camelPropertyFileValueInstance, startComponentProperty));
 	}
 
 	public String getProperty() {

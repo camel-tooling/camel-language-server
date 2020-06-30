@@ -27,19 +27,19 @@ import org.eclipse.lsp4j.TextDocumentItem;
 import com.github.cameltooling.lsp.internal.instancemodel.ILineRangeDefineable;
 
 /**
- * Represents one entry in properties file. For instance, the whole entry "camel.component.timer.delay=1000"
+ * Represents one entry in properties file or in Camel K modeline. For instance, the whole entry "camel.component.timer.delay=1000"
  *
  */
-public class CamelPropertyFileEntryInstance implements ILineRangeDefineable {
+public class CamelPropertyEntryInstance implements ILineRangeDefineable {
 	
-	private CamelPropertyFileKeyInstance camelPropertyFileKeyInstance;
-	private CamelPropertyFileValueInstance camelPropertyFileValueInstance;
+	private CamelPropertyKeyInstance camelPropertyKeyInstance;
+	private CamelPropertyValueInstance camelPropertyValueInstance;
 	private String line;
-	private int lineNumber;
+	private Position startPosition;
 
-	public CamelPropertyFileEntryInstance(CompletableFuture<CamelCatalog> camelCatalog, String line, int lineNumber, TextDocumentItem textDocumentItem) {
+	public CamelPropertyEntryInstance(String line, Position startPosition, TextDocumentItem textDocumentItem) {
 		this.line = line;
-		this.lineNumber = lineNumber;
+		this.startPosition = startPosition;
 		int indexOf = line.indexOf('=');
 		String camelPropertyFileKeyInstanceString;
 		String camelPropertyFileValueInstanceString;
@@ -50,37 +50,37 @@ public class CamelPropertyFileEntryInstance implements ILineRangeDefineable {
 			camelPropertyFileKeyInstanceString = line;
 			camelPropertyFileValueInstanceString = null;
 		}
-		camelPropertyFileKeyInstance = new CamelPropertyFileKeyInstance(camelCatalog, camelPropertyFileKeyInstanceString, this);
-		camelPropertyFileValueInstance = new CamelPropertyFileValueInstance(camelCatalog, camelPropertyFileValueInstanceString, camelPropertyFileKeyInstance, textDocumentItem);
+		camelPropertyKeyInstance = new CamelPropertyKeyInstance(camelPropertyFileKeyInstanceString, this);
+		camelPropertyValueInstance = new CamelPropertyValueInstance(camelPropertyFileValueInstanceString, camelPropertyKeyInstance, textDocumentItem);
 	}
 	
-	public CompletableFuture<List<CompletionItem>> getCompletions(Position position) {
-		if (position.getCharacter() <= camelPropertyFileKeyInstance.getEndposition()) {
-			return camelPropertyFileKeyInstance.getCompletions(position);
+	public CompletableFuture<List<CompletionItem>> getCompletions(Position position, CompletableFuture<CamelCatalog> camelCatalog) {
+		if (position.getCharacter() <= camelPropertyKeyInstance.getEndposition()) {
+			return camelPropertyKeyInstance.getCompletions(position, camelCatalog);
 		} else {
-			return camelPropertyFileValueInstance.getCompletions(position);
+			return camelPropertyValueInstance.getCompletions(position, camelCatalog);
 		}
 	}
 	
-	CamelPropertyFileKeyInstance getCamelPropertyFileKeyInstance() {
-		return camelPropertyFileKeyInstance;
+	CamelPropertyKeyInstance getCamelPropertyKeyInstance() {
+		return camelPropertyKeyInstance;
 	}
 
-	CamelPropertyFileValueInstance getCamelPropertyFileValueInstance() {
-		return camelPropertyFileValueInstance;
+	CamelPropertyValueInstance getCamelPropertyValueInstance() {
+		return camelPropertyValueInstance;
 	}
 
 	public int getLine() {
-		return lineNumber;
+		return startPosition.getLine();
 	}
 
 	@Override
 	public int getStartPositionInLine() {
-		return 0;
+		return startPosition.getCharacter();
 	}
 
 	@Override
 	public int getEndPositionInLine() {
-		return line.length();
+		return getStartPositionInLine() + line.length();
 	}
 }

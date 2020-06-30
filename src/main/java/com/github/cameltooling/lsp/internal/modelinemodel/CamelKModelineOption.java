@@ -49,6 +49,8 @@ public class CamelKModelineOption implements ILineRangeDefineable {
 				return new CamelKModelineTraitOption(value, startPosition);
 			} else if(CamelKModelineOptionNames.OPTION_NAME_DEPENDENCY.equals(optionName)) {
 				return new CamelKModelineDependencyOption(value, startPosition);
+			} else if(CamelKModelineOptionNames.OPTION_NAME_PROPERTY.equals(optionName)) {
+				return new CamelKModelinePropertyOption(value, startPosition);
 			} else {
 				return new GenericCamelKModelineOptionValue(value, startPosition);
 			}

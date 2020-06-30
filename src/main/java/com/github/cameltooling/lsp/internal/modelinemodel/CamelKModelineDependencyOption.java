@@ -50,11 +50,6 @@ public class CamelKModelineDependencyOption implements ICamelKModelineOptionValu
 	public String getValueAsString() {
 		return value;
 	}
-
-	@Override
-	public boolean isInRange(int position) {
-		return startPosition <= position && position <= getEndPositionInLine();
-	}
 	
 	@Override
 	public CompletableFuture<List<CompletionItem>> getCompletions(int position, CompletableFuture<CamelCatalog> camelCatalog) {

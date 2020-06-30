@@ -43,15 +43,25 @@ class CamelPropertiesTopLevelCompletionTest extends AbstractCamelLanguageServerT
 	}
 	
 	@Test
-	void testProvideNoCompletion() throws Exception {
+	void testProvideCompletionOnSecondLine() throws Exception {
+		String fileName = "a.properties";
+		CamelLanguageServer camelLanguageServer = initializeLanguageServer(fileName, new TextDocumentItem(fileName, CamelLanguageServer.LANGUAGE_ID, 0, "whateverfirstline\ncamel."));
+		
+		CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = getCompletionFor(camelLanguageServer, new Position(1, 6), fileName);
+		
+		assertThat(completions.get().getLeft()).hasSize(4);
+	}
+	
+	@Test
+	void testProvideCompletionForCamel() throws Exception {
 		CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = retrieveCompletion(new Position(0, 0));
 		
-		assertThat(completions.get().getLeft()).isEmpty();
+		assertThat(completions.get().getLeft().get(0).getLabel()).isEqualTo("camel.");
 	}
 	
 	protected CompletableFuture<Either<List<CompletionItem>, CompletionList>> retrieveCompletion(Position position) throws URISyntaxException, InterruptedException, ExecutionException {
 		String fileName = "a.properties";
-		CamelLanguageServer camelLanguageServer = initializeLanguageServer(fileName, new TextDocumentItem(fileName, CamelLanguageServer.LANGUAGE_ID, 0, "camel."));
+		CamelLanguageServer camelLanguageServer = initializeLanguageServer(fileName, new TextDocumentItem(fileName, CamelLanguageServer.LANGUAGE_ID, 0, "camel.\ncamel."));
 		return getCompletionFor(camelLanguageServer, position, fileName);
 	}
 }

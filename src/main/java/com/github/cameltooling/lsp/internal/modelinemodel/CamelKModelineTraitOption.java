@@ -64,11 +64,6 @@ public class CamelKModelineTraitOption implements ICamelKModelineOptionValue {
 	public String getValueAsString() {
 		return optionValue;
 	}
-
-	@Override
-	public boolean isInRange(int position) {
-		return startPosition <= position && position <= endPosition;
-	}
 	
 	@Override
 	public CompletableFuture<List<CompletionItem>> getCompletions(int position, CompletableFuture<CamelCatalog> camelCatalog) {

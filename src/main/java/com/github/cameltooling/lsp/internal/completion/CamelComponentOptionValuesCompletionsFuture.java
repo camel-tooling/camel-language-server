@@ -27,8 +27,8 @@ import java.util.stream.Stream;
 import org.apache.camel.catalog.CamelCatalog;
 import org.eclipse.lsp4j.CompletionItem;
 
-import com.github.cameltooling.lsp.internal.instancemodel.propertiesfile.CamelComponentPropertyFilekey;
-import com.github.cameltooling.lsp.internal.instancemodel.propertiesfile.CamelPropertyFileValueInstance;
+import com.github.cameltooling.lsp.internal.instancemodel.propertiesfile.CamelComponentPropertyKey;
+import com.github.cameltooling.lsp.internal.instancemodel.propertiesfile.CamelPropertyValueInstance;
 import com.github.cameltooling.model.ComponentOptionModel;
 import com.github.cameltooling.model.util.ModelHelper;
 
@@ -36,11 +36,11 @@ public class CamelComponentOptionValuesCompletionsFuture implements Function<Cam
 	
 	private static final String BOOLEAN_TYPE = "boolean";
 	
-	private CamelPropertyFileValueInstance camelPropertyFileValueInstance;
+	private CamelPropertyValueInstance camelPropertyFileValueInstance;
 
 	private String startFilter;
 
-	public CamelComponentOptionValuesCompletionsFuture(CamelPropertyFileValueInstance camelPropertyFileValueInstance, String startFilter) {
+	public CamelComponentOptionValuesCompletionsFuture(CamelPropertyValueInstance camelPropertyFileValueInstance, String startFilter) {
 		this.camelPropertyFileValueInstance = camelPropertyFileValueInstance;
 		this.startFilter = startFilter;
 	}
@@ -76,7 +76,7 @@ public class CamelComponentOptionValuesCompletionsFuture implements Function<Cam
 	}
 
 	private Optional<ComponentOptionModel> retrieveEndpointOptionModel(CamelCatalog camelCatalog) {
-		CamelComponentPropertyFilekey camelComponentPropertyFilekey = camelPropertyFileValueInstance.getKey().getCamelComponentPropertyFilekey();
+		CamelComponentPropertyKey camelComponentPropertyFilekey = camelPropertyFileValueInstance.getKey().getCamelComponentPropertyKey();
 		if(camelComponentPropertyFilekey != null) {
 			String componentId = camelComponentPropertyFilekey.getComponentId();
 			String keyName = camelComponentPropertyFilekey.getComponentProperty();

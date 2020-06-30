@@ -18,44 +18,42 @@ package com.github.cameltooling.lsp.internal.instancemodel.propertiesfile;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.util.concurrent.CompletableFuture;
-
-import org.apache.camel.catalog.CamelCatalog;
+import org.eclipse.lsp4j.Position;
 import org.eclipse.lsp4j.TextDocumentItem;
 import org.junit.jupiter.api.Test;
 
 import com.github.cameltooling.lsp.internal.CamelLanguageServer;
 
-class CamelPropertyFileEntryInstanceTest {
+class CamelPropertyEntryInstanceTest {
 
 	@Test
 	void testEmpty() throws Exception {
-		CamelPropertyFileEntryInstance cpfei = createModel("");
-		assertThat(cpfei.getCamelPropertyFileKeyInstance().getCamelPropertyFileKey()).isEmpty();
+		CamelPropertyEntryInstance cpfei = createModel("");
+		assertThat(cpfei.getCamelPropertyKeyInstance().getCamelPropertyKey()).isEmpty();
 	}
 	
 	@Test
 	void testKey() throws Exception {
-		CamelPropertyFileEntryInstance cpfei = createModel("camel.akey=avalue");
-		assertThat(cpfei.getCamelPropertyFileKeyInstance().getCamelPropertyFileKey()).isEqualTo("camel.akey");
+		CamelPropertyEntryInstance cpfei = createModel("camel.akey=avalue");
+		assertThat(cpfei.getCamelPropertyKeyInstance().getCamelPropertyKey()).isEqualTo("camel.akey");
 	}
 	
 	@Test
 	void testComponent() throws Exception {
-		CamelPropertyFileEntryInstance cpfei = createModel("camel.component.acomponentid.akey=avalue");
-		assertThat(cpfei.getCamelPropertyFileKeyInstance().getCamelPropertyFileKey()).isEqualTo("camel.component.acomponentid.akey");
-		assertThat(cpfei.getCamelPropertyFileKeyInstance().getCamelComponentPropertyFilekey().getComponentId()).isEqualTo("acomponentid");
-		assertThat(cpfei.getCamelPropertyFileKeyInstance().getCamelComponentPropertyFilekey().getComponentProperty()).isEqualTo("akey");
+		CamelPropertyEntryInstance cpfei = createModel("camel.component.acomponentid.akey=avalue");
+		assertThat(cpfei.getCamelPropertyKeyInstance().getCamelPropertyKey()).isEqualTo("camel.component.acomponentid.akey");
+		assertThat(cpfei.getCamelPropertyKeyInstance().getCamelComponentPropertyKey().getComponentId()).isEqualTo("acomponentid");
+		assertThat(cpfei.getCamelPropertyKeyInstance().getCamelComponentPropertyKey().getComponentProperty()).isEqualTo("akey");
 	}
 	
 	@Test
 	void testValue() throws Exception {
-		CamelPropertyFileEntryInstance cpfei = createModel("camel.akey=avalue");
-		assertThat(cpfei.getCamelPropertyFileValueInstance().getCamelPropertyFileValue()).isEqualTo("avalue");
+		CamelPropertyEntryInstance cpfei = createModel("camel.akey=avalue");
+		assertThat(cpfei.getCamelPropertyValueInstance().getCamelPropertyFileValue()).isEqualTo("avalue");
 	}
 
-	private CamelPropertyFileEntryInstance createModel(String lineToTest) {
-		return new CamelPropertyFileEntryInstance(CompletableFuture.completedFuture((CamelCatalog)null), lineToTest, 0, createTextDocumentItem(lineToTest));
+	private CamelPropertyEntryInstance createModel(String lineToTest) {
+		return new CamelPropertyEntryInstance(lineToTest, new Position(0,0), createTextDocumentItem(lineToTest));
 	}
 
 	private TextDocumentItem createTextDocumentItem(String value) {
