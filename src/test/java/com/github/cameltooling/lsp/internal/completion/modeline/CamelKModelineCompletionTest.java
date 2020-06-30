@@ -43,6 +43,17 @@ class CamelKModelineCompletionTest extends AbstractCamelLanguageServerTest {
 		checkTraitCompletionAvailable(completionItems);
 	}
 	
+	@Test
+	void testProvideCompletionWithPartialName() throws Exception {
+		CamelLanguageServer camelLanguageServer = initializeLanguageServer("// camel-k: tr");
+		
+		CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = getCompletionFor(camelLanguageServer, new Position(0, 14));
+		
+		List<CompletionItem> completionItems = completions.get().getLeft();
+		assertThat(completionItems).hasSize(1);
+		checkTraitCompletionAvailable(completionItems);
+	}
+	
 	private void checkTraitCompletionAvailable(List<CompletionItem> completionItems) {
 		CompletionItem traitCompletionItem = new CompletionItem("trait");
 		traitCompletionItem.setDocumentation("Configure a trait. E.g. \"trait=service.enabled=false\"");
@@ -65,15 +76,6 @@ class CamelKModelineCompletionTest extends AbstractCamelLanguageServerTest {
 		CamelLanguageServer camelLanguageServer = initializeLanguageServer("// camel-k: ");
 		
 		CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = getCompletionFor(camelLanguageServer, new Position(0, 5));
-		
-		assertThat(completions.get().getLeft()).isEmpty();
-	}
-	
-	@Test
-	void testProvideNoCompletionInsideOption() throws Exception {
-		CamelLanguageServer camelLanguageServer = initializeLanguageServer("// camel-k: trait=quarkus.enabled=true");
-		
-		CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = getCompletionFor(camelLanguageServer, new Position(0, 14));
 		
 		assertThat(completions.get().getLeft()).isEmpty();
 	}
