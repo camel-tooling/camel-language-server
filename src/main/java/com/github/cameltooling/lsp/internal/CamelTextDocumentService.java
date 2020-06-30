@@ -151,7 +151,7 @@ public class CamelTextDocumentService implements TextDocumentService {
 		LOGGER.info("hover: {}", hoverParams.getTextDocument());
 		TextDocumentItem textDocumentItem = openedDocuments.get(hoverParams.getTextDocument().getUri());
 		if(isOnCamelKModeline(hoverParams.getPosition().getLine(), textDocumentItem)) {
-			return new CamelKModelineHoverProcessor(textDocumentItem).getHover(hoverParams.getPosition().getCharacter());
+			return new CamelKModelineHoverProcessor(textDocumentItem).getHover(hoverParams.getPosition().getCharacter(), getCamelCatalog());
 		} else {
 			return new HoverProcessor(textDocumentItem, getCamelCatalog()).getHover(hoverParams.getPosition());
 		}
