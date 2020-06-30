@@ -23,6 +23,8 @@ import java.util.stream.Collectors;
 
 import org.eclipse.lsp4j.CompletionItem;
 
+import com.github.cameltooling.lsp.internal.completion.FilterPredicateUtils;
+
 public class CamelKModelineOptionNames {
 	
 	private CamelKModelineOptionNames() {}
@@ -56,6 +58,12 @@ public class CamelKModelineOptionNames {
 	
 	public static List<CompletionItem> getCompletionItems() {
 		return COMPLETION_ITEMS;
+	}
+	
+	public static List<CompletionItem> getCompletionItems(String filter) {
+		return getCompletionItems().stream()
+				.filter(FilterPredicateUtils.matchesCompletionFilter(filter))
+				.collect(Collectors.toList());
 	}
 
 	public static String getDescription(String optionName) {

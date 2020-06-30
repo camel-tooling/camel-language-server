@@ -93,8 +93,10 @@ public class CamelKModelineOption implements ILineRangeDefineable {
 	public CompletableFuture<List<CompletionItem>> getCompletions(int position, CompletableFuture<CamelCatalog> camelCatalog) {
 		if(optionValue != null && optionValue.isInRange(position)) {
 			return optionValue.getCompletions(position, camelCatalog);
+		} else {
+			String filter = optionName.substring(0, position - getStartPositionInLine());
+			return CompletableFuture.completedFuture(CamelKModelineOptionNames.getCompletionItems(filter));
 		}
-		return CompletableFuture.completedFuture(Collections.emptyList());
 	}
 	
 	public CompletableFuture<Hover> getHover(int characterPosition, CompletableFuture<CamelCatalog> camelCatalog) {
