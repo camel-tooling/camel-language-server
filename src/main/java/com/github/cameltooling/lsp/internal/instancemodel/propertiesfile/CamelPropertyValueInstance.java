@@ -34,35 +34,33 @@ import com.github.cameltooling.lsp.internal.parser.CamelKafkaUtil;
  * For instance, with "camel.component.timer.delay=1000",
  * it is used to represents "1000"
  */
-public class CamelPropertyFileValueInstance implements ILineRangeDefineable {
+public class CamelPropertyValueInstance implements ILineRangeDefineable {
 
-	private CompletableFuture<CamelCatalog> camelCatalog;
-	private String camelPropertyFileValue;
-	private CamelPropertyFileKeyInstance key;
+	private String camelPropertyValue;
+	private CamelPropertyKeyInstance key;
 
 	private TextDocumentItem textDocumentItem;
 
-	public CamelPropertyFileValueInstance(CompletableFuture<CamelCatalog> camelCatalog, String camelPropertyFileValue, CamelPropertyFileKeyInstance key, TextDocumentItem textDocumentItem) {
-		this.camelCatalog = camelCatalog;
-		this.camelPropertyFileValue = camelPropertyFileValue;
+	public CamelPropertyValueInstance(String camelPropertyFileValue, CamelPropertyKeyInstance key, TextDocumentItem textDocumentItem) {
+		this.camelPropertyValue = camelPropertyFileValue;
 		this.key = key;
 		this.textDocumentItem = textDocumentItem;
 	}
 
-	public CompletableFuture<List<CompletionItem>> getCompletions(Position position) {
-		if (new CamelKafkaUtil().isCamelURIForKafka(key.getCamelPropertyFileKey())) {
+	public CompletableFuture<List<CompletionItem>> getCompletions(Position position, CompletableFuture<CamelCatalog> camelCatalog) {
+		if (new CamelKafkaUtil().isCamelURIForKafka(key.getCamelPropertyKey())) {
 			return new CamelEndpointCompletionProcessor(textDocumentItem, camelCatalog).getCompletions(position);
 		} else {
-			String startFilter = camelPropertyFileValue.substring(0, position.getCharacter() - key.getEndposition() -1);
+			String startFilter = camelPropertyValue.substring(0, position.getCharacter() - key.getEndposition() -1);
 			return camelCatalog.thenApply(new CamelComponentOptionValuesCompletionsFuture(this, startFilter));
 		}
 	}
 
 	public String getCamelPropertyFileValue() {
-		return camelPropertyFileValue;
+		return camelPropertyValue;
 	}
 	
-	public CamelPropertyFileKeyInstance getKey() {
+	public CamelPropertyKeyInstance getKey() {
 		return key;
 	}
 
@@ -78,7 +76,7 @@ public class CamelPropertyFileValueInstance implements ILineRangeDefineable {
 
 	@Override
 	public int getEndPositionInLine() {
-		return getStartPositionInLine() + (camelPropertyFileValue != null ? camelPropertyFileValue.length() : 0);
+		return getStartPositionInLine() + (camelPropertyValue != null ? camelPropertyValue.length() : 0);
 	}
 
 }

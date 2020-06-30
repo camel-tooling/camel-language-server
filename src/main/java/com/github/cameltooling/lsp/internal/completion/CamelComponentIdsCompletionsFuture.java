@@ -23,15 +23,15 @@ import java.util.stream.Collectors;
 import org.apache.camel.catalog.CamelCatalog;
 import org.eclipse.lsp4j.CompletionItem;
 
-import com.github.cameltooling.lsp.internal.instancemodel.propertiesfile.CamelComponentNamePropertyFileInstance;
+import com.github.cameltooling.lsp.internal.instancemodel.propertiesfile.CamelComponentNamePropertyInstance;
 import com.github.cameltooling.model.util.ModelHelper;
 
 public class CamelComponentIdsCompletionsFuture implements Function<CamelCatalog, List<CompletionItem>> {
 
 	private String startFilter;
-	private CamelComponentNamePropertyFileInstance camelComponentNamePropertyFileInstance;
+	private CamelComponentNamePropertyInstance camelComponentNamePropertyFileInstance;
 
-	public CamelComponentIdsCompletionsFuture(CamelComponentNamePropertyFileInstance camelComponentNamePropertyFileInstance, String startFilter) {
+	public CamelComponentIdsCompletionsFuture(CamelComponentNamePropertyInstance camelComponentNamePropertyFileInstance, String startFilter) {
 		this.camelComponentNamePropertyFileInstance = camelComponentNamePropertyFileInstance;
 		this.startFilter = startFilter;
 	}

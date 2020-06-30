@@ -25,7 +25,7 @@ import org.eclipse.lsp4j.CompletionItem;
 import org.eclipse.lsp4j.Position;
 import org.eclipse.lsp4j.TextDocumentItem;
 
-import com.github.cameltooling.lsp.internal.instancemodel.propertiesfile.CamelPropertyFileEntryInstance;
+import com.github.cameltooling.lsp.internal.instancemodel.propertiesfile.CamelPropertyEntryInstance;
 import com.github.cameltooling.lsp.internal.parser.ParserFileHelperUtil;
 
 public class CamelPropertiesCompletionProcessor {
@@ -41,7 +41,7 @@ public class CamelPropertiesCompletionProcessor {
 	public CompletableFuture<List<CompletionItem>> getCompletions(Position position) {
 		if (textDocumentItem != null) {
 			String line = new ParserFileHelperUtil().getLine(textDocumentItem, position);
-			return new CamelPropertyFileEntryInstance(camelCatalog, line, position.getLine(), textDocumentItem).getCompletions(position);
+			return new CamelPropertyEntryInstance(line, new Position(position.getLine(), 0), textDocumentItem).getCompletions(position, camelCatalog);
 		}
 		return CompletableFuture.completedFuture(Collections.emptyList());
 	}

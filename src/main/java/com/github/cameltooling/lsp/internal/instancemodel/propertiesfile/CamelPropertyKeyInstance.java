@@ -33,32 +33,34 @@ import com.github.cameltooling.lsp.internal.instancemodel.ILineRangeDefineable;
  * it is used to represents "camel.component.timer.delay"
  * 
  */
-public class CamelPropertyFileKeyInstance implements ILineRangeDefineable {
+public class CamelPropertyKeyInstance implements ILineRangeDefineable {
 	
 	private static final String CAMEL_KEY_PREFIX = "camel.";
 	static final String CAMEL_COMPONENT_KEY_PREFIX = "camel.component.";
 	
-	private String camelPropertyFileKey;
-	private CamelComponentPropertyFilekey camelComponentPropertyFilekey;
-	private CamelPropertyFileEntryInstance camelPropertyFileEntryInstance;
+	private String camelPropertyKey;
+	private CamelComponentPropertyKey camelComponentPropertyKey;
+	private CamelPropertyEntryInstance camelPropertyEntryInstance;
 
-	public CamelPropertyFileKeyInstance(CompletableFuture<CamelCatalog> camelCatalog, String camelPropertyFileKey, CamelPropertyFileEntryInstance camelPropertyFileEntryInstance) {
-		this.camelPropertyFileKey = camelPropertyFileKey;
-		this.camelPropertyFileEntryInstance = camelPropertyFileEntryInstance;
+	public CamelPropertyKeyInstance(String camelPropertyFileKey, CamelPropertyEntryInstance camelPropertyEntryInstance) {
+		this.camelPropertyKey = camelPropertyFileKey;
+		this.camelPropertyEntryInstance = camelPropertyEntryInstance;
 		if (camelPropertyFileKey.startsWith(CAMEL_COMPONENT_KEY_PREFIX)) {
-			camelComponentPropertyFilekey = new CamelComponentPropertyFilekey(camelCatalog, camelPropertyFileKey.substring(CAMEL_COMPONENT_KEY_PREFIX.length()), this);
+			camelComponentPropertyKey = new CamelComponentPropertyKey(camelPropertyFileKey.substring(CAMEL_COMPONENT_KEY_PREFIX.length()), this);
 		}
 	}
 
 	public int getEndposition() {
-		return camelPropertyFileKey.length();
+		return camelPropertyEntryInstance.getStartPositionInLine() + camelPropertyKey.length();
 	}
 
-	public CompletableFuture<List<CompletionItem>> getCompletions(Position position) {
-		if (CAMEL_KEY_PREFIX.length() == position.getCharacter() && camelPropertyFileKey.startsWith(CAMEL_KEY_PREFIX)) {
+	public CompletableFuture<List<CompletionItem>> getCompletions(Position position, CompletableFuture<CamelCatalog> camelCatalog) {
+		if(position.getCharacter() == getStartPositionInLine()) {
+			return CompletableFuture.completedFuture(Collections.singletonList(new CompletionItem(CAMEL_KEY_PREFIX)));
+		} else if (getStartPositionInLine() + CAMEL_KEY_PREFIX.length() == position.getCharacter() && camelPropertyKey.startsWith(CAMEL_KEY_PREFIX)) {
 			return getTopLevelCamelCompletion();
-		} else if(camelComponentPropertyFilekey != null && camelComponentPropertyFilekey.isInRange(position.getCharacter())) {
-			return camelComponentPropertyFilekey.getCompletions(position);
+		} else if(camelComponentPropertyKey != null && camelComponentPropertyKey.isInRange(position.getCharacter())) {
+			return camelComponentPropertyKey.getCompletions(position, camelCatalog);
 		}
 		return CompletableFuture.completedFuture(Collections.emptyList());
 	}
@@ -73,30 +75,30 @@ public class CamelPropertyFileKeyInstance implements ILineRangeDefineable {
 		return CompletableFuture.completedFuture(completions);
 	}
 
-	public String getCamelPropertyFileKey() {
-		return camelPropertyFileKey;
+	public String getCamelPropertyKey() {
+		return camelPropertyKey;
 	}
 
-	public CamelComponentPropertyFilekey getCamelComponentPropertyFilekey() {
-		return camelComponentPropertyFilekey;
+	public CamelComponentPropertyKey getCamelComponentPropertyKey() {
+		return camelComponentPropertyKey;
 	}
 
-	public CamelPropertyFileEntryInstance getCamelPropertyFileEntryInstance() {
-		return camelPropertyFileEntryInstance;
+	public CamelPropertyEntryInstance getCamelPropertyEntryInstance() {
+		return camelPropertyEntryInstance;
 	}
 
 	public int getLine() {
-		return camelPropertyFileEntryInstance.getLine();
+		return camelPropertyEntryInstance.getLine();
 	}
 
 	@Override
 	public int getStartPositionInLine() {
-		return 0;
+		return camelPropertyEntryInstance.getStartPositionInLine();
 	}
 
 	@Override
 	public int getEndPositionInLine() {
-		return camelPropertyFileKey.length();
+		return camelPropertyKey.length();
 	}
 
 }

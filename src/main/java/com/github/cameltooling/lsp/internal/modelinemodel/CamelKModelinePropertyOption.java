@@ -16,34 +16,45 @@
  */
 package com.github.cameltooling.lsp.internal.modelinemodel;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 import org.apache.camel.catalog.CamelCatalog;
 import org.eclipse.lsp4j.CompletionItem;
-import org.eclipse.lsp4j.Hover;
+import org.eclipse.lsp4j.Position;
 
-import com.github.cameltooling.lsp.internal.instancemodel.ILineRangeDefineable;
+import com.github.cameltooling.lsp.internal.instancemodel.propertiesfile.CamelPropertyEntryInstance;
 
-public interface ICamelKModelineOptionValue extends ILineRangeDefineable {
+public class CamelKModelinePropertyOption implements ICamelKModelineOptionValue {
 
-	public default int getLine() {
-		return 0;
+	private CamelPropertyEntryInstance value;
+	private int startPosition;
+	private String fullStringValue;
+
+	public CamelKModelinePropertyOption(String value, int startPosition) {
+		this.value = new CamelPropertyEntryInstance(value, new Position(0, startPosition), null);
+		this.fullStringValue = value;
+		this.startPosition = startPosition;
 	}
 
-	public String getValueAsString();
-
-	public default CompletableFuture<List<CompletionItem>> getCompletions(int position, CompletableFuture<CamelCatalog> camelCatalog) {
-		return CompletableFuture.completedFuture(Collections.emptyList());
+	@Override
+	public int getStartPositionInLine() {
+		return startPosition;
 	}
 
-	public default boolean isInRange(int position) {
-		return getStartPositionInLine() <= position && position <= getEndPositionInLine();
+	@Override
+	public int getEndPositionInLine() {
+		return value.getEndPositionInLine();
 	}
 
-	public default CompletableFuture<Hover> getHover(int characterPosition) {
-		return CompletableFuture.completedFuture(null);
+	@Override
+	public String getValueAsString() {
+		return fullStringValue;
+	}
+	
+	@Override
+	public CompletableFuture<List<CompletionItem>> getCompletions(int positionInLine, CompletableFuture<CamelCatalog> camelCatalog) {
+		return value.getCompletions(new Position(0, positionInLine), camelCatalog);
 	}
 
 }
