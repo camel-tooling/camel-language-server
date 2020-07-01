@@ -36,11 +36,13 @@ public class DiagnosticRunner {
 	private CamelLanguageServer camelLanguageServer;
 	private EndpointDiagnosticService endpointDiagnosticService;
 	private ConfigurationPropertiesDiagnosticService configurationPropertiesDiagnosticService;
+	private CamelKModelineDiagnosticService camelKModelineDiagnosticService;
 
 	public DiagnosticRunner(CompletableFuture<CamelCatalog> camelCatalog, CamelLanguageServer camelLanguageServer) {
 		this.camelLanguageServer = camelLanguageServer;
 		endpointDiagnosticService = new EndpointDiagnosticService(camelCatalog);
 		configurationPropertiesDiagnosticService = new ConfigurationPropertiesDiagnosticService(camelCatalog);
+		camelKModelineDiagnosticService = new CamelKModelineDiagnosticService();
 	}
 
 	public void compute(DidSaveTextDocumentParams params) {
@@ -65,6 +67,7 @@ public class DiagnosticRunner {
 			List<Diagnostic> diagnostics = endpointDiagnosticService.converToLSPDiagnostics(camelText, endpointErrors, openedDocument);
 			Map<String, ConfigurationPropertiesValidationResult> configurationPropertiesErrors = configurationPropertiesDiagnosticService.computeCamelConfigurationPropertiesErrors(camelText, uri);
 			diagnostics.addAll(configurationPropertiesDiagnosticService.converToLSPDiagnostics(configurationPropertiesErrors));
+			diagnostics.addAll(camelKModelineDiagnosticService.compute(camelText));
 			camelLanguageServer.getClient().publishDiagnostics(new PublishDiagnosticsParams(uri, diagnostics));
 		});
 	}

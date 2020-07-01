@@ -33,12 +33,25 @@ public class CamelKModelineTraitOption implements ICamelKModelineOptionValue {
 	private int endPosition;
 	private String optionValue;
 	private String traitDefinitionName;
+	private String traitPropertyName;
 
 	public CamelKModelineTraitOption(String optionValue, int startPosition) {
 		this.optionValue = optionValue;
 		this.startPosition = startPosition;
 		this.endPosition = startPosition + optionValue.length();
 		this.traitDefinitionName = computeTraitDefinitionName(optionValue);
+		this.traitPropertyName = computeTraitPropertyName(optionValue);
+	}
+
+	private String computeTraitPropertyName(String optionValue) {
+		int indexOfDotSeparator = optionValue.indexOf('.');
+		if(indexOfDotSeparator != -1) {
+			int indexOfEqualSeparator = optionValue.indexOf('=', indexOfDotSeparator);
+			if(indexOfEqualSeparator != -1) {
+				return optionValue.substring(indexOfDotSeparator + 1, indexOfEqualSeparator);
+			}
+		}
+		return null;
 	}
 
 	private String computeTraitDefinitionName(String optionValue) {
@@ -104,6 +117,14 @@ public class CamelKModelineTraitOption implements ICamelKModelineOptionValue {
 			}
 		}
 		return ICamelKModelineOptionValue.super.getHover(characterPosition, camelCatalog);
+	}
+
+	public String getTraitDefinitionName() {
+		return traitDefinitionName;
+	}
+
+	public String getTraitPropertyName() {
+		return traitPropertyName;
 	}
 
 }

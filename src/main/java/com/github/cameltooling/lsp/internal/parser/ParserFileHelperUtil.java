@@ -22,12 +22,14 @@ import org.eclipse.lsp4j.TextDocumentItem;
 public class ParserFileHelperUtil {
 
 	public String getLine(TextDocumentItem textDocumentItem, Position position) {
-		int line = position.getLine();
-		return getLine(textDocumentItem, line);
+		return getLine(textDocumentItem, position.getLine());
 	}
 	
 	public String getLine(TextDocumentItem textDocumentItem, int line) {
-		String text = textDocumentItem.getText();
+		return getLine(textDocumentItem.getText(), line);
+	}
+
+	public String getLine(String text, int line) {
 		String[] lines = text.split("\\r?\\n", line + 2);
 		if (lines.length >= line + 1) {
 			return lines[line];
