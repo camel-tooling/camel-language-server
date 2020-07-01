@@ -16,20 +16,25 @@
  */
 package com.github.cameltooling.lsp.internal.instancemodel.propertiesfile;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 import org.apache.camel.catalog.CamelCatalog;
 import org.eclipse.lsp4j.CompletionItem;
+import org.eclipse.lsp4j.Hover;
 import org.eclipse.lsp4j.Position;
+import org.eclipse.lsp4j.jsonrpc.messages.Either;
 
 import com.github.cameltooling.lsp.internal.completion.CamelComponentOptionNamesCompletionFuture;
 import com.github.cameltooling.lsp.internal.instancemodel.ILineRangeDefineable;
+import com.github.cameltooling.model.ComponentModel;
+import com.github.cameltooling.model.ComponentOptionModel;
+import com.github.cameltooling.model.util.ModelHelper;
 
 /**
- * Represents the subpart component parameter in key.
- * For instance, with "camel.component.timer.delay=1000",
- * it is used to represents "delay"
+ * Represents the subpart component parameter in key. For instance, with
+ * "camel.component.timer.delay=1000", it is used to represents "delay"
  * 
  */
 public class CamelComponentParameterPropertyInstance implements ILineRangeDefineable {
@@ -38,7 +43,8 @@ public class CamelComponentParameterPropertyInstance implements ILineRangeDefine
 	private CamelComponentPropertyKey camelComponentPropertykey;
 	private int startCharacterInLine;
 
-	public CamelComponentParameterPropertyInstance(String componentParameter, int startCharacterInLine, CamelComponentPropertyKey camelComponentPropertyKey) {
+	public CamelComponentParameterPropertyInstance(String componentParameter, int startCharacterInLine,
+			CamelComponentPropertyKey camelComponentPropertyKey) {
 		this.componentParameter = componentParameter;
 		this.startCharacterInLine = startCharacterInLine;
 		this.camelComponentPropertykey = camelComponentPropertyKey;
@@ -59,14 +65,40 @@ public class CamelComponentParameterPropertyInstance implements ILineRangeDefine
 		return startCharacterInLine + componentParameter.length();
 	}
 
-	public CompletableFuture<List<CompletionItem>> getCompletions(Position position, CompletableFuture<CamelCatalog> camelCatalog) {
-		CamelPropertyValueInstance camelPropertyFileValueInstance = camelComponentPropertykey.getCamelPropertyKeyInstance().getCamelPropertyEntryInstance().getCamelPropertyValueInstance();
-		String startComponentProperty = componentParameter.substring(0, position.getCharacter() - getStartPositionInLine());
-		return camelCatalog.thenApply(new CamelComponentOptionNamesCompletionFuture(camelComponentPropertykey.getComponentId(), this, camelPropertyFileValueInstance, startComponentProperty));
+	public CompletableFuture<List<CompletionItem>> getCompletions(Position position,
+			CompletableFuture<CamelCatalog> camelCatalog) {
+		CamelPropertyValueInstance camelPropertyFileValueInstance = camelComponentPropertykey
+				.getCamelPropertyKeyInstance().getCamelPropertyEntryInstance().getCamelPropertyValueInstance();
+		String startComponentProperty = componentParameter.substring(0,
+				position.getCharacter() - getStartPositionInLine());
+		return camelCatalog
+				.thenApply(new CamelComponentOptionNamesCompletionFuture(camelComponentPropertykey.getComponentId(),
+						this, camelPropertyFileValueInstance, startComponentProperty));
 	}
 
 	public String getProperty() {
 		return componentParameter;
+	}
+
+	public CompletableFuture<Hover> getHover(CompletableFuture<CamelCatalog> camelCatalog) {
+		return camelCatalog.thenApply(catalog -> {
+			String componentJSonSchema = catalog.componentJSonSchema(camelComponentPropertykey.getComponentId());
+			if (componentJSonSchema != null) {
+				ComponentModel componentModel = ModelHelper.generateComponentModel(componentJSonSchema, true);
+				if (componentModel != null) {
+					ComponentOptionModel componentOptionModel = componentModel.getComponentOption(getProperty());
+					if (componentOptionModel != null) {
+						String description = componentOptionModel.getDescription();
+						if (description != null) {
+							Hover hover = new Hover();
+							hover.setContents(Collections.singletonList((Either.forLeft(description))));
+							return hover;
+						}
+					}
+				}
+			}
+			return null;
+		});
 	}
 
 }

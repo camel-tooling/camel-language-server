@@ -27,11 +27,11 @@ import com.github.cameltooling.lsp.internal.instancemodel.CamelUriElementInstanc
 import com.github.cameltooling.model.ComponentModel;
 import com.github.cameltooling.model.util.ModelHelper;
 
-public class HoverFuture implements Function<CamelCatalog, Hover> {
+public class CamelURIHoverFuture implements Function<CamelCatalog, Hover> {
 	
 	private CamelUriElementInstance uriElement;
 	
-	public HoverFuture(CamelUriElementInstance uriElement) {
+	public CamelURIHoverFuture(CamelUriElementInstance uriElement) {
 		this.uriElement = uriElement;
 	}
 

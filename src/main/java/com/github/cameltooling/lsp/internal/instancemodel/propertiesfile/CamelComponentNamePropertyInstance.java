@@ -16,20 +16,24 @@
  */
 package com.github.cameltooling.lsp.internal.instancemodel.propertiesfile;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 import org.apache.camel.catalog.CamelCatalog;
 import org.eclipse.lsp4j.CompletionItem;
+import org.eclipse.lsp4j.Hover;
 import org.eclipse.lsp4j.Position;
+import org.eclipse.lsp4j.jsonrpc.messages.Either;
 
 import com.github.cameltooling.lsp.internal.completion.CamelComponentIdsCompletionsFuture;
 import com.github.cameltooling.lsp.internal.instancemodel.ILineRangeDefineable;
+import com.github.cameltooling.model.ComponentModel;
+import com.github.cameltooling.model.util.ModelHelper;
 
 /**
- * Represents the subpart component key.
- * For instance, with "camel.component.timer.delay=1000",
- * it is used to represents "timer"
+ * Represents the subpart component key. For instance, with
+ * "camel.component.timer.delay=1000", it is used to represents "timer"
  * 
  */
 public class CamelComponentNamePropertyInstance implements ILineRangeDefineable {
@@ -37,7 +41,8 @@ public class CamelComponentNamePropertyInstance implements ILineRangeDefineable 
 	private String componentName;
 	private CamelComponentPropertyKey camelComponentPropertyKey;
 
-	public CamelComponentNamePropertyInstance(String componentName, CamelComponentPropertyKey camelComponentPropertyKey) {
+	public CamelComponentNamePropertyInstance(String componentName,
+			CamelComponentPropertyKey camelComponentPropertyKey) {
 		this.componentName = componentName;
 		this.camelComponentPropertyKey = camelComponentPropertyKey;
 	}
@@ -60,11 +65,29 @@ public class CamelComponentNamePropertyInstance implements ILineRangeDefineable 
 	public String getName() {
 		return componentName;
 	}
-	
+
 	public CompletableFuture<List<CompletionItem>> getCompletions(Position position, CompletableFuture<CamelCatalog> camelCatalog) {
 		int characterPosition = position.getCharacter();
 		String componentIdBeforePosition = componentName.substring(0, characterPosition - getStartPositionInLine());
 		return camelCatalog.thenApply(new CamelComponentIdsCompletionsFuture(this, componentIdBeforePosition));
+	}
+
+	public CompletableFuture<Hover> getHover(CompletableFuture<CamelCatalog> camelCatalog) {
+		return camelCatalog.thenApply(catalog -> {
+			String componentJSonSchema = catalog.componentJSonSchema(componentName);
+			if (componentJSonSchema != null) {
+				ComponentModel componentModel = ModelHelper.generateComponentModel(componentJSonSchema, true);
+				if (componentModel != null) {
+					String description = componentModel.getDescription();
+					if (description != null) {
+						Hover hover = new Hover();
+						hover.setContents(Collections.singletonList((Either.forLeft(description))));
+						return hover;
+					}
+				}
+			}
+			return null;
+		});
 	}
 
 }

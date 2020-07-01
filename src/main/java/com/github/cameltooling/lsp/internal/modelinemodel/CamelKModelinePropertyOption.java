@@ -21,6 +21,7 @@ import java.util.concurrent.CompletableFuture;
 
 import org.apache.camel.catalog.CamelCatalog;
 import org.eclipse.lsp4j.CompletionItem;
+import org.eclipse.lsp4j.Hover;
 import org.eclipse.lsp4j.Position;
 
 import com.github.cameltooling.lsp.internal.instancemodel.propertiesfile.CamelPropertyEntryInstance;
@@ -55,6 +56,11 @@ public class CamelKModelinePropertyOption implements ICamelKModelineOptionValue 
 	@Override
 	public CompletableFuture<List<CompletionItem>> getCompletions(int positionInLine, CompletableFuture<CamelCatalog> camelCatalog) {
 		return value.getCompletions(new Position(0, positionInLine), camelCatalog);
+	}
+	
+	@Override
+	public CompletableFuture<Hover> getHover(int characterPosition, CompletableFuture<CamelCatalog> camelCatalog) {
+		return value.getHover(new Position(0, characterPosition), camelCatalog);
 	}
 
 }

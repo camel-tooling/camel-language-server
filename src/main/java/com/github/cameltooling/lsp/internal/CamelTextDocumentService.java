@@ -77,7 +77,7 @@ import com.github.cameltooling.lsp.internal.definition.DefinitionProcessor;
 import com.github.cameltooling.lsp.internal.diagnostic.DiagnosticRunner;
 import com.github.cameltooling.lsp.internal.documentsymbol.DocumentSymbolProcessor;
 import com.github.cameltooling.lsp.internal.hover.CamelKModelineHoverProcessor;
-import com.github.cameltooling.lsp.internal.hover.HoverProcessor;
+import com.github.cameltooling.lsp.internal.hover.CamelURIHoverProcessor;
 import com.github.cameltooling.lsp.internal.parser.CamelKModelineParser;
 import com.github.cameltooling.lsp.internal.parser.ParserFileHelperUtil;
 import com.github.cameltooling.lsp.internal.references.ReferencesProcessor;
@@ -153,7 +153,7 @@ public class CamelTextDocumentService implements TextDocumentService {
 		if(isOnCamelKModeline(hoverParams.getPosition().getLine(), textDocumentItem)) {
 			return new CamelKModelineHoverProcessor(textDocumentItem).getHover(hoverParams.getPosition().getCharacter(), getCamelCatalog());
 		} else {
-			return new HoverProcessor(textDocumentItem, getCamelCatalog()).getHover(hoverParams.getPosition());
+			return new CamelURIHoverProcessor(textDocumentItem, getCamelCatalog()).getHover(hoverParams.getPosition());
 		}
 	}
 
