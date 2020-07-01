@@ -18,6 +18,9 @@ package com.github.cameltooling.lsp.internal.diagnostic;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.Comparator;
+import java.util.List;
+
 import org.eclipse.lsp4j.Diagnostic;
 import org.eclipse.lsp4j.Range;
 import org.junit.jupiter.api.Test;
@@ -27,11 +30,19 @@ class CamelKModelineDiagnosticTest extends AbstractDiagnosticTest {
 	@Test
 	void testDuplicatedTraitsInModeline() throws Exception {
 		testDiagnostic("camelk-with-duplicated-traits-in-modeline", 2, ".java");
-		Diagnostic diagnostic1 = lastPublishedDiagnostics.getDiagnostics().get(0);
+		List<Diagnostic> diagnostics = lastPublishedDiagnostics.getDiagnostics();
+		diagnostics.sort(new Comparator<Diagnostic>() {
+
+			@Override
+			public int compare(Diagnostic d1, Diagnostic d2) {
+				return d1.getRange().getStart().getCharacter() - d2.getRange().getStart().getCharacter();
+			}
+		});
+		Diagnostic diagnostic1 = diagnostics.get(0);
 		Range range1 = diagnostic1.getRange();
 		checkRange(range1, 0, 18, 0, 38);
 		assertThat(diagnostic1.getMessage()).isEqualTo("More than one trait defines the same property: quarkus.enabled");
-		Diagnostic diagnostic2 = lastPublishedDiagnostics.getDiagnostics().get(1);
+		Diagnostic diagnostic2 = diagnostics.get(1);
 		Range range2 = diagnostic2.getRange();
 		checkRange(range2, 0, 45, 0, 66);
 		assertThat(diagnostic2.getMessage()).isEqualTo("More than one trait defines the same property: quarkus.enabled");
