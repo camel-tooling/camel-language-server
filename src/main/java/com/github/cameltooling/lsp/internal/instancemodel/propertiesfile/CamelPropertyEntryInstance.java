@@ -21,6 +21,7 @@ import java.util.concurrent.CompletableFuture;
 
 import org.apache.camel.catalog.CamelCatalog;
 import org.eclipse.lsp4j.CompletionItem;
+import org.eclipse.lsp4j.Hover;
 import org.eclipse.lsp4j.Position;
 import org.eclipse.lsp4j.TextDocumentItem;
 
@@ -82,5 +83,13 @@ public class CamelPropertyEntryInstance implements ILineRangeDefineable {
 	@Override
 	public int getEndPositionInLine() {
 		return getStartPositionInLine() + line.length();
+	}
+
+	public CompletableFuture<Hover> getHover(Position position, CompletableFuture<CamelCatalog> camelCatalog) {
+		if (position.getCharacter() <= camelPropertyKeyInstance.getEndposition()) {
+			return camelPropertyKeyInstance.getHover(position, camelCatalog);
+		} else {
+			return CompletableFuture.completedFuture(null);
+		}
 	}
 }

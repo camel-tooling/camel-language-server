@@ -31,13 +31,13 @@ import com.github.cameltooling.lsp.internal.parser.ParserFileHelper;
 import com.github.cameltooling.lsp.internal.parser.ParserFileHelperFactory;
 import com.github.cameltooling.model.util.StringUtils;
 
-public class HoverProcessor {
+public class CamelURIHoverProcessor {
 	
-	private static final Logger LOGGER = LoggerFactory.getLogger(HoverProcessor.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(CamelURIHoverProcessor.class);
 	private TextDocumentItem textDocumentItem;
 	private CompletableFuture<CamelCatalog> camelCatalog;
 
-	public HoverProcessor(TextDocumentItem textDocumentItem, CompletableFuture<CamelCatalog> camelCatalog) {
+	public CamelURIHoverProcessor(TextDocumentItem textDocumentItem, CompletableFuture<CamelCatalog> camelCatalog) {
 		this.textDocumentItem = textDocumentItem;
 		this.camelCatalog = camelCatalog;
 	}
@@ -52,7 +52,7 @@ public class HoverProcessor {
 					CamelURIInstance camelURIInstance = parserFileHelper.createCamelURIInstance(textDocumentItem, position, camelComponentUri);
 					int positionInCamelUri = parserFileHelper.getPositionInCamelURI(textDocumentItem, position);
 					CamelUriElementInstance elem = camelURIInstance.getSpecificElement(positionInCamelUri);
-					return camelCatalog.thenApply(new HoverFuture(elem));
+					return camelCatalog.thenApply(new CamelURIHoverFuture(elem));
 				}
 			}
 		} catch (Exception e) {
