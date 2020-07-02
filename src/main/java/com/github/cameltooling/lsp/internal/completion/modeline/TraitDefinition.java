@@ -22,11 +22,11 @@ import org.eclipse.lsp4j.CompletionItem;
 
 public class TraitDefinition {
 	
-	public String name;
-	public String description;
-	public boolean platform;
-	public List<String> profiles;
-	public List<TraitProperty> properties;
+	private String name;
+	private String description;
+	private boolean platform;
+	private List<String> profiles;
+	private List<TraitProperty> properties;
 	
 	public CompletionItem createCompletionItem() {
 		CompletionItem completionItem = new CompletionItem(name);
@@ -44,6 +44,14 @@ public class TraitDefinition {
 
 	public String getName() {
 		return name;
+	}
+
+	public boolean isPlatform() {
+		return platform;
+	}
+
+	public List<String> getProfiles() {
+		return profiles;
 	}
 
 }

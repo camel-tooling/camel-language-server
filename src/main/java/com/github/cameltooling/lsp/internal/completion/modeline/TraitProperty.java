@@ -20,10 +20,10 @@ import org.eclipse.lsp4j.CompletionItem;
 
 public class TraitProperty {
 
-	public String name;
-	public String description;
-	public String type;
-	public Object defaultValue;
+	private String name;
+	private String description;
+	private String type;
+	private Object defaultValue;
 	
 	public CompletionItem createCompletionItem() {
 		CompletionItem completionItem = new CompletionItem(name);
