@@ -72,7 +72,7 @@ class CamelKModelineTraitDefinitionNameTest extends AbstractCamelLanguageServerT
 		CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = getCompletionFor(camelLanguageServer, new Position(0, 18));
 		
 		List<CompletionItem> completionItems = completions.get().getLeft();
-		assertThat(completionItems).hasSize(0);
+		assertThat(completionItems).isEmpty();
 	}
 	
 }
