@@ -39,7 +39,7 @@ class CamelPropertiesTopLevelCompletionTest extends AbstractCamelLanguageServerT
 	void testProvideCompletion() throws Exception {
 		CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = retrieveCompletion(new Position(0, 6));
 		
-		assertThat(completions.get().getLeft()).hasSize(4);
+		assertThat(completions.get().getLeft()).hasSize(8);
 	}
 	
 	@Test
@@ -49,7 +49,7 @@ class CamelPropertiesTopLevelCompletionTest extends AbstractCamelLanguageServerT
 		
 		CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = getCompletionFor(camelLanguageServer, new Position(1, 6), fileName);
 		
-		assertThat(completions.get().getLeft()).hasSize(4);
+		assertThat(completions.get().getLeft()).hasSize(8);
 	}
 	
 	@Test

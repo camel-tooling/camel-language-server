@@ -389,7 +389,7 @@ class CamelLanguageServerTest extends AbstractCamelLanguageServerTest {
 		try (FileInputStream fis = new FileInputStream(f)) {
 			CamelLanguageServer cls = initializeLanguageServerWithFileName(fis, "application.properties");
 			CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = getCompletionFor(cls, new Position(2, 6), "application.properties");
-			assertThat(completions.get().getLeft()).hasSize(4);
+			assertThat(completions.get().getLeft()).hasSize(8);
 		}
 	}
 	

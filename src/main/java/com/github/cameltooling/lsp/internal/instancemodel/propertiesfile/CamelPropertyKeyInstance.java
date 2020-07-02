@@ -16,10 +16,11 @@
  */
 package com.github.cameltooling.lsp.internal.instancemodel.propertiesfile;
 
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
 
 import org.apache.camel.catalog.CamelCatalog;
 import org.eclipse.lsp4j.CompletionItem;
@@ -37,6 +38,8 @@ public class CamelPropertyKeyInstance implements ILineRangeDefineable {
 	
 	private static final String CAMEL_KEY_PREFIX = "camel.";
 	static final String CAMEL_COMPONENT_KEY_PREFIX = "camel.component.";
+	private static final String[] ALL_GROUPS = new String[] {"main", "faulttolerance", "hystrix", "resilience4j", "rest", "health", "lra", "threadpool"};
+	private static final List<CompletionItem> ALL_GROUP_COMPLETIONS = Arrays.stream(ALL_GROUPS).map(CompletionItem::new).collect(Collectors.toList());
 	
 	private String camelPropertyKey;
 	private CamelComponentPropertyKey camelComponentPropertyKey;
@@ -67,12 +70,7 @@ public class CamelPropertyKeyInstance implements ILineRangeDefineable {
 	
 
 	protected CompletableFuture<List<CompletionItem>> getTopLevelCamelCompletion() {
-		List<CompletionItem> completions = new ArrayList<>();
-		completions.add(new CompletionItem("component"));
-		completions.add(new CompletionItem("main"));
-		completions.add(new CompletionItem("rest"));
-		completions.add(new CompletionItem("hystrix"));
-		return CompletableFuture.completedFuture(completions);
+		return CompletableFuture.completedFuture(ALL_GROUP_COMPLETIONS);
 	}
 
 	public String getCamelPropertyKey() {
