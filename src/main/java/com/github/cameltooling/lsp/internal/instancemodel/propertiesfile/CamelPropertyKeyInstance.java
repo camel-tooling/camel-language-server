@@ -39,7 +39,7 @@ public class CamelPropertyKeyInstance implements ILineRangeDefineable {
 	
 	private static final String CAMEL_KEY_PREFIX = "camel.";
 	static final String CAMEL_COMPONENT_KEY_PREFIX = "camel.component.";
-	private static final String[] ALL_GROUPS = new String[] {"main", "faulttolerance", "hystrix", "resilience4j", "rest", "health", "lra", "threadpool"};
+	private static final String[] ALL_GROUPS = new String[] {"component", "main", "faulttolerance", "hystrix", "resilience4j", "rest", "health", "lra", "threadpool"};
 	private static final List<CompletionItem> ALL_GROUP_COMPLETIONS = Arrays.stream(ALL_GROUPS).map(CompletionItem::new).collect(Collectors.toList());
 	
 	private String camelPropertyKey;
