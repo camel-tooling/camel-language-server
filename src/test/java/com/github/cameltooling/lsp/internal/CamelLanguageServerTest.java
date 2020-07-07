@@ -23,6 +23,7 @@ import java.io.FileInputStream;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
+import org.apache.camel.tooling.model.MainModel;
 import org.apache.log4j.Logger;
 import org.apache.log4j.spi.LoggingEvent;
 import org.eclipse.lsp4j.CompletionItem;
@@ -36,6 +37,7 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 import com.github.cameltooling.lsp.internal.completion.CamelEndpointCompletionProcessor;
+import com.google.gson.Gson;
 
 
 class CamelLanguageServerTest extends AbstractCamelLanguageServerTest {
@@ -389,7 +391,9 @@ class CamelLanguageServerTest extends AbstractCamelLanguageServerTest {
 		try (FileInputStream fis = new FileInputStream(f)) {
 			CamelLanguageServer cls = initializeLanguageServerWithFileName(fis, "application.properties");
 			CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = getCompletionFor(cls, new Position(2, 6), "application.properties");
-			assertThat(completions.get().getLeft()).hasSize(9);
+			String mainJsonSchema = cls.getTextDocumentService().getCamelCatalog().get().mainJsonSchema();
+			MainModel mainModel = new Gson().fromJson(mainJsonSchema, MainModel.class);
+			assertThat(completions.get().getLeft()).hasSize(mainModel.getGroups().size() + 1);
 		}
 	}
 	
