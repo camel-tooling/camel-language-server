@@ -23,6 +23,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 import org.apache.camel.catalog.CamelCatalog;
+import org.apache.camel.catalog.DefaultCamelCatalog;
 import org.apache.camel.tooling.model.MainModel;
 import org.eclipse.lsp4j.CompletionItem;
 import org.eclipse.lsp4j.Hover;
@@ -43,6 +44,7 @@ public class CamelPropertyKeyInstance implements ILineRangeDefineable {
 	static final String CAMEL_COMPONENT_KEY_PREFIX = "camel.component.";
 	
 	private String camelPropertyKey;
+	private String propertyGroup;
 	private CamelComponentPropertyKey camelComponentPropertyKey;
 	private CamelPropertyEntryInstance camelPropertyEntryInstance;
 
@@ -51,6 +53,15 @@ public class CamelPropertyKeyInstance implements ILineRangeDefineable {
 		this.camelPropertyEntryInstance = camelPropertyEntryInstance;
 		if (camelPropertyFileKey.startsWith(CAMEL_COMPONENT_KEY_PREFIX)) {
 			camelComponentPropertyKey = new CamelComponentPropertyKey(camelPropertyFileKey.substring(CAMEL_COMPONENT_KEY_PREFIX.length()), this);
+		}
+		if(camelPropertyKey.startsWith(CAMEL_KEY_PREFIX)) {
+			int startIndexGroup = CAMEL_KEY_PREFIX.length();
+			int secondDotIndex = camelPropertyKey.indexOf('.', startIndexGroup);
+			if (secondDotIndex != -1) {
+				propertyGroup = camelPropertyFileKey.substring(startIndexGroup, secondDotIndex);
+			} else {
+				propertyGroup = camelPropertyFileKey.substring(startIndexGroup);
+			}
 		}
 	}
 
@@ -65,10 +76,32 @@ public class CamelPropertyKeyInstance implements ILineRangeDefineable {
 			return getTopLevelCamelCompletion(camelCatalog);
 		} else if(camelComponentPropertyKey != null && camelComponentPropertyKey.isInRange(position.getCharacter())) {
 			return camelComponentPropertyKey.getCompletions(position, camelCatalog);
+		} else if(propertyGroup != null && getStartPositionInLine() + CAMEL_KEY_PREFIX.length() + propertyGroup.length() + 1 == position.getCharacter()) {
+			return getGroupPropertiesCompletions(camelCatalog);
 		}
 		return CompletableFuture.completedFuture(Collections.emptyList());
 	}
 	
+	protected CompletableFuture<List<CompletionItem>> getGroupPropertiesCompletions(CompletableFuture<CamelCatalog> camelCatalog) {
+		return camelCatalog.thenApply(catalog -> {
+			if (catalog instanceof DefaultCamelCatalog) {
+				MainModel mainModel =  ((DefaultCamelCatalog)catalog).mainModel();
+				String groupPrefix = CAMEL_KEY_PREFIX + propertyGroup + ".";
+				return mainModel.getOptions().stream()
+						.filter(option -> option.getName().startsWith(groupPrefix))
+						.map(option -> {
+							String realOptionName = option.getName().substring(groupPrefix.length());
+							CompletionItem completionItem = new CompletionItem(realOptionName);
+							completionItem.setDocumentation(option.getDescription());
+							completionItem.setDeprecated(option.isDeprecated());
+							completionItem.setInsertText(realOptionName + "=");
+							return completionItem;
+						}).collect(Collectors.toList());
+			} else {
+				return Collections.emptyList();
+			}
+		});
+	}
 
 	protected CompletableFuture<List<CompletionItem>> getTopLevelCamelCompletion(CompletableFuture<CamelCatalog> camelCatalog) {
 		return camelCatalog.thenApply(catalog -> {
