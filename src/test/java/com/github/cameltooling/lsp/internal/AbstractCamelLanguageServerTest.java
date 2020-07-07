@@ -72,7 +72,7 @@ public abstract class AbstractCamelLanguageServerTest {
 	protected static final String DUMMY_URI = "dummyUri";
 	private String extensionUsed;
 	protected PublishDiagnosticsParams lastPublishedDiagnostics;
-	private CamelLanguageServer camelLanguageServer;
+	protected CamelLanguageServer camelLanguageServer;
 
 	public AbstractCamelLanguageServerTest() {
 		super();

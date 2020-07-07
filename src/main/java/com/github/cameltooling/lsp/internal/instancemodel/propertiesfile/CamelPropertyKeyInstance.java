@@ -16,18 +16,20 @@
  */
 package com.github.cameltooling.lsp.internal.instancemodel.propertiesfile;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 import org.apache.camel.catalog.CamelCatalog;
+import org.apache.camel.tooling.model.MainModel;
 import org.eclipse.lsp4j.CompletionItem;
 import org.eclipse.lsp4j.Hover;
 import org.eclipse.lsp4j.Position;
 
 import com.github.cameltooling.lsp.internal.instancemodel.ILineRangeDefineable;
+import com.google.gson.Gson;
 
 /**
  * Represents one key in properties file.
@@ -39,8 +41,6 @@ public class CamelPropertyKeyInstance implements ILineRangeDefineable {
 	
 	private static final String CAMEL_KEY_PREFIX = "camel.";
 	static final String CAMEL_COMPONENT_KEY_PREFIX = "camel.component.";
-	private static final String[] ALL_GROUPS = new String[] {"component", "main", "faulttolerance", "hystrix", "resilience4j", "rest", "health", "lra", "threadpool"};
-	private static final List<CompletionItem> ALL_GROUP_COMPLETIONS = Arrays.stream(ALL_GROUPS).map(CompletionItem::new).collect(Collectors.toList());
 	
 	private String camelPropertyKey;
 	private CamelComponentPropertyKey camelComponentPropertyKey;
@@ -62,7 +62,7 @@ public class CamelPropertyKeyInstance implements ILineRangeDefineable {
 		if(position.getCharacter() == getStartPositionInLine()) {
 			return CompletableFuture.completedFuture(Collections.singletonList(new CompletionItem(CAMEL_KEY_PREFIX)));
 		} else if (getStartPositionInLine() + CAMEL_KEY_PREFIX.length() == position.getCharacter() && camelPropertyKey.startsWith(CAMEL_KEY_PREFIX)) {
-			return getTopLevelCamelCompletion();
+			return getTopLevelCamelCompletion(camelCatalog);
 		} else if(camelComponentPropertyKey != null && camelComponentPropertyKey.isInRange(position.getCharacter())) {
 			return camelComponentPropertyKey.getCompletions(position, camelCatalog);
 		}
@@ -70,8 +70,30 @@ public class CamelPropertyKeyInstance implements ILineRangeDefineable {
 	}
 	
 
-	protected CompletableFuture<List<CompletionItem>> getTopLevelCamelCompletion() {
-		return CompletableFuture.completedFuture(ALL_GROUP_COMPLETIONS);
+	protected CompletableFuture<List<CompletionItem>> getTopLevelCamelCompletion(CompletableFuture<CamelCatalog> camelCatalog) {
+		return camelCatalog.thenApply(catalog -> {
+			MainModel mainModel = new Gson().fromJson(catalog.mainJsonSchema(), MainModel.class);
+			List<CompletionItem> allCompletionItems = new ArrayList<>();
+			allCompletionItems.addAll(createGroupCompletionFromMainModel(mainModel));
+			allCompletionItems.add(createCompletionItemForCamelComponent());
+			return allCompletionItems;
+		});
+	}
+
+	private CompletionItem createCompletionItemForCamelComponent() {
+		CompletionItem completionItem = new CompletionItem("component");
+		completionItem.setInsertText("component.");
+		return completionItem;
+	}
+
+	private List<CompletionItem> createGroupCompletionFromMainModel(MainModel mainModel) {
+		return mainModel.getGroups().stream().map(group -> {
+			String realGroupName = group.getName().replaceFirst(CAMEL_KEY_PREFIX, "");
+			CompletionItem completionItem = new CompletionItem(realGroupName);
+			completionItem.setDocumentation(group.getDescription());
+			completionItem.setInsertText(realGroupName + ".");
+			return completionItem;
+		}).collect(Collectors.toList());
 	}
 
 	public String getCamelPropertyKey() {

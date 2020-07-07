@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
+import org.apache.camel.tooling.model.MainModel;
 import org.eclipse.lsp4j.CompletionItem;
 import org.eclipse.lsp4j.CompletionList;
 import org.eclipse.lsp4j.Position;
@@ -32,6 +33,7 @@ import org.junit.jupiter.api.Test;
 
 import com.github.cameltooling.lsp.internal.AbstractCamelLanguageServerTest;
 import com.github.cameltooling.lsp.internal.CamelLanguageServer;
+import com.google.gson.Gson;
 
 class CamelPropertiesTopLevelCompletionTest extends AbstractCamelLanguageServerTest {
 	
@@ -39,7 +41,9 @@ class CamelPropertiesTopLevelCompletionTest extends AbstractCamelLanguageServerT
 	void testProvideCompletion() throws Exception {
 		CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = retrieveCompletion(new Position(0, 6));
 		
-		assertThat(completions.get().getLeft()).hasSize(9);
+		MainModel mainModel = loadMainModel(camelLanguageServer);
+		
+		assertThat(completions.get().getLeft()).hasSize(mainModel.getGroups().size() + 1);
 	}
 	
 	@Test
@@ -49,7 +53,14 @@ class CamelPropertiesTopLevelCompletionTest extends AbstractCamelLanguageServerT
 		
 		CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = getCompletionFor(camelLanguageServer, new Position(1, 6), fileName);
 		
-		assertThat(completions.get().getLeft()).hasSize(9);
+		MainModel mainModel = loadMainModel(camelLanguageServer);
+		
+		assertThat(completions.get().getLeft()).hasSize(mainModel.getGroups().size() + 1);
+	}
+
+	private MainModel loadMainModel(CamelLanguageServer camelLanguageServer) throws InterruptedException, ExecutionException {
+		String mainJsonSchema = camelLanguageServer.getTextDocumentService().getCamelCatalog().get().mainJsonSchema();
+		return new Gson().fromJson(mainJsonSchema, MainModel.class);
 	}
 	
 	@Test
