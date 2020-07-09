@@ -18,6 +18,10 @@ package com.github.cameltooling.lsp.internal.completion.modeline;
 
 import org.eclipse.lsp4j.CompletionItem;
 
+import com.github.cameltooling.lsp.internal.completion.CompletionResolverUtils;
+import com.github.cameltooling.lsp.internal.modelinemodel.CamelKModelineTraitDefinitionProperty;
+import com.github.cameltooling.lsp.internal.modelinemodel.CamelKModelineTraitOption;
+
 public class TraitProperty {
 
 	private String name;
@@ -25,17 +29,30 @@ public class TraitProperty {
 	private String type;
 	private Object defaultValue;
 	
-	public CompletionItem createCompletionItem() {
+	public CompletionItem createCompletionItem(CamelKModelineTraitDefinitionProperty camelKModelineTraitDefinitionProperty) {
 		CompletionItem completionItem = new CompletionItem(name);
 		completionItem.setDocumentation(description);
-		if (defaultValue != null) {
-			if("int".equals(type) && defaultValue instanceof Double) {
-				completionItem.setInsertText(name+"="+((Double)defaultValue).intValue());
+		CamelKModelineTraitOption traitOption = camelKModelineTraitDefinitionProperty.getTraitOption();
+		if (hasAValueSpecified(traitOption)) {
+			completionItem.setInsertText(name);
+		} else {
+			String prefix = name + "=";
+			if (defaultValue != null) {
+				if ("int".equals(type) && defaultValue instanceof Double) {
+					completionItem.setInsertText(prefix + ((Double) defaultValue).intValue());
+				} else {
+					completionItem.setInsertText(prefix + defaultValue);
+				}
 			} else {
-				completionItem.setInsertText(name+"="+defaultValue);
+				completionItem.setInsertText(prefix);
 			}
 		}
+		CompletionResolverUtils.applyTextEditToCompletionItem(camelKModelineTraitDefinitionProperty, completionItem);
 		return completionItem;
+	}
+
+	private boolean hasAValueSpecified(CamelKModelineTraitOption traitOption) {
+		return traitOption.getValueAsString().contains("=");
 	}
 
 	public String getDescription() {

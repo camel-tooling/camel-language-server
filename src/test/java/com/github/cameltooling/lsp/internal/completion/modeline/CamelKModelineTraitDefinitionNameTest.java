@@ -25,6 +25,8 @@ import java.util.concurrent.CompletableFuture;
 import org.eclipse.lsp4j.CompletionItem;
 import org.eclipse.lsp4j.CompletionList;
 import org.eclipse.lsp4j.Position;
+import org.eclipse.lsp4j.Range;
+import org.eclipse.lsp4j.TextEdit;
 import org.eclipse.lsp4j.jsonrpc.messages.Either;
 import org.junit.jupiter.api.Test;
 
@@ -41,12 +43,7 @@ class CamelKModelineTraitDefinitionNameTest extends AbstractCamelLanguageServerT
 		
 		List<CompletionItem> completionItems = completions.get().getLeft();
 		assertThat(completionItems).hasSize(28);
-		Optional<CompletionItem> platformTraitCompletionItem = completionItems.stream()
-				.filter(completionItem ->  "platform".equals(completionItem.getLabel()))
-				.findFirst();
-		
-		assertThat(platformTraitCompletionItem).isNotNull();
-		assertThat(platformTraitCompletionItem.get().getDocumentation().getLeft()).isEqualTo("The platform trait is a base trait that is used to assign an integration platform to an integration.In case the platform is missing, the trait is allowed to create a default platform.This feature is especially useful in contexts where there's no need to provide a custom configuration for the platform(e.g. on OpenShift the default settings work, since there's an embedded container image registry).");
+		checkPlatformCompletionAvailable(completionItems, "platform.", 18, 18);
 	}
 	
 	@Test
@@ -57,12 +54,21 @@ class CamelKModelineTraitDefinitionNameTest extends AbstractCamelLanguageServerT
 		
 		List<CompletionItem> completionItems = completions.get().getLeft();
 		assertThat(completionItems).hasSize(1);
+		checkPlatformCompletionAvailable(completionItems, "platform.", 18, 21);
+	}
+
+	private void checkPlatformCompletionAvailable(List<CompletionItem> completionItems, String expectedTextEditNewText, int expectedTextEditStart, int expectedTextEditEnd) {
 		Optional<CompletionItem> platformTraitCompletionItem = completionItems.stream()
 				.filter(completionItem ->  "platform".equals(completionItem.getLabel()))
 				.findFirst();
 		
 		assertThat(platformTraitCompletionItem).isNotNull();
 		assertThat(platformTraitCompletionItem.get().getDocumentation().getLeft()).isEqualTo("The platform trait is a base trait that is used to assign an integration platform to an integration.In case the platform is missing, the trait is allowed to create a default platform.This feature is especially useful in contexts where there's no need to provide a custom configuration for the platform(e.g. on OpenShift the default settings work, since there's an embedded container image registry).");
+		TextEdit textEdit = platformTraitCompletionItem.get().getTextEdit();
+		assertThat(textEdit.getNewText()).isEqualTo(expectedTextEditNewText);
+		Range range = textEdit.getRange();
+		assertThat(range.getStart().getCharacter()).isEqualTo(expectedTextEditStart);
+		assertThat(range.getEnd().getCharacter()).isEqualTo(expectedTextEditEnd);
 	}
 	
 	@Test
@@ -73,6 +79,27 @@ class CamelKModelineTraitDefinitionNameTest extends AbstractCamelLanguageServerT
 		
 		List<CompletionItem> completionItems = completions.get().getLeft();
 		assertThat(completionItems).isEmpty();
+	}
+	
+	@Test
+	void testProvideCompletionForYaml() throws Exception {
+		CamelLanguageServer camelLanguageServer = initializeLanguageServerWithFileName("# camel-k: trait=", "modeline.camelk.yaml");
+		
+		CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = getCompletionFor(camelLanguageServer, new Position(0, 17), "modeline.camelk.yaml");
+		
+		List<CompletionItem> completionItems = completions.get().getLeft();
+		assertThat(completionItems).hasSize(28);
+		checkPlatformCompletionAvailable(completionItems, "platform.", 17, 17);
+	}
+	
+	@Test
+	void testProvideCompletionWithCorrectInsertWithTextAfter() throws Exception {
+		CamelLanguageServer camelLanguageServer = initializeLanguageServer("// camel-k: trait=quarkus.enabled=true");
+		
+		CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = getCompletionFor(camelLanguageServer, new Position(0, 18));
+		
+		List<CompletionItem> completionItems = completions.get().getLeft();
+		checkPlatformCompletionAvailable(completionItems, "platform", 18, 25);
 	}
 	
 }

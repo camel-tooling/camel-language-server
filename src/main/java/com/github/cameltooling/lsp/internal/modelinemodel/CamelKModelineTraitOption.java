@@ -16,52 +16,54 @@
  */
 package com.github.cameltooling.lsp.internal.modelinemodel;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 import org.apache.camel.catalog.CamelCatalog;
 import org.eclipse.lsp4j.CompletionItem;
 import org.eclipse.lsp4j.Hover;
-import org.eclipse.lsp4j.jsonrpc.messages.Either;
 
-import com.github.cameltooling.lsp.internal.completion.modeline.CamelKTraitManager;
-
+/**
+ * Represents the Modeline trait option.
+ * For instance, "// camel-k: trait=quarkus.enabled=true", it represents "quarkus.enabled=true"
+ *
+ */
 public class CamelKModelineTraitOption implements ICamelKModelineOptionValue {
 
 	private int startPosition;
 	private int endPosition;
 	private String optionValue;
-	private String traitDefinitionName;
-	private String traitPropertyName;
+	private CamelKModelineTraitDefinition traitDefinition;
+	private CamelKModelineTraitDefinitionProperty traitProperty;
 
 	public CamelKModelineTraitOption(String optionValue, int startPosition) {
 		this.optionValue = optionValue;
 		this.startPosition = startPosition;
 		this.endPosition = startPosition + optionValue.length();
-		this.traitDefinitionName = computeTraitDefinitionName(optionValue);
-		this.traitPropertyName = computeTraitPropertyName(optionValue);
+		this.traitDefinition = createTraitDefinition(optionValue, startPosition);
+		this.traitProperty = createTraitProperty(optionValue);
 	}
 
-	private String computeTraitPropertyName(String optionValue) {
+	private CamelKModelineTraitDefinitionProperty createTraitProperty(String optionValue) {
 		int indexOfDotSeparator = optionValue.indexOf('.');
 		if(indexOfDotSeparator != -1) {
 			int indexOfEqualSeparator = optionValue.indexOf('=', indexOfDotSeparator);
+			int startPositionOfTraitDefintionProperty = getStartPositionInLine() + indexOfDotSeparator + 1;
 			if(indexOfEqualSeparator != -1) {
-				return optionValue.substring(indexOfDotSeparator + 1, indexOfEqualSeparator);
+				return new CamelKModelineTraitDefinitionProperty(this, optionValue.substring(indexOfDotSeparator + 1, indexOfEqualSeparator), startPositionOfTraitDefintionProperty);
 			} else {
-				return optionValue.substring(indexOfDotSeparator + 1);
+				return new CamelKModelineTraitDefinitionProperty(this, optionValue.substring(indexOfDotSeparator + 1), startPositionOfTraitDefintionProperty);
 			}
 		}
 		return null;
 	}
 
-	private String computeTraitDefinitionName(String optionValue) {
+	private CamelKModelineTraitDefinition createTraitDefinition(String optionValue, int startPosition) {
 		int indexOfDotSeparator = optionValue.indexOf('.');
 		if(indexOfDotSeparator != -1) {
-			return optionValue.substring(0,indexOfDotSeparator);
+			return new CamelKModelineTraitDefinition(this, optionValue.substring(0, indexOfDotSeparator), startPosition);
 		} else {
-			return null;
+			return new CamelKModelineTraitDefinition(this, optionValue, startPosition);
 		}
 	}
 
@@ -82,58 +84,30 @@ public class CamelKModelineTraitOption implements ICamelKModelineOptionValue {
 	
 	@Override
 	public CompletableFuture<List<CompletionItem>> getCompletions(int position, CompletableFuture<CamelCatalog> camelCatalog) {
-		if(isInTraitDefinitionName(position)) {
-			String filter = retrieveTraitDefinitionPartBefore(position);
-			return CompletableFuture.completedFuture(CamelKTraitManager.getTraitDefinitionNameCompletionItems(filter));
-		} else if(isInTraitPropertyName(position)) {
-			String filter = retrieveTraitPropertyPartBefore(position);
-			return CompletableFuture.completedFuture(CamelKTraitManager.getTraitPropertyNameCompletionItems(traitDefinitionName, filter));
+		if(traitDefinition != null && traitDefinition.isInRange(position)) {
+			return traitDefinition.getCompletions(position, camelCatalog);
+		} else if(traitProperty!= null && traitProperty.isInRange(position)) {
+			return traitProperty.getCompletions(position, camelCatalog);
 		}
 		return ICamelKModelineOptionValue.super.getCompletions(position, camelCatalog);
-	}
-
-	private String retrieveTraitPropertyPartBefore(int position) {
-		return optionValue.substring(traitDefinitionName.length() + 1, position - getStartPositionInLine());
-	}
-
-	private String retrieveTraitDefinitionPartBefore(int position) {
-		return (traitDefinitionName != null ? traitDefinitionName : optionValue).substring(0, position - getStartPositionInLine());
-	}
-
-	private boolean isInTraitDefinitionName(int position) {
-		return getStartPositionInLine() <= position && position <= getStartPositionInLine() + (traitDefinitionName != null ? traitDefinitionName.length() : optionValue.length());
-	}
-
-	private boolean isInTraitPropertyName(int position) {
-		return traitDefinitionName != null && getStartPositionInLine() + traitDefinitionName.length() + 1 <= position;
 	}
 	
 	@Override
 	public CompletableFuture<Hover> getHover(int characterPosition, CompletableFuture<CamelCatalog> camelCatalog) {
-		if (isInTraitDefinitionName(characterPosition)) {
-			String description = CamelKTraitManager.getDescription(traitDefinitionName);
-			if (description != null) {
-				Hover hover = new Hover();
-				hover.setContents(Collections.singletonList((Either.forLeft(description))));
-				return CompletableFuture.completedFuture(hover);
-			}
-		} else if (isInTraitPropertyName(characterPosition)) {
-			String description = CamelKTraitManager.getPropertyDescription(traitDefinitionName, traitPropertyName);
-			if (description != null) {
-				Hover hover = new Hover();
-				hover.setContents(Collections.singletonList((Either.forLeft(description))));
-				return CompletableFuture.completedFuture(hover);
-			}
+		if(traitDefinition != null && traitDefinition.isInRange(characterPosition)) {
+			return traitDefinition.getHover(characterPosition, camelCatalog);
+		} else if (traitProperty!= null && traitProperty.isInRange(characterPosition)) {
+			return traitProperty.getHover(characterPosition, camelCatalog);
 		}
 		return ICamelKModelineOptionValue.super.getHover(characterPosition, camelCatalog);
 	}
 
-	public String getTraitDefinitionName() {
-		return traitDefinitionName;
+	public CamelKModelineTraitDefinition getTraitDefinition() {
+		return traitDefinition;
 	}
 
-	public String getTraitPropertyName() {
-		return traitPropertyName;
+	public CamelKModelineTraitDefinitionProperty getTraitProperty() {
+		return traitProperty;
 	}
 
 }

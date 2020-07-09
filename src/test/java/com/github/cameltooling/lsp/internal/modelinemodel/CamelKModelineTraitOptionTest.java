@@ -27,25 +27,25 @@ class CamelKModelineTraitOptionTest {
 	@Test
 	void checkDefinitionName() throws Exception {
 		CamelKModelineTraitOption traitOption = retrieveFirstTrait("// camel-k: trait=quarkus.enabled=true");
-		assertThat(traitOption.getTraitDefinitionName()).isEqualTo("quarkus");
+		assertThat(traitOption.getTraitDefinition().getValueAsString()).isEqualTo("quarkus");
 	}
 	
 	@Test
 	void checkDefinitionNameWithIncompleteValues() throws Exception {
 		CamelKModelineTraitOption traitOption = retrieveFirstTrait("// camel-k: trait=quarkus.");
-		assertThat(traitOption.getTraitDefinitionName()).isEqualTo("quarkus");
+		assertThat(traitOption.getTraitDefinition().getValueAsString()).isEqualTo("quarkus");
 	}
 	
 	@Test
 	void checkPropertyName() throws Exception {
 		CamelKModelineTraitOption traitOption = retrieveFirstTrait("// camel-k: trait=quarkus.enabled=true");
-		assertThat(traitOption.getTraitPropertyName()).isEqualTo("enabled");
+		assertThat(traitOption.getTraitProperty().getValueAsString()).isEqualTo("enabled");
 	}
 	
 	@Test
 	void checkPropertyNameWithoutValue() throws Exception {
 		CamelKModelineTraitOption traitOption = retrieveFirstTrait("// camel-k: trait=quarkus.enabled=");
-		assertThat(traitOption.getTraitPropertyName()).isEqualTo("enabled");
+		assertThat(traitOption.getTraitProperty().getValueAsString()).isEqualTo("enabled");
 	}
 
 	private CamelKModelineTraitOption retrieveFirstTrait(String modelineWithMixedSeparator) {

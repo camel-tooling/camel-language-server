@@ -20,6 +20,10 @@ import java.util.List;
 
 import org.eclipse.lsp4j.CompletionItem;
 
+import com.github.cameltooling.lsp.internal.completion.CompletionResolverUtils;
+import com.github.cameltooling.lsp.internal.modelinemodel.CamelKModelineTraitDefinition;
+import com.github.cameltooling.lsp.internal.modelinemodel.CamelKModelineTraitOption;
+
 public class TraitDefinition {
 	
 	private String name;
@@ -28,9 +32,15 @@ public class TraitDefinition {
 	private List<String> profiles;
 	private List<TraitProperty> properties;
 	
-	public CompletionItem createCompletionItem() {
+	public CompletionItem createCompletionItem(CamelKModelineTraitDefinition traitDefinition) {
 		CompletionItem completionItem = new CompletionItem(name);
 		completionItem.setDocumentation(description);
+		if(hasAPropertySpecified(traitDefinition.getTraitOption())) {
+			completionItem.setInsertText(name);
+		} else {
+			completionItem.setInsertText(name + ".");
+		}
+		CompletionResolverUtils.applyTextEditToCompletionItem(traitDefinition, completionItem);
 		return completionItem;
 	}
 
@@ -52,6 +62,10 @@ public class TraitDefinition {
 
 	public List<String> getProfiles() {
 		return profiles;
+	}
+	
+	private boolean hasAPropertySpecified(CamelKModelineTraitOption traitOption) {
+		return traitOption.getTraitProperty() != null;
 	}
 
 }
