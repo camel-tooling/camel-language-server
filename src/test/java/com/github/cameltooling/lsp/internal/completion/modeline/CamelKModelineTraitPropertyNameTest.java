@@ -26,6 +26,7 @@ import java.util.concurrent.ExecutionException;
 import org.eclipse.lsp4j.CompletionItem;
 import org.eclipse.lsp4j.CompletionList;
 import org.eclipse.lsp4j.Position;
+import org.eclipse.lsp4j.TextEdit;
 import org.eclipse.lsp4j.jsonrpc.messages.Either;
 import org.junit.jupiter.api.Test;
 
@@ -45,6 +46,10 @@ class CamelKModelineTraitPropertyNameTest extends AbstractCamelLanguageServerTes
 		CompletionItem completionItem = findCompletionItemWithLabel(completions, "native");
 		assertThat(completionItem.getDocumentation().getLeft()).isEqualTo("The Quarkus runtime type (reserved for future use)");
 		assertThat(completionItem.getInsertText()).isEqualTo("native=false");
+		TextEdit textEdit = completionItem.getTextEdit();
+		assertThat(textEdit.getNewText()).isEqualTo("native=false");
+		assertThat(textEdit.getRange().getStart().getCharacter()).isEqualTo(26);
+		assertThat(textEdit.getRange().getEnd().getCharacter()).isEqualTo(26);
 	}
 	
 	@Test
@@ -52,6 +57,20 @@ class CamelKModelineTraitPropertyNameTest extends AbstractCamelLanguageServerTes
 		CamelLanguageServer camelLanguageServer = initializeLanguageServer("// camel-k: trait=quarkus.na");
 		
 		CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = getCompletionFor(camelLanguageServer, new Position(0, 28));
+		
+		List<CompletionItem> completionItems = completions.get().getLeft();
+		assertThat(completionItems).hasSize(1);
+		TextEdit textEdit = completionItems.get(0).getTextEdit();
+		assertThat(textEdit.getNewText()).isEqualTo("native=false");
+		assertThat(textEdit.getRange().getStart().getCharacter()).isEqualTo(26);
+		assertThat(textEdit.getRange().getEnd().getCharacter()).isEqualTo(28);
+	}
+	
+	@Test
+	void testProvideCompletionForYaml() throws Exception {
+		CamelLanguageServer camelLanguageServer = initializeLanguageServerWithFileName("# camel-k: trait=quarkus.na", "modeline.camelk.yaml");
+		
+		CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = getCompletionFor(camelLanguageServer, new Position(0, 27), "modeline.camelk.yaml");
 		
 		List<CompletionItem> completionItems = completions.get().getLeft();
 		assertThat(completionItems).hasSize(1);
@@ -70,7 +89,7 @@ class CamelKModelineTraitPropertyNameTest extends AbstractCamelLanguageServerTes
 		CamelLanguageServer camelLanguageServer = initializeLanguageServer("// camel-k: trait=container.");
 		CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = getCompletionFor(camelLanguageServer, new Position(0, 28));
 		CompletionItem completionItem = findCompletionItemWithLabel(completions, "request-cpu");
-		assertThat(completionItem.getInsertText()).isNull();
+		assertThat(completionItem.getInsertText()).isEqualTo("request-cpu=");
 	}
 	
 	@Test
@@ -99,6 +118,23 @@ class CamelKModelineTraitPropertyNameTest extends AbstractCamelLanguageServerTes
 		
 		List<CompletionItem> completionItems = completions.get().getLeft();
 		assertThat(completionItems).isEmpty();
+	}
+	
+	@Test
+	void testProvideCompletionWithInsertAndReplaceWithvalueAlreadyProvided() throws Exception {
+		CamelLanguageServer camelLanguageServer = initializeLanguageServer("// camel-k: trait=quarkus.enabled=true");
+		
+		CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = getCompletionFor(camelLanguageServer, new Position(0, 26));
+		
+		List<CompletionItem> completionItems = completions.get().getLeft();
+		assertThat(completionItems).hasSize(2);
+		CompletionItem completionItem = findCompletionItemWithLabel(completions, "native");
+		assertThat(completionItem.getDocumentation().getLeft()).isEqualTo("The Quarkus runtime type (reserved for future use)");
+		assertThat(completionItem.getInsertText()).isEqualTo("native");
+		TextEdit textEdit = completionItem.getTextEdit();
+		assertThat(textEdit.getNewText()).isEqualTo("native");
+		assertThat(textEdit.getRange().getStart().getCharacter()).isEqualTo(26);
+		assertThat(textEdit.getRange().getEnd().getCharacter()).isEqualTo(33);
 	}
 	
 }

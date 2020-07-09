@@ -44,12 +44,12 @@ public class CamelKModelineDiagnosticService {
 		for (CamelKModelineTraitOption traitOption : traitOptions) {
 			for (CamelKModelineTraitOption traitOption2 : traitOptions) {
 				if(!traitOption.equals(traitOption2)) {
-				String definitionName = traitOption.getTraitDefinitionName();
-				String propertyName = traitOption.getTraitPropertyName();
+				String definitionName = traitOption.getTraitDefinition().getValueAsString();
+				String propertyName = traitOption.getTraitProperty().getValueAsString();
 				if(definitionName != null
 					&& propertyName != null
-					&& definitionName.equals(traitOption2.getTraitDefinitionName())
-					&& propertyName.equals(traitOption2.getTraitPropertyName())) {
+					&& definitionName.equals(traitOption2.getTraitDefinition().getValueAsString())
+					&& propertyName.equals(traitOption2.getTraitProperty().getValueAsString())) {
 						Range range = new Range(new Position(0,traitOption2.getStartPositionInLine()), new Position(0,traitOption2.getEndPositionInLine()));
 						diagnostics.add(new Diagnostic(range, "More than one trait defines the same property: " + definitionName + "." + propertyName));
 					}

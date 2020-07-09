@@ -29,6 +29,8 @@ import java.util.stream.Collectors;
 import org.eclipse.lsp4j.CompletionItem;
 
 import com.github.cameltooling.lsp.internal.completion.FilterPredicateUtils;
+import com.github.cameltooling.lsp.internal.modelinemodel.CamelKModelineTraitDefinition;
+import com.github.cameltooling.lsp.internal.modelinemodel.CamelKModelineTraitDefinitionProperty;
 import com.google.gson.Gson;
 
 public class CamelKTraitManager {
@@ -48,18 +50,18 @@ public class CamelKTraitManager {
 		return traits;
 	}
 	
-	public static List<CompletionItem> getTraitDefinitionNameCompletionItems(String filter){
+	public static List<CompletionItem> getTraitDefinitionNameCompletionItems(String filter, CamelKModelineTraitDefinition camelKModelineTraitDefinition){
 		return getTraits().stream()
-				.map(TraitDefinition::createCompletionItem)
+				.map(traitDefinition -> traitDefinition.createCompletionItem(camelKModelineTraitDefinition))
 				.filter(FilterPredicateUtils.matchesCompletionFilter(filter))
 				.collect(Collectors.toList());
 	}
 
-	public static List<CompletionItem> getTraitPropertyNameCompletionItems(String traitDefinitionName, String filter) {
-		Optional<TraitDefinition> traitDefinition = getTrait(traitDefinitionName);
+	public static List<CompletionItem> getTraitPropertyNameCompletionItems(String filter, CamelKModelineTraitDefinitionProperty traitDefinitionProperty) {
+		Optional<TraitDefinition> traitDefinition = getTrait(traitDefinitionProperty.getTraitOption().getTraitDefinition().getValueAsString());
 		if(traitDefinition.isPresent()) {
 			return traitDefinition.get().getProperties().stream()
-					.map(TraitProperty::createCompletionItem)
+					.map(traitProperty -> traitProperty.createCompletionItem(traitDefinitionProperty))
 					.filter(FilterPredicateUtils.matchesCompletionFilter(filter))
 					.collect(Collectors.toList());
 		}
