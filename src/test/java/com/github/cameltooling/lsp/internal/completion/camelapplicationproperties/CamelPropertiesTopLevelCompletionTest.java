@@ -67,7 +67,7 @@ class CamelPropertiesTopLevelCompletionTest extends AbstractCamelLanguageServerT
 	void testProvideCompletionForCamel() throws Exception {
 		CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = retrieveCompletion(new Position(0, 0));
 		
-		assertThat(completions.get().getLeft().get(0).getLabel()).isEqualTo("camel.");
+		assertThat(completions.get().getLeft().get(0).getLabel()).isEqualTo("camel");
 	}
 	
 	protected CompletableFuture<Either<List<CompletionItem>, CompletionList>> retrieveCompletion(Position position) throws URISyntaxException, InterruptedException, ExecutionException {

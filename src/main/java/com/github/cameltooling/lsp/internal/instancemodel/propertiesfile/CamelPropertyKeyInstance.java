@@ -28,7 +28,10 @@ import org.apache.camel.tooling.model.MainModel;
 import org.eclipse.lsp4j.CompletionItem;
 import org.eclipse.lsp4j.Hover;
 import org.eclipse.lsp4j.Position;
+import org.eclipse.lsp4j.Range;
+import org.eclipse.lsp4j.TextEdit;
 
+import com.github.cameltooling.lsp.internal.completion.FilterPredicateUtils;
 import com.github.cameltooling.lsp.internal.instancemodel.ILineRangeDefineable;
 import com.google.gson.Gson;
 
@@ -70,10 +73,16 @@ public class CamelPropertyKeyInstance implements ILineRangeDefineable {
 	}
 
 	public CompletableFuture<List<CompletionItem>> getCompletions(Position position, CompletableFuture<CamelCatalog> camelCatalog) {
-		if(position.getCharacter() == getStartPositionInLine()) {
-			return CompletableFuture.completedFuture(Collections.singletonList(new CompletionItem(CAMEL_KEY_PREFIX)));
-		} else if (getStartPositionInLine() + CAMEL_KEY_PREFIX.length() == position.getCharacter() && camelPropertyKey.startsWith(CAMEL_KEY_PREFIX)) {
-			return getTopLevelCamelCompletion(camelCatalog);
+		int indexOfFirstDot = camelPropertyKey.indexOf('.');
+		int indexOfSecondDot = indexOfFirstDot != -1 ? camelPropertyKey.indexOf('.', indexOfFirstDot + 1) : -1;
+		if(isBeforeFirstDot(position, indexOfFirstDot)) {
+			CompletionItem completionItem = new CompletionItem("camel");
+			String insertText = indexOfFirstDot != -1 ? "camel" : CAMEL_KEY_PREFIX;
+			completionItem.setInsertText(insertText);
+			completionItem.setTextEdit(new TextEdit(new Range(new Position(getLine(), getStartPositionInLine()), new Position(getLine(), indexOfFirstDot != -1 ? getStartPositionInLine() + indexOfFirstDot : getEndPositionInLine())), insertText));
+			return CompletableFuture.completedFuture(Collections.singletonList(completionItem));
+		} else if (isBetweenFirstAndSecondDotOfCamelPropertyKey(position, indexOfSecondDot)) {
+			return getTopLevelCamelCompletion(camelCatalog, indexOfSecondDot, position.getCharacter());
 		} else if(camelComponentPropertyKey != null && camelComponentPropertyKey.isInRange(position.getCharacter())) {
 			return camelComponentPropertyKey.getCompletions(position, camelCatalog);
 		} else if(propertyGroup != null && getStartPositionInLine() + CAMEL_KEY_PREFIX.length() + propertyGroup.length() + 1 == position.getCharacter()) {
@@ -103,28 +112,50 @@ public class CamelPropertyKeyInstance implements ILineRangeDefineable {
 		});
 	}
 
-	protected CompletableFuture<List<CompletionItem>> getTopLevelCamelCompletion(CompletableFuture<CamelCatalog> camelCatalog) {
+	private boolean isBetweenFirstAndSecondDotOfCamelPropertyKey(Position position, int indexOfSecondDot) {
+		return getStartPositionInLine() + CAMEL_KEY_PREFIX.length() <= position.getCharacter()
+				&& camelPropertyKey.startsWith(CAMEL_KEY_PREFIX)
+				&& position.getCharacter() <= getStartPositionInLine() + Math.max(CAMEL_KEY_PREFIX.length(), indexOfSecondDot);
+	}
+
+	private boolean isBeforeFirstDot(Position position, int indexOfFirstDot) {
+		return getStartPositionInLine() <= position.getCharacter() && position.getCharacter() <= getStartPositionInLine() + Math.max(0, indexOfFirstDot);
+	}
+
+	protected CompletableFuture<List<CompletionItem>> getTopLevelCamelCompletion(CompletableFuture<CamelCatalog> camelCatalog, int indexOfSecondDot, int completionPositionRequest) {
+		String filterString = camelPropertyKey.substring(CAMEL_KEY_PREFIX.length(), completionPositionRequest - getStartPositionInLine());
 		return camelCatalog.thenApply(catalog -> {
 			MainModel mainModel = new Gson().fromJson(catalog.mainJsonSchema(), MainModel.class);
 			List<CompletionItem> allCompletionItems = new ArrayList<>();
-			allCompletionItems.addAll(createGroupCompletionFromMainModel(mainModel));
-			allCompletionItems.add(createCompletionItemForCamelComponent());
-			return allCompletionItems;
+			allCompletionItems.addAll(createGroupCompletionFromMainModel(mainModel, indexOfSecondDot));
+			allCompletionItems.add(createCompletionItemForCamelComponent(indexOfSecondDot));
+			return allCompletionItems.stream().filter(FilterPredicateUtils.matchesCompletionFilter(filterString)).collect(Collectors.toList());
 		});
 	}
 
-	private CompletionItem createCompletionItemForCamelComponent() {
+	private CompletionItem createCompletionItemForCamelComponent(int indexOfSecondDot) {
 		CompletionItem completionItem = new CompletionItem("component");
-		completionItem.setInsertText("component.");
+		String insertText = indexOfSecondDot != -1 ? "component" : "component.";
+		completionItem.setInsertText(insertText);
+		Position start = new Position(getLine(), getStartPositionInLine() + CAMEL_KEY_PREFIX.length());
+		Position end = new Position(getLine(), indexOfSecondDot != -1 ? getStartPositionInLine() + indexOfSecondDot : getEndPositionInLine());
+		Range range = new Range(start, end);
+		TextEdit textEdit = new TextEdit(range, insertText);
+		completionItem.setTextEdit(textEdit);
 		return completionItem;
 	}
 
-	private List<CompletionItem> createGroupCompletionFromMainModel(MainModel mainModel) {
+	private List<CompletionItem> createGroupCompletionFromMainModel(MainModel mainModel, int indexOfSecondDot) {
 		return mainModel.getGroups().stream().map(group -> {
 			String realGroupName = group.getName().replaceFirst(CAMEL_KEY_PREFIX, "");
 			CompletionItem completionItem = new CompletionItem(realGroupName);
 			completionItem.setDocumentation(group.getDescription());
-			completionItem.setInsertText(realGroupName + ".");
+			String insertText = indexOfSecondDot != -1 ? realGroupName : realGroupName + ".";
+			completionItem.setInsertText(insertText);
+			Position start = new Position(getLine(), getStartPositionInLine() + CAMEL_KEY_PREFIX.length());
+			Position end = new Position(getLine(), indexOfSecondDot != -1 ? getStartPositionInLine() + indexOfSecondDot : getEndPositionInLine());
+			Range range = new Range(start, end);
+			completionItem.setTextEdit(new TextEdit(range, insertText));
 			return completionItem;
 		}).collect(Collectors.toList());
 	}
@@ -152,7 +183,7 @@ public class CamelPropertyKeyInstance implements ILineRangeDefineable {
 
 	@Override
 	public int getEndPositionInLine() {
-		return camelPropertyKey.length();
+		return getStartPositionInLine() + camelPropertyKey.length();
 	}
 
 	public CompletableFuture<Hover> getHover(Position position, CompletableFuture<CamelCatalog> camelCatalog) {

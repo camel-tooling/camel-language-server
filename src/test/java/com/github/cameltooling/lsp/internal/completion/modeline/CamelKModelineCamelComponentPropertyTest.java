@@ -18,13 +18,17 @@ package com.github.cameltooling.lsp.internal.completion.modeline;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 import org.eclipse.lsp4j.CompletionItem;
 import org.eclipse.lsp4j.CompletionList;
 import org.eclipse.lsp4j.Position;
+import org.eclipse.lsp4j.Range;
+import org.eclipse.lsp4j.TextEdit;
 import org.eclipse.lsp4j.jsonrpc.messages.Either;
 import org.junit.jupiter.api.Test;
 
@@ -46,6 +50,71 @@ class CamelKModelineCamelComponentPropertyTest extends AbstractCamelLanguageServ
 	}
 	
 	@Test
+	void testProvideCompletionForComponentNamesWithInsertAndReplace() throws Exception {
+		CamelLanguageServer camelLanguageServer = initializeLanguageServer("// camel-k: property=camel.component.toreplace");
+		
+		CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = getCompletionFor(camelLanguageServer, new Position(0, 37));
+		
+		List<CompletionItem> completionItems = completions.get().getLeft();
+		assertThat(completionItems).hasSizeGreaterThan(50);
+		CompletionItem timerCompletionItem = completionItems.stream().filter(completionItem -> "timer".equals(completionItem.getLabel())).findFirst().get();
+		assertThat(timerCompletionItem.getDocumentation().getLeft()).isEqualTo("Generate messages in specified intervals using java.util.Timer.");
+		TextEdit textEdit = timerCompletionItem.getTextEdit();
+		assertThat(textEdit).isNotNull();
+		assertThat(textEdit.getNewText()).isEqualTo("timer");
+		assertThat(textEdit.getRange().getStart().getCharacter()).isEqualTo(37);
+		assertThat(textEdit.getRange().getEnd().getCharacter()).isEqualTo(37 + "toreplace".length());
+	}
+	
+	@Test
+	void testProvideCompletionForGroup() throws Exception {
+		CamelLanguageServer camelLanguageServer = initializeLanguageServer("// camel-k: property=camel.");
+		
+		CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = getCompletionFor(camelLanguageServer, new Position(0, 27));
+		
+		List<CompletionItem> completionItems = completions.get().getLeft();
+		CompletionItem faultToleranceCompletionItem = completionItems.stream().filter(completionItem -> "faulttolerance".equals(completionItem.getLabel())).findFirst().get();
+		assertThat(faultToleranceCompletionItem).isNotNull();
+		assertThat(faultToleranceCompletionItem.getTextEdit().getNewText()).isEqualTo("faulttolerance.");
+		
+		CompletionItem componentCompletionItem = completionItems.stream().filter(completionItem -> "component".equals(completionItem.getLabel())).findFirst().get();
+		assertThat(componentCompletionItem).isNotNull();
+		assertThat(componentCompletionItem.getTextEdit().getNewText()).isEqualTo("component.");
+	}
+	
+	@Test
+	void testProvideCompletionForGroupWithInsertAndReplaceWithPArtialProperty() throws Exception {
+		testProvideCompletionForGroupWithInsertAndReplace("// camel-k: property=camel.toreplace", true);
+	}
+	
+	@Test
+	void testProvideCompletionForGroupWithInsertAndReplace() throws Exception {
+		testProvideCompletionForGroupWithInsertAndReplace("// camel-k: property=camel.toreplace.property=value", false);
+	}
+
+	private void testProvideCompletionForGroupWithInsertAndReplace(String modeline, boolean withFinalDot) throws URISyntaxException, InterruptedException, ExecutionException {
+		CamelLanguageServer camelLanguageServer = initializeLanguageServer(modeline);
+		
+		CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = getCompletionFor(camelLanguageServer, new Position(0, 27));
+		
+		List<CompletionItem> completionItems = completions.get().getLeft();
+		CompletionItem faultToleranceCompletionItem = completionItems.stream().filter(completionItem -> "faulttolerance".equals(completionItem.getLabel())).findFirst().get();
+		assertThat(faultToleranceCompletionItem).isNotNull();
+		TextEdit faulToleranceTextEdit = faultToleranceCompletionItem.getTextEdit();
+		assertThat(faulToleranceTextEdit.getNewText()).isEqualTo("faulttolerance" + (withFinalDot? "." : ""));
+		assertThat(faulToleranceTextEdit.getRange().getStart().getCharacter()).isEqualTo(27);
+		assertThat(faulToleranceTextEdit.getRange().getEnd().getCharacter()).isEqualTo(27 + "toreplace".length());
+		
+		CompletionItem componentCompletionItem = completionItems.stream().filter(completionItem -> "component".equals(completionItem.getLabel())).findFirst().get();
+		assertThat(componentCompletionItem).isNotNull();
+		assertThat(componentCompletionItem.getTextEdit().getNewText()).isEqualTo("component" + (withFinalDot? "." : ""));
+		TextEdit componentTextEdit = componentCompletionItem.getTextEdit();
+		assertThat(componentTextEdit.getNewText()).isEqualTo("component" + (withFinalDot? "." : ""));
+		assertThat(componentTextEdit.getRange().getStart().getCharacter()).isEqualTo(27);
+		assertThat(componentTextEdit.getRange().getEnd().getCharacter()).isEqualTo(27 + "toreplace".length());
+	}
+	
+	@Test
 	void testProvideCompletionForComponentAttribute() throws Exception {
 		CamelLanguageServer camelLanguageServer = initializeLanguageServer("// camel-k: property=camel.component.timer.");
 		
@@ -56,7 +125,7 @@ class CamelKModelineCamelComponentPropertyTest extends AbstractCamelLanguageServ
 		CompletionItem timerCompletionItem = completionItems.stream().filter(completionItem -> "bridgeErrorHandler".equals(completionItem.getLabel())).findFirst().get();
 		assertThat(timerCompletionItem.getDocumentation().getLeft()).isEqualTo("Allows for bridging the consumer to the Camel routing Error Handler, which mean any exceptions occurred while the consumer is trying to pickup incoming messages, or the likes, will now be processed as a message and handled by the routing Error Handler. By default the consumer will use the org.apache.camel.spi.ExceptionHandler to deal with exceptions, that will be logged at WARN or ERROR level and ignored.");
 	}
-		
+	
 	@Test
 	void testProvideCompletionForComponentSuffix() throws Exception {
 		CamelLanguageServer camelLanguageServer = initializeLanguageServer("// camel-k: property=");
@@ -64,8 +133,26 @@ class CamelKModelineCamelComponentPropertyTest extends AbstractCamelLanguageServ
 		CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = getCompletionFor(camelLanguageServer, new Position(0, 21));
 		
 		List<CompletionItem> completionItems = completions.get().getLeft();
-		Optional<CompletionItem> timerCompletionItem = completionItems.stream().filter(completionItem -> "camel.".equals(completionItem.getLabel())).findFirst();
+		Optional<CompletionItem> timerCompletionItem = completionItems.stream().filter(completionItem -> "camel".equals(completionItem.getLabel())).findFirst();
 		assertThat(timerCompletionItem).isNotEmpty();
+		assertThat(timerCompletionItem.get().getTextEdit().getNewText()).isEqualTo("camel.");
+	}
+	
+	@Test
+	void testProvideCompletionForComponentSuffixWithInseertAndReplace() throws Exception {
+		CamelLanguageServer camelLanguageServer = initializeLanguageServer("// camel-k: property=test.test");
+		
+		CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = getCompletionFor(camelLanguageServer, new Position(0, 21));
+		
+		List<CompletionItem> completionItems = completions.get().getLeft();
+		Optional<CompletionItem> timerCompletionItem = completionItems.stream().filter(completionItem -> "camel".equals(completionItem.getLabel())).findFirst();
+		assertThat(timerCompletionItem).isNotEmpty();
+		TextEdit timerTextEdit = timerCompletionItem.get().getTextEdit();
+		assertThat(timerTextEdit).isNotNull();
+		assertThat(timerTextEdit.getNewText()).isEqualTo("camel");
+		Range timerTextEditRange = timerTextEdit.getRange();
+		assertThat(timerTextEditRange.getStart().getCharacter()).isEqualTo(21);
+		assertThat(timerTextEditRange.getEnd().getCharacter()).isEqualTo(21+"test".length());
 	}
 	
 }
