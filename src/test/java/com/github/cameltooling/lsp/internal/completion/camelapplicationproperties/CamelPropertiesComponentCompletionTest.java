@@ -53,10 +53,10 @@ class CamelPropertiesComponentCompletionTest extends AbstractCamelLanguageServer
 	}
 	
 	@Test
-	void testProvideCompletionNoCompletionAtWrongPosition() throws Exception {
+	void testProvideFilteredCompletion() throws Exception {
 		CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = retrieveCompletion(new Position(0, 14));
 		
-		assertThat(completions.get().getLeft()).isEmpty();
+		assertThat(completions.get().getLeft()).hasSize(1);
 	}
 	
 	protected CompletableFuture<Either<List<CompletionItem>, CompletionList>> retrieveCompletion(Position position) throws URISyntaxException, InterruptedException, ExecutionException {
