@@ -25,6 +25,7 @@ import org.eclipse.lsp4j.CompletionItem;
 import org.eclipse.lsp4j.CompletionList;
 import org.eclipse.lsp4j.InsertTextFormat;
 import org.eclipse.lsp4j.Position;
+import org.eclipse.lsp4j.TextEdit;
 import org.eclipse.lsp4j.jsonrpc.messages.Either;
 import org.junit.jupiter.api.Test;
 
@@ -44,6 +45,25 @@ class CamelKModelineDependencyCompletionTest extends AbstractCamelLanguageServer
 		assertThat(completionItems.stream().filter(completionItem -> !completionItem.getLabel().startsWith("mvn")).map(completionitem -> completionitem.getLabel())).allMatch(compleItemLabel -> compleItemLabel.startsWith("camel-"));
 		CompletionItem timerCompletionItem = completionItems.stream().filter(completionItem -> "camel-timer".equals(completionItem.getLabel())).findFirst().get();
 		assertThat(timerCompletionItem.getDocumentation().getLeft()).isEqualTo("Generate messages in specified intervals using java.util.Timer.");
+		assertThat(timerCompletionItem.getTextEdit()).isNotNull();
+	}
+	
+	@Test
+	void testProvideCompletionWithInsertAndReplaceForCamelComponentDependency() throws Exception {
+		CamelLanguageServer camelLanguageServer = initializeLanguageServer("// camel-k: dependency=camel-example");
+		
+		CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = getCompletionFor(camelLanguageServer, new Position(0, 23));
+		
+		List<CompletionItem> completionItems = completions.get().getLeft();
+		assertThat(completionItems).isNotEmpty();
+		assertThat(completionItems.stream().filter(completionItem -> !completionItem.getLabel().startsWith("mvn")).map(completionitem -> completionitem.getLabel())).allMatch(compleItemLabel -> compleItemLabel.startsWith("camel-"));
+		CompletionItem timerCompletionItem = completionItems.stream().filter(completionItem -> "camel-timer".equals(completionItem.getLabel())).findFirst().get();
+		assertThat(timerCompletionItem.getDocumentation().getLeft()).isEqualTo("Generate messages in specified intervals using java.util.Timer.");
+		TextEdit camelTimerTextEdit = timerCompletionItem.getTextEdit();
+		assertThat(camelTimerTextEdit).isNotNull();
+		assertThat(camelTimerTextEdit.getNewText()).isEqualTo("camel-timer");
+		assertThat(camelTimerTextEdit.getRange().getStart().getCharacter()).isEqualTo(23);
+		assertThat(camelTimerTextEdit.getRange().getEnd().getCharacter()).isEqualTo(23 + "camel-example".length());
 	}
 	
 	@Test
