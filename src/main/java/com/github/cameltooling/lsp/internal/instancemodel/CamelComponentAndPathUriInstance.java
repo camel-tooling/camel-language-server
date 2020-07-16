@@ -26,8 +26,8 @@ import org.apache.camel.catalog.CamelCatalog;
 import org.eclipse.lsp4j.CompletionItem;
 import org.eclipse.lsp4j.TextDocumentItem;
 
+import com.github.cameltooling.lsp.internal.catalog.model.ComponentModel;
 import com.github.cameltooling.lsp.internal.completion.CamelComponentSchemesCompletionsFuture;
-import com.github.cameltooling.model.ComponentModel;
 
 /**
  * For a Camel component and path URI "timer:timerName?delay=10s", it represents "timer:timerName"

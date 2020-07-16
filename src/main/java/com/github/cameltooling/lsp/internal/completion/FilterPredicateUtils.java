@@ -21,8 +21,8 @@ import java.util.function.Predicate;
 
 import org.eclipse.lsp4j.CompletionItem;
 
+import com.github.cameltooling.lsp.internal.catalog.model.EndpointOptionModel;
 import com.github.cameltooling.lsp.internal.instancemodel.OptionParamURIInstance;
-import com.github.cameltooling.model.EndpointOptionModel;
 
 public class FilterPredicateUtils {
 

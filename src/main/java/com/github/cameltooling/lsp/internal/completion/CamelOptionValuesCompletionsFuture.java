@@ -27,9 +27,9 @@ import java.util.stream.Stream;
 import org.apache.camel.catalog.CamelCatalog;
 import org.eclipse.lsp4j.CompletionItem;
 
+import com.github.cameltooling.lsp.internal.catalog.model.EndpointOptionModel;
+import com.github.cameltooling.lsp.internal.catalog.util.ModelHelper;
 import com.github.cameltooling.lsp.internal.instancemodel.OptionParamValueURIInstance;
-import com.github.cameltooling.model.EndpointOptionModel;
-import com.github.cameltooling.model.util.ModelHelper;
 
 public class CamelOptionValuesCompletionsFuture implements Function<CamelCatalog, List<CompletionItem>> {
 

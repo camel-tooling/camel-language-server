@@ -30,8 +30,8 @@ import org.eclipse.lsp4j.Range;
 import org.eclipse.lsp4j.TextDocumentItem;
 import org.w3c.dom.Node;
 
+import com.github.cameltooling.lsp.internal.catalog.model.ComponentModel;
 import com.github.cameltooling.lsp.internal.completion.CamelComponentSchemesCompletionsFuture;
-import com.github.cameltooling.model.ComponentModel;
 
 /**
  * represents the whole Camel URI
