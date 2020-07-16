@@ -36,12 +36,12 @@ import org.eclipse.lsp4j.DiagnosticSeverity;
 import org.eclipse.lsp4j.Position;
 import org.eclipse.lsp4j.Range;
 
-import com.github.cameltooling.model.diagnostic.BooleanErrorMsg;
-import com.github.cameltooling.model.diagnostic.EnumErrorMsg;
-import com.github.cameltooling.model.diagnostic.IntegerErrorMsg;
-import com.github.cameltooling.model.diagnostic.NumberErrorMsg;
-import com.github.cameltooling.model.diagnostic.ReferenceErrorMsg;
-import com.github.cameltooling.model.diagnostic.UnknownErrorMsg;
+import com.github.cameltooling.lsp.internal.catalog.diagnostic.BooleanErrorMsg;
+import com.github.cameltooling.lsp.internal.catalog.diagnostic.EnumErrorMsg;
+import com.github.cameltooling.lsp.internal.catalog.diagnostic.IntegerErrorMsg;
+import com.github.cameltooling.lsp.internal.catalog.diagnostic.NumberErrorMsg;
+import com.github.cameltooling.lsp.internal.catalog.diagnostic.ReferenceErrorMsg;
+import com.github.cameltooling.lsp.internal.catalog.diagnostic.UnknownErrorMsg;
 
 public class ConfigurationPropertiesDiagnosticService extends DiagnosticService {
 

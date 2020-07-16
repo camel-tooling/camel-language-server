@@ -23,8 +23,8 @@ import java.util.stream.Collectors;
 import org.apache.camel.catalog.CamelCatalog;
 import org.eclipse.lsp4j.CompletionItem;
 
+import com.github.cameltooling.lsp.internal.catalog.util.ModelHelper;
 import com.github.cameltooling.lsp.internal.instancemodel.propertiesfile.CamelComponentNamePropertyInstance;
-import com.github.cameltooling.model.util.ModelHelper;
 
 public class CamelComponentIdsCompletionsFuture implements Function<CamelCatalog, List<CompletionItem>> {
 

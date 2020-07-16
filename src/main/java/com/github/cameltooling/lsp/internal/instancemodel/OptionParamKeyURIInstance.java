@@ -25,8 +25,8 @@ import org.apache.camel.catalog.CamelCatalog;
 import org.eclipse.lsp4j.CompletionItem;
 import org.eclipse.lsp4j.TextDocumentItem;
 
+import com.github.cameltooling.lsp.internal.catalog.model.ComponentModel;
 import com.github.cameltooling.lsp.internal.completion.CamelOptionNamesCompletionsFuture;
-import com.github.cameltooling.model.ComponentModel;
 
 /**
  * For a Camel URI "timer:timerName?delay=10s", it represents "delay"

@@ -27,10 +27,10 @@ import org.eclipse.lsp4j.TextDocumentItem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.github.cameltooling.lsp.internal.catalog.util.ModelHelper;
 import com.github.cameltooling.lsp.internal.instancemodel.CamelUriElementInstance;
 import com.github.cameltooling.lsp.internal.instancemodel.ReferenceUtils;
 import com.github.cameltooling.lsp.internal.parser.ParserXMLFileHelper;
-import com.github.cameltooling.model.util.ModelHelper;
 
 public final class CamelComponentSchemesCompletionsFuture implements Function<CamelCatalog, List<CompletionItem>> {
 	

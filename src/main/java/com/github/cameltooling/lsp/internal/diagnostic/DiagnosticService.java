@@ -24,7 +24,7 @@ import org.apache.camel.catalog.CamelCatalog;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.github.cameltooling.model.diagnostic.CamelDiagnosticMessage;
+import com.github.cameltooling.lsp.internal.catalog.diagnostic.CamelDiagnosticMessage;
 
 public abstract class DiagnosticService {
 	

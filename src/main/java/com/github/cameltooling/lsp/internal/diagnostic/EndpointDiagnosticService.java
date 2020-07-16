@@ -43,13 +43,13 @@ import org.eclipse.lsp4j.TextDocumentItem;
 import org.jboss.forge.roaster.Roaster;
 import org.jboss.forge.roaster.model.source.JavaClassSource;
 
+import com.github.cameltooling.lsp.internal.catalog.diagnostic.BooleanErrorMsg;
+import com.github.cameltooling.lsp.internal.catalog.diagnostic.EnumErrorMsg;
+import com.github.cameltooling.lsp.internal.catalog.diagnostic.IntegerErrorMsg;
+import com.github.cameltooling.lsp.internal.catalog.diagnostic.NumberErrorMsg;
+import com.github.cameltooling.lsp.internal.catalog.diagnostic.ReferenceErrorMsg;
+import com.github.cameltooling.lsp.internal.catalog.diagnostic.UnknownErrorMsg;
 import com.github.cameltooling.lsp.internal.parser.ParserFileHelperUtil;
-import com.github.cameltooling.model.diagnostic.BooleanErrorMsg;
-import com.github.cameltooling.model.diagnostic.EnumErrorMsg;
-import com.github.cameltooling.model.diagnostic.IntegerErrorMsg;
-import com.github.cameltooling.model.diagnostic.NumberErrorMsg;
-import com.github.cameltooling.model.diagnostic.ReferenceErrorMsg;
-import com.github.cameltooling.model.diagnostic.UnknownErrorMsg;
 
 public class EndpointDiagnosticService extends DiagnosticService {
 

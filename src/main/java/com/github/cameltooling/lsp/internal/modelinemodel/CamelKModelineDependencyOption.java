@@ -29,9 +29,9 @@ import org.eclipse.lsp4j.Hover;
 import org.eclipse.lsp4j.InsertTextFormat;
 import org.eclipse.lsp4j.jsonrpc.messages.Either;
 
+import com.github.cameltooling.lsp.internal.catalog.model.ComponentModel;
+import com.github.cameltooling.lsp.internal.catalog.util.ModelHelper;
 import com.github.cameltooling.lsp.internal.completion.CompletionResolverUtils;
-import com.github.cameltooling.model.ComponentModel;
-import com.github.cameltooling.model.util.ModelHelper;
 
 public class CamelKModelineDependencyOption implements ICamelKModelineOptionValue {
 

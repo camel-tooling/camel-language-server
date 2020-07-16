@@ -25,11 +25,11 @@ import java.util.stream.Stream;
 import org.apache.camel.catalog.CamelCatalog;
 import org.eclipse.lsp4j.CompletionItem;
 
+import com.github.cameltooling.lsp.internal.catalog.model.EndpointOptionModel;
+import com.github.cameltooling.lsp.internal.catalog.util.ModelHelper;
 import com.github.cameltooling.lsp.internal.instancemodel.CamelUriElementInstance;
 import com.github.cameltooling.lsp.internal.instancemodel.OptionParamKeyURIInstance;
 import com.github.cameltooling.lsp.internal.instancemodel.OptionParamURIInstance;
-import com.github.cameltooling.model.EndpointOptionModel;
-import com.github.cameltooling.model.util.ModelHelper;
 
 public class CamelOptionNamesCompletionsFuture implements Function<CamelCatalog, List<CompletionItem>>  {
 
