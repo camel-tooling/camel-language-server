@@ -52,4 +52,4 @@ jobs:
 stages:
  - test
  - name: deploy
-   if: branch = master AND NOT type = pull_request
+   if: branch = master AND NOT type = pull_request OR tag IS present
