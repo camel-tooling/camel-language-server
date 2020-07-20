@@ -40,9 +40,9 @@ jobs:
           mvn verify -P !build-extras -Dtest="*,!RunnerStandardIOTest,!RunnerWebSocketTest" -B sonar:sonar -Dsonar.login=${SONAR_TOKEN} -Dsonar.organization="camel-tooling" -Dsonar.projectKey="camel-lsp-server" -Dsonar.projectName="Camel LSP Server"; 
          fi
         - if [[ $TRAVIS_PULL_REQUEST == "false" && $TRAVIS_BRANCH == "master" && $IS_SNAPSHOT == "true" ]]; then
-         echo "deploy scripts woudl be called"
+         echo "deploy scripts woudl be called";
          elif [[ -n "$TRAVIS_TAG" && $IS_SNAPSHOT == "false" ]]; then
-         echo "deploy scripts woudl be called"
+         echo "deploy scripts woudl be called";
          fi
       addons:
         sonarcloud:
