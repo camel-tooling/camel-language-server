@@ -46,6 +46,7 @@ import org.jboss.forge.roaster.model.source.JavaClassSource;
 import com.github.cameltooling.lsp.internal.catalog.diagnostic.BooleanErrorMsg;
 import com.github.cameltooling.lsp.internal.catalog.diagnostic.EnumErrorMsg;
 import com.github.cameltooling.lsp.internal.catalog.diagnostic.IntegerErrorMsg;
+import com.github.cameltooling.lsp.internal.catalog.diagnostic.InvalidDurationErrorMsg;
 import com.github.cameltooling.lsp.internal.catalog.diagnostic.NumberErrorMsg;
 import com.github.cameltooling.lsp.internal.catalog.diagnostic.ReferenceErrorMsg;
 import com.github.cameltooling.lsp.internal.catalog.diagnostic.UnknownErrorMsg;
@@ -235,6 +236,7 @@ public class EndpointDiagnosticService extends DiagnosticService {
 		computeErrorMessage(sb, validationResult.getInvalidNumber(), new NumberErrorMsg());
 		computeErrorMessage(sb, validationResult.getInvalidBoolean(), new BooleanErrorMsg());
 		computeErrorMessage(sb, validationResult.getInvalidReference(), new ReferenceErrorMsg());
+		computeErrorMessage(sb, validationResult.getInvalidDuration(), new InvalidDurationErrorMsg());
 		computeErrorMessage(sb, validationResult.getSyntaxError());
 		return sb.toString();
 	}

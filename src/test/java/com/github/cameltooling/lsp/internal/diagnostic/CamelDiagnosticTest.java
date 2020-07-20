@@ -45,7 +45,7 @@ class CamelDiagnosticTest extends AbstractDiagnosticTest {
 		Range range = lastPublishedDiagnostics.getDiagnostics().get(0).getRange();
 		checkRange(range, 8, 16, 8, 39);
 	}
-	
+
 	@Test
 	void testValidationErrorWithNamespacePrefix() throws Exception {
 		testDiagnostic("camel-with-endpoint-error-withNamespacePrefix", 1, ".xml");

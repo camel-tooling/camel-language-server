@@ -23,7 +23,9 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.time.Duration;
+import java.util.List;
 
+import org.eclipse.lsp4j.Diagnostic;
 import org.eclipse.lsp4j.DidSaveTextDocumentParams;
 import org.eclipse.lsp4j.Range;
 import org.eclipse.lsp4j.TextDocumentIdentifier;
@@ -50,6 +52,15 @@ public abstract class AbstractDiagnosticTest extends AbstractCamelLanguageServer
 		
 		await().timeout(AWAIT_TIMEOUT).untilAsserted(() -> assertThat(lastPublishedDiagnostics).isNotNull());
 		await().timeout(AWAIT_TIMEOUT).untilAsserted(() -> assertThat(lastPublishedDiagnostics.getDiagnostics()).hasSize(expectedNumberOfError));
+		
+		checkHasNonEmptyMessage(lastPublishedDiagnostics.getDiagnostics());
+	}
+
+	private void checkHasNonEmptyMessage(List<Diagnostic> diagnostics) {
+		for (Diagnostic diagnostic : diagnostics) {
+			assertThat(diagnostic.getMessage()).isNotEmpty();
+		}
+		
 	}
 
 }
