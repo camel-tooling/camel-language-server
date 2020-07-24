@@ -67,6 +67,24 @@ class CamelKModelineDependencyCompletionTest extends AbstractCamelLanguageServer
 	}
 	
 	@Test
+	void testProvideCompletionWithInsertAndReplaceInMiddleOfValue() throws Exception {
+		CamelLanguageServer camelLanguageServer = initializeLanguageServer("// camel-k: dependency=camel-tika");
+		
+		CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = getCompletionFor(camelLanguageServer, new Position(0, 31));
+		
+		List<CompletionItem> completionItems = completions.get().getLeft();
+		assertThat(completionItems).hasSize(3/*camel-timer, camel-tika and the mvn completion */);
+		assertThat(completionItems.stream().filter(completionItem -> !completionItem.getLabel().startsWith("mvn")).map(completionitem -> completionitem.getLabel())).allMatch(compleItemLabel -> compleItemLabel.startsWith("camel-"));
+		CompletionItem timerCompletionItem = completionItems.stream().filter(completionItem -> "camel-timer".equals(completionItem.getLabel())).findFirst().get();
+		assertThat(timerCompletionItem.getDocumentation().getLeft()).isEqualTo("Generate messages in specified intervals using java.util.Timer.");
+		TextEdit camelTimerTextEdit = timerCompletionItem.getTextEdit();
+		assertThat(camelTimerTextEdit).isNotNull();
+		assertThat(camelTimerTextEdit.getNewText()).isEqualTo("camel-timer");
+		assertThat(camelTimerTextEdit.getRange().getStart().getCharacter()).isEqualTo(23);
+		assertThat(camelTimerTextEdit.getRange().getEnd().getCharacter()).isEqualTo(23 + "camel-tika".length());
+	}
+	
+	@Test
 	void testProvideCompletionForMavenComponentDependency() throws Exception {
 		CamelLanguageServer camelLanguageServer = initializeLanguageServer("// camel-k: dependency=");
 		
