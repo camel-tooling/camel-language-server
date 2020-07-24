@@ -32,6 +32,7 @@ import org.eclipse.lsp4j.jsonrpc.messages.Either;
 import com.github.cameltooling.lsp.internal.catalog.model.ComponentModel;
 import com.github.cameltooling.lsp.internal.catalog.util.ModelHelper;
 import com.github.cameltooling.lsp.internal.completion.CompletionResolverUtils;
+import com.github.cameltooling.lsp.internal.completion.FilterPredicateUtils;
 
 public class CamelKModelineDependencyOption implements ICamelKModelineOptionValue {
 
@@ -60,22 +61,25 @@ public class CamelKModelineDependencyOption implements ICamelKModelineOptionValu
 
 	@Override
 	public CompletableFuture<List<CompletionItem>> getCompletions(int position, CompletableFuture<CamelCatalog> camelCatalog) {
-		if(getStartPositionInLine() == position) {
+		if(getStartPositionInLine() <= position && position <= getEndPositionInLine()) {
+			String filter = value != null ? value.substring(0, position - getStartPositionInLine()) : "";
 			return camelCatalog
-					.thenApply(retrieveCamelComponentCompletionItems())
-					.thenApply(addMvnDependencyCompletionItem());
+					.thenApply(retrieveCamelComponentCompletionItems(filter))
+					.thenApply(addMvnDependencyCompletionItem(filter));
 		}
 		return ICamelKModelineOptionValue.super.getCompletions(position, camelCatalog);
 	}
 
-	private Function<List<CompletionItem>, List<CompletionItem>> addMvnDependencyCompletionItem() {
+	private Function<List<CompletionItem>, List<CompletionItem>> addMvnDependencyCompletionItem(String filter) {
 		return completionItems -> {
-			completionItems.add(createMvnCompletionItem());
+			if(filter != null || !"".equals(filter)) {
+				completionItems.add(createMvnCompletionItem());
+			}
 			return completionItems;
 		};
 	}
 
-	private Function<? super CamelCatalog, ? extends List<CompletionItem>> retrieveCamelComponentCompletionItems() {
+	private Function<? super CamelCatalog, ? extends List<CompletionItem>> retrieveCamelComponentCompletionItems(String filter) {
 		return catalog -> catalog.findComponentNames().stream()
 			.map(componentName -> ModelHelper.generateComponentModel(catalog.componentJSonSchema(componentName), true))
 			.map(componentModel -> {
@@ -85,6 +89,7 @@ public class CamelKModelineDependencyOption implements ICamelKModelineOptionValu
 				CompletionResolverUtils.applyTextEditToCompletionItem(this, completionItem);
 				return completionItem;
 			})
+			.filter(FilterPredicateUtils.matchesCompletionFilter(filter))
 			.collect(Collectors.toList());
 	}
 
