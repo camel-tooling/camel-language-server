@@ -86,7 +86,7 @@ class CamelKModelineDependencyCompletionTest extends AbstractCamelLanguageServer
 	
 	@Test
 	void testProvideCompletionForMavenComponentDependency() throws Exception {
-		CamelLanguageServer camelLanguageServer = initializeLanguageServer("// camel-k: dependency=");
+		CamelLanguageServer camelLanguageServer = initializeLanguageServer("// camel-k: dependency=test");
 		
 		CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = getCompletionFor(camelLanguageServer, new Position(0, 23));
 		
@@ -95,5 +95,7 @@ class CamelKModelineDependencyCompletionTest extends AbstractCamelLanguageServer
 		CompletionItem timerCompletionItem = completionItems.stream().filter(completionItem -> completionItem.getLabel().startsWith("mvn")).findFirst().get();
 		assertThat(timerCompletionItem.getInsertTextFormat()).isEqualTo(InsertTextFormat.Snippet);
 		assertThat(timerCompletionItem.getInsertText()).isEqualTo("mvn:${1:groupId}/${2:artifactId}:${3:version}");
+		assertThat(timerCompletionItem.getTextEdit().getRange().getStart().getCharacter()).isEqualTo(23);
+		assertThat(timerCompletionItem.getTextEdit().getRange().getEnd().getCharacter()).isEqualTo(23 + "test".length());
 	}
 }
