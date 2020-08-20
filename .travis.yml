@@ -14,17 +14,17 @@ jobs:
     - stage: test
       jdk: openjdk8
       script:
-        - mvn install -P !build-extras -DskipTests=true -Dmaven.javadoc.skip=true -B -V
+        - mvn install -P !build-extras -DskipTests=true -B -V
         - mvn test -P !build-extras -B
     - stage: test
       jdk: openjdk11
       script:
-        - mvn install -P !build-extras -DskipTests=true -Dmaven.javadoc.skip=true -B -V
+        - mvn install -P !build-extras -DskipTests=true -B -V
         - mvn test -P !build-extras -B
     - stage: test
       jdk: openjdk14
       script:
-        - mvn install -P !build-extras -DskipTests=true -Dmaven.javadoc.skip=true -B -V
+        - mvn install -P !build-extras -DskipTests=true -B -V
         - mvn test -P !build-extras -B
     - stage: deploy
       name: "Sonar Analysis and Deployment"
