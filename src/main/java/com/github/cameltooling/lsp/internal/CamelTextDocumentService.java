@@ -287,7 +287,7 @@ public class CamelTextDocumentService implements TextDocumentService {
 
 	/**
 	 * /!\ public for test purpose
-	 * @return
+	 * @return a Future of the Camel Catalog
 	 */
 	public CompletableFuture<CamelCatalog> getCamelCatalog() {
 		return camelCatalog;

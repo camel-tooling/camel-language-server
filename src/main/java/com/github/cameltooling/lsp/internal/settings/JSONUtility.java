@@ -25,6 +25,10 @@ public class JSONUtility {
 	 * Converts given JSON objects to given Model objects.
 	 *
 	 * @throws IllegalArgumentException if clazz is null
+	 * @param <T> The type in which it will be converted
+	 * @param object the raw object to convert
+	 * @param clazz the class in which to convert
+	 * @return the object converted in the <T> type
 	 */
 	public <T> T toModel(Object object, Class<T> clazz) {
 		return toModel(new Gson(), object, clazz);
