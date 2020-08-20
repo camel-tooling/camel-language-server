@@ -25,6 +25,7 @@ public interface CamelDiagnosticMessage<T> {
 	 * Return error messaged constructed to match the validation result.
 	 *
 	 * @param valueObj - The key and value object validated.
+	 * @return The error message corresponding to the provided object as parameter.
 	 */
 	String getErrorMessage(T valueObj);
 
