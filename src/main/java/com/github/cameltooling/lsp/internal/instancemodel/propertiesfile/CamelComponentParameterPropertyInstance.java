@@ -65,15 +65,11 @@ public class CamelComponentParameterPropertyInstance implements ILineRangeDefine
 		return startCharacterInLine + componentParameter.length();
 	}
 
-	public CompletableFuture<List<CompletionItem>> getCompletions(Position position,
-			CompletableFuture<CamelCatalog> camelCatalog) {
-		CamelPropertyValueInstance camelPropertyFileValueInstance = camelComponentPropertykey
-				.getCamelPropertyKeyInstance().getCamelPropertyEntryInstance().getCamelPropertyValueInstance();
-		String startComponentProperty = componentParameter.substring(0,
-				position.getCharacter() - getStartPositionInLine());
+	public CompletableFuture<List<CompletionItem>> getCompletions(Position position, CompletableFuture<CamelCatalog> camelCatalog) {
+		CamelPropertyValueInstance camelPropertyFileValueInstance = camelComponentPropertykey.getCamelPropertyKeyInstance().getCamelPropertyEntryInstance().getCamelPropertyValueInstance();
+		String startComponentProperty = componentParameter.substring(0, position.getCharacter() - getStartPositionInLine());
 		return camelCatalog
-				.thenApply(new CamelComponentOptionNamesCompletionFuture(camelComponentPropertykey.getComponentId(),
-						this, camelPropertyFileValueInstance, startComponentProperty));
+				.thenApply(new CamelComponentOptionNamesCompletionFuture(camelComponentPropertykey.getComponentId(), this, camelPropertyFileValueInstance, startComponentProperty));
 	}
 
 	public String getProperty() {
@@ -99,6 +95,10 @@ public class CamelComponentParameterPropertyInstance implements ILineRangeDefine
 			}
 			return null;
 		});
+	}
+
+	public boolean shouldUseDashedCase() {
+		return camelComponentPropertykey.shouldUseDashedCase();
 	}
 
 }

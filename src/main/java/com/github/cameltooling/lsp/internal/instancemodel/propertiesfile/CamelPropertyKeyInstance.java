@@ -193,4 +193,8 @@ public class CamelPropertyKeyInstance implements ILineRangeDefineable {
 		return CompletableFuture.completedFuture(null);
 	}
 
+	public boolean shouldUseDashedCase() {
+		return camelPropertyEntryInstance.shouldUseDashedCase();
+	}
+
 }

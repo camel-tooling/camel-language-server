@@ -22,6 +22,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.apache.camel.catalog.CamelCatalog;
+import org.apache.camel.util.StringHelper;
 import org.eclipse.lsp4j.CompletionItem;
 
 import com.github.cameltooling.lsp.internal.catalog.model.ComponentOptionModel;
@@ -48,11 +49,12 @@ public class CamelComponentOptionNamesCompletionFuture implements Function<Camel
 		Stream<ComponentOptionModel> endpointOptions = ModelHelper.generateComponentModel(catalog.componentJSonSchema(componentId), true).getComponentOptions().stream();
 		return endpointOptions
 				.map(parameter -> {
-					CompletionItem completionItem = new CompletionItem(parameter.getName());
+					String parameterDisplayName = computeDisplayName(parameter, camelComponentParameterPropertyFileInstance.shouldUseDashedCase());
+					CompletionItem completionItem = new CompletionItem(parameterDisplayName);
 					completionItem.setDocumentation(parameter.getDescription());
 					completionItem.setDetail(parameter.getJavaType());
 					completionItem.setDeprecated(Boolean.valueOf(parameter.getDeprecated()));
-					String insertText = parameter.getName();
+					String insertText = parameterDisplayName;
 					if (hasValueProvided() && parameter.getDefaultValue() != null) {
 						insertText += String.format("=%s", parameter.getDefaultValue());
 					}
@@ -62,6 +64,15 @@ public class CamelComponentOptionNamesCompletionFuture implements Function<Camel
 				})
 				.filter(FilterPredicateUtils.matchesCompletionFilter(startFilter))
 				.collect(Collectors.toList());
+	}
+
+	private String computeDisplayName(ComponentOptionModel parameter, boolean useDashedCase) {
+		String camelCaseName = parameter.getName();
+		if(useDashedCase) {
+			return StringHelper.camelCaseToDash(camelCaseName);
+		} else {
+			return camelCaseName;
+		}
 	}
 
 	private boolean hasValueProvided() {
