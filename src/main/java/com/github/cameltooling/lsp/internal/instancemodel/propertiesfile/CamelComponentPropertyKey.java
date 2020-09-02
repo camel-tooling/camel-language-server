@@ -112,4 +112,8 @@ public class CamelComponentPropertyKey implements ILineRangeDefineable {
 		}
 	}
 
+	public boolean shouldUseDashedCase() {
+		return camelPropertyKeyInstance.shouldUseDashedCase();
+	}
+
 }

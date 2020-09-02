@@ -29,58 +29,60 @@ import org.eclipse.lsp4j.TextEdit;
 import org.eclipse.lsp4j.jsonrpc.messages.Either;
 import org.junit.jupiter.api.Test;
 
-class CamelPropertiesComponentOptionNameCompletionTest extends AbstractCamelPropertiesComponentOptionTest {
+class CamelPropertiesComponentOptionDashedNameCompletionTest extends AbstractCamelPropertiesComponentOptionTest {
+	
+	private static String LINE_WITH_DASHED_COMPONENT = "\ncamel.component.acomponent.with-dash=demo";
 	
 	@Test
 	void testProvideCompletion() throws Exception {
-		CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = retrieveCompletion(new Position(0, 27), "camel.component.acomponent.");
+		CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = retrieveCompletion(new Position(0, 27), "camel.component.acomponent." + LINE_WITH_DASHED_COMPONENT);
 		
 		assertThat(completions.get().getLeft()).hasSize(2);
 	}
 	
 	@Test
 	void testProvideCompletionHasDefaultValue() throws Exception {
-		CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = retrieveCompletion(new Position(0, 27), "camel.component.acomponent.");
+		CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = retrieveCompletion(new Position(0, 27), "camel.component.acomponent." + LINE_WITH_DASHED_COMPONENT);
 		
-		assertThat(completions.get().getLeft().get(0).getInsertText()).isEqualTo("aComponentProperty=aDefaultValue");
+		assertThat(completions.get().getLeft().get(0).getInsertText()).isEqualTo("a-component-property=aDefaultValue");
 	}
 	
 	@Test
 	void testProvideCompletionWithoutDefaultValueIfAValueAlreadyProvided() throws Exception {
-		CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = retrieveCompletion(new Position(0, 27), "camel.component.acomponent.aComponentProperty=aValue");
-		CompletionItem expectedCompletionItem = new CompletionItem("aComponentProperty");
-		expectedCompletionItem.setInsertText("aComponentProperty");
+		CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = retrieveCompletion(new Position(0, 27), "camel.component.acomponent.a-component-property=aValue");
+		CompletionItem expectedCompletionItem = new CompletionItem("a-component-property");
+		expectedCompletionItem.setInsertText("a-component-property");
 		expectedCompletionItem.setDocumentation("A parameter description");
 		expectedCompletionItem.setDeprecated(false);
 		expectedCompletionItem.setDetail(String.class.getName());
-		expectedCompletionItem.setTextEdit(new TextEdit(new Range(new Position(0, 27), new Position(0, 45)), "aComponentProperty"));
+		expectedCompletionItem.setTextEdit(new TextEdit(new Range(new Position(0, 27), new Position(0, 47)), "a-component-property"));
 		assertThat(completions.get().getLeft()).contains(expectedCompletionItem);
 	}
 	
 	@Test
 	void testInsertAndReplace() throws Exception {
-		CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = retrieveCompletion(new Position(0, 27), "camel.component.acomponent.awrongtoreplace=aValue");
-		CompletionItem expectedCompletionItem = new CompletionItem("aComponentProperty");
-		expectedCompletionItem.setInsertText("aComponentProperty");
+		CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = retrieveCompletion(new Position(0, 27), "camel.component.acomponent.a-wrong-to-replace=aValue");
+		CompletionItem expectedCompletionItem = new CompletionItem("a-component-property");
+		expectedCompletionItem.setInsertText("a-component-property");
 		expectedCompletionItem.setDocumentation("A parameter description");
 		expectedCompletionItem.setDeprecated(false);
 		expectedCompletionItem.setDetail(String.class.getName());
-		expectedCompletionItem.setTextEdit(new TextEdit(new Range(new Position(0, 27), new Position(0, 42)), "aComponentProperty"));
+		expectedCompletionItem.setTextEdit(new TextEdit(new Range(new Position(0, 27), new Position(0, 45)), "a-component-property"));
 		assertThat(completions.get().getLeft()).contains(expectedCompletionItem);
 	}
 	
 	@Test
 	void testProvideNoCompletionAfterComponentproperty() throws Exception {
-		CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = retrieveCompletion(new Position(0, 46), "camel.component.acomponent.aComponentProperty.");
+		CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = retrieveCompletion(new Position(0, 48), "camel.component.acomponent.a-component-property.");
 		
 		assertThat(completions.get().getLeft()).isEmpty();
 	}
 	
 	@Test
 	void testProvideFilteredCompletionWhenInsideValue() throws Exception {
-		CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = retrieveCompletion(new Position(0, 29), "camel.component.acomponent.aComponentProperty.");
+		CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = retrieveCompletion(new Position(0, 30), "camel.component.acomponent.a-component-property.");
 		
 		assertThat(completions.get().getLeft()).hasSize(1);
-		assertThat(completions.get().getLeft().get(0).getInsertText()).isEqualTo("aComponentProperty=aDefaultValue");
+		assertThat(completions.get().getLeft().get(0).getInsertText()).isEqualTo("a-component-property=aDefaultValue");
 	}
 }

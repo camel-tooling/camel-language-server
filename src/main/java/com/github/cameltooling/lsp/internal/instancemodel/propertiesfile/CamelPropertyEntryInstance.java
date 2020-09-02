@@ -37,10 +37,12 @@ public class CamelPropertyEntryInstance implements ILineRangeDefineable {
 	private CamelPropertyValueInstance camelPropertyValueInstance;
 	private String line;
 	private Position startPosition;
+	private TextDocumentItem textDocumentItem;
 
 	public CamelPropertyEntryInstance(String line, Position startPosition, TextDocumentItem textDocumentItem) {
 		this.line = line;
 		this.startPosition = startPosition;
+		this.textDocumentItem = textDocumentItem;
 		int indexOf = line.indexOf('=');
 		String camelPropertyFileKeyInstanceString;
 		String camelPropertyFileValueInstanceString;
@@ -92,4 +94,9 @@ public class CamelPropertyEntryInstance implements ILineRangeDefineable {
 			return CompletableFuture.completedFuture(null);
 		}
 	}
+
+	public boolean shouldUseDashedCase() {
+		return textDocumentItem != null ? new DashedCaseDetector().hasDashedCaseInCamelComponentOption(textDocumentItem.getText()) : false;
+	}
+
 }
