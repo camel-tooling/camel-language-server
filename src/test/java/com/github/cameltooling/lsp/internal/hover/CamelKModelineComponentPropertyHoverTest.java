@@ -44,6 +44,11 @@ class CamelKModelineComponentPropertyHoverTest extends AbstractCamelLanguageServ
 	}
 	
 	@Test
+	void testProvideDocumentationOnHoverOfComponentAttributeUsingDashedName() throws Exception {
+		testProvideDocumentationOnHover("// camel-k: property=camel.component.timer.basic-property-binding=true", 50, "Whether the component should use basic property binding (Camel 2.x) or the newer property binding with additional capabilities");
+	}
+	
+	@Test
 	void testNoErrorWithPartialNoComponentNameSpecified() throws Exception {
 		testProvideDocumentationOnHover("// camel-k: property=camel.component.timer", 38, "Generate messages in specified intervals using java.util.Timer.");
 	}

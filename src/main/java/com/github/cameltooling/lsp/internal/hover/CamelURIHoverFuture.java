@@ -20,6 +20,7 @@ import java.util.Collections;
 import java.util.function.Function;
 
 import org.apache.camel.catalog.CamelCatalog;
+import org.apache.camel.util.StringHelper;
 import org.eclipse.lsp4j.Hover;
 import org.eclipse.lsp4j.jsonrpc.messages.Either;
 
@@ -37,7 +38,11 @@ public class CamelURIHoverFuture implements Function<CamelCatalog, Hover> {
 
 	@Override
 	public Hover apply(CamelCatalog camelCatalog) {
-		String componentJSonSchema = camelCatalog.componentJSonSchema(uriElement.getComponentName());
+		String componentUsedName = uriElement.getComponentName();
+		String componentJSonSchema = camelCatalog.componentJSonSchema(componentUsedName);
+		if (componentJSonSchema == null && componentUsedName.contains("-")) {
+			componentJSonSchema = camelCatalog.componentJSonSchema(StringHelper.dashToCamelCase(componentUsedName));
+		}
 		if (componentJSonSchema != null) {
 			Hover hover = new Hover();
 			ComponentModel componentModel = ModelHelper.generateComponentModel(componentJSonSchema, true);
