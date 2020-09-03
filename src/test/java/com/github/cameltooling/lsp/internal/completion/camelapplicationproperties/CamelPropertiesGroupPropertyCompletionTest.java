@@ -37,22 +37,29 @@ class CamelPropertiesGroupPropertyCompletionTest extends AbstractCamelLanguageSe
 
 	@Test
 	void testProvideCompletion() throws Exception {
-		CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = retrieveCompletion(new Position(0, 11));
+		CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = retrieveCompletion(new Position(0, 11), "camel.main.");
 		
-		assertThat(completions.get().getLeft()).contains(createExpectedCompletionItem());
+		assertThat(completions.get().getLeft()).contains(createExpectedCompletionItem("allowUseOriginalMessage"));
 	}
 	
-	private CompletionItem createExpectedCompletionItem() {
-		CompletionItem completionItem = new CompletionItem("allowUseOriginalMessage");
+	@Test
+	void testProvideCompletionWithDashedName() throws Exception {
+		CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = retrieveCompletion(new Position(0, 11), "camel.main.\ncamel.main.auto-startup=true");
+		
+		assertThat(completions.get().getLeft()).contains(createExpectedCompletionItem("allow-use-original-message"));
+	}
+	
+	private CompletionItem createExpectedCompletionItem(String expectedOption) {
+		CompletionItem completionItem = new CompletionItem(expectedOption);
 		completionItem.setDocumentation("Sets whether to allow access to the original message from Camel's error handler, or from org.apache.camel.spi.UnitOfWork.getOriginalInMessage(). Turning this off can optimize performance, as defensive copy of the original message is not needed. Default is false.");
 		completionItem.setDeprecated(false);
-		completionItem.setInsertText("allowUseOriginalMessage=");
-		return completionItem ;
+		completionItem.setInsertText(expectedOption + "=");
+		return completionItem;
 	}
 
-	protected CompletableFuture<Either<List<CompletionItem>, CompletionList>> retrieveCompletion(Position position) throws URISyntaxException, InterruptedException, ExecutionException {
+	protected CompletableFuture<Either<List<CompletionItem>, CompletionList>> retrieveCompletion(Position position, String text) throws URISyntaxException, InterruptedException, ExecutionException {
 		String fileName = "a.properties";
-		CamelLanguageServer camelLanguageServer = initializeLanguageServer(".properties", new TextDocumentItem(fileName, CamelLanguageServer.LANGUAGE_ID, 0, "camel.main."));
+		CamelLanguageServer camelLanguageServer = initializeLanguageServer(".properties", new TextDocumentItem(fileName, CamelLanguageServer.LANGUAGE_ID, 0, text));
 		return getCompletionFor(camelLanguageServer, position, fileName);
 	}
 }
