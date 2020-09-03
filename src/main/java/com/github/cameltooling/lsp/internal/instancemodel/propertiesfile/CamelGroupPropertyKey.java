@@ -82,8 +82,10 @@ public class CamelGroupPropertyKey implements ILineRangeDefineable {
 				if (catalog instanceof DefaultCamelCatalog) {
 					MainModel mainModel = ((DefaultCamelCatalog) catalog).mainModel();
 					String fullName = CamelPropertyKeyInstance.CAMEL_KEY_PREFIX + groupConfiguration;
-					Optional<MainOptionModel> mainOptionModel = mainModel.getOptions().stream()
-							.filter(option -> option.getName().startsWith(fullName)).findFirst();
+					Optional<MainOptionModel> mainOptionModel = findFirstOption(mainModel, fullName);
+					if (!mainOptionModel.isPresent() && fullName.contains("-")) {
+						mainOptionModel = findFirstOption(mainModel,StringHelper.dashToCamelCase(fullName));
+					}
 					if (mainOptionModel.isPresent()) {
 						Hover hover = new Hover();
 						hover.setContents(Collections.singletonList((Either.forLeft(mainOptionModel.get().getDescription()))));
@@ -94,6 +96,12 @@ public class CamelGroupPropertyKey implements ILineRangeDefineable {
 			});
 		}
 		return CompletableFuture.completedFuture(null);
+	}
+
+	private Optional<MainOptionModel> findFirstOption(MainModel mainModel, String fullName) {
+		return mainModel.getOptions().stream()
+				.filter(option -> option.getName().startsWith(fullName))
+				.findFirst();
 	}
 
 	private boolean isInGroupAttribute(Position position) {
