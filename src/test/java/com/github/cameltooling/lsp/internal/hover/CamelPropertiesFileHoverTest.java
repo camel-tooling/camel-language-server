@@ -45,8 +45,24 @@ class CamelPropertiesFileHoverTest extends AbstractCamelLanguageServerTest {
 	}
 	
 	@Test
+	void testHoverOnCamelMainOptionsWithDashedNames() throws Exception {
+		String propertyEntry = "camel.main.backlog-tracing=true";
+		CompletableFuture<Hover> hover = getHover(propertyEntry, 13);
+		
+		assertThat(hover.get().getContents().getLeft().get(0).getLeft()).isEqualTo("Sets whether backlog tracing is enabled or not. Default is false.");
+	}
+	
+	@Test
 	void testHoverOnCamelComponentOptions() throws Exception {
 		String propertyEntry = "camel.component.acomponent.aComponentProperty=true";
+		CompletableFuture<Hover> hover = getHover(propertyEntry, 29);
+		
+		assertThat(hover.get().getContents().getLeft().get(0).getLeft()).isEqualTo("A parameter description");
+	}
+	
+	@Test
+	void testHoverOnCamelComponentOptionsWithDashedNames() throws Exception {
+		String propertyEntry = "camel.component.acomponent.a-component-property=true";
 		CompletableFuture<Hover> hover = getHover(propertyEntry, 29);
 		
 		assertThat(hover.get().getContents().getLeft().get(0).getLeft()).isEqualTo("A parameter description");
