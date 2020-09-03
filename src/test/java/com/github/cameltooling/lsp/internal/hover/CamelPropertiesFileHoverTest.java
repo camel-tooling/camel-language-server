@@ -19,6 +19,7 @@ package com.github.cameltooling.lsp.internal.hover;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.net.URISyntaxException;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
@@ -31,30 +32,52 @@ import org.junit.jupiter.api.Test;
 
 import com.github.cameltooling.lsp.internal.AbstractCamelLanguageServerTest;
 import com.github.cameltooling.lsp.internal.CamelLanguageServer;
+import com.github.cameltooling.lsp.internal.TestExtraComponentUtil;
 
 class CamelPropertiesFileHoverTest extends AbstractCamelLanguageServerTest {
 	
 	@Test
 	void testHoverOnCamelMainOptions() throws Exception {
 		String propertyEntry = "camel.main.backlogTracing=true";
-		CompletableFuture<Hover> hover = getHover(propertyEntry);
+		CompletableFuture<Hover> hover = getHover(propertyEntry, 13);
 		
 		assertThat(hover.get().getContents().getLeft().get(0).getLeft()).isEqualTo("Sets whether backlog tracing is enabled or not. Default is false.");
 	}
 	
 	@Test
+	void testHoverOnCamelComponentOptions() throws Exception {
+		String propertyEntry = "camel.component.acomponent.aComponentProperty=true";
+		CompletableFuture<Hover> hover = getHover(propertyEntry, 29);
+		
+		assertThat(hover.get().getContents().getLeft().get(0).getLeft()).isEqualTo("A parameter description");
+	}
+	
+	@Test
+	void testHoverOnCamelComponentNames() throws Exception {
+		String propertyEntry = "camel.component.acomponent.aComponentProperty=true";
+		CompletableFuture<Hover> hover = getHover(propertyEntry, 17);
+		
+		assertThat(hover.get().getContents().getLeft().get(0).getLeft()).isEqualTo("Description of my component.");
+	}
+	
+	@Test
 	void testNoHoverOnUnknownCamelMainOptions() throws Exception {
 		String propertyEntry = "camel.main.unknown=true";
-		CompletableFuture<Hover> hover = getHover(propertyEntry);
+		CompletableFuture<Hover> hover = getHover(propertyEntry, 13);
 		
 		assertThat(hover.get()).isNull();
 	}
 	
-	private CompletableFuture<Hover> getHover(String propertyEntry) throws URISyntaxException, InterruptedException, ExecutionException {
+	private CompletableFuture<Hover> getHover(String propertyEntry, int position) throws URISyntaxException, InterruptedException, ExecutionException {
 		String fileName = "a.properties";
 		CamelLanguageServer camelLanguageServer = initializeLanguageServer(fileName, new TextDocumentItem(fileName, CamelLanguageServer.LANGUAGE_ID, 0, propertyEntry));
-		HoverParams hoverParams = new HoverParams(new TextDocumentIdentifier(fileName), new Position(0, 13));
+		HoverParams hoverParams = new HoverParams(new TextDocumentIdentifier(fileName), new Position(0, position));
 		return camelLanguageServer.getTextDocumentService().hover(hoverParams);
+	}
+	
+	@Override
+	protected Map<Object, Object> getInitializationOptions() {
+		return createMapSettingsWithComponent(TestExtraComponentUtil.DEFAULT_COMPONENT);
 	}
 
 }
