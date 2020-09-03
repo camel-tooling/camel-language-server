@@ -26,6 +26,7 @@ import org.apache.camel.catalog.CamelCatalog;
 import org.apache.camel.catalog.DefaultCamelCatalog;
 import org.apache.camel.tooling.model.MainModel;
 import org.apache.camel.tooling.model.MainModel.MainOptionModel;
+import org.apache.camel.util.StringHelper;
 import org.eclipse.lsp4j.CompletionItem;
 import org.eclipse.lsp4j.Hover;
 import org.eclipse.lsp4j.Position;
@@ -101,6 +102,7 @@ public class CamelGroupPropertyKey implements ILineRangeDefineable {
 
 	public CompletableFuture<List<CompletionItem>> getCompletions(Position position, CompletableFuture<CamelCatalog> camelCatalog) {
 		if (isInGroupAttribute(position)) {
+			boolean shouldUseDashed = shouldUseDashedCase();
 			return camelCatalog.thenApply(catalog -> {
 				if (catalog instanceof DefaultCamelCatalog) {
 					MainModel mainModel = ((DefaultCamelCatalog) catalog).mainModel();
@@ -108,6 +110,9 @@ public class CamelGroupPropertyKey implements ILineRangeDefineable {
 					return mainModel.getOptions().stream().filter(option -> option.getName().startsWith(groupPrefix))
 							.map(option -> {
 								String realOptionName = option.getName().substring(groupPrefix.length());
+								if(shouldUseDashed) {
+									realOptionName = StringHelper.camelCaseToDash(realOptionName);
+								}
 								CompletionItem completionItem = new CompletionItem(realOptionName);
 								completionItem.setDocumentation(option.getDescription());
 								completionItem.setDeprecated(option.isDeprecated());
@@ -120,6 +125,10 @@ public class CamelGroupPropertyKey implements ILineRangeDefineable {
 			});
 		}
 		return CompletableFuture.completedFuture(Collections.emptyList());
+	}
+
+	private boolean shouldUseDashedCase() {
+		return camelPropertyKeyInstance.shouldUseDashedCase();
 	}
 
 }

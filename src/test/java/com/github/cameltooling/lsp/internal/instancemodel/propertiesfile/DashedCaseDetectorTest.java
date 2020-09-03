@@ -47,6 +47,11 @@ class DashedCaseDetectorTest {
 	}
 	
 	@Test
+	void testHasDashedCaseInCamelMainOption() throws Exception {
+		assertThat(hasDashed("camel.main.auto-startup=123")).isTrue();
+	}
+	
+	@Test
 	void testHasDashedCaseInCamelComponentOptionWithSeveralLines() throws Exception {
 		assertThat(hasDashed(
 				"camel.component.id.myNameNotDashed=123\n" +
