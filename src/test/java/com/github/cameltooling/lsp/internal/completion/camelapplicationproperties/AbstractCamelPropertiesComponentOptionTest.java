@@ -30,6 +30,7 @@ import org.eclipse.lsp4j.jsonrpc.messages.Either;
 
 import com.github.cameltooling.lsp.internal.AbstractCamelLanguageServerTest;
 import com.github.cameltooling.lsp.internal.CamelLanguageServer;
+import com.github.cameltooling.lsp.internal.TestExtraComponentUtil;
 
 public abstract class AbstractCamelPropertiesComponentOptionTest extends AbstractCamelLanguageServerTest{
 
@@ -41,33 +42,6 @@ public abstract class AbstractCamelPropertiesComponentOptionTest extends Abstrac
 	
 	@Override
 	protected Map<Object, Object> getInitializationOptions() {
-		String component = "{\n" + 
-				" \"component\": {\n" + 
-				"    \"kind\": \"component\",\n" + 
-				"    \"scheme\": \"acomponent\",\n" + 
-				"    \"syntax\": \"acomponent:withsyntax\",\n" + 
-				"    \"title\": \"A Component\",\n" + 
-				"    \"description\": \"Description of my component.\",\n" + 
-				"    \"label\": \"\",\n" + 
-				"    \"deprecated\": true,\n" + 
-				"    \"deprecationNote\": \"\",\n" + 
-				"    \"async\": false,\n" + 
-				"    \"consumerOnly\": true,\n" + 
-				"    \"producerOnly\": false,\n" + 
-				"    \"lenientProperties\": false,\n" + 
-				"    \"javaType\": \"org.test.AComponent\",\n" + 
-				"    \"firstVersion\": \"1.0.0\",\n" + 
-				"    \"groupId\": \"org.test\",\n" + 
-				"    \"artifactId\": \"camel-acomponent\",\n" + 
-				"    \"version\": \"3.0.0\"\n" + 
-				"  },\n" + 
-				"  \"componentProperties\": {\n" + 
-				"\"aComponentProperty\": { \"kind\": \"parameter\", \"displayName\": \"A Component property \", \"group\": \"common\", \"required\": false, \"type\": \"string\", \"javaType\": \"java.lang.String\", \"deprecated\": false, \"secret\": false, \"defaultValue\": \"aDefaultValue\", \"configurationClass\": \"org.apache.camel.component.knative.KnativeConfiguration\", \"configurationField\": \"configuration\", \"description\": \"A parameter description\" },\n" +
-				"\"aSecondComponentProperty\": { \"kind\": \"parameter\", \"displayName\": \"A Second Component property \", \"group\": \"common\", \"required\": false, \"type\": \"string\", \"javaType\": \"java.lang.String\", \"deprecated\": false, \"secret\": false, \"defaultValue\": \"aDefaultValue\", \"configurationClass\": \"org.apache.camel.component.knative.KnativeConfiguration\", \"configurationField\": \"configuration\", \"description\": \"A second parameter description\" }\n" +
-				"  },\n" + 
-				"  \"properties\": {\n" +
-				"  }\n" + 
-				"}";
-		return createMapSettingsWithComponent(component);
+		return createMapSettingsWithComponent(TestExtraComponentUtil.DEFAULT_COMPONENT);
 	}
 }
