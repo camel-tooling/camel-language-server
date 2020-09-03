@@ -77,6 +77,7 @@ import com.github.cameltooling.lsp.internal.definition.DefinitionProcessor;
 import com.github.cameltooling.lsp.internal.diagnostic.DiagnosticRunner;
 import com.github.cameltooling.lsp.internal.documentsymbol.DocumentSymbolProcessor;
 import com.github.cameltooling.lsp.internal.hover.CamelKModelineHoverProcessor;
+import com.github.cameltooling.lsp.internal.hover.CamelPropertiesFileHoverProcessor;
 import com.github.cameltooling.lsp.internal.hover.CamelURIHoverProcessor;
 import com.github.cameltooling.lsp.internal.parser.CamelKModelineParser;
 import com.github.cameltooling.lsp.internal.parser.ParserFileHelperUtil;
@@ -149,8 +150,11 @@ public class CamelTextDocumentService implements TextDocumentService {
 	@Override
 	public CompletableFuture<Hover> hover(HoverParams hoverParams) {
 		LOGGER.info("hover: {}", hoverParams.getTextDocument());
-		TextDocumentItem textDocumentItem = openedDocuments.get(hoverParams.getTextDocument().getUri());
-		if(isOnCamelKModeline(hoverParams.getPosition().getLine(), textDocumentItem)) {
+		String uri = hoverParams.getTextDocument().getUri();
+		TextDocumentItem textDocumentItem = openedDocuments.get(uri);
+		if (uri.endsWith(".properties")){
+			return new CamelPropertiesFileHoverProcessor(textDocumentItem).getHover(hoverParams.getPosition(), getCamelCatalog());
+		} else if(isOnCamelKModeline(hoverParams.getPosition().getLine(), textDocumentItem)) {
 			return new CamelKModelineHoverProcessor(textDocumentItem).getHover(hoverParams.getPosition().getCharacter(), getCamelCatalog());
 		} else {
 			return new CamelURIHoverProcessor(textDocumentItem, getCamelCatalog()).getHover(hoverParams.getPosition());

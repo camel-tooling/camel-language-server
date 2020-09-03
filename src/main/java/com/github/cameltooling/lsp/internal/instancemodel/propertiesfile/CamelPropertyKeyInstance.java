@@ -23,7 +23,6 @@ import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 import org.apache.camel.catalog.CamelCatalog;
-import org.apache.camel.catalog.DefaultCamelCatalog;
 import org.apache.camel.tooling.model.MainModel;
 import org.eclipse.lsp4j.CompletionItem;
 import org.eclipse.lsp4j.Hover;
@@ -43,11 +42,11 @@ import com.google.gson.Gson;
  */
 public class CamelPropertyKeyInstance implements ILineRangeDefineable {
 	
-	private static final String CAMEL_KEY_PREFIX = "camel.";
+	static final String CAMEL_KEY_PREFIX = "camel.";
 	static final String CAMEL_COMPONENT_KEY_PREFIX = "camel.component.";
 	
 	private String camelPropertyKey;
-	private String propertyGroup;
+	private CamelGroupPropertyKey propertyGroup;
 	private CamelComponentPropertyKey camelComponentPropertyKey;
 	private CamelPropertyEntryInstance camelPropertyEntryInstance;
 
@@ -58,13 +57,7 @@ public class CamelPropertyKeyInstance implements ILineRangeDefineable {
 			camelComponentPropertyKey = new CamelComponentPropertyKey(camelPropertyFileKey.substring(CAMEL_COMPONENT_KEY_PREFIX.length()), this);
 		}
 		if(camelPropertyKey.startsWith(CAMEL_KEY_PREFIX)) {
-			int startIndexGroup = CAMEL_KEY_PREFIX.length();
-			int secondDotIndex = camelPropertyKey.indexOf('.', startIndexGroup);
-			if (secondDotIndex != -1) {
-				propertyGroup = camelPropertyFileKey.substring(startIndexGroup, secondDotIndex);
-			} else {
-				propertyGroup = camelPropertyFileKey.substring(startIndexGroup);
-			}
+			propertyGroup = new CamelGroupPropertyKey(camelPropertyFileKey.substring(CAMEL_KEY_PREFIX.length()), this);
 		}
 	}
 
@@ -85,31 +78,10 @@ public class CamelPropertyKeyInstance implements ILineRangeDefineable {
 			return getTopLevelCamelCompletion(camelCatalog, indexOfSecondDot, position.getCharacter());
 		} else if(camelComponentPropertyKey != null && camelComponentPropertyKey.isInRange(position.getCharacter())) {
 			return camelComponentPropertyKey.getCompletions(position, camelCatalog);
-		} else if(propertyGroup != null && getStartPositionInLine() + CAMEL_KEY_PREFIX.length() + propertyGroup.length() + 1 == position.getCharacter()) {
-			return getGroupPropertiesCompletions(camelCatalog);
+		} else if(propertyGroup != null && propertyGroup.isInRange(position.getCharacter())) {
+			return propertyGroup.getCompletions(position, camelCatalog);
 		}
 		return CompletableFuture.completedFuture(Collections.emptyList());
-	}
-	
-	protected CompletableFuture<List<CompletionItem>> getGroupPropertiesCompletions(CompletableFuture<CamelCatalog> camelCatalog) {
-		return camelCatalog.thenApply(catalog -> {
-			if (catalog instanceof DefaultCamelCatalog) {
-				MainModel mainModel =  ((DefaultCamelCatalog)catalog).mainModel();
-				String groupPrefix = CAMEL_KEY_PREFIX + propertyGroup + ".";
-				return mainModel.getOptions().stream()
-						.filter(option -> option.getName().startsWith(groupPrefix))
-						.map(option -> {
-							String realOptionName = option.getName().substring(groupPrefix.length());
-							CompletionItem completionItem = new CompletionItem(realOptionName);
-							completionItem.setDocumentation(option.getDescription());
-							completionItem.setDeprecated(option.isDeprecated());
-							completionItem.setInsertText(realOptionName + "=");
-							return completionItem;
-						}).collect(Collectors.toList());
-			} else {
-				return Collections.emptyList();
-			}
-		});
 	}
 
 	private boolean isBetweenFirstAndSecondDotOfCamelPropertyKey(Position position, int indexOfSecondDot) {
@@ -189,6 +161,8 @@ public class CamelPropertyKeyInstance implements ILineRangeDefineable {
 	public CompletableFuture<Hover> getHover(Position position, CompletableFuture<CamelCatalog> camelCatalog) {
 		if(camelComponentPropertyKey != null && camelComponentPropertyKey.isInRange(position.getCharacter())) {
 			return camelComponentPropertyKey.getHover(position, camelCatalog);
+		} else if(propertyGroup != null && propertyGroup.isInRange(position.getCharacter())) {
+			return propertyGroup.getHover(position, camelCatalog);
 		}
 		return CompletableFuture.completedFuture(null);
 	}
