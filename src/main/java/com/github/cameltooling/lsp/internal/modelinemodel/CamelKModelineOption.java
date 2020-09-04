@@ -34,14 +34,14 @@ public class CamelKModelineOption implements ILineRangeDefineable {
 	private ICamelKModelineOptionValue optionValue;
 	private int startCharacter;
 
-	public CamelKModelineOption(String option, int startCharacter) {
+	public CamelKModelineOption(String option, int startCharacter, String documentItemUri) {
 		int nameValueIndexSeparator = option.indexOf('=');
 		this.startCharacter = startCharacter;
 		this.optionName = option.substring(0, nameValueIndexSeparator != -1 ? nameValueIndexSeparator : option.length());
-		this.optionValue = createOptionValue(option, nameValueIndexSeparator);
+		this.optionValue = createOptionValue(option, nameValueIndexSeparator, documentItemUri);
 	}
 
-	private ICamelKModelineOptionValue createOptionValue(String option, int nameValueIndexSeparator){
+	private ICamelKModelineOptionValue createOptionValue(String option, int nameValueIndexSeparator, String documentItemUri){
 		if(nameValueIndexSeparator != -1) {
 			String value = option.substring(nameValueIndexSeparator+1);
 			int startPosition = getStartPositionInLine() + optionName.length() + 1;
@@ -51,7 +51,9 @@ public class CamelKModelineOption implements ILineRangeDefineable {
 				return new CamelKModelineDependencyOption(value, startPosition);
 			} else if(CamelKModelineOptionNames.OPTION_NAME_PROPERTY.equals(optionName)) {
 				return new CamelKModelinePropertyOption(value, startPosition);
-			} else {
+			} else if(CamelKModelineOptionNames.OPTION_NAME_PROPERTY_FILE.equals(optionName)) {
+				return new CamelKModelinePropertyFileOption(value, startPosition, documentItemUri);
+			}else {
 				return new GenericCamelKModelineOptionValue(value, startPosition);
 			}
 		} else {

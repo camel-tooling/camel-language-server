@@ -67,7 +67,7 @@ public class DiagnosticRunner {
 			List<Diagnostic> diagnostics = endpointDiagnosticService.converToLSPDiagnostics(camelText, endpointErrors, openedDocument);
 			Map<String, ConfigurationPropertiesValidationResult> configurationPropertiesErrors = configurationPropertiesDiagnosticService.computeCamelConfigurationPropertiesErrors(camelText, uri);
 			diagnostics.addAll(configurationPropertiesDiagnosticService.converToLSPDiagnostics(configurationPropertiesErrors));
-			diagnostics.addAll(camelKModelineDiagnosticService.compute(camelText));
+			diagnostics.addAll(camelKModelineDiagnosticService.compute(camelText, uri));
 			camelLanguageServer.getClient().publishDiagnostics(new PublishDiagnosticsParams(uri, diagnostics));
 		});
 	}
