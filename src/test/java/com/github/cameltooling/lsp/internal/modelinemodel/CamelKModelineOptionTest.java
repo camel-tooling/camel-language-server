@@ -25,7 +25,7 @@ import org.junit.jupiter.api.Test;
 class CamelKModelineOptionTest {
 	
 	String modelineString = "// camel-k: language=groovy";
-	CamelKModeline basicModeline = new CamelKModeline(modelineString);
+	CamelKModeline basicModeline = new CamelKModeline(modelineString, null);
 
 	@Test
 	void testOptionParsingBasic() throws Exception {
@@ -39,7 +39,7 @@ class CamelKModelineOptionTest {
 	@Test
 	void testOptionTraitWithIncompleteTraitContent() throws Exception {
 		String modelineWithMixedSeparator = "// camel-k: language=groovy trait=quarkus";
-		List<CamelKModelineOption> options = new CamelKModeline(modelineWithMixedSeparator).getOptions();
+		List<CamelKModelineOption> options = new CamelKModeline(modelineWithMixedSeparator, null).getOptions();
 		assertThat(options).hasSize(2);
 	}
 	
@@ -58,14 +58,14 @@ class CamelKModelineOptionTest {
 	@Test
 	void testOptionsWithMixedSeparator() throws Exception {
 		String modelineWithMixedSeparator = "// camel-k:\tlanguage=groovy trait=quarkus.enabled=true\tdependency=mvn:org.my/application:1.0";
-		List<CamelKModelineOption> options = new CamelKModeline(modelineWithMixedSeparator).getOptions();
+		List<CamelKModelineOption> options = new CamelKModeline(modelineWithMixedSeparator, null).getOptions();
 		assertThat(options).hasSize(3);
 	}
 	
 	@Test
 	void testOptionsWithIncompleteOptions() throws Exception {
 		String modelineWithMixedSeparator = "// camel-k: language=groovy trait";
-		List<CamelKModelineOption> options = new CamelKModeline(modelineWithMixedSeparator).getOptions();
+		List<CamelKModelineOption> options = new CamelKModeline(modelineWithMixedSeparator, null).getOptions();
 		assertThat(options).hasSize(2);
 		CamelKModelineOption incompleteOption = options.get(1);
 		assertThat(incompleteOption.getOptionName()).isEqualTo("trait");
@@ -75,7 +75,7 @@ class CamelKModelineOptionTest {
 	}
 
 	private void checkFor2Options(String modelineWith2Options) {
-		List<CamelKModelineOption> options = new CamelKModeline(modelineWith2Options).getOptions();
+		List<CamelKModelineOption> options = new CamelKModeline(modelineWith2Options, null).getOptions();
 		assertThat(options).hasSize(2);
 		CamelKModelineOption languageGroovyOption = options.get(0);
 		assertThat(languageGroovyOption.getOptionName()).isEqualTo("language");

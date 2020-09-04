@@ -61,6 +61,7 @@ import org.eclipse.lsp4j.services.LanguageClient;
 import org.eclipse.lsp4j.services.TextDocumentService;
 import org.junit.jupiter.api.AfterEach;
 
+import com.google.common.io.Files;
 import com.google.gson.Gson;
 
 public abstract class AbstractCamelLanguageServerTest {
@@ -181,6 +182,19 @@ public abstract class AbstractCamelLanguageServerTest {
         } catch (ExecutionException | InterruptedException | URISyntaxException | IOException ex) {
         	return null;
         }
+	}
+	
+	protected CamelLanguageServer initializeLanguageServer(File camelFile) throws URISyntaxException, InterruptedException, ExecutionException, IOException {
+		return initializeLanguageServer(getExtensionByStringHandling(camelFile.getName()), new TextDocumentItem(camelFile.toURI().toString(), CamelLanguageServer.LANGUAGE_ID, 0, new String(Files.toByteArray(camelFile))));
+	}
+	
+	private String getExtensionByStringHandling(String filename) {
+		int indexOfLastDot = filename.lastIndexOf('.');
+		if(indexOfLastDot != -1) {
+			return filename.substring(indexOfLastDot + 1);
+		} else {
+			return "";
+		}
 	}
 	
 	private TextDocumentItem createTestTextDocument(String text, String suffixFileName) {

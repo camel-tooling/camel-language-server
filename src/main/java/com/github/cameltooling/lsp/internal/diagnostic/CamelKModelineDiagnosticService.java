@@ -32,9 +32,9 @@ import com.github.cameltooling.lsp.internal.parser.ParserFileHelperUtil;
 
 public class CamelKModelineDiagnosticService {
 
-	public Collection<Diagnostic> compute(String camelText) {
+	public Collection<Diagnostic> compute(String camelText, String documentItemUri) {
 		String modelineString = new ParserFileHelperUtil().getLine(camelText, 0);
-		CamelKModeline camelKModeline = new CamelKModeline(modelineString);
+		CamelKModeline camelKModeline = new CamelKModeline(modelineString, documentItemUri);
 		List<CamelKModelineTraitOption> traitOptions = camelKModeline.getOptions().stream()
 				.map(CamelKModelineOption::getOptionValue)
 				.filter(CamelKModelineTraitOption.class::isInstance)

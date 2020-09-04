@@ -35,29 +35,29 @@ public class CamelKModeline implements ILineRangeDefineable {
 	private List<CamelKModelineOption> options = new ArrayList<>();
 	private int endOfPrefixPositionInline;
 
-	public CamelKModeline(String fullModeline) {
+	public CamelKModeline(String fullModeline, String documentItemUri) {
 		this.fullModeline = fullModeline;
 		String modelineCamelkStart = new CamelKModelineParser().retrieveModelineCamelKStart(fullModeline);
 		if(modelineCamelkStart != null) {
 			endOfPrefixPositionInline = modelineCamelkStart.length();
-			parseOptions(fullModeline, modelineCamelkStart);
+			parseOptions(fullModeline, modelineCamelkStart, documentItemUri);
 		} else {
 			endOfPrefixPositionInline = -1;
 		}
 	}
 
-	private void parseOptions(String fullModeline, String modelineCamelkStart) {
+	private void parseOptions(String fullModeline, String modelineCamelkStart, String documentItemUri) {
 		int currentPosition = modelineCamelkStart.length();
 		String remainingModeline = fullModeline.substring(currentPosition);
 		while(!remainingModeline.isEmpty()) {
 			int nextSpaceLikeCharacter = getNextSpaceLikeCharacter(remainingModeline);
 			if(nextSpaceLikeCharacter != -1) {
-				options.add(new CamelKModelineOption(remainingModeline.substring(1, nextSpaceLikeCharacter), currentPosition + 1));
+				options.add(new CamelKModelineOption(remainingModeline.substring(1, nextSpaceLikeCharacter), currentPosition + 1, documentItemUri));
 				remainingModeline = remainingModeline.substring(nextSpaceLikeCharacter);
 				currentPosition += nextSpaceLikeCharacter; 
 			} else {
 				if(!remainingModeline.trim().isEmpty() && !isEnfOfXmlModeline(remainingModeline.trim())) {
-					options.add(new CamelKModelineOption(remainingModeline.substring(1), currentPosition + 1));
+					options.add(new CamelKModelineOption(remainingModeline.substring(1), currentPosition + 1, documentItemUri));
 				}
 				remainingModeline = "";
 			}
