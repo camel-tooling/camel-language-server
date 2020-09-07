@@ -24,6 +24,7 @@ import java.util.concurrent.CompletableFuture;
 import org.apache.camel.catalog.CamelCatalog;
 import org.eclipse.lsp4j.CompletionItem;
 import org.eclipse.lsp4j.Hover;
+import org.eclipse.lsp4j.TextDocumentItem;
 
 import com.github.cameltooling.lsp.internal.completion.modeline.CamelKModelineOptionNames;
 import com.github.cameltooling.lsp.internal.instancemodel.ILineRangeDefineable;
@@ -35,29 +36,29 @@ public class CamelKModeline implements ILineRangeDefineable {
 	private List<CamelKModelineOption> options = new ArrayList<>();
 	private int endOfPrefixPositionInline;
 
-	public CamelKModeline(String fullModeline, String documentItemUri) {
+	public CamelKModeline(String fullModeline, TextDocumentItem documentItem) {
 		this.fullModeline = fullModeline;
 		String modelineCamelkStart = new CamelKModelineParser().retrieveModelineCamelKStart(fullModeline);
 		if(modelineCamelkStart != null) {
 			endOfPrefixPositionInline = modelineCamelkStart.length();
-			parseOptions(fullModeline, modelineCamelkStart, documentItemUri);
+			parseOptions(fullModeline, modelineCamelkStart, documentItem);
 		} else {
 			endOfPrefixPositionInline = -1;
 		}
 	}
 
-	private void parseOptions(String fullModeline, String modelineCamelkStart, String documentItemUri) {
+	private void parseOptions(String fullModeline, String modelineCamelkStart, TextDocumentItem documentItem) {
 		int currentPosition = modelineCamelkStart.length();
 		String remainingModeline = fullModeline.substring(currentPosition);
 		while(!remainingModeline.isEmpty()) {
 			int nextSpaceLikeCharacter = getNextSpaceLikeCharacter(remainingModeline);
 			if(nextSpaceLikeCharacter != -1) {
-				options.add(new CamelKModelineOption(remainingModeline.substring(1, nextSpaceLikeCharacter), currentPosition + 1, documentItemUri));
+				options.add(new CamelKModelineOption(remainingModeline.substring(1, nextSpaceLikeCharacter), currentPosition + 1, documentItem));
 				remainingModeline = remainingModeline.substring(nextSpaceLikeCharacter);
 				currentPosition += nextSpaceLikeCharacter; 
 			} else {
 				if(!remainingModeline.trim().isEmpty() && !isEnfOfXmlModeline(remainingModeline.trim())) {
-					options.add(new CamelKModelineOption(remainingModeline.substring(1), currentPosition + 1, documentItemUri));
+					options.add(new CamelKModelineOption(remainingModeline.substring(1), currentPosition + 1, documentItem));
 				}
 				remainingModeline = "";
 			}

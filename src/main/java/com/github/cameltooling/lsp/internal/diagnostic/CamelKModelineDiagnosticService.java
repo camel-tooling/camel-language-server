@@ -24,6 +24,7 @@ import java.util.stream.Collectors;
 import org.eclipse.lsp4j.Diagnostic;
 import org.eclipse.lsp4j.Position;
 import org.eclipse.lsp4j.Range;
+import org.eclipse.lsp4j.TextDocumentItem;
 
 import com.github.cameltooling.lsp.internal.modelinemodel.CamelKModeline;
 import com.github.cameltooling.lsp.internal.modelinemodel.CamelKModelineOption;
@@ -32,9 +33,9 @@ import com.github.cameltooling.lsp.internal.parser.ParserFileHelperUtil;
 
 public class CamelKModelineDiagnosticService {
 
-	public Collection<Diagnostic> compute(String camelText, String documentItemUri) {
+	public Collection<Diagnostic> compute(String camelText, TextDocumentItem documentItem) {
 		String modelineString = new ParserFileHelperUtil().getLine(camelText, 0);
-		CamelKModeline camelKModeline = new CamelKModeline(modelineString, documentItemUri);
+		CamelKModeline camelKModeline = new CamelKModeline(modelineString, documentItem);
 		List<CamelKModelineTraitOption> traitOptions = camelKModeline.getOptions().stream()
 				.map(CamelKModelineOption::getOptionValue)
 				.filter(CamelKModelineTraitOption.class::isInstance)
