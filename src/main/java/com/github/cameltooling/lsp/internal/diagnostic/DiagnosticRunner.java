@@ -47,27 +47,29 @@ public class DiagnosticRunner {
 
 	public void compute(DidSaveTextDocumentParams params) {
 		String camelText = retrieveFullText(params);
-		computeDiagnostics(camelText, params.getTextDocument().getUri());
+		computeDiagnostics(camelText, camelLanguageServer.getTextDocumentService().getOpenedDocument(params.getTextDocument().getUri()));
 	}
 
 	public void compute(DidChangeTextDocumentParams params) {
 		String camelText = params.getContentChanges().get(0).getText();
-		computeDiagnostics(camelText, params.getTextDocument().getUri());
+		
+		computeDiagnostics(camelText, camelLanguageServer.getTextDocumentService().getOpenedDocument(params.getTextDocument().getUri()));
 	}
 
 	public void compute(DidOpenTextDocumentParams params) {
 		String camelText = params.getTextDocument().getText();
-		computeDiagnostics(camelText, params.getTextDocument().getUri());
+		computeDiagnostics(camelText, params.getTextDocument());
 	}
 
-	public void computeDiagnostics(String camelText, String uri) {
+	public void computeDiagnostics(String camelText, TextDocumentItem documentItem) {
+		String uri = documentItem.getUri();
 		CompletableFuture.runAsync(() -> {
 			Map<CamelEndpointDetails, EndpointValidationResult> endpointErrors = endpointDiagnosticService.computeCamelEndpointErrors(camelText, uri);
 			TextDocumentItem openedDocument = camelLanguageServer.getTextDocumentService().getOpenedDocument(uri);
 			List<Diagnostic> diagnostics = endpointDiagnosticService.converToLSPDiagnostics(camelText, endpointErrors, openedDocument);
 			Map<String, ConfigurationPropertiesValidationResult> configurationPropertiesErrors = configurationPropertiesDiagnosticService.computeCamelConfigurationPropertiesErrors(camelText, uri);
 			diagnostics.addAll(configurationPropertiesDiagnosticService.converToLSPDiagnostics(configurationPropertiesErrors));
-			diagnostics.addAll(camelKModelineDiagnosticService.compute(camelText, uri));
+			diagnostics.addAll(camelKModelineDiagnosticService.compute(camelText, documentItem));
 			camelLanguageServer.getClient().publishDiagnostics(new PublishDiagnosticsParams(uri, diagnostics));
 		});
 	}

@@ -23,6 +23,7 @@ import java.util.concurrent.CompletableFuture;
 import org.apache.camel.catalog.CamelCatalog;
 import org.eclipse.lsp4j.CompletionItem;
 import org.eclipse.lsp4j.Hover;
+import org.eclipse.lsp4j.TextDocumentItem;
 import org.eclipse.lsp4j.jsonrpc.messages.Either;
 
 import com.github.cameltooling.lsp.internal.completion.modeline.CamelKModelineOptionNames;
@@ -34,14 +35,14 @@ public class CamelKModelineOption implements ILineRangeDefineable {
 	private ICamelKModelineOptionValue optionValue;
 	private int startCharacter;
 
-	public CamelKModelineOption(String option, int startCharacter, String documentItemUri) {
+	public CamelKModelineOption(String option, int startCharacter, TextDocumentItem documentItem) {
 		int nameValueIndexSeparator = option.indexOf('=');
 		this.startCharacter = startCharacter;
 		this.optionName = option.substring(0, nameValueIndexSeparator != -1 ? nameValueIndexSeparator : option.length());
-		this.optionValue = createOptionValue(option, nameValueIndexSeparator, documentItemUri);
+		this.optionValue = createOptionValue(option, nameValueIndexSeparator, documentItem);
 	}
 
-	private ICamelKModelineOptionValue createOptionValue(String option, int nameValueIndexSeparator, String documentItemUri){
+	private ICamelKModelineOptionValue createOptionValue(String option, int nameValueIndexSeparator, TextDocumentItem documentItem){
 		if(nameValueIndexSeparator != -1) {
 			String value = option.substring(nameValueIndexSeparator+1);
 			int startPosition = getStartPositionInLine() + optionName.length() + 1;
@@ -50,9 +51,9 @@ public class CamelKModelineOption implements ILineRangeDefineable {
 			} else if(CamelKModelineOptionNames.OPTION_NAME_DEPENDENCY.equals(optionName)) {
 				return new CamelKModelineDependencyOption(value, startPosition);
 			} else if(CamelKModelineOptionNames.OPTION_NAME_PROPERTY.equals(optionName)) {
-				return new CamelKModelinePropertyOption(value, startPosition);
+				return new CamelKModelinePropertyOption(value, startPosition, documentItem);
 			} else if(CamelKModelineOptionNames.OPTION_NAME_PROPERTY_FILE.equals(optionName)) {
-				return new CamelKModelinePropertyFileOption(value, startPosition, documentItemUri);
+				return new CamelKModelinePropertyFileOption(value, startPosition, documentItem.getUri());
 			}else {
 				return new GenericCamelKModelineOptionValue(value, startPosition);
 			}

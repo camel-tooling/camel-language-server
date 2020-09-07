@@ -127,6 +127,18 @@ class CamelKModelineCamelComponentPropertyTest extends AbstractCamelLanguageServ
 	}
 	
 	@Test
+	void testProvideCompletionForComponentAttributeWithDashedNotation() throws Exception {
+		CamelLanguageServer camelLanguageServer = initializeLanguageServer("// camel-k: property=camel.component.timer. property=camel.component.timer.basic-property-binding=true");
+		
+		CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = getCompletionFor(camelLanguageServer, new Position(0, 43));
+		
+		List<CompletionItem> completionItems = completions.get().getLeft();
+		assertThat(completionItems).hasSize(2);
+		CompletionItem timerCompletionItem = completionItems.stream().filter(completionItem -> "bridge-error-handler".equals(completionItem.getLabel())).findFirst().get();
+		assertThat(timerCompletionItem.getDocumentation().getLeft()).isEqualTo("Allows for bridging the consumer to the Camel routing Error Handler, which mean any exceptions occurred while the consumer is trying to pickup incoming messages, or the likes, will now be processed as a message and handled by the routing Error Handler. By default the consumer will use the org.apache.camel.spi.ExceptionHandler to deal with exceptions, that will be logged at WARN or ERROR level and ignored.");
+	}
+	
+	@Test
 	void testProvideCompletionForComponentSuffix() throws Exception {
 		CamelLanguageServer camelLanguageServer = initializeLanguageServer("// camel-k: property=");
 		

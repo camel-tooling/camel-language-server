@@ -21,7 +21,9 @@ public class DashedCaseDetector {
 	public boolean hasDashedCaseInCamelComponentOption(String text) {
 		String[] lines = text.split("\\r?\\n");
 		for (String line : lines) {
-			if (line.matches("camel.\\w+.\\w+.\\w+-.*")) {
+			String camelProperty = "camel.\\w+.\\w+.\\w+-.*";
+			if (line.matches(camelProperty)
+					|| line.matches("(//|#) camel-k: .*property=" + camelProperty)) {
 				return true;
 			}
 		}

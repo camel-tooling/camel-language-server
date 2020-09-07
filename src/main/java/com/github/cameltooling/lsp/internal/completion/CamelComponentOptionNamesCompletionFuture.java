@@ -33,14 +33,14 @@ import com.github.cameltooling.lsp.internal.instancemodel.propertiesfile.CamelPr
 public class CamelComponentOptionNamesCompletionFuture implements Function<CamelCatalog, List<CompletionItem>> {
 
 	private String componentId;
-	private CamelPropertyValueInstance camelPropertyFileValueInstance;
+	private CamelPropertyValueInstance camelPropertyValueInstance;
 	private String startFilter;
-	private CamelComponentParameterPropertyInstance camelComponentParameterPropertyFileInstance;
+	private CamelComponentParameterPropertyInstance camelComponentParameterPropertyInstance;
 
 	public CamelComponentOptionNamesCompletionFuture(String componentId, CamelComponentParameterPropertyInstance camelComponentParameterPropertyFileInstance, CamelPropertyValueInstance camelPropertyFileValueInstance, String startFilter) {
 		this.componentId = componentId;
-		this.camelComponentParameterPropertyFileInstance = camelComponentParameterPropertyFileInstance;
-		this.camelPropertyFileValueInstance = camelPropertyFileValueInstance;
+		this.camelComponentParameterPropertyInstance = camelComponentParameterPropertyFileInstance;
+		this.camelPropertyValueInstance = camelPropertyFileValueInstance;
 		this.startFilter = startFilter;
 	}
 
@@ -49,7 +49,7 @@ public class CamelComponentOptionNamesCompletionFuture implements Function<Camel
 		Stream<ComponentOptionModel> endpointOptions = ModelHelper.generateComponentModel(catalog.componentJSonSchema(componentId), true).getComponentOptions().stream();
 		return endpointOptions
 				.map(parameter -> {
-					String parameterDisplayName = computeDisplayName(parameter, camelComponentParameterPropertyFileInstance.shouldUseDashedCase());
+					String parameterDisplayName = computeDisplayName(parameter, camelComponentParameterPropertyInstance.shouldUseDashedCase());
 					CompletionItem completionItem = new CompletionItem(parameterDisplayName);
 					completionItem.setDocumentation(parameter.getDescription());
 					completionItem.setDetail(parameter.getJavaType());
@@ -59,7 +59,7 @@ public class CamelComponentOptionNamesCompletionFuture implements Function<Camel
 						insertText += String.format("=%s", parameter.getDefaultValue());
 					}
 					completionItem.setInsertText(insertText);
-					CompletionResolverUtils.applyTextEditToCompletionItem(camelComponentParameterPropertyFileInstance, completionItem);
+					CompletionResolverUtils.applyTextEditToCompletionItem(camelComponentParameterPropertyInstance, completionItem);
 					return completionItem;
 				})
 				.filter(FilterPredicateUtils.matchesCompletionFilter(startFilter))
@@ -76,7 +76,7 @@ public class CamelComponentOptionNamesCompletionFuture implements Function<Camel
 	}
 
 	private boolean hasValueProvided() {
-		return camelPropertyFileValueInstance == null || camelPropertyFileValueInstance.getCamelPropertyFileValue() == null;
+		return camelPropertyValueInstance == null || camelPropertyValueInstance.getCamelPropertyFileValue() == null;
 	}
 
 }

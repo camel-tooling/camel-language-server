@@ -23,6 +23,7 @@ import org.apache.camel.catalog.CamelCatalog;
 import org.eclipse.lsp4j.CompletionItem;
 import org.eclipse.lsp4j.Hover;
 import org.eclipse.lsp4j.Position;
+import org.eclipse.lsp4j.TextDocumentItem;
 
 import com.github.cameltooling.lsp.internal.instancemodel.propertiesfile.CamelPropertyEntryInstance;
 
@@ -32,8 +33,8 @@ public class CamelKModelinePropertyOption implements ICamelKModelineOptionValue 
 	private int startPosition;
 	private String fullStringValue;
 
-	public CamelKModelinePropertyOption(String value, int startPosition) {
-		this.value = new CamelPropertyEntryInstance(value, new Position(0, startPosition), null);
+	public CamelKModelinePropertyOption(String value, int startPosition, TextDocumentItem documentItem) {
+		this.value = new CamelPropertyEntryInstance(value, new Position(0, startPosition), documentItem);
 		this.fullStringValue = value;
 		this.startPosition = startPosition;
 	}

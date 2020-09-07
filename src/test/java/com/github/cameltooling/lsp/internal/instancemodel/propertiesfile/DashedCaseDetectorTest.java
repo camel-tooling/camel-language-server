@@ -58,6 +58,21 @@ class DashedCaseDetectorTest {
 				"camel.component.id.my-name-dashed=123")).isTrue();
 	}
 	
+	@Test
+	void testHasDashedInCamelKModeline() throws Exception {
+		assertThat(hasDashed("// camel-k: property=camel.component.id.my-name-dashed=123")).isTrue();
+	}
+	
+	@Test
+	void testHasDashedInCamelKModelineForYaml() throws Exception {
+		assertThat(hasDashed("# camel-k: property=camel.component.id.my-name-dashed=123")).isTrue();
+	}
+	
+	@Test
+	void testHasDashedInCamelKModelineWithSeveralParameters() throws Exception {
+		assertThat(hasDashed("// camel-k: name=test property=camel.component.id.my-name-dashed=123")).isTrue();
+	}
+	
 	private boolean hasDashed(String text) {
 		return new DashedCaseDetector().hasDashedCaseInCamelComponentOption(text);
 	}
