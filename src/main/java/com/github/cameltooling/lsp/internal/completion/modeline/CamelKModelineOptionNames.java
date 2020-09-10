@@ -36,6 +36,7 @@ public class CamelKModelineOptionNames {
 	public static final String OPTION_NAME_PROPERTY = "property";
 	public static final String OPTION_NAME_PROPERTY_FILE = "property-file";
 	public static final String OPTION_NAME_RESOURCE = "resource";
+	public static final String OPTION_NAME_OPEN_API = "open-api";
 	
 	static {
 		OPTION_NAMES_WITH_DESCRIPTION = new HashMap<>();
@@ -43,7 +44,7 @@ public class CamelKModelineOptionNames {
 		OPTION_NAMES_WITH_DESCRIPTION.put("env", "Set an environment variable in the integration container. E.g \"env=MY_VAR=my-value\"");
 		OPTION_NAMES_WITH_DESCRIPTION.put("label", "Add a label to the integration. E.g. \"label=my.company=hello\"");
 		OPTION_NAMES_WITH_DESCRIPTION.put("name", "The integration name");
-		OPTION_NAMES_WITH_DESCRIPTION.put("open-api", "Add an OpenAPI v2 spec (file path)");
+		OPTION_NAMES_WITH_DESCRIPTION.put(OPTION_NAME_OPEN_API, "Add an OpenAPI v2 spec (file path)");
 		OPTION_NAMES_WITH_DESCRIPTION.put("profile", "Trait profile used for deployment");
 		OPTION_NAMES_WITH_DESCRIPTION.put(OPTION_NAME_PROPERTY, "Add a camel property");
 		OPTION_NAMES_WITH_DESCRIPTION.put(OPTION_NAME_PROPERTY_FILE, "Bind a property file to the integration. E.g. \"property-file=integration.properties\"");

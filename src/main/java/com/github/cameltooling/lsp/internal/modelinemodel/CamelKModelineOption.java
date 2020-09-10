@@ -56,7 +56,9 @@ public class CamelKModelineOption implements ILineRangeDefineable {
 				return new CamelKModelinePropertyFileOption(value, startPosition, documentItem.getUri());
 			} else if(CamelKModelineOptionNames.OPTION_NAME_RESOURCE.equals(optionName)) {
 				return new CamelKModelineResourceOption(value, startPosition, documentItem.getUri());
-			} else {
+			} else if(CamelKModelineOptionNames.OPTION_NAME_OPEN_API.equals(optionName)) {
+				return new CamelKModelineOpenAPIOption(value, startPosition, documentItem.getUri());
+			}else {
 				return new GenericCamelKModelineOptionValue(value, startPosition);
 			}
 		} else {
