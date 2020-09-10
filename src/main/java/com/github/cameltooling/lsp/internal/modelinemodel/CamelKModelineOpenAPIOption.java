@@ -21,18 +21,24 @@ import java.util.function.Predicate;
 
 import com.github.cameltooling.lsp.internal.completion.modeline.CamelKModelineOptionNames;
 
-public class CamelKModelinePropertyFileOption extends CamelKModelineLocalResourceRelatedOption {
+public class CamelKModelineOpenAPIOption extends CamelKModelineLocalResourceRelatedOption {
 	
-	public CamelKModelinePropertyFileOption(String value, int startPosition, String documentItemUri) {
+	public CamelKModelineOpenAPIOption(String value, int startPosition, String documentItemUri) {
 		super(value, startPosition, documentItemUri);
-	}
-	
-	protected Predicate<? super Path> getFilter() {
-		return path -> path.getFileName().toString().endsWith(".properties");
 	}
 
 	@Override
 	protected String getPropertyName() {
-		return CamelKModelineOptionNames.OPTION_NAME_PROPERTY_FILE;
+		return  CamelKModelineOptionNames.OPTION_NAME_OPEN_API;
+	}
+
+	@Override
+	protected Predicate<? super Path> getFilter() {
+		return path ->  {
+			String filename = path.getFileName().toString();
+			return filename.endsWith(".json")
+					|| filename.endsWith(".yaml")
+					|| filename.endsWith(".yml");
+		};
 	}
 }
