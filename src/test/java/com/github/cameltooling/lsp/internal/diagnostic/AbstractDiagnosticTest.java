@@ -25,6 +25,7 @@ import java.io.FileNotFoundException;
 import java.time.Duration;
 import java.util.List;
 
+import org.awaitility.core.ConditionFactory;
 import org.eclipse.lsp4j.Diagnostic;
 import org.eclipse.lsp4j.DidSaveTextDocumentParams;
 import org.eclipse.lsp4j.Range;
@@ -37,6 +38,7 @@ import com.github.cameltooling.lsp.internal.RangeChecker;
 public abstract class AbstractDiagnosticTest extends AbstractCamelLanguageServerTest {
 
 	protected static final Duration AWAIT_TIMEOUT = Duration.ofSeconds(10000);
+	private static final Duration AWAIT_POLL_INTERVAL = Duration.ofMillis(5);
 	protected CamelLanguageServer camelLanguageServer;
 
 	protected void checkRange(Range range, int startLine, int startCharacter, int endLine, int endCharacter) {
@@ -50,10 +52,14 @@ public abstract class AbstractDiagnosticTest extends AbstractCamelLanguageServer
 		DidSaveTextDocumentParams params = new DidSaveTextDocumentParams(new TextDocumentIdentifier(DUMMY_URI+extension));
 		camelLanguageServer.getTextDocumentService().didSave(params);
 		
-		await().timeout(AWAIT_TIMEOUT).untilAsserted(() -> assertThat(lastPublishedDiagnostics).isNotNull());
-		await().timeout(AWAIT_TIMEOUT).untilAsserted(() -> assertThat(lastPublishedDiagnostics.getDiagnostics()).hasSize(expectedNumberOfError));
+		createAwait().untilAsserted(() -> assertThat(lastPublishedDiagnostics).isNotNull());
+		createAwait().untilAsserted(() -> assertThat(lastPublishedDiagnostics.getDiagnostics()).hasSize(expectedNumberOfError));
 		
 		checkHasNonEmptyMessage(lastPublishedDiagnostics.getDiagnostics());
+	}
+
+	private ConditionFactory createAwait() {
+		return await().pollDelay(Duration.ZERO).pollInterval(AWAIT_POLL_INTERVAL).timeout(AWAIT_TIMEOUT);
 	}
 
 	private void checkHasNonEmptyMessage(List<Diagnostic> diagnostics) {

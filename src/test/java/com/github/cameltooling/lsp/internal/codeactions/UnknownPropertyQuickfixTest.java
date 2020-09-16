@@ -31,6 +31,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.awaitility.core.ConditionFactory;
 import org.eclipse.lsp4j.CodeAction;
 import org.eclipse.lsp4j.CodeActionContext;
 import org.eclipse.lsp4j.CodeActionKind;
@@ -53,6 +54,7 @@ import com.github.cameltooling.lsp.internal.diagnostic.DiagnosticService;
 class UnknownPropertyQuickfixTest extends AbstractCamelLanguageServerTest {
 
 	private static final Duration AWAIT_TIMEOUT = Duration.ofSeconds(10);
+	private static final Duration AWAIT_POLL_INTERVAL = Duration.ofMillis(5);
 	private CamelLanguageServer camelLanguageServer;
 	
 	@Test
@@ -148,8 +150,12 @@ class UnknownPropertyQuickfixTest extends AbstractCamelLanguageServerTest {
 		DidSaveTextDocumentParams params = new DidSaveTextDocumentParams(textDocumentIdentifier);
 		camelLanguageServer.getTextDocumentService().didSave(params);
 		
-		await().timeout(AWAIT_TIMEOUT).untilAsserted(() -> assertThat(lastPublishedDiagnostics).isNotNull());
-		await().timeout(AWAIT_TIMEOUT).untilAsserted(() -> assertThat(lastPublishedDiagnostics.getDiagnostics()).hasSize(1));
+		createAwait().untilAsserted(() -> assertThat(lastPublishedDiagnostics).isNotNull());
+		createAwait().untilAsserted(() -> assertThat(lastPublishedDiagnostics.getDiagnostics()).hasSize(1));
 		return textDocumentIdentifier;
+	}
+	
+	private ConditionFactory createAwait() {
+		return await().pollDelay(Duration.ZERO).pollInterval(AWAIT_POLL_INTERVAL).timeout(AWAIT_TIMEOUT);
 	}
 }
