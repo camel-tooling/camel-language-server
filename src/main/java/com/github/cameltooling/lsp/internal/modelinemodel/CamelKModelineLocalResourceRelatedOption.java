@@ -37,6 +37,10 @@ import com.github.cameltooling.lsp.internal.completion.CompletionResolverUtils;
 
 public abstract class CamelKModelineLocalResourceRelatedOption implements ICamelKModelineOptionValue {
 
+	private static final String IDE_CONFIG_FOLDER_THEIA = ".theia";
+	private static final String IDE_CONFIG_FOLDER_ECLIPSE_DESKTOP = ".settings";
+	private static final String IDE_CONFIG_FOLDER_VSCODE = ".vscode";
+
 	private static final Logger LOGGER = LoggerFactory.getLogger(CamelKModelineLocalResourceRelatedOption.class);
 	
 	private String value;
@@ -65,7 +69,7 @@ public abstract class CamelKModelineLocalResourceRelatedOption implements ICamel
 	}
 	
 	protected abstract String getPropertyName();
-	protected abstract Predicate<? super Path> getFilter();
+	protected abstract Predicate<Path> getFilter();
 	
 	@Override
 	public CompletableFuture<List<CompletionItem>> getCompletions(int position, CompletableFuture<CamelCatalog> camelCatalog) {
@@ -88,6 +92,7 @@ public abstract class CamelKModelineLocalResourceRelatedOption implements ICamel
 			return pathStream
 					.filter(Files::isRegularFile)
 					.filter(path -> !path.equals(documentUriPath))
+					.filter(this::isOutsideOfIDEConfigFolder)
 					.filter(getFilter())
 					.map(documentUriParentPath::relativize)
 					.map(Path::toString)
@@ -98,5 +103,12 @@ public abstract class CamelKModelineLocalResourceRelatedOption implements ICamel
 					})
 					.collect(Collectors.toList());
 		}
+	}
+
+	private boolean isOutsideOfIDEConfigFolder(Path path) {
+		String absolutePath = path.toAbsolutePath().toString();
+		return !absolutePath.contains(IDE_CONFIG_FOLDER_VSCODE)
+				&& !absolutePath.contains(IDE_CONFIG_FOLDER_ECLIPSE_DESKTOP)
+				&& !absolutePath.contains(IDE_CONFIG_FOLDER_THEIA);
 	}
 }

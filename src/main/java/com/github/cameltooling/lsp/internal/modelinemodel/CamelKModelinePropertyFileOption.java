@@ -27,7 +27,7 @@ public class CamelKModelinePropertyFileOption extends CamelKModelineLocalResourc
 		super(value, startPosition, documentItemUri);
 	}
 	
-	protected Predicate<? super Path> getFilter() {
+	protected Predicate<Path> getFilter() {
 		return path -> path.getFileName().toString().endsWith(".properties");
 	}
 

@@ -69,6 +69,12 @@ class CamelKModelineCamelResourceTest extends AbstractCamelLanguageServerTest {
 	 *   | a.properties
 	 *   | myFolder
 	 *   --| aSecond.properties
+	 *   | .vscode
+	 *   --| shouldbefiltered.txt
+	 *   | .settings
+	 *   --| shouldbefiltered2.txt
+	 *   | .theia
+	 *   --| shouldbefiltered3.txt
 	 * 
 	 * @return The Camel K yaml file created at the root of the temporary directory
 	 * @throws IOException
@@ -78,10 +84,12 @@ class CamelKModelineCamelResourceTest extends AbstractCamelLanguageServerTest {
 		Files.write("# camel-k: resource=".getBytes(), camelKfile);
 		File aSiblingPropertyFile = new File(temporaryDir, "a.properties");
 		aSiblingPropertyFile.createNewFile();
-		File aSiblingFolder = new File(temporaryDir, "myFolder");
-		aSiblingFolder.mkdir();
-		File aPropertiesFileInSiblingFolder = new File(aSiblingFolder, "aSecond.properties");
-		aPropertiesFileInSiblingFolder.createNewFile();
+		
+		createFolderWithFile("myFolder", "aSecond.properties", temporaryDir);
+		createFolderWithFile(".vscode", "shouldbefiltered.txt", temporaryDir);
+		createFolderWithFile(".settings", "shouldbefiltered2.txt", temporaryDir);
+		createFolderWithFile(".theia", "shouldbefiltered3.txt", temporaryDir);
+		
 		File anotherFile = new File(temporaryDir, "anotherFile.txt");
 		anotherFile.createNewFile();
 		return camelKfile;

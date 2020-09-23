@@ -33,7 +33,7 @@ public class CamelKModelineResourceOption extends CamelKModelineLocalResourceRel
 	}
 
 	@Override
-	protected Predicate<? super Path> getFilter() {
+	protected Predicate<Path> getFilter() {
 		return path -> true;
 	}
 }
