@@ -68,6 +68,12 @@ class CamelKModelineCamelOpenAPITest extends AbstractCamelLanguageServerTest {
 	 *   | a.json
 	 *   | myFolder
 	 *   --| aSecond.yaml
+	 *   | .vscode
+	 *   --| shouldbefiltered.yaml
+	 *   | .settings
+	 *   --| shouldbefiltered2.yaml
+	 *   | .theia
+	 *   --| shouldbefiltered3.yaml
 	 * 
 	 * @return The Camel K yaml file created at the root of the temporary directory
 	 * @throws IOException
@@ -77,10 +83,12 @@ class CamelKModelineCamelOpenAPITest extends AbstractCamelLanguageServerTest {
 		Files.write("# camel-k: open-api=".getBytes(), camelKfile);
 		File aSiblingPropertyFile = new File(temporaryDir, "a.json");
 		aSiblingPropertyFile.createNewFile();
-		File aSiblingFolder = new File(temporaryDir, "myFolder");
-		aSiblingFolder.mkdir();
-		File aPropertiesFileInSiblingFolder = new File(aSiblingFolder, "aSecond.yaml");
-		aPropertiesFileInSiblingFolder.createNewFile();
+		
+		createFolderWithFile("myFolder", "aSecond.yaml", temporaryDir);
+		createFolderWithFile(".vscode", "shouldbefiltered.yaml", temporaryDir);
+		createFolderWithFile(".settings", "shouldbefiltered2.yaml", temporaryDir);
+		createFolderWithFile(".theia", "shouldbefiltered3.yaml", temporaryDir);
+		
 		File anotherFile = new File(temporaryDir, "anotherFile.txt");
 		anotherFile.createNewFile();
 		return camelKfile;

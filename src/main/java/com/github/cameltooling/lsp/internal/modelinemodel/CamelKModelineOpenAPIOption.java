@@ -33,7 +33,7 @@ public class CamelKModelineOpenAPIOption extends CamelKModelineLocalResourceRela
 	}
 
 	@Override
-	protected Predicate<? super Path> getFilter() {
+	protected Predicate<Path> getFilter() {
 		return path ->  {
 			String filename = path.getFileName().toString();
 			return filename.endsWith(".json")

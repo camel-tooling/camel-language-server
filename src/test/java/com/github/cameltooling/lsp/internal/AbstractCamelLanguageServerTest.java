@@ -257,4 +257,11 @@ public abstract class AbstractCamelLanguageServerTest {
 		return initializationOptions;
 	}
 	
+	protected void createFolderWithFile(String folderName, String fileName, File parent) throws IOException {
+		File aSiblingFolder = new File(parent, folderName);
+		aSiblingFolder.mkdir();
+		File aPropertiesFileInSiblingFolder = new File(aSiblingFolder, fileName);
+		aPropertiesFileInSiblingFolder.createNewFile();
+	}
+	
 }
