@@ -44,6 +44,17 @@ On hover, the documentation of the Camel component is available.
 On save, diagnostics on Camel URIs are updated:
 ![Diagnostic on Camel URI](./images/diagnostic.png "Diagnostic on Camel URI")
 
+### Camel K modeline support
+
+* Completion for:
+  * option names
+  * trait definition names
+  * trait property names
+  * Camel artifact id for dependency
+  * mvn dependency
+  * Camel component properties
+  * resource-like properties (`resource`, `open-api`, `property-file`). It is providing relevant sibling files filtering out some IDEs configuration folders (`.vscode`, `.settings`, `.theia`).
+
 ### WebSocket support
 
 Connection through WebSocket is supported. The server needs to be launched with `--websocket` option.
