@@ -17,76 +17,31 @@
 package com.github.cameltooling.lsp.internal.documentsymbol;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 import org.eclipse.lsp4j.DocumentSymbol;
-import org.eclipse.lsp4j.Location;
 import org.eclipse.lsp4j.SymbolInformation;
-import org.eclipse.lsp4j.SymbolKind;
 import org.eclipse.lsp4j.TextDocumentItem;
 import org.eclipse.lsp4j.jsonrpc.messages.Either;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-
-import com.github.cameltooling.lsp.internal.parser.ParserXMLFileHelper;
 
 public class DocumentSymbolProcessor {
-	
-	static final String CANNOT_DETERMINE_DOCUMENT_SYMBOLS = "Cannot determine document symbols";
-	private static final String ATTRIBUTE_ID = "id";
-	private static final Logger LOGGER = LoggerFactory.getLogger(DocumentSymbolProcessor.class);
+
 	private TextDocumentItem textDocumentItem;
-	private ParserXMLFileHelper parserFileHelper = new ParserXMLFileHelper();
 
 	public DocumentSymbolProcessor(TextDocumentItem textDocumentItem) {
 		this.textDocumentItem = textDocumentItem;
 	}
-	
+
 	public CompletableFuture<List<Either<SymbolInformation, DocumentSymbol>>> getDocumentSymbols() {
 		return CompletableFuture.supplyAsync(() -> {
+			List<Either<SymbolInformation, DocumentSymbol>> symbolInformations = new ArrayList<>();
 			if (textDocumentItem.getUri().endsWith(".xml")) {
-				try {
-					List<Either<SymbolInformation, DocumentSymbol>> symbolInformations = new ArrayList<>();
-					NodeList routeNodes = parserFileHelper.getRouteNodes(textDocumentItem);
-					if (routeNodes != null) {
-						symbolInformations.addAll(convertToSymbolInformation(routeNodes));
-					}
-					NodeList camelContextNodes = parserFileHelper.getCamelContextNodes(textDocumentItem);
-					if (camelContextNodes != null) {
-						symbolInformations.addAll(convertToSymbolInformation(camelContextNodes));
-					}
-					return symbolInformations;
-				} catch (Exception e) {
-					LOGGER.error(CANNOT_DETERMINE_DOCUMENT_SYMBOLS, e);
-				}
+				return new DocumentSymbolXMLProcessor(textDocumentItem).getSymbolInformations();
+			} else if (textDocumentItem.getUri().endsWith(".java")) {
+				return new DocumentSymbolJavaProcessor(textDocumentItem).getSymbolInformations();
 			}
-			return Collections.emptyList();
+			return symbolInformations;
 		});
-	}
-
-	private List<Either<SymbolInformation, DocumentSymbol>> convertToSymbolInformation(NodeList routeNodes) {
-		List<Either<SymbolInformation, DocumentSymbol>> res = new ArrayList<>();
-		for (int i = 0; i < routeNodes.getLength(); i++) {
-			Node routeNode = routeNodes.item(i);
-			Location location = parserFileHelper.retrieveLocation(routeNode, textDocumentItem);
-			String displayNameOfSymbol = computeDisplayNameOfSymbol(routeNode);
-			res.add(Either.forLeft(new SymbolInformation(displayNameOfSymbol, SymbolKind.Field, location)));
-		}
-		return res;
-	}
-
-	private String computeDisplayNameOfSymbol(Node node) {
-		Node routeIdAttribute = node.getAttributes().getNamedItem(ATTRIBUTE_ID);
-		String displayNameOfSymbol;
-		if (routeIdAttribute != null) {
-			displayNameOfSymbol = routeIdAttribute.getNodeValue();
-		} else {
-			displayNameOfSymbol = "<no id>";
-		}
-		return displayNameOfSymbol;
 	}
 }
