@@ -216,8 +216,12 @@ public abstract class AbstractCamelLanguageServerTest {
 	}
 	
 	protected CompletableFuture<List<Either<SymbolInformation,DocumentSymbol>>> getDocumentSymbolFor(CamelLanguageServer camelLanguageServer) {
+		return getDocumentSymbolFor(camelLanguageServer, DUMMY_URI+extensionUsed);
+	}
+	
+	protected CompletableFuture<List<Either<SymbolInformation,DocumentSymbol>>> getDocumentSymbolFor(CamelLanguageServer camelLanguageServer, String uri) {
 		TextDocumentService textDocumentService = camelLanguageServer.getTextDocumentService();
-		DocumentSymbolParams params = new DocumentSymbolParams(new TextDocumentIdentifier(DUMMY_URI+extensionUsed));
+		DocumentSymbolParams params = new DocumentSymbolParams(new TextDocumentIdentifier(uri));
 		return textDocumentService.documentSymbol(params);
 	}
 
