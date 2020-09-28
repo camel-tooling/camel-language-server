@@ -1,10 +1,7 @@
 # First Time Setup
 
 0. Fork and clone the repository
-1. Install Eclipse [Oxygen Java EE](https://www.eclipse.org/downloads/packages/release/2019-03/r/eclipse-ide-enterprise-java-developers)
-that will have most needed already installed. Alternately,
-you can get the [Eclipse IDE for Java developers](https://www.eclipse.org/downloads/packages/release/2019-03/r/eclipse-ide-java-developers)
-and just install Eclipse PDE from marketplace.
+1. Install latest Eclipse Java EE from [Download Packages page](https://www.eclipse.org/downloads/packages/) that will have most needed already installed. Alternately, you can get the Eclipse IDE for Java developers and just install Eclipse PDE from marketplace.
 
 2. Once installed use `File > Open Projects from File System...` and
 point it `camel-language-server` and Eclipse should automatically
