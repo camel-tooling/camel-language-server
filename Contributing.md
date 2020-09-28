@@ -1,4 +1,8 @@
-# First Time Setup
+# First Time Setup in Eclipse Desktop
+
+Note: Eclipse Desktop IDE is providing a convenient development workflow for the Camel Language Server. That said, other IDEs can be used.
+
+## Project setup
 
 0. Fork and clone the repository
 1. Install latest Eclipse Java EE from [Download Packages page](https://www.eclipse.org/downloads/packages/) that will have most needed already installed. Alternately, you can get the Eclipse IDE for Java developers and just install Eclipse PDE from marketplace.
@@ -10,6 +14,25 @@ detect the projects and import it properly.
 3. If you discover an error on `pom.xml` after import about Tycho, you can use Quick Fix
 (Ctrl+1) to install the Tycho Maven integration.
 
+## Local debug flow with an editor
+
+Eclipse desktop allows to debug Language Server being written in the same workspace. To do that:
+
+* Create a Content type for the file type you want to test:
+    * `Windows -> Preferences -> General -> Content types`
+    * Select `Text`
+    * Click `Add child...` and provide configuration. For instance:
+        * name: `Camel K`
+        * File association `*.camelk.*`
+* Associate the created Content type to the `Camel Language Server` Launch configuration
+    * `Windows -> Preferences -> Language Servers`
+    * At the bottom, click on `Add...`
+    * Select the added Content type in the left column (`Camel K` if following example)
+    * Select the launch configuration `Camel Language Server` in the right column under `Java Application`
+    * Select the `debug` option in the drop down below the right column
+    * Click `Ok` and then `Apply and close`
+* Open the file you want to test with the `Generic Text Editor`
+    * To be sure that the file opens with the Generic Text Editor, you can right-click on it and then `Open With -> Generic Text Editor`
 
 # Building from command line
 
