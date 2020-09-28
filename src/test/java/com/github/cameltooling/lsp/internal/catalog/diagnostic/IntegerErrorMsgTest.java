@@ -23,8 +23,6 @@ import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 
-import com.github.cameltooling.lsp.internal.catalog.diagnostic.IntegerErrorMsg;
-
 class IntegerErrorMsgTest {
 
 	@Test

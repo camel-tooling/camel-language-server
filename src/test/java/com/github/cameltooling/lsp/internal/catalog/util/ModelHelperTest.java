@@ -24,7 +24,6 @@ import org.apache.camel.catalog.DefaultCamelCatalog;
 import org.junit.jupiter.api.Test;
 
 import com.github.cameltooling.lsp.internal.catalog.model.ComponentModel;
-import com.github.cameltooling.lsp.internal.catalog.util.ModelHelper;
 
 class ModelHelperTest {
 
