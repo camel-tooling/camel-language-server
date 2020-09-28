@@ -24,8 +24,6 @@ import java.util.Map;
 import org.apache.camel.catalog.EndpointValidationResult;
 import org.junit.jupiter.api.Test;
 
-import com.github.cameltooling.lsp.internal.catalog.diagnostic.EnumErrorMsg;
-
 class EnumErrorMsgTest {
 
 	@Test
