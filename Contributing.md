@@ -16,7 +16,7 @@ detect the projects and import it properly.
 
 ## Local debug flow with an editor
 
-Eclipse desktop allows to debug Language Server being written in the same workspace. To do that:
+Eclipse desktop allows to debug Language Server projects being written in the same workspace. To do that:
 
 * Create a Content type for the file type you want to test:
     * `Windows -> Preferences -> General -> Content types`
