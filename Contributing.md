@@ -1,6 +1,6 @@
 # First Time Setup in Eclipse Desktop
 
-Note: Eclipse Desktop IDE is providing a convenient development workflow for the Camel Language Server. That said, other IDEs can be used.
+The Eclipse Desktop IDE provides a convenient development workflow for the Camel Language Server, but other IDEs may be used as well.
 
 ## Project setup
 
