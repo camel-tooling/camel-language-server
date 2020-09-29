@@ -19,10 +19,12 @@ package com.github.cameltooling.lsp.internal.documentsymbol;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.OptionalInt;
 import java.util.stream.Stream;
 
 import org.apache.camel.parser.RouteBuilderParser;
+import org.apache.camel.parser.model.CamelEndpointDetails;
 import org.apache.camel.parser.model.CamelNodeDetails;
 import org.eclipse.lsp4j.DocumentSymbol;
 import org.eclipse.lsp4j.Location;
@@ -49,25 +51,33 @@ public class DocumentSymbolJavaProcessor {
 		JavaClassSource clazz = (JavaClassSource) Roaster.parse(textDocumentItem.getText());
 		String rawPathOfCamelFile = URI.create(textDocumentItem.getUri()).getRawPath();
 		List<CamelNodeDetails> camelNodes = RouteBuilderParser.parseRouteBuilderTree(clazz, "", rawPathOfCamelFile, true);
-		return createSymbolInformations(camelNodes);
+		List<CamelEndpointDetails> endpoints = new ArrayList<>();
+		RouteBuilderParser.parseRouteBuilderEndpoints(clazz, "", rawPathOfCamelFile, endpoints);
+		return createSymbolInformations(camelNodes, endpoints);
 	}
 	
-	private List<Either<SymbolInformation, DocumentSymbol>> createSymbolInformations(List<CamelNodeDetails> camelNodes) {
+	private List<Either<SymbolInformation, DocumentSymbol>> createSymbolInformations(List<CamelNodeDetails> camelNodes, List<CamelEndpointDetails> endpoints) {
 		List<Either<SymbolInformation, DocumentSymbol>> symbolInformations = new ArrayList<>();
 		if (camelNodes != null) {
 			for (CamelNodeDetails camelNodeDetails : camelNodes) {
 				Range range = computeRange(camelNodeDetails);
-				symbolInformations.add(createSymbolInformation(camelNodeDetails, range));
-				symbolInformations.addAll(createSymbolInformations(camelNodeDetails.getOutputs()));
+				Optional<String> componentName = endpoints.stream()
+						.filter(ced -> Integer.valueOf(ced.getLineNumber()) - 1 == range.getStart().getLine())
+						.map(CamelEndpointDetails::getEndpointUri)
+						.map(this::shortEndpoint)
+						.findFirst();
+				symbolInformations.add(createSymbolInformation(camelNodeDetails, range, componentName));
+				symbolInformations.addAll(createSymbolInformations(camelNodeDetails.getOutputs(), endpoints));
 			}
 		}
 		return symbolInformations;
 	}
 
-	private Either<SymbolInformation, DocumentSymbol> createSymbolInformation(CamelNodeDetails camelNodeDetails, Range range) {
+	private Either<SymbolInformation, DocumentSymbol> createSymbolInformation(CamelNodeDetails camelNodeDetails, Range range, Optional<String> componentPath) {
+		String nodeDetailsName = camelNodeDetails.getName();
 		return Either.forLeft(
 				new SymbolInformation(
-						camelNodeDetails.getName(),
+						componentPath.isPresent() ? nodeDetailsName + " " + componentPath.get() : nodeDetailsName,
 						SymbolKind.Field,
 						new Location(textDocumentItem.getUri(), range)));
 	}
@@ -94,5 +104,10 @@ public class DocumentSymbolJavaProcessor {
 			return Stream.of(camelNodeDetails);
 		}
 	}
+	
+    private String shortEndpoint(String uri) {
+        int pos = uri.indexOf('?');
+        return pos != -1 ? uri.substring(0, pos) : uri;
+    }
 
 }

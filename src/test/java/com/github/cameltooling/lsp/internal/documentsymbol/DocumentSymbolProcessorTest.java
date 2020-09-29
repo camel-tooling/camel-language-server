@@ -192,7 +192,7 @@ class DocumentSymbolProcessorTest extends AbstractCamelLanguageServerTest {
 		File f = new File("src/test/resources/workspace/camel.java");
 		List<Either<SymbolInformation,DocumentSymbol>> documentSymbols = testRetrieveDocumentSymbol(f, 4);
 		SymbolInformation symbolInformation = documentSymbols.get(0).getLeft();
-		assertThat(symbolInformation.getName()).isEqualTo("from");
+		assertThat(symbolInformation.getName()).isEqualTo("from file:src/data");
 		Range range = symbolInformation.getLocation().getRange();
 		assertThat(range.getStart().getLine()).isEqualTo(15);
 		assertThat(range.getEnd().getLine()).isEqualTo(20);
@@ -205,10 +205,10 @@ class DocumentSymbolProcessorTest extends AbstractCamelLanguageServerTest {
 		List<Either<SymbolInformation,DocumentSymbol>> documentSymbols = testRetrieveDocumentSymbol(f, 12);
 		
 		List<SymbolInformation> fromSymbolInformations = documentSymbols.stream()
-				.filter(either -> "from".equals(either.getLeft().getName()))
+				.filter(either -> "from direct:route2".equals(either.getLeft().getName()))
 				.map(Either::getLeft)
 				.collect(Collectors.toList());
-		SymbolInformation secondFrom = fromSymbolInformations.get(1);
+		SymbolInformation secondFrom = fromSymbolInformations.get(0);
 		Range range = secondFrom.getLocation().getRange();
 		assertThat(range.getStart().getLine()).isEqualTo(13);
 		assertThat(range.getEnd().getLine()).isEqualTo(18);
