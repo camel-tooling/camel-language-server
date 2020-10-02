@@ -27,17 +27,21 @@ import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
 import org.eclipse.lsp4j.DocumentSymbol;
-import org.eclipse.lsp4j.Location;
 import org.eclipse.lsp4j.Position;
 import org.eclipse.lsp4j.Range;
 import org.eclipse.lsp4j.SymbolInformation;
 import org.eclipse.lsp4j.jsonrpc.messages.Either;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 import com.github.cameltooling.lsp.internal.AbstractCamelLanguageServerTest;
 import com.github.cameltooling.lsp.internal.CamelLanguageServer;
+import com.google.common.io.Files;
 
 class DocumentSymbolProcessorTest extends AbstractCamelLanguageServerTest {
+	
+	@TempDir
+	File tempDir;
 	
 	@Test
 	void testRoutesProvidedAsDocumentSymbol() throws Exception {
@@ -59,12 +63,41 @@ class DocumentSymbolProcessorTest extends AbstractCamelLanguageServerTest {
 				"      </recipientList>\r\n" + 
 				"    </route>\n"
 				+ "</camelContext>\n";
-		List<Either<SymbolInformation, DocumentSymbol>> documentSymbols = testRetrieveDocumentSymbol(textTotest, 3);
-		SymbolInformation firstRoute = documentSymbols.get(0).getLeft();
-		assertThat(firstRoute.getName()).isEqualTo("a route");
+		List<Either<SymbolInformation, DocumentSymbol>> documentSymbols = testRetrieveDocumentSymbol(textTotest, 8);
+		SymbolInformation firstRoute = documentSymbols.stream()
+			.filter(item -> "a route".equals(item.getLeft().getName()))
+			.map(item -> item.getLeft())
+			.findAny()
+			.get();
 		Position expectedStart = new Position(2, 24/* expecting 4 but seems a bug in Camel*/);
 		Position expectedEnd = new Position(8, 12);
-		assertThat(firstRoute.getLocation()).usingRecursiveComparison().isEqualTo(new Location(DUMMY_URI+".xml", new Range(expectedStart, expectedEnd)));
+		assertThat(firstRoute.getLocation().getRange()).usingRecursiveComparison().isEqualTo(new Range(expectedStart, expectedEnd));
+	}
+	
+	@Test
+	void testEndpointsInXml() throws Exception {
+		String textTotest =
+				"<camelContext id=\"camel\" xmlns=\"http://camel.apache.org/schema/spring\">\r\n" +
+				"    <route id=\"a route\">\r\n" +
+				"      <from uri=\"direct:cafe\"/>\r\n" +
+				"      <to uri=\"direct:drink\"/>\r\n" +
+				"    </route>\r\n" +
+				"</camelContext>\n";
+		List<Either<SymbolInformation, DocumentSymbol>> documentSymbols = testRetrieveDocumentSymbol(textTotest, 4);
+		checkSymbolInformation(documentSymbols, new Position(2, 0), new Position(3, 30), "from direct:cafe");
+		checkSymbolInformation(documentSymbols, new Position(3, 0), new Position(3, 30), "to direct:drink");
+	}
+
+	private void checkSymbolInformation(List<Either<SymbolInformation, DocumentSymbol>> documentSymbols,
+			Position expectedStart, Position expectedEnd, String expectedText) {
+		SymbolInformation from = documentSymbols.stream()
+			.filter(item -> {
+				return expectedText.equals(item.getLeft().getName());
+			})
+			.map(item -> item.getLeft())
+			.findAny()
+			.get();
+		assertThat(from.getLocation().getRange()).usingRecursiveComparison().isEqualTo(new Range(expectedStart, expectedEnd));
 	}
 
 	@Test
@@ -118,7 +151,7 @@ class DocumentSymbolProcessorTest extends AbstractCamelLanguageServerTest {
 				"    </route>\n"
 				+ "</camelContext>\n"
 				+ "</beans>";
-		testRetrieveDocumentSymbol(textTotest, 6);
+		testRetrieveDocumentSymbol(textTotest, 16);
 	}
 	
 	@Test
@@ -161,7 +194,7 @@ class DocumentSymbolProcessorTest extends AbstractCamelLanguageServerTest {
 				"      </recipientList>\r\n" + 
 				"    </route>\n"
 				+ "</camelContext>\n";
-		testRetrieveDocumentSymbol(textTotest, 4);
+		testRetrieveDocumentSymbol(textTotest, 11);
 	}
 	
 	@Test
@@ -184,7 +217,7 @@ class DocumentSymbolProcessorTest extends AbstractCamelLanguageServerTest {
 				"      </camel:recipientList>\r\n" + 
 				"    </camel:route>\n"
 				+ "</camel:camelContext>\n";
-		testRetrieveDocumentSymbol(textTotest, 3);
+		testRetrieveDocumentSymbol(textTotest, 8);
 	}
 	
 	@Test
@@ -241,9 +274,10 @@ class DocumentSymbolProcessorTest extends AbstractCamelLanguageServerTest {
 		assertThat(range.getEnd().getCharacter()).isEqualTo(40);
 	}
 	
-	private List<Either<SymbolInformation, DocumentSymbol>> testRetrieveDocumentSymbol(String textTotest, int expectedSize) throws URISyntaxException, InterruptedException, ExecutionException {
-		CamelLanguageServer camelLanguageServer = initializeLanguageServer(textTotest);
-		return testRetrieveDocumentSymbol(expectedSize, camelLanguageServer, DUMMY_URI+".xml");
+	private List<Either<SymbolInformation, DocumentSymbol>> testRetrieveDocumentSymbol(String textTotest, int expectedSize) throws URISyntaxException, InterruptedException, ExecutionException, IOException {
+		File camelFile = new File(tempDir, "DocumentSymbolInformation.xml");
+		Files.write(textTotest.getBytes(), camelFile);
+		return testRetrieveDocumentSymbol(camelFile, expectedSize);
 	}
 	
 	private List<Either<SymbolInformation, DocumentSymbol>> testRetrieveDocumentSymbol(File file, int expectedSize) throws URISyntaxException, InterruptedException, ExecutionException, IOException {
