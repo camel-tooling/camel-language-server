@@ -20,32 +20,21 @@ import java.io.File;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
-import java.util.OptionalInt;
-import java.util.stream.Stream;
 
 import org.apache.camel.parser.RouteBuilderParser;
 import org.apache.camel.parser.model.CamelEndpointDetails;
 import org.apache.camel.parser.model.CamelNodeDetails;
 import org.eclipse.lsp4j.DocumentSymbol;
-import org.eclipse.lsp4j.Location;
-import org.eclipse.lsp4j.Position;
-import org.eclipse.lsp4j.Range;
 import org.eclipse.lsp4j.SymbolInformation;
-import org.eclipse.lsp4j.SymbolKind;
 import org.eclipse.lsp4j.TextDocumentItem;
 import org.eclipse.lsp4j.jsonrpc.messages.Either;
 import org.jboss.forge.roaster.Roaster;
 import org.jboss.forge.roaster.model.source.JavaClassSource;
 
-import com.github.cameltooling.lsp.internal.parser.ParserFileHelperUtil;
-
-public class DocumentSymbolJavaProcessor {
-
-	private TextDocumentItem textDocumentItem;
+public class DocumentSymbolJavaProcessor extends AbstractDocumentSymbolProcessor {
 
 	public DocumentSymbolJavaProcessor(TextDocumentItem textDocumentItem) {
-		this.textDocumentItem = textDocumentItem;
+		super(textDocumentItem);
 	}
 
 	public List<Either<SymbolInformation, DocumentSymbol>> getSymbolInformations() {
@@ -56,59 +45,5 @@ public class DocumentSymbolJavaProcessor {
 		RouteBuilderParser.parseRouteBuilderEndpoints(clazz, "", absolutePathOfCamelFile, endpoints);
 		return createSymbolInformations(camelNodes, endpoints);
 	}
-	
-	private List<Either<SymbolInformation, DocumentSymbol>> createSymbolInformations(List<CamelNodeDetails> camelNodes, List<CamelEndpointDetails> endpoints) {
-		List<Either<SymbolInformation, DocumentSymbol>> symbolInformations = new ArrayList<>();
-		if (camelNodes != null) {
-			for (CamelNodeDetails camelNodeDetails : camelNodes) {
-				Range range = computeRange(camelNodeDetails);
-				Optional<String> componentName = endpoints.stream()
-						.filter(ced -> Integer.valueOf(ced.getLineNumber()) - 1 == range.getStart().getLine())
-						.map(CamelEndpointDetails::getEndpointUri)
-						.map(this::shortEndpoint)
-						.findFirst();
-				symbolInformations.add(createSymbolInformation(camelNodeDetails, range, componentName));
-				symbolInformations.addAll(createSymbolInformations(camelNodeDetails.getOutputs(), endpoints));
-			}
-		}
-		return symbolInformations;
-	}
-
-	private Either<SymbolInformation, DocumentSymbol> createSymbolInformation(CamelNodeDetails camelNodeDetails, Range range, Optional<String> componentPath) {
-		String nodeDetailsName = camelNodeDetails.getName();
-		return Either.forLeft(
-				new SymbolInformation(
-						componentPath.isPresent() ? nodeDetailsName + " " + componentPath.get() : nodeDetailsName,
-						SymbolKind.Field,
-						new Location(textDocumentItem.getUri(), range)));
-	}
-
-	private Range computeRange(CamelNodeDetails camelNodeDetails) {
-		int endLine = retrieveEndline(camelNodeDetails);
-		Position startPosition = new Position(Integer.valueOf(camelNodeDetails.getLineNumber()) - 1, 0);
-		Position endPosition = new Position(endLine, new ParserFileHelperUtil().getLine(textDocumentItem, endLine).length());
-		return new Range(startPosition, endPosition);
-	}
-
-	private int retrieveEndline(CamelNodeDetails camelNodeDetails) {
-		OptionalInt endLineComputedFromChildren = retrieveAllChildrenOutputs(camelNodeDetails)
-				.mapToInt(output -> Integer.valueOf(output.getLineNumberEnd()) - 1)
-				.max();
-		return endLineComputedFromChildren.orElse(Integer.valueOf(camelNodeDetails.getLineNumberEnd()) - 1);
-	}
-
-	private Stream<CamelNodeDetails> retrieveAllChildrenOutputs(CamelNodeDetails camelNodeDetails) {
-		List<CamelNodeDetails> children = camelNodeDetails.getOutputs();
-		if (children != null) {
-			return Stream.concat(Stream.of(camelNodeDetails), children.stream().flatMap(this::retrieveAllChildrenOutputs));
-		} else {
-			return Stream.of(camelNodeDetails);
-		}
-	}
-	
-    private String shortEndpoint(String uri) {
-        int pos = uri.indexOf('?');
-        return pos != -1 ? uri.substring(0, pos) : uri;
-    }
 
 }

@@ -16,9 +16,14 @@
  */
 package com.github.cameltooling.lsp.internal.documentsymbol;
 
+import java.io.ByteArrayInputStream;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.camel.parser.XmlRouteParser;
+import org.apache.camel.parser.model.CamelEndpointDetails;
+import org.apache.camel.parser.model.CamelNodeDetails;
 import org.eclipse.lsp4j.DocumentSymbol;
 import org.eclipse.lsp4j.Location;
 import org.eclipse.lsp4j.SymbolInformation;
@@ -32,22 +37,26 @@ import org.w3c.dom.NodeList;
 
 import com.github.cameltooling.lsp.internal.parser.ParserXMLFileHelper;
 
-public class DocumentSymbolXMLProcessor {
+public class DocumentSymbolXMLProcessor extends AbstractDocumentSymbolProcessor {
 	
 	static final String CANNOT_DETERMINE_DOCUMENT_SYMBOLS = "Cannot determine document symbols";
 	private static final String ATTRIBUTE_ID = "id";
 	private static final Logger LOGGER = LoggerFactory.getLogger(DocumentSymbolXMLProcessor.class);
 	
 	private ParserXMLFileHelper parserFileHelper = new ParserXMLFileHelper();
-	private TextDocumentItem textDocumentItem;
 
 	public DocumentSymbolXMLProcessor(TextDocumentItem textDocumentItem) {
-		this.textDocumentItem = textDocumentItem;
+		super(textDocumentItem);
 	}
 
 	public List<Either<SymbolInformation, DocumentSymbol>> getSymbolInformations() {
 		List<Either<SymbolInformation, DocumentSymbol>> symbolInformations = new ArrayList<>();
 		try {
+			String rawpath = URI.create(textDocumentItem.getUri()).getRawPath();
+			List<CamelNodeDetails> camelNodeDetails = XmlRouteParser.parseXmlRouteTree(createInputStream(textDocumentItem), "", rawpath);
+			List<CamelEndpointDetails> endpoints = new ArrayList<>();
+			XmlRouteParser.parseXmlRouteEndpoints(createInputStream(textDocumentItem), "", rawpath, endpoints);
+			symbolInformations.addAll(createSymbolInformations(camelNodeDetails, endpoints));
 			NodeList routeNodes = parserFileHelper.getRouteNodes(textDocumentItem);
 			if (routeNodes != null) {
 				symbolInformations.addAll(convertToSymbolInformation(routeNodes));
@@ -60,6 +69,10 @@ public class DocumentSymbolXMLProcessor {
 			LOGGER.error(CANNOT_DETERMINE_DOCUMENT_SYMBOLS, e);
 		}
 		return symbolInformations;
+	}
+
+	private ByteArrayInputStream createInputStream(TextDocumentItem textDocumentItem) {
+		return new ByteArrayInputStream(textDocumentItem.getText().getBytes());
 	}
 	
 	private List<Either<SymbolInformation, DocumentSymbol>> convertToSymbolInformation(NodeList routeNodes) {
