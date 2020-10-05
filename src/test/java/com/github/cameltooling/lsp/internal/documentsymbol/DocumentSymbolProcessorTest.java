@@ -225,6 +225,22 @@ class DocumentSymbolProcessorTest extends AbstractCamelLanguageServerTest {
 		assertThat(range.getEnd().getCharacter()).isEqualTo(55);
 	}
 	
+	@Test
+	void testPartialRoute() throws Exception {
+		File f = new File("src/test/resources/workspace/PartialRoute.java");
+		List<Either<SymbolInformation,DocumentSymbol>> documentSymbols = testRetrieveDocumentSymbol(f, 1);
+		
+		List<SymbolInformation> fromSymbolInformations = documentSymbols.stream()
+				.filter(either -> "from file:src/data".equals(either.getLeft().getName()))
+				.map(Either::getLeft)
+				.collect(Collectors.toList());
+		SymbolInformation secondFrom = fromSymbolInformations.get(0);
+		Range range = secondFrom.getLocation().getRange();
+		assertThat(range.getStart().getLine()).isEqualTo(3);
+		assertThat(range.getEnd().getLine()).isEqualTo(3);
+		assertThat(range.getEnd().getCharacter()).isEqualTo(40);
+	}
+	
 	private List<Either<SymbolInformation, DocumentSymbol>> testRetrieveDocumentSymbol(String textTotest, int expectedSize) throws URISyntaxException, InterruptedException, ExecutionException {
 		CamelLanguageServer camelLanguageServer = initializeLanguageServer(textTotest);
 		return testRetrieveDocumentSymbol(expectedSize, camelLanguageServer, DUMMY_URI+".xml");
