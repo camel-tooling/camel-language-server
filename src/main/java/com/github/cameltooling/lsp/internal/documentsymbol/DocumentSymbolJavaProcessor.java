@@ -16,6 +16,7 @@
  */
 package com.github.cameltooling.lsp.internal.documentsymbol;
 
+import java.io.File;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
@@ -49,10 +50,10 @@ public class DocumentSymbolJavaProcessor {
 
 	public List<Either<SymbolInformation, DocumentSymbol>> getSymbolInformations() {
 		JavaClassSource clazz = (JavaClassSource) Roaster.parse(textDocumentItem.getText());
-		String rawPathOfCamelFile = URI.create(textDocumentItem.getUri()).getRawPath();
-		List<CamelNodeDetails> camelNodes = RouteBuilderParser.parseRouteBuilderTree(clazz, "", rawPathOfCamelFile, true);
+		String absolutePathOfCamelFile = new File(URI.create(textDocumentItem.getUri())).getAbsolutePath();
+		List<CamelNodeDetails> camelNodes = RouteBuilderParser.parseRouteBuilderTree(clazz, "", absolutePathOfCamelFile, true);
 		List<CamelEndpointDetails> endpoints = new ArrayList<>();
-		RouteBuilderParser.parseRouteBuilderEndpoints(clazz, "", rawPathOfCamelFile, endpoints);
+		RouteBuilderParser.parseRouteBuilderEndpoints(clazz, "", absolutePathOfCamelFile, endpoints);
 		return createSymbolInformations(camelNodes, endpoints);
 	}
 	
