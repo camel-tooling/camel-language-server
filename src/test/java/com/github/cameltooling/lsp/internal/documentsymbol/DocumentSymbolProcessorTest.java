@@ -190,6 +190,10 @@ class DocumentSymbolProcessorTest extends AbstractCamelLanguageServerTest {
 	@Test
 	void testSingleRoute() throws Exception {
 		File f = new File("src/test/resources/workspace/camel.java");
+		testSingleRoute(f);
+	}
+
+	private void testSingleRoute(File f) throws URISyntaxException, InterruptedException, ExecutionException, IOException {
 		List<Either<SymbolInformation,DocumentSymbol>> documentSymbols = testRetrieveDocumentSymbol(f, 4);
 		SymbolInformation symbolInformation = documentSymbols.get(0).getLeft();
 		assertThat(symbolInformation.getName()).isEqualTo("from file:src/data");
@@ -197,6 +201,12 @@ class DocumentSymbolProcessorTest extends AbstractCamelLanguageServerTest {
 		assertThat(range.getStart().getLine()).isEqualTo(15);
 		assertThat(range.getEnd().getLine()).isEqualTo(20);
 		assertThat(range.getEnd().getCharacter()).isEqualTo(55);
+	}
+	
+	@Test
+	void testWithSpaceInPath() throws Exception {
+		File f = new File("src/test/resources/workspace with space/MyRouteBuilder.java");
+		testSingleRoute(f);
 	}
 	
 	@Test
