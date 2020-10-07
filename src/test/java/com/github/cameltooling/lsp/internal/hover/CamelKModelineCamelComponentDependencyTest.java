@@ -23,6 +23,7 @@ import java.util.concurrent.CompletableFuture;
 import org.eclipse.lsp4j.Hover;
 import org.eclipse.lsp4j.HoverParams;
 import org.eclipse.lsp4j.Position;
+import org.eclipse.lsp4j.Range;
 import org.eclipse.lsp4j.TextDocumentIdentifier;
 import org.junit.jupiter.api.Test;
 
@@ -39,6 +40,16 @@ class CamelKModelineCamelComponentDependencyTest extends AbstractCamelLanguageSe
 		CompletableFuture<Hover> hover = camelLanguageServer.getTextDocumentService().hover(hoverParams);
 		
 		assertThat(hover.get().getContents().getLeft().get(0).getLeft()).isEqualTo("Generate messages in specified intervals using java.util.Timer.");
+	}
+	
+	@Test
+	void testRangeOnHover() throws Exception {
+		CamelLanguageServer camelLanguageServer = initializeLanguageServer("// camel-k: dependency=camel-timer", ".java");
+		
+		HoverParams hoverParams = new HoverParams(new TextDocumentIdentifier(DUMMY_URI+".java"), new Position(0, 24));
+		CompletableFuture<Hover> hover = camelLanguageServer.getTextDocumentService().hover(hoverParams);
+		
+		assertThat(hover.get().getRange()).isEqualTo(new Range(new Position(0, 23), new Position(0, 34)));
 	}
 	
 	@Test

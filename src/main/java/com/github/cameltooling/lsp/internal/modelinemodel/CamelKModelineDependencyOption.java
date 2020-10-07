@@ -16,7 +16,6 @@
  */
 package com.github.cameltooling.lsp.internal.modelinemodel;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
@@ -27,7 +26,6 @@ import org.apache.camel.catalog.CamelCatalog;
 import org.eclipse.lsp4j.CompletionItem;
 import org.eclipse.lsp4j.Hover;
 import org.eclipse.lsp4j.InsertTextFormat;
-import org.eclipse.lsp4j.jsonrpc.messages.Either;
 
 import com.github.cameltooling.lsp.internal.catalog.model.ComponentModel;
 import com.github.cameltooling.lsp.internal.catalog.util.ModelHelper;
@@ -107,7 +105,7 @@ public class CamelKModelineDependencyOption implements ICamelKModelineOptionValu
 		return camelCatalog.thenApply(catalog -> {
 			Optional<ComponentModel> model = findComponentModel(catalog);
 			if (model.isPresent()) {
-				return new Hover(Collections.singletonList((Either.forLeft(model.get().getDescription()))));
+				return createHover(model.get().getDescription());
 			} else {
 				return null;
 			}

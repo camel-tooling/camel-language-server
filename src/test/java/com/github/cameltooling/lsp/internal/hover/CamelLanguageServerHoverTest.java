@@ -23,6 +23,7 @@ import java.util.concurrent.CompletableFuture;
 import org.eclipse.lsp4j.Hover;
 import org.eclipse.lsp4j.HoverParams;
 import org.eclipse.lsp4j.Position;
+import org.eclipse.lsp4j.Range;
 import org.eclipse.lsp4j.TextDocumentIdentifier;
 import org.junit.jupiter.api.Test;
 
@@ -40,6 +41,16 @@ class CamelLanguageServerHoverTest extends AbstractCamelLanguageServerTest {
 		CompletableFuture<Hover> hover = camelLanguageServer.getTextDocumentService().hover(hoverParams);
 		
 		assertThat(hover.get().getContents().getLeft().get(0).getLeft()).isEqualTo(AHC_DOCUMENTATION);
+	}
+	
+	@Test
+	void testRangeForCamelComponentOnHover() throws Exception {
+		CamelLanguageServer camelLanguageServer = initializeLanguageServer("<from uri=\"ahc:httpUri\" xmlns=\"http://camel.apache.org/schema/spring\"></from>\n");
+		
+		HoverParams hoverParams = new HoverParams(new TextDocumentIdentifier(DUMMY_URI+".xml"), new Position(0, 13));
+		CompletableFuture<Hover> hover = camelLanguageServer.getTextDocumentService().hover(hoverParams);
+		
+		assertThat(hover.get().getRange()).isEqualTo(new Range(new Position(0, 11), new Position(0, 14)));
 	}
 	
 	@Test
@@ -116,6 +127,16 @@ class CamelLanguageServerHoverTest extends AbstractCamelLanguageServerTest {
 		CompletableFuture<Hover> hover = camelLanguageServer.getTextDocumentService().hover(hoverParams);
 		
 		assertThat(hover.get().getContents().getLeft().get(0).getLeft()).isEqualTo(FILE_FILTER_DOCUMENTATION);		
+	}
+	
+	@Test
+	void testRangeForParameterOnHover() throws Exception {
+		CamelLanguageServer camelLanguageServer = initializeLanguageServer("<from uri=\"file:bla?filter=test\" xmlns=\"http://camel.apache.org/schema/spring\"></from>\n");
+		
+		HoverParams hoverParams = new HoverParams(new TextDocumentIdentifier(DUMMY_URI+".xml"), new Position(0, 26));
+		CompletableFuture<Hover> hover = camelLanguageServer.getTextDocumentService().hover(hoverParams);
+		
+		assertThat(hover.get().getRange()).isEqualTo(new Range(new Position(0, 20), new Position(0, 26)));		
 	}
 	
 	@Test
