@@ -16,14 +16,12 @@
  */
 package com.github.cameltooling.lsp.internal.modelinemodel;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 import org.apache.camel.catalog.CamelCatalog;
 import org.eclipse.lsp4j.CompletionItem;
 import org.eclipse.lsp4j.Hover;
-import org.eclipse.lsp4j.jsonrpc.messages.Either;
 
 import com.github.cameltooling.lsp.internal.completion.modeline.CamelKTraitManager;
 
@@ -68,9 +66,7 @@ public class CamelKModelineTraitDefinition implements ICamelKModelineOptionValue
 	public CompletableFuture<Hover> getHover(int characterPosition, CompletableFuture<CamelCatalog> camelCatalog) {
 		String description = CamelKTraitManager.getDescription(traitDefinitionName);
 		if (description != null) {
-			Hover hover = new Hover();
-			hover.setContents(Collections.singletonList((Either.forLeft(description))));
-			return CompletableFuture.completedFuture(hover);
+			return CompletableFuture.completedFuture(createHover(description));
 		}
 		return ICamelKModelineOptionValue.super.getHover(characterPosition, camelCatalog);
 	}

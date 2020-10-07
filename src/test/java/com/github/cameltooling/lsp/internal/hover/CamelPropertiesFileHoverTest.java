@@ -26,6 +26,7 @@ import java.util.concurrent.ExecutionException;
 import org.eclipse.lsp4j.Hover;
 import org.eclipse.lsp4j.HoverParams;
 import org.eclipse.lsp4j.Position;
+import org.eclipse.lsp4j.Range;
 import org.eclipse.lsp4j.TextDocumentIdentifier;
 import org.eclipse.lsp4j.TextDocumentItem;
 import org.junit.jupiter.api.Test;
@@ -61,6 +62,14 @@ class CamelPropertiesFileHoverTest extends AbstractCamelLanguageServerTest {
 	}
 	
 	@Test
+	void testRangeHoverOnCamelComponentOptions() throws Exception {
+		String propertyEntry = "camel.component.acomponent.aComponentProperty=true";
+		CompletableFuture<Hover> hover = getHover(propertyEntry, 29);
+		
+		assertThat(hover.get().getRange()).isEqualTo(new Range(new Position(0, 27), new Position(0, 45)));
+	}
+	
+	@Test
 	void testHoverOnCamelComponentOptionsWithDashedNames() throws Exception {
 		String propertyEntry = "camel.component.acomponent.a-component-property=true";
 		CompletableFuture<Hover> hover = getHover(propertyEntry, 29);
@@ -74,6 +83,14 @@ class CamelPropertiesFileHoverTest extends AbstractCamelLanguageServerTest {
 		CompletableFuture<Hover> hover = getHover(propertyEntry, 17);
 		
 		assertThat(hover.get().getContents().getLeft().get(0).getLeft()).isEqualTo("Description of my component.");
+	}
+	
+	@Test
+	void testRangeHoverOnCamelComponentNames() throws Exception {
+		String propertyEntry = "camel.component.acomponent.aComponentProperty=true";
+		CompletableFuture<Hover> hover = getHover(propertyEntry, 17);
+		
+		assertThat(hover.get().getRange()).isEqualTo(new Range(new Position(0, 16), new Position(0, 26)));
 	}
 	
 	@Test

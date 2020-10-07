@@ -25,6 +25,7 @@ import java.util.concurrent.ExecutionException;
 import org.eclipse.lsp4j.Hover;
 import org.eclipse.lsp4j.HoverParams;
 import org.eclipse.lsp4j.Position;
+import org.eclipse.lsp4j.Range;
 import org.eclipse.lsp4j.TextDocumentIdentifier;
 import org.junit.jupiter.api.Test;
 
@@ -58,7 +59,13 @@ class CamelKModelineComponentPropertyHoverTest extends AbstractCamelLanguageServ
 		testProvideDocumentationOnHover("// camel-k: property=camel.component.timer.unknown", 50, null);
 	}
 	
-	private void testProvideDocumentationOnHover(String modeline, int position, String expectedDescription) throws URISyntaxException, InterruptedException, ExecutionException {
+	@Test
+	void testRange() throws Exception {
+		Hover hover = testProvideDocumentationOnHover("// camel-k: property=camel.component.timer.basicPropertyBinding=true", 50, "Whether the component should use basic property binding (Camel 2.x) or the newer property binding with additional capabilities");
+		assertThat(hover.getRange()).isEqualTo(new Range(new Position(0, 43), new Position(0, 63)));
+	}
+	
+	private Hover testProvideDocumentationOnHover(String modeline, int position, String expectedDescription) throws URISyntaxException, InterruptedException, ExecutionException {
 		CamelLanguageServer camelLanguageServer = initializeLanguageServer(modeline, ".java");
 		
 		HoverParams hoverParams = new HoverParams(new TextDocumentIdentifier(DUMMY_URI+".java"), new Position(0, position));
@@ -66,8 +73,10 @@ class CamelKModelineComponentPropertyHoverTest extends AbstractCamelLanguageServ
 		
 		if (expectedDescription != null) {
 			assertThat(hover.get().getContents().getLeft().get(0).getLeft()).isEqualTo(expectedDescription);
+			return hover.get();
 		} else {
 			assertThat(hover.get()).isNull();
+			return null;
 		}
 	}
 }

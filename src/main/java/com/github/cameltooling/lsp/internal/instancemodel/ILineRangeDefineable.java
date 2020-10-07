@@ -16,9 +16,23 @@
  */
 package com.github.cameltooling.lsp.internal.instancemodel;
 
+import java.util.Collections;
+
+import org.eclipse.lsp4j.Hover;
+import org.eclipse.lsp4j.Position;
+import org.eclipse.lsp4j.Range;
+import org.eclipse.lsp4j.jsonrpc.messages.Either;
+
 public interface ILineRangeDefineable {
 	
 	public int getLine();
 	public int getStartPositionInLine();
 	public int getEndPositionInLine();
+	
+	public default Hover createHover(String description) {
+		Hover hover = new Hover();
+		hover.setContents(Collections.singletonList((Either.forLeft(description))));
+		hover.setRange(new Range(new Position(getLine(), getStartPositionInLine()), new Position(getLine(), getEndPositionInLine())));
+		return hover;
+	}
 }

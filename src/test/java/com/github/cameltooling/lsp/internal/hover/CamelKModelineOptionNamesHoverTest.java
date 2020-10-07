@@ -23,6 +23,7 @@ import java.util.concurrent.CompletableFuture;
 import org.eclipse.lsp4j.Hover;
 import org.eclipse.lsp4j.HoverParams;
 import org.eclipse.lsp4j.Position;
+import org.eclipse.lsp4j.Range;
 import org.eclipse.lsp4j.TextDocumentIdentifier;
 import org.junit.jupiter.api.Test;
 
@@ -39,6 +40,16 @@ class CamelKModelineOptionNamesHoverTest extends AbstractCamelLanguageServerTest
 		CompletableFuture<Hover> hover = camelLanguageServer.getTextDocumentService().hover(hoverParams);
 		
 		assertThat(hover.get().getContents().getLeft().get(0).getLeft()).isEqualTo("Configure a trait. E.g. \"trait=service.enabled=false\"");
+	}
+	
+	@Test
+	void testRangeOnHover() throws Exception {
+		CamelLanguageServer camelLanguageServer = initializeLanguageServer("// camel-k: trait=quarkus.enabled=true", ".java");
+		
+		HoverParams hoverParams = new HoverParams(new TextDocumentIdentifier(DUMMY_URI+".java"), new Position(0, 14));
+		CompletableFuture<Hover> hover = camelLanguageServer.getTextDocumentService().hover(hoverParams);
+		
+		assertThat(hover.get().getRange()).isEqualTo(new Range(new Position(0, 12), new Position(0, 17)));
 	}
 	
 	@Test

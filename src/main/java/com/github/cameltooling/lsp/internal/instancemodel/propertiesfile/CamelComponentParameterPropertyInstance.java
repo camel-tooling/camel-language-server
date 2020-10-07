@@ -16,7 +16,6 @@
  */
 package com.github.cameltooling.lsp.internal.instancemodel.propertiesfile;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
@@ -25,7 +24,6 @@ import org.apache.camel.util.StringHelper;
 import org.eclipse.lsp4j.CompletionItem;
 import org.eclipse.lsp4j.Hover;
 import org.eclipse.lsp4j.Position;
-import org.eclipse.lsp4j.jsonrpc.messages.Either;
 
 import com.github.cameltooling.lsp.internal.catalog.model.ComponentModel;
 import com.github.cameltooling.lsp.internal.catalog.model.ComponentOptionModel;
@@ -87,9 +85,7 @@ public class CamelComponentParameterPropertyInstance implements ILineRangeDefine
 					if (componentOptionModel != null) {
 						String description = componentOptionModel.getDescription();
 						if (description != null) {
-							Hover hover = new Hover();
-							hover.setContents(Collections.singletonList((Either.forLeft(description))));
-							return hover;
+							return createHover(description);
 						}
 					}
 				}

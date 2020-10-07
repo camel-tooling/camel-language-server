@@ -30,7 +30,6 @@ import org.apache.camel.util.StringHelper;
 import org.eclipse.lsp4j.CompletionItem;
 import org.eclipse.lsp4j.Hover;
 import org.eclipse.lsp4j.Position;
-import org.eclipse.lsp4j.jsonrpc.messages.Either;
 
 import com.github.cameltooling.lsp.internal.instancemodel.ILineRangeDefineable;
 
@@ -87,9 +86,7 @@ public class CamelGroupPropertyKey implements ILineRangeDefineable {
 						mainOptionModel = findFirstOption(mainModel,StringHelper.dashToCamelCase(fullName));
 					}
 					if (mainOptionModel.isPresent()) {
-						Hover hover = new Hover();
-						hover.setContents(Collections.singletonList((Either.forLeft(mainOptionModel.get().getDescription()))));
-						return hover;
+						return createHover(mainOptionModel.get().getDescription());
 					}
 				}
 				return null;

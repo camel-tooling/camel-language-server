@@ -21,6 +21,8 @@ import java.util.function.Function;
 
 import org.apache.camel.catalog.CamelCatalog;
 import org.eclipse.lsp4j.Hover;
+import org.eclipse.lsp4j.Position;
+import org.eclipse.lsp4j.Range;
 import org.eclipse.lsp4j.jsonrpc.messages.Either;
 
 import com.github.cameltooling.lsp.internal.catalog.model.ComponentModel;
@@ -42,6 +44,8 @@ public class CamelURIHoverFuture implements Function<CamelCatalog, Hover> {
 			Hover hover = new Hover();
 			ComponentModel componentModel = ModelHelper.generateComponentModel(componentJSonSchema, true);
 			hover.setContents(Collections.singletonList((Either.forLeft(uriElement.getDescription(componentModel)))));
+			Position start = new Position(uriElement.getLine(), uriElement.getStartPositionInLine());
+			hover.setRange(new Range(start, new Position(uriElement.getLine(), uriElement.getEndPositionInLine())));
 			return hover;
 		}
 		return null;
