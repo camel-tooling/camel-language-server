@@ -49,6 +49,7 @@
 		<junit.version>5.7.0</junit.version>
 		<assertj.version>3.17.2</assertj.version>
 		<camel.version>3.5.0</camel.version>
+		<camel.kafka.connector.version>0.6.0-SNAPSHOT</camel.kafka.connector.version>
 		<roaster.version>2.21.1.Final</roaster.version>
 		<awaitility.version>4.0.3</awaitility.version>
 		<tyrus.version>1.17</tyrus.version>
@@ -240,6 +241,11 @@
 			<version>${camel.version}</version>
 		</dependency>
 		<dependency>
+			<groupId>org.apache.camel.kafkaconnector</groupId>
+			<artifactId>camel-kafka-connector-catalog</artifactId>
+			<version>${camel.kafka.connector.version}</version>
+		</dependency>
+		<dependency>
 			<groupId>org.apache.camel</groupId>
 			<artifactId>camel-route-parser</artifactId>
 			<version>${camel.version}</version>
@@ -288,4 +294,15 @@
 			<version>${commons-text.version}</version>
 		</dependency>
 	</dependencies>
+	
+	<repositories>
+		<repository>
+			<id>apache.snapshots</id>
+			<url>https://repository.apache.org/content/repositories/snapshots</url>
+			<snapshots>
+				<enabled>true</enabled>
+				<updatePolicy>always</updatePolicy>
+			</snapshots>
+		</repository>
+	</repositories>
 </project>

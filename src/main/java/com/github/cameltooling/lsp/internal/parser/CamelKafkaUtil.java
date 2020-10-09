@@ -20,6 +20,7 @@ public class CamelKafkaUtil {
 
 	public static final String CAMEL_SINK_URL = "camel.sink.url";
 	public static final String CAMEL_SOURCE_URL = "camel.source.url";
+	public static final String CONNECTOR_CLASS = "connector.class";
 	
 	public boolean isCamelURIForKafka(String propertyKey) {
 		return CamelKafkaUtil.CAMEL_SINK_URL.equals(propertyKey)
@@ -29,6 +30,10 @@ public class CamelKafkaUtil {
 	public boolean isInsideACamelUri(String line, int characterPosition) {
 		return line.startsWith(CamelKafkaUtil.CAMEL_SOURCE_URL) && CamelKafkaUtil.CAMEL_SOURCE_URL.length() < characterPosition 
 				|| line.startsWith(CamelKafkaUtil.CAMEL_SINK_URL) && CamelKafkaUtil.CAMEL_SINK_URL.length() < characterPosition;
+	}
+
+	public boolean isConnectorClassForCamelKafkaConnector(String propertyKey) {
+		return CONNECTOR_CLASS.equals(propertyKey);
 	}
 
 }
