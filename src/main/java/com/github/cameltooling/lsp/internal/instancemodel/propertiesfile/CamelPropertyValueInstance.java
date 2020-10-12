@@ -53,12 +53,16 @@ public class CamelPropertyValueInstance implements ILineRangeDefineable {
 		if (new CamelKafkaUtil().isCamelURIForKafka(propertyKey)) {
 			return new CamelEndpointCompletionProcessor(textDocumentItem, camelCatalog).getCompletions(position);
 		} else if (new CamelKafkaUtil().isConnectorClassForCamelKafkaConnector(propertyKey)) {
-			String startFilter = camelPropertyValue.substring(0, position.getCharacter() - key.getEndposition() -1);
+			String startFilter = computeStartFilter(position);
 			return new CamelKafkaConnectorClassCompletionProcessor(this).getCompletions(startFilter);
 		} else {
-			String startFilter = camelPropertyValue.substring(0, position.getCharacter() - key.getEndposition() -1);
+			String startFilter = computeStartFilter(position);
 			return camelCatalog.thenApply(new CamelComponentOptionValuesCompletionsFuture(this, startFilter));
 		}
+	}
+
+	private String computeStartFilter(Position position) {
+		return camelPropertyValue.substring(0, position.getCharacter() - key.getEndposition() -1);
 	}
 
 	public String getCamelPropertyFileValue() {
