@@ -28,6 +28,7 @@ import org.eclipse.lsp4j.CompletionItem;
 import org.eclipse.lsp4j.Hover;
 import org.eclipse.lsp4j.Position;
 import org.eclipse.lsp4j.Range;
+import org.eclipse.lsp4j.TextDocumentItem;
 import org.eclipse.lsp4j.TextEdit;
 
 import com.github.cameltooling.lsp.internal.completion.FilterPredicateUtils;
@@ -44,17 +45,21 @@ public class CamelPropertyKeyInstance implements ILineRangeDefineable {
 	
 	static final String CAMEL_KEY_PREFIX = "camel.";
 	static final String CAMEL_COMPONENT_KEY_PREFIX = "camel.component.";
+	static final String CAMEL_SINK_KEY_PREFIX = "camel.sink.";
 	
 	private String camelPropertyKey;
 	private CamelGroupPropertyKey propertyGroup;
 	private CamelComponentPropertyKey camelComponentPropertyKey;
 	private CamelPropertyEntryInstance camelPropertyEntryInstance;
+	private CamelSinkPropertyKey camelSinkPropertyKey;
 
-	public CamelPropertyKeyInstance(String camelPropertyFileKey, CamelPropertyEntryInstance camelPropertyEntryInstance) {
+	public CamelPropertyKeyInstance(String camelPropertyFileKey, CamelPropertyEntryInstance camelPropertyEntryInstance, TextDocumentItem textDocumentItem) {
 		this.camelPropertyKey = camelPropertyFileKey;
 		this.camelPropertyEntryInstance = camelPropertyEntryInstance;
 		if (camelPropertyFileKey.startsWith(CAMEL_COMPONENT_KEY_PREFIX)) {
 			camelComponentPropertyKey = new CamelComponentPropertyKey(camelPropertyFileKey.substring(CAMEL_COMPONENT_KEY_PREFIX.length()), this);
+		} else if(camelPropertyFileKey.startsWith(CAMEL_SINK_KEY_PREFIX)) {
+			camelSinkPropertyKey = new CamelSinkPropertyKey(camelPropertyFileKey.substring(CAMEL_SINK_KEY_PREFIX.length()), this, textDocumentItem);
 		}
 		if(camelPropertyKey.startsWith(CAMEL_KEY_PREFIX)) {
 			propertyGroup = new CamelGroupPropertyKey(camelPropertyFileKey.substring(CAMEL_KEY_PREFIX.length()), this);
@@ -78,6 +83,8 @@ public class CamelPropertyKeyInstance implements ILineRangeDefineable {
 			return getTopLevelCamelCompletion(camelCatalog, indexOfSecondDot, position.getCharacter());
 		} else if(camelComponentPropertyKey != null && camelComponentPropertyKey.isInRange(position.getCharacter())) {
 			return camelComponentPropertyKey.getCompletions(position, camelCatalog);
+		} else if(camelSinkPropertyKey != null && camelSinkPropertyKey.isInRange(position.getCharacter())) {
+			return camelSinkPropertyKey.getCompletions(position);
 		} else if(propertyGroup != null && propertyGroup.isInRange(position.getCharacter())) {
 			return propertyGroup.getCompletions(position, camelCatalog);
 		}
