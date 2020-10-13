@@ -53,7 +53,7 @@ public class CamelPropertyEntryInstance implements ILineRangeDefineable {
 			camelPropertyFileKeyInstanceString = line;
 			camelPropertyFileValueInstanceString = null;
 		}
-		camelPropertyKeyInstance = new CamelPropertyKeyInstance(camelPropertyFileKeyInstanceString, this);
+		camelPropertyKeyInstance = new CamelPropertyKeyInstance(camelPropertyFileKeyInstanceString, this, textDocumentItem);
 		camelPropertyValueInstance = new CamelPropertyValueInstance(camelPropertyFileValueInstanceString, camelPropertyKeyInstance, textDocumentItem);
 	}
 	
