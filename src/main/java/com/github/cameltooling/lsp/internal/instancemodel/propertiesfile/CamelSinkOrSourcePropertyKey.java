@@ -38,25 +38,27 @@ import com.github.cameltooling.lsp.internal.completion.FilterPredicateUtils;
 import com.github.cameltooling.lsp.internal.instancemodel.ILineRangeDefineable;
 
 /**
- * Represents the subpart of the key after camel.sink.
+ * Represents the subpart of the key after camel.sink. or camel.source.
  * For instance, with "camel.sink.timer.delay=1000",
  * it is used to represents "timer.delay"
  * 
  */
-public class CamelSinkPropertyKey implements ILineRangeDefineable {
+public class CamelSinkOrSourcePropertyKey implements ILineRangeDefineable {
 	
-	private static final Logger LOGGER = LoggerFactory.getLogger(CamelSinkPropertyKey.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(CamelSinkOrSourcePropertyKey.class);
 
 	private static CamelKafkaConnectorCatalog catalog = new CamelKafkaConnectorCatalog();
 	
-	private String sinkParameter;
+	private String optionKey;
 	private CamelPropertyKeyInstance camelPropertyKeyInstance;
 	private String connectorClass;
+	private String prefix;
 
-	public CamelSinkPropertyKey(String sinkParameter, CamelPropertyKeyInstance camelPropertyKeyInstance, TextDocumentItem textDocumentItem) {
-		this.sinkParameter = sinkParameter;
+	public CamelSinkOrSourcePropertyKey(String optionKey, CamelPropertyKeyInstance camelPropertyKeyInstance, TextDocumentItem textDocumentItem, String prefix) {
+		this.optionKey = optionKey;
 		this.camelPropertyKeyInstance = camelPropertyKeyInstance;
 		this.connectorClass = findConnectorClass(textDocumentItem);
+		this.prefix = prefix;
 	}
 
 	private String findConnectorClass(TextDocumentItem textDocumentItem) {
@@ -80,30 +82,34 @@ public class CamelSinkPropertyKey implements ILineRangeDefineable {
 
 	@Override
 	public int getStartPositionInLine() {
-		return camelPropertyKeyInstance.getStartPositionInLine() + CamelPropertyKeyInstance.CAMEL_SINK_KEY_PREFIX.length();
+		return camelPropertyKeyInstance.getStartPositionInLine() + getPrefix().length();
+	}
+
+	private String getPrefix() {
+		return prefix;
 	}
 
 	@Override
 	public int getEndPositionInLine() {
-		return getStartPositionInLine() + sinkParameter.length();
+		return getStartPositionInLine() + optionKey.length();
 	}
 	
 	public boolean isInRange(int positionChar) {
 		return getStartPositionInLine() <= positionChar
-				&& positionChar <= sinkParameter.length() + getStartPositionInLine();
+				&& positionChar <= optionKey.length() + getStartPositionInLine();
 	}
 
 	public CompletableFuture<List<CompletionItem>> getCompletions(Position position) {
 		if (connectorClass != null) {
 			Optional<CamelKafkaConnectorModel> camelKafkaConnectorModel = findConnectorModel();
 			if (camelKafkaConnectorModel.isPresent()) {
-				String filterString = sinkParameter.substring(0, position.getCharacter() - getStartPositionInLine());
+				String filterString = optionKey.substring(0, position.getCharacter() - getStartPositionInLine());
 				List<CompletionItem> completions = camelKafkaConnectorModel.get()
 						.getOptions()
 						.stream()
-						.filter(option -> option.getName().startsWith(CamelPropertyKeyInstance.CAMEL_SINK_KEY_PREFIX))
+						.filter(option -> option.getName().startsWith(getPrefix()))
 						.map(option -> {
-							CompletionItem completionItem = new CompletionItem(option.getName().replace(CamelPropertyKeyInstance.CAMEL_SINK_KEY_PREFIX, ""));
+							CompletionItem completionItem = new CompletionItem(option.getName().replace(getPrefix(), ""));
 							CompletionResolverUtils.applyTextEditToCompletionItem(this, completionItem);
 							completionItem.setDocumentation(option.getDescription());
 							return completionItem;

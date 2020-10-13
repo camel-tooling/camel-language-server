@@ -45,13 +45,14 @@ public class CamelPropertyKeyInstance implements ILineRangeDefineable {
 	
 	static final String CAMEL_KEY_PREFIX = "camel.";
 	static final String CAMEL_COMPONENT_KEY_PREFIX = "camel.component.";
-	static final String CAMEL_SINK_KEY_PREFIX = "camel.sink.";
+	private static final String CAMEL_SINK_KEY_PREFIX = "camel.sink.";
+	private static final String CAMEL_SOURCE_KEY_PREFIX = "camel.source.";
 	
 	private String camelPropertyKey;
 	private CamelGroupPropertyKey propertyGroup;
 	private CamelComponentPropertyKey camelComponentPropertyKey;
 	private CamelPropertyEntryInstance camelPropertyEntryInstance;
-	private CamelSinkPropertyKey camelSinkPropertyKey;
+	private CamelSinkOrSourcePropertyKey camelSinkPropertyKey;
 
 	public CamelPropertyKeyInstance(String camelPropertyFileKey, CamelPropertyEntryInstance camelPropertyEntryInstance, TextDocumentItem textDocumentItem) {
 		this.camelPropertyKey = camelPropertyFileKey;
@@ -59,7 +60,9 @@ public class CamelPropertyKeyInstance implements ILineRangeDefineable {
 		if (camelPropertyFileKey.startsWith(CAMEL_COMPONENT_KEY_PREFIX)) {
 			camelComponentPropertyKey = new CamelComponentPropertyKey(camelPropertyFileKey.substring(CAMEL_COMPONENT_KEY_PREFIX.length()), this);
 		} else if(camelPropertyFileKey.startsWith(CAMEL_SINK_KEY_PREFIX)) {
-			camelSinkPropertyKey = new CamelSinkPropertyKey(camelPropertyFileKey.substring(CAMEL_SINK_KEY_PREFIX.length()), this, textDocumentItem);
+			camelSinkPropertyKey = new CamelSinkOrSourcePropertyKey(camelPropertyFileKey.substring(CAMEL_SINK_KEY_PREFIX.length()), this, textDocumentItem, CAMEL_SINK_KEY_PREFIX);
+		} else if(camelPropertyFileKey.startsWith(CAMEL_SOURCE_KEY_PREFIX)) {
+			camelSinkPropertyKey = new CamelSinkOrSourcePropertyKey(camelPropertyFileKey.substring(CAMEL_SOURCE_KEY_PREFIX.length()), this, textDocumentItem, CAMEL_SOURCE_KEY_PREFIX);
 		}
 		if(camelPropertyKey.startsWith(CAMEL_KEY_PREFIX)) {
 			propertyGroup = new CamelGroupPropertyKey(camelPropertyFileKey.substring(CAMEL_KEY_PREFIX.length()), this);
