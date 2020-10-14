@@ -21,24 +21,24 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
-import org.apache.camel.kafkaconnector.catalog.CamelKafkaConnectorCatalog;
 import org.apache.camel.kafkaconnector.model.CamelKafkaConnectorModel;
 import org.eclipse.lsp4j.CompletionItem;
 
+import com.github.cameltooling.lsp.internal.catalog.util.CamelKafkaConnectorCatalogManager;
 import com.github.cameltooling.lsp.internal.instancemodel.propertiesfile.CamelPropertyValueInstance;
 
 public class CamelKafkaConnectorClassCompletionProcessor {
-	
-	private static CamelKafkaConnectorCatalog catalog = new CamelKafkaConnectorCatalog();
 
 	private CamelPropertyValueInstance camelPropertyValueInstance;
+	private CamelKafkaConnectorCatalogManager camelKafkaConnectorManager;
 
-	public CamelKafkaConnectorClassCompletionProcessor(CamelPropertyValueInstance camelPropertyValueInstance) {
+	public CamelKafkaConnectorClassCompletionProcessor(CamelPropertyValueInstance camelPropertyValueInstance, CamelKafkaConnectorCatalogManager camelKafkaConnectorManager) {
 		this.camelPropertyValueInstance = camelPropertyValueInstance;
+		this.camelKafkaConnectorManager = camelKafkaConnectorManager;
 	}
 
 	public CompletableFuture<List<CompletionItem>> getCompletions(String startFilter) {
-		Collection<CamelKafkaConnectorModel> camelKafkaConnectors = catalog.getConnectorsModel().values();
+		Collection<CamelKafkaConnectorModel> camelKafkaConnectors = camelKafkaConnectorManager.getCatalog().getConnectorsModel().values();
 		List<CompletionItem> completions = camelKafkaConnectors.stream()
 				.map(camelKafkaConnector -> {
 					CompletionItem completionItem = new CompletionItem(camelKafkaConnector.getConnectorClass());

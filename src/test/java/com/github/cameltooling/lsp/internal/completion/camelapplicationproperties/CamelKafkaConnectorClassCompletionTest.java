@@ -27,21 +27,19 @@ import org.eclipse.lsp4j.CompletionItem;
 import org.eclipse.lsp4j.CompletionList;
 import org.eclipse.lsp4j.Position;
 import org.eclipse.lsp4j.Range;
-import org.eclipse.lsp4j.TextDocumentItem;
 import org.eclipse.lsp4j.jsonrpc.messages.Either;
 import org.junit.jupiter.api.Test;
 
-import com.github.cameltooling.lsp.internal.AbstractCamelLanguageServerTest;
 import com.github.cameltooling.lsp.internal.CamelLanguageServer;
 
-class CamelKafkaConnectorClassCompletionTest extends AbstractCamelLanguageServerTest {
+class CamelKafkaConnectorClassCompletionTest extends AbstractCamelKafkaConnectorTest {
 
 	@Test
 	void testProvideCompletion() throws Exception {
 		CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = retrieveCompletion(new Position(0, 16), "connector.class=");
 		
 		List<CompletionItem> completionItems = completions.get().getLeft();
-		String connectorClassName = "org.apache.camel.kafkaconnector.activemq.CamelActivemqSinkConnector";
+		String connectorClassName = "org.test.kafkaconnector.TestSourceConnector";
 		CompletionItem completionItem = completionItems.stream().filter(ci -> connectorClassName.equals(ci.getLabel())).findAny().get();
 		assertThat(completionItem.getTextEdit().getNewText()).isEqualTo(connectorClassName);
 		assertThat(completionItem.getTextEdit().getRange()).isEqualTo(new Range(new Position(0, 16), new Position(0, 16)));
@@ -49,19 +47,18 @@ class CamelKafkaConnectorClassCompletionTest extends AbstractCamelLanguageServer
 	
 	@Test
 	void testFilterCompletion() throws Exception {
-		CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = retrieveCompletion(new Position(0, 70), "connector.class=org.apache.camel.kafkaconnector.activemq.CamelActivemqSinkConnector");
+		CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = retrieveCompletion(new Position(0, 44), "connector.class=org.test.kafkaconnector.TestSinkConnector");
 		
 		List<CompletionItem> completionItems = completions.get().getLeft();
 		assertThat(completionItems).hasSize(2);
-		String connectorClassName = "org.apache.camel.kafkaconnector.activemq.CamelActivemqSinkConnector";
+		String connectorClassName = "org.test.kafkaconnector.TestSinkConnector";
 		CompletionItem completionItem = completionItems.stream().filter(ci -> connectorClassName.equals(ci.getLabel())).findAny().get();
 		assertThat(completionItem.getTextEdit().getNewText()).isEqualTo(connectorClassName);
-		assertThat(completionItem.getTextEdit().getRange()).isEqualTo(new Range(new Position(0, 16), new Position(0, 83)));
+		assertThat(completionItem.getTextEdit().getRange()).isEqualTo(new Range(new Position(0, 16), new Position(0, 57)));
 	}
 	
 	protected CompletableFuture<Either<List<CompletionItem>, CompletionList>> retrieveCompletion(Position position, String text) throws URISyntaxException, InterruptedException, ExecutionException {
-		String fileName = "a.properties";
-		CamelLanguageServer camelLanguageServer = initializeLanguageServer(".properties", new TextDocumentItem(fileName, CamelLanguageServer.LANGUAGE_ID, 0, text));
-		return getCompletionFor(camelLanguageServer, position, fileName);
+		CamelLanguageServer camelLanguageServer = initializeLanguageServer(text);
+		return getCompletionFor(camelLanguageServer, position);
 	}
 }

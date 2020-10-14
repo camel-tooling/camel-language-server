@@ -56,7 +56,7 @@ public class CamelKModelinePropertyOption implements ICamelKModelineOptionValue 
 	
 	@Override
 	public CompletableFuture<List<CompletionItem>> getCompletions(int positionInLine, CompletableFuture<CamelCatalog> camelCatalog) {
-		return value.getCompletions(new Position(0, positionInLine), camelCatalog);
+		return value.getCompletions(new Position(0, positionInLine), camelCatalog, null);
 	}
 	
 	@Override
