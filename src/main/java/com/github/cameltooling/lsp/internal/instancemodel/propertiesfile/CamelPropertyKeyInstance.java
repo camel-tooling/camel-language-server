@@ -31,6 +31,7 @@ import org.eclipse.lsp4j.Range;
 import org.eclipse.lsp4j.TextDocumentItem;
 import org.eclipse.lsp4j.TextEdit;
 
+import com.github.cameltooling.lsp.internal.catalog.util.CamelKafkaConnectorCatalogManager;
 import com.github.cameltooling.lsp.internal.completion.FilterPredicateUtils;
 import com.github.cameltooling.lsp.internal.instancemodel.ILineRangeDefineable;
 import com.google.gson.Gson;
@@ -73,7 +74,7 @@ public class CamelPropertyKeyInstance implements ILineRangeDefineable {
 		return camelPropertyEntryInstance.getStartPositionInLine() + camelPropertyKey.length();
 	}
 
-	public CompletableFuture<List<CompletionItem>> getCompletions(Position position, CompletableFuture<CamelCatalog> camelCatalog) {
+	public CompletableFuture<List<CompletionItem>> getCompletions(Position position, CompletableFuture<CamelCatalog> camelCatalog, CamelKafkaConnectorCatalogManager camelKafkaConnectorManager) {
 		int indexOfFirstDot = camelPropertyKey.indexOf('.');
 		int indexOfSecondDot = indexOfFirstDot != -1 ? camelPropertyKey.indexOf('.', indexOfFirstDot + 1) : -1;
 		if(isBeforeFirstDot(position, indexOfFirstDot)) {
@@ -87,7 +88,7 @@ public class CamelPropertyKeyInstance implements ILineRangeDefineable {
 		} else if(camelComponentPropertyKey != null && camelComponentPropertyKey.isInRange(position.getCharacter())) {
 			return camelComponentPropertyKey.getCompletions(position, camelCatalog);
 		} else if(camelSinkPropertyKey != null && camelSinkPropertyKey.isInRange(position.getCharacter())) {
-			return camelSinkPropertyKey.getCompletions(position);
+			return camelSinkPropertyKey.getCompletions(position, camelKafkaConnectorManager);
 		} else if(propertyGroup != null && propertyGroup.isInRange(position.getCharacter())) {
 			return propertyGroup.getCompletions(position, camelCatalog);
 		}

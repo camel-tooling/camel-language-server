@@ -26,27 +26,26 @@ import org.eclipse.lsp4j.Position;
 import org.eclipse.lsp4j.Range;
 import org.junit.jupiter.api.Test;
 
-import com.github.cameltooling.lsp.internal.AbstractCamelLanguageServerTest;
 import com.github.cameltooling.lsp.internal.CamelLanguageServer;
 
-class CamelKafkaCamelSinkPropertyCompletionTest extends AbstractCamelLanguageServerTest {
+class CamelKafkaCamelSinkPropertyCompletionTest extends AbstractCamelKafkaConnectorTest {
 
 	@Test
 	void testCompletion() throws Exception {
-		String text = "connector.class=org.apache.camel.kafkaconnector.activemq.CamelActivemqSinkConnector\n"
+		String text = "connector.class=org.test.kafkaconnector.TestSinkConnector\n"
 					+ "camel.sink.";
-		CamelLanguageServer languageServer = initializeLanguageServer(text, ".properties");
+		CamelLanguageServer languageServer = initializeLanguageServer(text);
 		List<CompletionItem> completions = getCompletionFor(languageServer, new Position(1, 11)).get().getLeft();
-		Optional<CompletionItem> optionCompletion = completions.stream().filter(completion -> "path.destinationType".equals(completion.getLabel())).findAny();
+		Optional<CompletionItem> optionCompletion = completions.stream().filter(completion -> "path.aMediumPathOption".equals(completion.getLabel())).findAny();
 		assertThat(optionCompletion).isPresent();
 		assertThat(optionCompletion.get().getTextEdit().getRange()).isEqualTo(new Range(new Position(1, 11), new Position(1, 11)));
 	}
 	
 	@Test
 	void testCompletionWithStartedValue() throws Exception {
-		String text = "connector.class=org.apache.camel.kafkaconnector.activemq.CamelActivemqSinkConnector\n"
+		String text = "connector.class=org.test.kafkaconnector.TestSinkConnector\n"
 					+ "camel.sink.pat";
-		CamelLanguageServer languageServer = initializeLanguageServer(text, ".properties");
+		CamelLanguageServer languageServer = initializeLanguageServer(text);
 		List<CompletionItem> completions = getCompletionFor(languageServer, new Position(1, 13)).get().getLeft();
 		assertThat(completions).hasSize(2);
 		assertThat(completions.get(0).getTextEdit().getRange()).isEqualTo(new Range(new Position(1, 11), new Position(1, 14)));
@@ -55,7 +54,7 @@ class CamelKafkaCamelSinkPropertyCompletionTest extends AbstractCamelLanguageSer
 	@Test
 	void testNoCompletionWithNoConnectorClass() throws Exception {
 		String text = "camel.sink.";
-		CamelLanguageServer languageServer = initializeLanguageServer(text, ".properties");
+		CamelLanguageServer languageServer = initializeLanguageServer(text);
 		List<CompletionItem> completions = getCompletionFor(languageServer, new Position(0, 11)).get().getLeft();
 		assertThat(completions).isEmpty();
 	}
@@ -64,7 +63,7 @@ class CamelKafkaCamelSinkPropertyCompletionTest extends AbstractCamelLanguageSer
 	void testNoCompletionWithUnkownConnectorClass() throws Exception {
 		String text = "connector.class=unknown\n"
 					+ "camel.sink.";
-		CamelLanguageServer languageServer = initializeLanguageServer(text, ".properties");
+		CamelLanguageServer languageServer = initializeLanguageServer(text);
 		List<CompletionItem> completions = getCompletionFor(languageServer, new Position(1, 11)).get().getLeft();
 		assertThat(completions).isEmpty();
 	}

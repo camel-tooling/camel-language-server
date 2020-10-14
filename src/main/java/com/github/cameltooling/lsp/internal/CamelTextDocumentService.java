@@ -68,6 +68,7 @@ import org.eclipse.lsp4j.services.TextDocumentService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.github.cameltooling.lsp.internal.catalog.util.CamelKafkaConnectorCatalogManager;
 import com.github.cameltooling.lsp.internal.codeactions.InvalidEnumQuickfix;
 import com.github.cameltooling.lsp.internal.codeactions.UnknownPropertyQuickfix;
 import com.github.cameltooling.lsp.internal.completion.CamelEndpointCompletionProcessor;
@@ -94,6 +95,7 @@ public class CamelTextDocumentService implements TextDocumentService {
 	private Map<String, TextDocumentItem> openedDocuments = new HashMap<>();
 	private CompletableFuture<CamelCatalog> camelCatalog;
 	private CamelLanguageServer camelLanguageServer;
+	private CamelKafkaConnectorCatalogManager camelKafkaConnectorManager = new CamelKafkaConnectorCatalogManager();
 
 	public CamelTextDocumentService(CamelLanguageServer camelLanguageServer) {
 		this.camelLanguageServer = camelLanguageServer;
@@ -129,7 +131,7 @@ public class CamelTextDocumentService implements TextDocumentService {
 		LOGGER.info("completion: {}", uri);
 		TextDocumentItem textDocumentItem = openedDocuments.get(uri);
 		if (uri.endsWith(".properties")){
-			return new CamelPropertiesCompletionProcessor(textDocumentItem, getCamelCatalog()).getCompletions(completionParams.getPosition()).thenApply(Either::forLeft);
+			return new CamelPropertiesCompletionProcessor(textDocumentItem, getCamelCatalog(), getCamelKafkaConnectorManager()).getCompletions(completionParams.getPosition()).thenApply(Either::forLeft);
 		} else if(isOnCamelKModeline(completionParams.getPosition().getLine(), textDocumentItem)){
 			return new CamelKModelineCompletionprocessor(textDocumentItem, getCamelCatalog()).getCompletions(completionParams.getPosition()).thenApply(Either::forLeft);
 		} else {
@@ -295,5 +297,13 @@ public class CamelTextDocumentService implements TextDocumentService {
 	 */
 	public CompletableFuture<CamelCatalog> getCamelCatalog() {
 		return camelCatalog;
+	}
+
+	public CamelKafkaConnectorCatalogManager getCamelKafkaConnectorManager() {
+		return camelKafkaConnectorManager;
+	}
+
+	public void setCamelKafkaConnectorManager(CamelKafkaConnectorCatalogManager camelKafkaConnectorManager) {
+		this.camelKafkaConnectorManager = camelKafkaConnectorManager;
 	}
 }

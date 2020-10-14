@@ -25,6 +25,7 @@ import org.eclipse.lsp4j.Hover;
 import org.eclipse.lsp4j.Position;
 import org.eclipse.lsp4j.TextDocumentItem;
 
+import com.github.cameltooling.lsp.internal.catalog.util.CamelKafkaConnectorCatalogManager;
 import com.github.cameltooling.lsp.internal.instancemodel.ILineRangeDefineable;
 
 /**
@@ -57,12 +58,16 @@ public class CamelPropertyEntryInstance implements ILineRangeDefineable {
 		camelPropertyValueInstance = new CamelPropertyValueInstance(camelPropertyFileValueInstanceString, camelPropertyKeyInstance, textDocumentItem);
 	}
 	
-	public CompletableFuture<List<CompletionItem>> getCompletions(Position position, CompletableFuture<CamelCatalog> camelCatalog) {
-		if (position.getCharacter() <= camelPropertyKeyInstance.getEndposition()) {
-			return camelPropertyKeyInstance.getCompletions(position, camelCatalog);
+	public CompletableFuture<List<CompletionItem>> getCompletions(Position position, CompletableFuture<CamelCatalog> camelCatalog, CamelKafkaConnectorCatalogManager camelKafkaConnectorManager) {
+		if (isOnPropertyKey(position)) {
+			return camelPropertyKeyInstance.getCompletions(position, camelCatalog, camelKafkaConnectorManager);
 		} else {
-			return camelPropertyValueInstance.getCompletions(position, camelCatalog);
+			return camelPropertyValueInstance.getCompletions(position, camelCatalog, camelKafkaConnectorManager);
 		}
+	}
+
+	private boolean isOnPropertyKey(Position position) {
+		return position.getCharacter() <= camelPropertyKeyInstance.getEndposition();
 	}
 	
 	CamelPropertyKeyInstance getCamelPropertyKeyInstance() {
@@ -88,7 +93,7 @@ public class CamelPropertyEntryInstance implements ILineRangeDefineable {
 	}
 
 	public CompletableFuture<Hover> getHover(Position position, CompletableFuture<CamelCatalog> camelCatalog) {
-		if (position.getCharacter() <= camelPropertyKeyInstance.getEndposition()) {
+		if (isOnPropertyKey(position)) {
 			return camelPropertyKeyInstance.getHover(position, camelCatalog);
 		} else {
 			return CompletableFuture.completedFuture(null);

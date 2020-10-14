@@ -25,7 +25,6 @@ import java.util.Properties;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
-import org.apache.camel.kafkaconnector.catalog.CamelKafkaConnectorCatalog;
 import org.apache.camel.kafkaconnector.model.CamelKafkaConnectorModel;
 import org.eclipse.lsp4j.CompletionItem;
 import org.eclipse.lsp4j.Position;
@@ -33,6 +32,7 @@ import org.eclipse.lsp4j.TextDocumentItem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.github.cameltooling.lsp.internal.catalog.util.CamelKafkaConnectorCatalogManager;
 import com.github.cameltooling.lsp.internal.completion.CompletionResolverUtils;
 import com.github.cameltooling.lsp.internal.completion.FilterPredicateUtils;
 import com.github.cameltooling.lsp.internal.instancemodel.ILineRangeDefineable;
@@ -46,8 +46,6 @@ import com.github.cameltooling.lsp.internal.instancemodel.ILineRangeDefineable;
 public class CamelSinkOrSourcePropertyKey implements ILineRangeDefineable {
 	
 	private static final Logger LOGGER = LoggerFactory.getLogger(CamelSinkOrSourcePropertyKey.class);
-
-	private static CamelKafkaConnectorCatalog catalog = new CamelKafkaConnectorCatalog();
 	
 	private String optionKey;
 	private CamelPropertyKeyInstance camelPropertyKeyInstance;
@@ -99,9 +97,9 @@ public class CamelSinkOrSourcePropertyKey implements ILineRangeDefineable {
 				&& positionChar <= optionKey.length() + getStartPositionInLine();
 	}
 
-	public CompletableFuture<List<CompletionItem>> getCompletions(Position position) {
+	public CompletableFuture<List<CompletionItem>> getCompletions(Position position, CamelKafkaConnectorCatalogManager camelKafkaConnectorManager) {
 		if (connectorClass != null) {
-			Optional<CamelKafkaConnectorModel> camelKafkaConnectorModel = findConnectorModel();
+			Optional<CamelKafkaConnectorModel> camelKafkaConnectorModel = findConnectorModel(camelKafkaConnectorManager);
 			if (camelKafkaConnectorModel.isPresent()) {
 				String filterString = optionKey.substring(0, position.getCharacter() - getStartPositionInLine());
 				List<CompletionItem> completions = camelKafkaConnectorModel.get()
@@ -122,8 +120,8 @@ public class CamelSinkOrSourcePropertyKey implements ILineRangeDefineable {
 		return CompletableFuture.completedFuture(Collections.emptyList());
 	}
 
-	private Optional<CamelKafkaConnectorModel> findConnectorModel() {
-		return catalog.getConnectorsModel()
+	private Optional<CamelKafkaConnectorModel> findConnectorModel(CamelKafkaConnectorCatalogManager camelKafkaConnectorManager) {
+		return camelKafkaConnectorManager.getCatalog().getConnectorsModel()
 				.values()
 				.stream()
 				.filter(connector -> connectorClass.equals(connector.getConnectorClass()))
