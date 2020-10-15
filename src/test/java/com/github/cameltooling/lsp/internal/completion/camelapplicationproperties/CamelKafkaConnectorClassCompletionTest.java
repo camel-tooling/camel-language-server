@@ -30,6 +30,7 @@ import org.eclipse.lsp4j.Range;
 import org.eclipse.lsp4j.jsonrpc.messages.Either;
 import org.junit.jupiter.api.Test;
 
+import com.github.cameltooling.lsp.internal.AbstractCamelKafkaConnectorTest;
 import com.github.cameltooling.lsp.internal.CamelLanguageServer;
 
 class CamelKafkaConnectorClassCompletionTest extends AbstractCamelKafkaConnectorTest {

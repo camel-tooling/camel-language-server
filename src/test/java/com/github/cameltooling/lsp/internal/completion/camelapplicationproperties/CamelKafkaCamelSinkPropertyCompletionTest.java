@@ -26,6 +26,7 @@ import org.eclipse.lsp4j.Position;
 import org.eclipse.lsp4j.Range;
 import org.junit.jupiter.api.Test;
 
+import com.github.cameltooling.lsp.internal.AbstractCamelKafkaConnectorTest;
 import com.github.cameltooling.lsp.internal.CamelLanguageServer;
 
 class CamelKafkaCamelSinkPropertyCompletionTest extends AbstractCamelKafkaConnectorTest {

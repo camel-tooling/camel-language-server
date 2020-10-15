@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.cameltooling.lsp.internal.completion.camelapplicationproperties;
+package com.github.cameltooling.lsp.internal;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -24,9 +24,6 @@ import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
 import org.apache.camel.kafkaconnector.catalog.CamelKafkaConnectorCatalog;
-
-import com.github.cameltooling.lsp.internal.AbstractCamelLanguageServerTest;
-import com.github.cameltooling.lsp.internal.CamelLanguageServer;
 
 public abstract class AbstractCamelKafkaConnectorTest extends AbstractCamelLanguageServerTest {
 
