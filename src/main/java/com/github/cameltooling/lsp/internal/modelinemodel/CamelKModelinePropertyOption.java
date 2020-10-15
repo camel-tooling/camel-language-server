@@ -61,7 +61,7 @@ public class CamelKModelinePropertyOption implements ICamelKModelineOptionValue 
 	
 	@Override
 	public CompletableFuture<Hover> getHover(int characterPosition, CompletableFuture<CamelCatalog> camelCatalog) {
-		return value.getHover(new Position(0, characterPosition), camelCatalog);
+		return value.getHover(new Position(0, characterPosition), camelCatalog, null);
 	}
 
 }
