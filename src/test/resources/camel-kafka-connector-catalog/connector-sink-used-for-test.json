@@ -44,5 +44,8 @@
 			"defaultValue": "null",
 			"priority": "HIGH"
 		}
-	}
+	},
+	"converters": [
+		"org.test.kafkaconnector.converters.TestSinkObjectConverter"
+	]
 }
