@@ -53,7 +53,7 @@ public class CamelPropertyKeyInstance implements ILineRangeDefineable {
 	private CamelGroupPropertyKey propertyGroup;
 	private CamelComponentPropertyKey camelComponentPropertyKey;
 	private CamelPropertyEntryInstance camelPropertyEntryInstance;
-	private CamelSinkOrSourcePropertyKey camelSinkPropertyKey;
+	private CamelSinkOrSourcePropertyKey camelSinkOrSourcePropertyKey;
 
 	public CamelPropertyKeyInstance(String camelPropertyFileKey, CamelPropertyEntryInstance camelPropertyEntryInstance, TextDocumentItem textDocumentItem) {
 		this.camelPropertyKey = camelPropertyFileKey;
@@ -61,9 +61,9 @@ public class CamelPropertyKeyInstance implements ILineRangeDefineable {
 		if (camelPropertyFileKey.startsWith(CAMEL_COMPONENT_KEY_PREFIX)) {
 			camelComponentPropertyKey = new CamelComponentPropertyKey(camelPropertyFileKey.substring(CAMEL_COMPONENT_KEY_PREFIX.length()), this);
 		} else if(camelPropertyFileKey.startsWith(CAMEL_SINK_KEY_PREFIX)) {
-			camelSinkPropertyKey = new CamelSinkOrSourcePropertyKey(camelPropertyFileKey.substring(CAMEL_SINK_KEY_PREFIX.length()), this, textDocumentItem, CAMEL_SINK_KEY_PREFIX);
+			camelSinkOrSourcePropertyKey = new CamelSinkOrSourcePropertyKey(camelPropertyFileKey.substring(CAMEL_SINK_KEY_PREFIX.length()), this, textDocumentItem, CAMEL_SINK_KEY_PREFIX);
 		} else if(camelPropertyFileKey.startsWith(CAMEL_SOURCE_KEY_PREFIX)) {
-			camelSinkPropertyKey = new CamelSinkOrSourcePropertyKey(camelPropertyFileKey.substring(CAMEL_SOURCE_KEY_PREFIX.length()), this, textDocumentItem, CAMEL_SOURCE_KEY_PREFIX);
+			camelSinkOrSourcePropertyKey = new CamelSinkOrSourcePropertyKey(camelPropertyFileKey.substring(CAMEL_SOURCE_KEY_PREFIX.length()), this, textDocumentItem, CAMEL_SOURCE_KEY_PREFIX);
 		}
 		if(camelPropertyKey.startsWith(CAMEL_KEY_PREFIX)) {
 			propertyGroup = new CamelGroupPropertyKey(camelPropertyFileKey.substring(CAMEL_KEY_PREFIX.length()), this);
@@ -87,8 +87,8 @@ public class CamelPropertyKeyInstance implements ILineRangeDefineable {
 			return getTopLevelCamelCompletion(camelCatalog, indexOfSecondDot, position.getCharacter());
 		} else if(camelComponentPropertyKey != null && camelComponentPropertyKey.isInRange(position.getCharacter())) {
 			return camelComponentPropertyKey.getCompletions(position, camelCatalog);
-		} else if(camelSinkPropertyKey != null && camelSinkPropertyKey.isInRange(position.getCharacter())) {
-			return camelSinkPropertyKey.getCompletions(position, camelKafkaConnectorManager);
+		} else if(camelSinkOrSourcePropertyKey != null && camelSinkOrSourcePropertyKey.isInRange(position.getCharacter())) {
+			return camelSinkOrSourcePropertyKey.getCompletions(position, camelKafkaConnectorManager);
 		} else if(propertyGroup != null && propertyGroup.isInRange(position.getCharacter())) {
 			return propertyGroup.getCompletions(position, camelCatalog);
 		}
@@ -169,9 +169,11 @@ public class CamelPropertyKeyInstance implements ILineRangeDefineable {
 		return getStartPositionInLine() + camelPropertyKey.length();
 	}
 
-	public CompletableFuture<Hover> getHover(Position position, CompletableFuture<CamelCatalog> camelCatalog) {
+	public CompletableFuture<Hover> getHover(Position position, CompletableFuture<CamelCatalog> camelCatalog, CamelKafkaConnectorCatalogManager camelKafkaConnectorManager) {
 		if(camelComponentPropertyKey != null && camelComponentPropertyKey.isInRange(position.getCharacter())) {
 			return camelComponentPropertyKey.getHover(position, camelCatalog);
+		} else if(camelSinkOrSourcePropertyKey != null && camelSinkOrSourcePropertyKey.isInRange(position.getCharacter())) {
+			return camelSinkOrSourcePropertyKey.getHover(camelKafkaConnectorManager);
 		} else if(propertyGroup != null && propertyGroup.isInRange(position.getCharacter())) {
 			return propertyGroup.getHover(position, camelCatalog);
 		}

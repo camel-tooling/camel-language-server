@@ -24,6 +24,7 @@ import java.util.stream.Collectors;
 
 import org.apache.camel.kafkaconnector.model.CamelKafkaConnectorModel;
 import org.eclipse.lsp4j.CompletionItem;
+import org.eclipse.lsp4j.Hover;
 import org.eclipse.lsp4j.Position;
 import org.eclipse.lsp4j.TextDocumentItem;
 
@@ -106,6 +107,23 @@ public class CamelSinkOrSourcePropertyKey implements ILineRangeDefineable {
 				.stream()
 				.filter(connector -> connectorClass.equals(connector.getConnectorClass()))
 				.findAny();
+	}
+
+	public CompletableFuture<Hover> getHover(CamelKafkaConnectorCatalogManager camelKafkaConnectorManager) {
+		if (connectorClass != null) {
+			Optional<CamelKafkaConnectorModel> camelKafkaConnectorModel = findConnectorModel(camelKafkaConnectorManager);
+			if (camelKafkaConnectorModel.isPresent()) {
+				String propertyKey = getPrefix() + optionKey;
+				Hover hover = camelKafkaConnectorModel.get()
+						.getOptions()
+						.stream()
+						.filter(option -> propertyKey.equals(option.getName()))
+						.map(option -> createHover(option.getDescription()))
+						.findAny().orElse(null);
+				return CompletableFuture.completedFuture(hover);
+			}
+		}
+		return CompletableFuture.completedFuture(null);
 	}
 
 }
