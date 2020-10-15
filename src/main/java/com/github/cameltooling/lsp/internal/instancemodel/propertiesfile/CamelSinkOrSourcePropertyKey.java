@@ -16,12 +16,9 @@
  */
 package com.github.cameltooling.lsp.internal.instancemodel.propertiesfile;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import java.util.Properties;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
@@ -29,13 +26,12 @@ import org.apache.camel.kafkaconnector.model.CamelKafkaConnectorModel;
 import org.eclipse.lsp4j.CompletionItem;
 import org.eclipse.lsp4j.Position;
 import org.eclipse.lsp4j.TextDocumentItem;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.github.cameltooling.lsp.internal.catalog.util.CamelKafkaConnectorCatalogManager;
 import com.github.cameltooling.lsp.internal.completion.CompletionResolverUtils;
 import com.github.cameltooling.lsp.internal.completion.FilterPredicateUtils;
 import com.github.cameltooling.lsp.internal.instancemodel.ILineRangeDefineable;
+import com.github.cameltooling.lsp.internal.parser.CamelKafkaUtil;
 
 /**
  * Represents the subpart of the key after camel.sink. or camel.source.
@@ -44,9 +40,7 @@ import com.github.cameltooling.lsp.internal.instancemodel.ILineRangeDefineable;
  * 
  */
 public class CamelSinkOrSourcePropertyKey implements ILineRangeDefineable {
-	
-	private static final Logger LOGGER = LoggerFactory.getLogger(CamelSinkOrSourcePropertyKey.class);
-	
+
 	private String optionKey;
 	private CamelPropertyKeyInstance camelPropertyKeyInstance;
 	private String connectorClass;
@@ -55,22 +49,8 @@ public class CamelSinkOrSourcePropertyKey implements ILineRangeDefineable {
 	public CamelSinkOrSourcePropertyKey(String optionKey, CamelPropertyKeyInstance camelPropertyKeyInstance, TextDocumentItem textDocumentItem, String prefix) {
 		this.optionKey = optionKey;
 		this.camelPropertyKeyInstance = camelPropertyKeyInstance;
-		this.connectorClass = findConnectorClass(textDocumentItem);
+		this.connectorClass = new CamelKafkaUtil().findConnectorClass(textDocumentItem);
 		this.prefix = prefix;
-	}
-
-	private String findConnectorClass(TextDocumentItem textDocumentItem) {
-		Properties properties = new Properties();
-		try {
-			properties.load(new ByteArrayInputStream(textDocumentItem.getText().getBytes()));
-			Object connectorClassValue = properties.get("connector.class");
-			if (connectorClassValue != null) {
-				return connectorClassValue.toString();
-			}
-		} catch (IOException e) {
-			LOGGER.error("Cannot load Properties file to search for 'connector.class' property value.", e);
-		}
-		return null;
 	}
 
 	@Override

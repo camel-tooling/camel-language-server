@@ -16,11 +16,23 @@
  */
 package com.github.cameltooling.lsp.internal.parser;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.util.Properties;
+
+import org.eclipse.lsp4j.TextDocumentItem;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class CamelKafkaUtil {
+	
+	private static final Logger LOGGER = LoggerFactory.getLogger(CamelKafkaUtil.class);
 
 	public static final String CAMEL_SINK_URL = "camel.sink.url";
 	public static final String CAMEL_SOURCE_URL = "camel.source.url";
 	public static final String CONNECTOR_CLASS = "connector.class";
+	public static final String KEY_CONVERTER = "key.converter";
+	public static final String VALUE_CONVERTER = "value.converter";
 	
 	public boolean isCamelURIForKafka(String propertyKey) {
 		return CamelKafkaUtil.CAMEL_SINK_URL.equals(propertyKey)
@@ -34,6 +46,25 @@ public class CamelKafkaUtil {
 
 	public boolean isConnectorClassForCamelKafkaConnector(String propertyKey) {
 		return CONNECTOR_CLASS.equals(propertyKey);
+	}
+
+	public boolean isConverterForCamelKafkaConnector(String propertyKey) {
+		return KEY_CONVERTER.equals(propertyKey)
+				|| VALUE_CONVERTER.equals(propertyKey);
+	}
+	
+	public String findConnectorClass(TextDocumentItem textDocumentItem) {
+		Properties properties = new Properties();
+		try {
+			properties.load(new ByteArrayInputStream(textDocumentItem.getText().getBytes()));
+			Object connectorClassValue = properties.get(CONNECTOR_CLASS);
+			if (connectorClassValue != null) {
+				return connectorClassValue.toString();
+			}
+		} catch (IOException e) {
+			LOGGER.error("Cannot load Properties file to search for 'connector.class' property value.", e);
+		}
+		return null;
 	}
 
 }
