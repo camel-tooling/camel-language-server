@@ -24,15 +24,15 @@ import org.eclipse.lsp4j.TextDocumentItem;
 import com.github.cameltooling.lsp.internal.catalog.util.CamelKafkaConnectorCatalogManager;
 import com.github.cameltooling.lsp.internal.instancemodel.propertiesfile.CamelPropertyValueInstance;
 
-public class CamelKafkaConverterCompletionProcessor extends AbstractConnectorClassDependentCompletionProcessor {
+public class KafkaConnectTransformerTypeCompletionProcessor extends AbstractConnectorClassDependentCompletionProcessor {
 
-	public CamelKafkaConverterCompletionProcessor(TextDocumentItem textDocumentItem, CamelPropertyValueInstance camelPropertyValueInstance, CamelKafkaConnectorCatalogManager camelKafkaConnectorManager) {
+	public KafkaConnectTransformerTypeCompletionProcessor(TextDocumentItem textDocumentItem, CamelPropertyValueInstance camelPropertyValueInstance, CamelKafkaConnectorCatalogManager camelKafkaConnectorManager) {
 		super(textDocumentItem, camelPropertyValueInstance, camelKafkaConnectorManager);
 	}
 
 	@Override
 	protected List<String> retrieveList(CamelKafkaConnectorModel model) {
-		return model.getConverters();
+		return model.getTransforms();
 	}
 
 }

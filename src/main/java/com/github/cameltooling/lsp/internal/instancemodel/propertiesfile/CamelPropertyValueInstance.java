@@ -29,6 +29,7 @@ import com.github.cameltooling.lsp.internal.completion.CamelComponentOptionValue
 import com.github.cameltooling.lsp.internal.completion.CamelEndpointCompletionProcessor;
 import com.github.cameltooling.lsp.internal.completion.CamelKafkaConnectorClassCompletionProcessor;
 import com.github.cameltooling.lsp.internal.completion.CamelKafkaConverterCompletionProcessor;
+import com.github.cameltooling.lsp.internal.completion.KafkaConnectTransformerTypeCompletionProcessor;
 import com.github.cameltooling.lsp.internal.instancemodel.ILineRangeDefineable;
 import com.github.cameltooling.lsp.internal.parser.CamelKafkaUtil;
 
@@ -60,6 +61,9 @@ public class CamelPropertyValueInstance implements ILineRangeDefineable {
 		} else if (new CamelKafkaUtil().isConverterForCamelKafkaConnector(propertyKey)) {
 			String startFilter = computeStartFilter(position);
 			return new CamelKafkaConverterCompletionProcessor(textDocumentItem, this, camelKafkaConnectorManager).getCompletions(startFilter);
+		} else if(new KafkaConnectTransformerTypePropertyKeyDetector().isTransformerTypeKey(propertyKey)) {
+			String startFilter = computeStartFilter(position);
+			return new KafkaConnectTransformerTypeCompletionProcessor(textDocumentItem, this, camelKafkaConnectorManager).getCompletions(startFilter);
 		} else {
 			String startFilter = computeStartFilter(position);
 			return camelCatalog.thenApply(new CamelComponentOptionValuesCompletionsFuture(this, startFilter));
