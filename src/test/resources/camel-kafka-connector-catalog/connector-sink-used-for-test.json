@@ -47,5 +47,8 @@
 	},
 	"converters": [
 		"org.test.kafkaconnector.converters.TestSinkObjectConverter"
+	],
+	"transformers": [
+		"org.test.kafkaconnector.converters.TestSinkTransformer"
 	]
 }
