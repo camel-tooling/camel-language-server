@@ -30,9 +30,11 @@ import org.eclipse.lsp4j.jsonrpc.messages.Either;
 
 import com.github.cameltooling.lsp.internal.completion.modeline.CamelKModelineOptionNames;
 import com.github.cameltooling.lsp.internal.instancemodel.ILineRangeDefineable;
+import com.github.cameltooling.lsp.internal.parser.ParserFileHelperUtil;
 
 public class CamelKModelineOption implements ILineRangeDefineable {
 	
+	private static final String END_OF_XML_COMMENT = "-->";
 	private String optionName;
 	private ICamelKModelineOptionValue optionValue;
 	private int startCharacter;
@@ -47,6 +49,9 @@ public class CamelKModelineOption implements ILineRangeDefineable {
 	private ICamelKModelineOptionValue createOptionValue(String option, int nameValueIndexSeparator, TextDocumentItem documentItem){
 		if(nameValueIndexSeparator != -1) {
 			String value = option.substring(nameValueIndexSeparator+1);
+			if (isEndOfCommentStuckToEndLine(option, documentItem, value)) {
+				value = value.substring(0, value.length() - END_OF_XML_COMMENT.length());
+			}
 			int startPosition = getStartPositionInLine() + optionName.length() + 1;
 			if(CamelKModelineOptionNames.OPTION_NAME_TRAIT.equals(optionName)) {
 				return new CamelKModelineTraitOption(value, startPosition);
@@ -66,6 +71,12 @@ public class CamelKModelineOption implements ILineRangeDefineable {
 		} else {
 			return null;
 		}
+	}
+
+	private boolean isEndOfCommentStuckToEndLine(String option, TextDocumentItem documentItem, String value) {
+		return value.endsWith(END_OF_XML_COMMENT)
+				&& documentItem.getUri().endsWith(".xml")
+				&& startCharacter + option.length() == new ParserFileHelperUtil().getLine(documentItem, getLine()).length();
 	}
 	
 	@Override

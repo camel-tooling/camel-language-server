@@ -20,9 +20,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.stream.Stream;
 
+import org.eclipse.lsp4j.TextDocumentItem;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+
+import com.github.cameltooling.lsp.internal.CamelLanguageServer;
 
 class CamelKModelineTest {
 	
@@ -62,6 +66,24 @@ class CamelKModelineTest {
 	void testGetNumberOfOptions(String modelineString) throws Exception {
 		CamelKModeline modeline = new CamelKModeline(modelineString, null);
 		assertThat(modeline.getOptions()).hasSize(1);
+	}
+	
+	@Test
+	void testWithXmlCommentWithoutSpaceWhenNoValue() {
+		String modelineText = "<!-- camel-k: dependency=-->";
+		CamelKModeline modeline = new CamelKModeline(modelineText, new TextDocumentItem("dummy.xml", CamelLanguageServer.LANGUAGE_ID, 0, modelineText));
+		int endPositionInLine = modeline.getOptions().get(0).getOptionValue().getEndPositionInLine();
+		assertThat(endPositionInLine).isEqualTo("<!-- camel-k: dependency=".length());
+	}
+	
+	@Test
+	void testWithXmlCommentWithoutSpaceWithValue() {
+		String modelineText = "<!-- camel-k: dependency=test-->";
+		CamelKModeline modeline = new CamelKModeline(modelineText, new TextDocumentItem("dummy.xml", CamelLanguageServer.LANGUAGE_ID, 0, modelineText));
+		ICamelKModelineOptionValue optionValue = modeline.getOptions().get(0).getOptionValue();
+		int endPositionInLine = optionValue.getEndPositionInLine();
+		assertThat(endPositionInLine).isEqualTo("<!-- camel-k: dependency=test".length());
+		assertThat(optionValue.getValueAsString()).isEqualTo("test");
 	}
 
 }
