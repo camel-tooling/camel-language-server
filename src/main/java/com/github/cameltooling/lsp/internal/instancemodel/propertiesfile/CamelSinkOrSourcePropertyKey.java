@@ -23,6 +23,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 import org.apache.camel.kafkaconnector.model.CamelKafkaConnectorModel;
+import org.apache.camel.util.StringHelper;
 import org.eclipse.lsp4j.CompletionItem;
 import org.eclipse.lsp4j.Hover;
 import org.eclipse.lsp4j.Position;
@@ -80,6 +81,7 @@ public class CamelSinkOrSourcePropertyKey implements ILineRangeDefineable {
 
 	public CompletableFuture<List<CompletionItem>> getCompletions(Position position, CamelKafkaConnectorCatalogManager camelKafkaConnectorManager) {
 		if (connectorClass != null) {
+			boolean shouldUseDashed = camelPropertyKeyInstance.shouldUseDashedCase();
 			Optional<CamelKafkaConnectorModel> camelKafkaConnectorModel = findConnectorModel(camelKafkaConnectorManager);
 			if (camelKafkaConnectorModel.isPresent()) {
 				String filterString = optionKey.substring(0, position.getCharacter() - getStartPositionInLine());
@@ -88,7 +90,11 @@ public class CamelSinkOrSourcePropertyKey implements ILineRangeDefineable {
 						.stream()
 						.filter(option -> option.getName().startsWith(getPrefix()))
 						.map(option -> {
-							CompletionItem completionItem = new CompletionItem(option.getName().replace(getPrefix(), ""));
+							String realOptionName = option.getName().replace(getPrefix(), "");
+							if(shouldUseDashed) {
+								realOptionName = StringHelper.camelCaseToDash(realOptionName);
+							}
+							CompletionItem completionItem = new CompletionItem(realOptionName);
 							CompletionResolverUtils.applyTextEditToCompletionItem(this, completionItem);
 							completionItem.setDocumentation(option.getDescription());
 							return completionItem;
@@ -114,10 +120,11 @@ public class CamelSinkOrSourcePropertyKey implements ILineRangeDefineable {
 			Optional<CamelKafkaConnectorModel> camelKafkaConnectorModel = findConnectorModel(camelKafkaConnectorManager);
 			if (camelKafkaConnectorModel.isPresent()) {
 				String propertyKey = getPrefix() + optionKey;
+				String camelCasePropertyKey = StringHelper.dashToCamelCase(propertyKey);
 				Hover hover = camelKafkaConnectorModel.get()
 						.getOptions()
 						.stream()
-						.filter(option -> propertyKey.equals(option.getName()))
+						.filter(option -> camelCasePropertyKey.equals(option.getName()))
 						.map(option -> createHover(option.getDescription()))
 						.findAny().orElse(null);
 				return CompletableFuture.completedFuture(hover);

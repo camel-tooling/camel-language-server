@@ -44,6 +44,18 @@ class CamelKafkaConnectorSourceSinkHoverTest extends AbstractCamelKafkaConnector
 	}
 	
 	@Test
+	void testHoverOnDashedProperty() throws Exception {
+		String text = "connector.class=org.test.kafkaconnector.TestSinkConnector\n"
+					+ "camel.sink.path.a-medium-path-option=";
+		CamelLanguageServer languageServer = initializeLanguageServer(text);
+		
+		HoverParams hoverParams = new HoverParams(new TextDocumentIdentifier(DUMMY_URI+".properties"), new Position(1, 17));
+		CompletableFuture<Hover> hover = languageServer.getTextDocumentService().hover(hoverParams);
+		
+		assertThat(hover.get().getContents().getLeft().get(0).getLeft()).isEqualTo("Description of camel.sink.path.aMediumPathOption");
+	}
+	
+	@Test
 	void testHoverOnSourceProperty() throws Exception {
 		String text = "connector.class=org.test.kafkaconnector.TestSourceConnector\n"
 					+ "camel.source.path.aMediumPathOption=";

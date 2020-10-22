@@ -43,6 +43,18 @@ class CamelKafkaCamelSinkPropertyCompletionTest extends AbstractCamelKafkaConnec
 	}
 	
 	@Test
+	void testCompletionWithDashedNotation() throws Exception {
+		String text = "connector.class=org.test.kafkaconnector.TestSinkConnector\n"
+					+ "camel.sink.a-high-path-option=test\n"
+					+ "camel.sink.";
+		CamelLanguageServer languageServer = initializeLanguageServer(text);
+		List<CompletionItem> completions = getCompletionFor(languageServer, new Position(2, 11)).get().getLeft();
+		Optional<CompletionItem> optionCompletion = completions.stream().filter(completion -> "path.a-medium-path-option".equals(completion.getLabel())).findAny();
+		assertThat(optionCompletion).isPresent();
+		assertThat(optionCompletion.get().getTextEdit().getRange()).isEqualTo(new Range(new Position(2, 11), new Position(2, 11)));
+	}
+	
+	@Test
 	void testCompletionWithStartedValue() throws Exception {
 		String text = "connector.class=org.test.kafkaconnector.TestSinkConnector\n"
 					+ "camel.sink.pat";

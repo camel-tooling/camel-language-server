@@ -18,7 +18,7 @@ package com.github.cameltooling.lsp.internal.instancemodel.propertiesfile;
 
 public class DashedCaseDetector {
 
-	public boolean hasDashedCaseInCamelComponentOption(String text) {
+	public boolean hasDashedCaseInCamelPropertyOption(String text) {
 		String[] lines = text.split("\\r?\\n");
 		for (String line : lines) {
 			String camelProperty = "camel.\\w+.\\w+.\\w+-.*";
