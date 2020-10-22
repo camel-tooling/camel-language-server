@@ -42,7 +42,7 @@ class DashedCaseDetectorTest {
 	}
 
 	@Test
-	void testHasDashedCaseInCamelComponentOption() throws Exception {
+	void testHasDashedCaseInCamelPropertyOption() throws Exception {
 		assertThat(hasDashed("camel.component.id.my-name-dashed=123")).isTrue();
 	}
 	
@@ -52,7 +52,7 @@ class DashedCaseDetectorTest {
 	}
 	
 	@Test
-	void testHasDashedCaseInCamelComponentOptionWithSeveralLines() throws Exception {
+	void testHasDashedCaseInCamelPropertyOptionWithSeveralLines() throws Exception {
 		assertThat(hasDashed(
 				"camel.component.id.myNameNotDashed=123\n" +
 				"camel.component.id.my-name-dashed=123")).isTrue();
@@ -74,7 +74,7 @@ class DashedCaseDetectorTest {
 	}
 	
 	private boolean hasDashed(String text) {
-		return new DashedCaseDetector().hasDashedCaseInCamelComponentOption(text);
+		return new DashedCaseDetector().hasDashedCaseInCamelPropertyOption(text);
 	}
 	
 }

@@ -102,7 +102,7 @@ public class CamelPropertyEntryInstance implements ILineRangeDefineable {
 
 	public boolean shouldUseDashedCase() {
 		return textDocumentItem != null
-				&& new DashedCaseDetector().hasDashedCaseInCamelComponentOption(textDocumentItem.getText());
+				&& new DashedCaseDetector().hasDashedCaseInCamelPropertyOption(textDocumentItem.getText());
 	}
 
 }
