@@ -31,56 +31,52 @@ import com.github.cameltooling.lsp.internal.CamelLanguageServer;
 class CamelKafkaConnectorTransformerCompletionTest extends AbstractCamelKafkaConnectorTest {
 
 	@Test
-	void testProvideCompletionForValueConverter() throws Exception {
+	void testProvideCompletionForValueTransformer() throws Exception {
 		String text = "connector.class=org.test.kafkaconnector.TestSinkConnector\n"
-					+ "value.converter=";
+					+ "transforms.demo.type=";
 		CamelLanguageServer languageServer = initializeLanguageServer(text);
-		List<CompletionItem> completions = getCompletionFor(languageServer, new Position(1, 16)).get().getLeft();
+		List<CompletionItem> completions = getCompletionFor(languageServer, new Position(1, 21)).get().getLeft();
 		assertThat(completions).hasSize(1);
+		CompletionItem completionItem = completions.get(0);
+		assertThat(completionItem.getLabel()).isEqualTo("TestSinkTransformer");
+		String fullyQualifiedTransformerClassName = "org.test.kafkaconnector.transformers.TestSinkTransformer";
+		assertThat(completionItem.getDetail()).isEqualTo(fullyQualifiedTransformerClassName);
+		assertThat(completionItem.getFilterText()).isEqualTo(fullyQualifiedTransformerClassName);
 	}
 	
 	@Test
 	void testProvideCompletionForPartialItems() throws Exception {
 		String text = "connector.class=org.test.kafkaconnector.TestSinkConnector\n"
-					+ "value.converter=org.test";
+					+ "transforms.demo.type=org.test";
 		CamelLanguageServer languageServer = initializeLanguageServer(text);
-		List<CompletionItem> completions = getCompletionFor(languageServer, new Position(1, 22)).get().getLeft();
+		List<CompletionItem> completions = getCompletionFor(languageServer, new Position(1, 27)).get().getLeft();
 		assertThat(completions).hasSize(1);
-		assertThat(completions.get(0).getTextEdit().getRange()).isEqualTo(new Range(new Position(1, 16), new Position(1, 24)));
-	}
-
-	@Test
-	void testProvideCompletionForKeyConverter() throws Exception {
-		String text = "connector.class=org.test.kafkaconnector.TestSinkConnector\n"
-					+ "key.converter=";
-		CamelLanguageServer languageServer = initializeLanguageServer(text);
-		List<CompletionItem> completions = getCompletionFor(languageServer, new Position(1, 14)).get().getLeft();
-		assertThat(completions).hasSize(1);
+		assertThat(completions.get(0).getTextEdit().getRange()).isEqualTo(new Range(new Position(1, 21), new Position(1, 29)));
 	}
 	
 	@Test
-	void testProvideNoCompletionWhenNoConverter() throws Exception {
+	void testProvideNoCompletionWhenNoTransformer() throws Exception {
 		String text = "connector.class=org.test.kafkaconnector.TestSourceConnector\n"
-					+ "value.converter=";
+					+ "transforms.demo.type=";
 		CamelLanguageServer languageServer = initializeLanguageServer(text);
-		List<CompletionItem> completions = getCompletionFor(languageServer, new Position(1, 16)).get().getLeft();
+		List<CompletionItem> completions = getCompletionFor(languageServer, new Position(1, 21)).get().getLeft();
 		assertThat(completions).isEmpty();
 	}
 	
 	@Test
 	void testProvideNoCompletionWhenNoConnectorClass() throws Exception {
-		String text = "value.converter=";
+		String text = "transforms.demo.type=";
 		CamelLanguageServer languageServer = initializeLanguageServer(text);
-		List<CompletionItem> completions = getCompletionFor(languageServer, new Position(0, 16)).get().getLeft();
+		List<CompletionItem> completions = getCompletionFor(languageServer, new Position(0, 21)).get().getLeft();
 		assertThat(completions).isEmpty();
 	}
 	
 	@Test
 	void testProvideNoCompletionWithUnknownConnectorClass() throws Exception {
 		String text = "connector.class=unknown\n"
-					+ "value.converter=";
+					+ "transforms.demo.type==";
 		CamelLanguageServer languageServer = initializeLanguageServer(text);
-		List<CompletionItem> completions = getCompletionFor(languageServer, new Position(1, 16)).get().getLeft();
+		List<CompletionItem> completions = getCompletionFor(languageServer, new Position(1, 21)).get().getLeft();
 		assertThat(completions).isEmpty();
 	}
 

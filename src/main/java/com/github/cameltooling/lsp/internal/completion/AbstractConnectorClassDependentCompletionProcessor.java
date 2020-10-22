@@ -57,11 +57,8 @@ public abstract class AbstractConnectorClassDependentCompletionProcessor {
 				List<String> converters = retrieveList(model.get());
 				if (converters != null) {
 					List<CompletionItem> completions = converters.stream()
-							.map(converter -> {
-								CompletionItem completionItem = new CompletionItem(converter);
-								CompletionResolverUtils.applyTextEditToCompletionItem(camelPropertyValueInstance, completionItem);
-								return completionItem;
-							}).filter(FilterPredicateUtils.matchesCompletionFilter(startFilter)).collect(Collectors.toList());
+							.map(fullyQualifiedConverterClassname -> new CompletionItemCreator().createForQualifiedClassName(fullyQualifiedConverterClassname, camelPropertyValueInstance))
+							.filter(FilterPredicateUtils.matchesCompletionFilter(startFilter)).collect(Collectors.toList());
 					return CompletableFuture.completedFuture(completions);
 				}
 			}

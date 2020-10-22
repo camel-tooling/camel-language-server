@@ -42,26 +42,11 @@ public class CamelKafkaConnectorClassCompletionProcessor {
 		List<CompletionItem> completions = camelKafkaConnectors.stream()
 				.map(camelKafkaConnector -> {
 					String qualifiedConnectorClassName = camelKafkaConnector.getConnectorClass();
-					CompletionItem completionItem = new CompletionItem(extractSimpleClassName(qualifiedConnectorClassName));
-					completionItem.setDetail(qualifiedConnectorClassName);
-					completionItem.setInsertText(qualifiedConnectorClassName);
-					completionItem.setFilterText(qualifiedConnectorClassName);
-					CompletionResolverUtils.applyTextEditToCompletionItem(camelPropertyValueInstance, completionItem);
-					return completionItem;
+					return new CompletionItemCreator().createForQualifiedClassName(qualifiedConnectorClassName, camelPropertyValueInstance);
 				})
 				.filter(FilterPredicateUtils.matchesCompletionFilter(startFilter))
 				.collect(Collectors.toList());
 		
 		return CompletableFuture.completedFuture(completions);
 	}
-
-	private String extractSimpleClassName(String qualifiedConnectorClassName) {
-		int lastDotIndex = qualifiedConnectorClassName.lastIndexOf('.');
-		if(lastDotIndex != -1) {
-			return qualifiedConnectorClassName.substring(lastDotIndex + 1);
-		} else {
-			return qualifiedConnectorClassName;
-		}
-	}
-
 }
