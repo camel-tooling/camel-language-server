@@ -37,6 +37,10 @@ class CamelKafkaConnectorConverterCompletionTest extends AbstractCamelKafkaConne
 		CamelLanguageServer languageServer = initializeLanguageServer(text);
 		List<CompletionItem> completions = getCompletionFor(languageServer, new Position(1, 16)).get().getLeft();
 		assertThat(completions).hasSize(1);
+		CompletionItem completionItem = completions.get(0);
+		assertThat(completionItem.getLabel()).isEqualTo("TestSinkObjectConverter");
+		assertThat(completionItem.getDetail()).isEqualTo("org.test.kafkaconnector.converters.TestSinkObjectConverter");
+		assertThat(completionItem.getFilterText()).isEqualTo("org.test.kafkaconnector.converters.TestSinkObjectConverter");
 	}
 	
 	@Test
