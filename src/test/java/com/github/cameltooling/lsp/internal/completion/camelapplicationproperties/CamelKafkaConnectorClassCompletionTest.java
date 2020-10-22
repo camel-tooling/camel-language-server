@@ -41,7 +41,9 @@ class CamelKafkaConnectorClassCompletionTest extends AbstractCamelKafkaConnector
 		
 		List<CompletionItem> completionItems = completions.get().getLeft();
 		String connectorClassName = "org.test.kafkaconnector.TestSourceConnector";
-		CompletionItem completionItem = completionItems.stream().filter(ci -> connectorClassName.equals(ci.getLabel())).findAny().get();
+		CompletionItem completionItem = completionItems.stream().filter(ci -> connectorClassName.equals(ci.getInsertText())).findAny().get();
+		assertThat(completionItem.getLabel()).isEqualTo("TestSourceConnector");
+		assertThat(completionItem.getDetail()).isEqualTo(connectorClassName);
 		assertThat(completionItem.getTextEdit().getNewText()).isEqualTo(connectorClassName);
 		assertThat(completionItem.getTextEdit().getRange()).isEqualTo(new Range(new Position(0, 16), new Position(0, 16)));
 	}
@@ -53,7 +55,8 @@ class CamelKafkaConnectorClassCompletionTest extends AbstractCamelKafkaConnector
 		List<CompletionItem> completionItems = completions.get().getLeft();
 		assertThat(completionItems).hasSize(2);
 		String connectorClassName = "org.test.kafkaconnector.TestSinkConnector";
-		CompletionItem completionItem = completionItems.stream().filter(ci -> connectorClassName.equals(ci.getLabel())).findAny().get();
+		CompletionItem completionItem = completionItems.stream().filter(ci -> connectorClassName.equals(ci.getInsertText())).findAny().get();
+		assertThat(completionItem.getFilterText()).isEqualTo(connectorClassName);
 		assertThat(completionItem.getTextEdit().getNewText()).isEqualTo(connectorClassName);
 		assertThat(completionItem.getTextEdit().getRange()).isEqualTo(new Range(new Position(0, 16), new Position(0, 57)));
 	}

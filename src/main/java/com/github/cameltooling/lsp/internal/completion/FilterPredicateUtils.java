@@ -39,7 +39,8 @@ public class FilterPredicateUtils {
 	public static Predicate<CompletionItem> matchesCompletionFilter(String filterString) {
 		return item -> {
 			if (filterString != null && filterString.trim().length() > 0) {
-				return item.getLabel().startsWith(filterString);
+				return item.getLabel().startsWith(filterString)
+						|| item.getInsertText() != null && item.getInsertText().startsWith(filterString);
 			} else {
 				return true;
 			}
