@@ -60,24 +60,24 @@ class CamelURIInstanceTest {
 	void testMultiplePathParam() throws Exception {
 		CamelURIInstance camelURIInstance = new CamelURIInstance("amqp:destinationType:destinationName", (Node) null, null);
 		assertThat(camelURIInstance.getComponentAndPathUriElementInstance().getPathParams()).containsOnly(
-				new PathParamURIInstance(camelURIInstance.getComponentAndPathUriElementInstance(), "destinationType", 5, 20),
-				new PathParamURIInstance(camelURIInstance.getComponentAndPathUriElementInstance(), "destinationName", 21, 36));
+				new PathParamURIInstance(camelURIInstance.getComponentAndPathUriElementInstance(), "destinationType", 5, 20, 0),
+				new PathParamURIInstance(camelURIInstance.getComponentAndPathUriElementInstance(), "destinationName", 21, 36, 1));
 	}
 	
 	@Test
 	void testMultiplePathParamWithSomethingElseInUri() throws Exception {
 		CamelURIInstance camelURIInstance = new CamelURIInstance("amqp:destinationType:destinationName?anOption", (Node) null, null);
 		assertThat(camelURIInstance.getComponentAndPathUriElementInstance().getPathParams()).containsOnly(
-				new PathParamURIInstance(camelURIInstance.getComponentAndPathUriElementInstance(), "destinationType", 5, 20),
-				new PathParamURIInstance(camelURIInstance.getComponentAndPathUriElementInstance(), "destinationName", 21, 36));
+				new PathParamURIInstance(camelURIInstance.getComponentAndPathUriElementInstance(), "destinationType", 5, 20, 0),
+				new PathParamURIInstance(camelURIInstance.getComponentAndPathUriElementInstance(), "destinationName", 21, 36, 1));
 	}
 	
 	@Test
 	void testMultiplePathParamWithSlashDelimiter() throws Exception {
 		CamelURIInstance camelURIInstance = new CamelURIInstance("atmos:name/operation", (Node) null, null);
 		assertThat(camelURIInstance.getComponentAndPathUriElementInstance().getPathParams()).containsOnly(
-				new PathParamURIInstance(camelURIInstance.getComponentAndPathUriElementInstance(), "name", 6, 10),
-				new PathParamURIInstance(camelURIInstance.getComponentAndPathUriElementInstance(), "operation", 11, 20));
+				new PathParamURIInstance(camelURIInstance.getComponentAndPathUriElementInstance(), "name", 6, 10, 0),
+				new PathParamURIInstance(camelURIInstance.getComponentAndPathUriElementInstance(), "operation", 11, 20, 1));
 	}
 	
 	@Test
