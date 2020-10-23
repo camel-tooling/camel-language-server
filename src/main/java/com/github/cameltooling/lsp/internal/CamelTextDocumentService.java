@@ -16,7 +16,6 @@
  */
 package com.github.cameltooling.lsp.internal;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -28,8 +27,6 @@ import org.apache.camel.catalog.CamelCatalog;
 import org.apache.camel.catalog.DefaultCamelCatalog;
 import org.apache.camel.catalog.maven.MavenVersionManager;
 import org.eclipse.lsp4j.CodeAction;
-import org.eclipse.lsp4j.CodeActionContext;
-import org.eclipse.lsp4j.CodeActionKind;
 import org.eclipse.lsp4j.CodeActionParams;
 import org.eclipse.lsp4j.CodeLens;
 import org.eclipse.lsp4j.CodeLensParams;
@@ -69,8 +66,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.github.cameltooling.lsp.internal.catalog.util.CamelKafkaConnectorCatalogManager;
-import com.github.cameltooling.lsp.internal.codeactions.InvalidEnumQuickfix;
-import com.github.cameltooling.lsp.internal.codeactions.UnknownPropertyQuickfix;
+import com.github.cameltooling.lsp.internal.codeactions.CodeActionProcessor;
 import com.github.cameltooling.lsp.internal.completion.CamelEndpointCompletionProcessor;
 import com.github.cameltooling.lsp.internal.completion.CamelPropertiesCompletionProcessor;
 import com.github.cameltooling.lsp.internal.completion.modeline.CamelKModelineCompletionprocessor;
@@ -198,17 +194,7 @@ public class CamelTextDocumentService implements TextDocumentService {
 	@Override
 	public CompletableFuture<List<Either<Command, CodeAction>>> codeAction(CodeActionParams params) {
 		LOGGER.info("codeAction: {}", params.getTextDocument());
-		CodeActionContext context = params.getContext();
-		if (context != null && (context.getOnly() == null || context.getOnly().contains(CodeActionKind.QuickFix))) {
-			return CompletableFuture.supplyAsync(() -> {
-				List<Either<Command, CodeAction>> allQuickfixes = new ArrayList<>();
-				allQuickfixes.addAll(new UnknownPropertyQuickfix(this).apply(params));
-				allQuickfixes.addAll(new InvalidEnumQuickfix(this).apply(params));
-				return allQuickfixes;
-			});
-		} else {
-			return CompletableFuture.completedFuture(Collections.emptyList());
-		}
+		return new CodeActionProcessor(this).getCodeActions(params);
 	}
 
 	@Override

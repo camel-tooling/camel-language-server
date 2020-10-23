@@ -62,9 +62,11 @@ public class CamelComponentAndPathUriInstance extends CamelUriElementInstance {
 	private void initPathParams(String uriToParse, int posDoubleDot, int posEndofPathParams) {
 		String[] allPathParams = uriToParse.substring(posDoubleDot + 1, posEndofPathParams).split(CAMEL_PATH_SEPARATOR_REGEX);
 		int currentPosition = posDoubleDot + 1;
+		int pathParamIndex = 0;
 		for (String pathParam : allPathParams) {
-			pathParams.add(new PathParamURIInstance(this, pathParam, currentPosition, currentPosition+pathParam.length()));
+			pathParams.add(new PathParamURIInstance(this, pathParam, currentPosition, currentPosition+pathParam.length(), pathParamIndex));
 			currentPosition += pathParam.length() + 1;
+			pathParamIndex++;
 		}
 	}
 	

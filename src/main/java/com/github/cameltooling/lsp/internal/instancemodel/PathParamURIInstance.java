@@ -19,10 +19,14 @@ package com.github.cameltooling.lsp.internal.instancemodel;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 import org.apache.camel.catalog.CamelCatalog;
+import org.apache.camel.tooling.model.ComponentModel.EndpointOptionModel;
 import org.eclipse.lsp4j.CompletionItem;
 import org.eclipse.lsp4j.TextDocumentItem;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.github.cameltooling.lsp.internal.catalog.model.ComponentModel;
 
@@ -30,14 +34,18 @@ import com.github.cameltooling.lsp.internal.catalog.model.ComponentModel;
  * For a Camel URI "timer:timerName?delay=10s", it represents "timerName"
  */
 public class PathParamURIInstance extends CamelUriElementInstance {
+	
+	private static final Logger LOGGER = LoggerFactory.getLogger(PathParamURIInstance.class);
 
 	private CamelComponentAndPathUriInstance uriInstance;
 	private String value;
+	private int pathParamIndex;
 
-	public PathParamURIInstance(CamelComponentAndPathUriInstance uriInstance, String value, int startPosition, int endPosition) {
+	public PathParamURIInstance(CamelComponentAndPathUriInstance uriInstance, String value, int startPosition, int endPosition, int pathParamIndex) {
 		super(startPosition, endPosition);
 		this.uriInstance = uriInstance;
 		this.value = value;
+		this.pathParamIndex = pathParamIndex;
 	}
 
 	public String getValue() {
@@ -82,5 +90,27 @@ public class PathParamURIInstance extends CamelUriElementInstance {
 	@Override
 	public CamelURIInstance getCamelUriInstance() {
 		return uriInstance.getCamelUriInstance();
+	}
+	
+	public String getName(CompletableFuture<CamelCatalog> camelCatalog) {
+		try {
+			return camelCatalog.thenApply(catalog -> {
+				org.apache.camel.tooling.model.ComponentModel componentModel = catalog.componentModel(uriInstance.getComponentName());
+				if (componentModel != null) {
+					// here, it is expected that the list is sorted with the correct order of endpoint path in which they appear in the scheme
+					List<EndpointOptionModel> endpointPathOptions = componentModel.getEndpointPathOptions();
+					if (endpointPathOptions != null && endpointPathOptions.size() >= pathParamIndex) {
+						return endpointPathOptions.get(pathParamIndex).getName();
+					}
+				}
+				return null;
+			}).get();
+		} catch (InterruptedException ie) {
+			Thread.currentThread().interrupt();
+			return null;
+		} catch(ExecutionException ee) {
+			LOGGER.warn("Cannot retrieve Path parameter name", ee);
+			return null;
+		}
 	}
 }
