@@ -93,7 +93,7 @@ public class CamelKafkaConnectorCamelURLRefactor {
 
 	private TextEdit createTextEdit(TextDocumentItem openedDocument, int startLine, String line, int equalIndex, ParserFileHelper parserFileHelper, String camelComponentUri) {
 		CamelURIInstance camelURIInstance = parserFileHelper.createCamelURIInstance(openedDocument, new Position(startLine, equalIndex + 1), camelComponentUri);
-		String sinkOrSource = line.startsWith(CamelKafkaUtil.CAMEL_SINK_URL) ? "sink" : "source";
+		String sinkOrSource = line.startsWith(CamelKafkaUtil.CAMEL_SINK_URL) ? CamelKafkaUtil.SINK : CamelKafkaUtil.SOURCE;
 		String pathParams = computePathParams(camelURIInstance, sinkOrSource);
 		String endpointOptionParams = computeOptions(camelURIInstance, sinkOrSource);
 		return new TextEdit(
@@ -116,7 +116,7 @@ public class CamelKafkaConnectorCamelURLRefactor {
 				.stream()
 				.map(optionParam -> {
 					String optionValue = optionParam.getValue().getValueName() != null ? optionParam.getValue().getValueName() : "";
-					return "camel."+sinkOrSource+".endpoint."+optionParam.getKey().getKeyName()+"="+optionValue;
+					return CamelKafkaUtil.CAMEL_PREFIX+sinkOrSource+".endpoint."+optionParam.getKey().getKeyName()+"="+optionValue;
 				})
 				.collect(Collectors.joining("\n"));
 	}
@@ -126,7 +126,7 @@ public class CamelKafkaConnectorCamelURLRefactor {
 				.stream()
 				.map(pathParam -> {
 					String pathName = pathParam.getName(camelTextDocumentService.getCamelCatalog());
-					return "camel."+sinkOrSource+".path."+pathName+"="+ pathParam.getValue();
+					return CamelKafkaUtil.CAMEL_PREFIX+sinkOrSource+".path."+pathName+"="+ pathParam.getValue();
 				})
 				.collect(Collectors.joining("\n"));
 	}
