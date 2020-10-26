@@ -43,6 +43,10 @@ public class CamelComponentAndPathUriInstance extends CamelUriElementInstance {
 	private CamelURIInstance parent;
 	private CamelComponentURIInstance component;
 	private Set<PathParamURIInstance> pathParams = new HashSet<>();
+
+	private PathParamURIInstance apiNamePathInstance;
+
+	private PathParamURIInstance methodNamePathInstance;
 	
 	public CamelComponentAndPathUriInstance(CamelURIInstance parent, String schemeAndPath, int endPosition) {
 		super(0, endPosition);
@@ -69,16 +73,29 @@ public class CamelComponentAndPathUriInstance extends CamelUriElementInstance {
 		for(String splitForDoubleDot : splitsForDoubleDots) {
 			String[] splitsForSlash = splitForDoubleDot.split(CAMEL_PATH_POTENTIAL_SECONDARY_SEPARATOR_REGEX);
 			if(Arrays.asList(splitsForSlash).contains("")) {
-				pathParams.add(new PathParamURIInstance(this, splitForDoubleDot, currentPosition, currentPosition+splitForDoubleDot.length(), pathParamIndex));
+				PathParamURIInstance pathParamURIInstance = new PathParamURIInstance(this, splitForDoubleDot, currentPosition, currentPosition+splitForDoubleDot.length(), pathParamIndex);
+				pathParams.add(pathParamURIInstance);
 				currentPosition += splitForDoubleDot.length() + 1;
+				initApiPathParams(pathParamIndex, pathParamURIInstance);
 				pathParamIndex++;
 			} else {
 				for (String splitForSlash : splitsForSlash) {
-					pathParams.add(new PathParamURIInstance(this, splitForSlash, currentPosition, currentPosition+splitForSlash.length(), pathParamIndex));
+					PathParamURIInstance pathParamURIInstance = new PathParamURIInstance(this, splitForSlash, currentPosition, currentPosition+splitForSlash.length(), pathParamIndex);
+					pathParams.add(pathParamURIInstance);
 					currentPosition += splitForSlash.length() + 1;
+					initApiPathParams(pathParamIndex, pathParamURIInstance);
 					pathParamIndex++;
 				}
 			}
+		}
+	}
+
+	private void initApiPathParams(int pathParamIndex, PathParamURIInstance pathParamURIInstance) {
+		if(pathParamIndex == 0) {
+			apiNamePathInstance = pathParamURIInstance;
+		}
+		if(pathParamIndex == 1) {
+			methodNamePathInstance = pathParamURIInstance;
 		}
 	}
 	
@@ -153,5 +170,13 @@ public class CamelComponentAndPathUriInstance extends CamelUriElementInstance {
 	@Override
 	public CamelURIInstance getCamelUriInstance() {
 		return parent.getCamelUriInstance();
+	}
+	
+	public PathParamURIInstance getApiNamePath() {
+		return apiNamePathInstance;
+	}
+
+	public PathParamURIInstance getMethodNamePath() {
+		return methodNamePathInstance;
 	}
 }
