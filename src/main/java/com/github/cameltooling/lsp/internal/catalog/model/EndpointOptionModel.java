@@ -18,79 +18,13 @@ package com.github.cameltooling.lsp.internal.catalog.model;
 
 import java.util.List;
 
-public class EndpointOptionModel {
+public class EndpointOptionModel extends BaseOptionModel {
 
-	private String name;
-	private String kind;
-	private String group;
-	private String label;
-	private boolean required;
-	private String type;
-	private String javaType;
 	private List<String> enums;
 	private String prefix;
 	private boolean multiValue;
-	private boolean deprecated;
-	private boolean secret;
 	private Object defaultValue;
-	private String description;
 	private String enumValues;
-
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	public String getKind() {
-		return kind;
-	}
-
-	public void setKind(String kind) {
-		this.kind = kind;
-	}
-
-	public String getGroup() {
-		return group;
-	}
-
-	public void setGroup(String group) {
-		this.group = group;
-	}
-
-	public String getLabel() {
-		return label;
-	}
-
-	public void setLabel(String label) {
-		this.label = label;
-	}
-
-	public boolean getRequired() {
-		return required;
-	}
-
-	public void setRequired(boolean required) {
-		this.required = required;
-	}
-
-	public String getType() {
-		return type;
-	}
-
-	public void setType(String type) {
-		this.type = type;
-	}
-
-	public String getJavaType() {
-		return javaType;
-	}
-
-	public void setJavaType(String javaType) {
-		this.javaType = javaType;
-	}
 
 	public List<String> getEnums() {
 		return enums;
@@ -116,36 +50,12 @@ public class EndpointOptionModel {
 		this.multiValue = multiValue;
 	}
 
-	public boolean getDeprecated() {
-		return deprecated;
-	}
-
-	public void setDeprecated(boolean deprecated) {
-		this.deprecated = deprecated;
-	}
-
-	public boolean getSecret() {
-		return secret;
-	}
-
-	public void setSecret(boolean secret) {
-		this.secret = secret;
-	}
-
 	public Object getDefaultValue() {
 		return defaultValue;
 	}
 
 	public void setDefaultValue(Object defaultValue) {
 		this.defaultValue = defaultValue;
-	}
-
-	public String getDescription() {
-		return description;
-	}
-
-	public void setDescription(String description) {
-		this.description = description;
 	}
 
 	public String getEnumValues() {
