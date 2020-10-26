@@ -78,7 +78,7 @@ class CamelKafkaConnectorCamelUrlRefactorTest extends AbstractCamelLanguageServe
 		assertThat(codeActions).hasSize(1);
 		CodeAction codeAction = codeActions.get(0).getRight();
 		assertThat(codeAction).isNotNull();
-		assertThat(codeAction.getTitle()).isEqualTo(CamelKafkaConnectorCamelURLRefactor.CONVERT_TO_LIST_OF_PROPERTIES_NOTATION);
+		assertThat(codeAction.getTitle()).isEqualTo(ConvertCamelKafkaConnectorURLToPropertiesRefactorAction.CONVERT_TO_LIST_OF_PROPERTIES_NOTATION);
 		Map<String, List<TextEdit>> changes = codeAction.getEdit().getChanges();
 		assertThat(changes).hasSize(1);
 		List<TextEdit> textEdits = changes.get(DUMMY_URI+".properties");

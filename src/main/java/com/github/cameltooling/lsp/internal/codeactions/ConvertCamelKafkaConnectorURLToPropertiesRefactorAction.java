@@ -43,13 +43,13 @@ import com.github.cameltooling.lsp.internal.parser.ParserFileHelper;
 import com.github.cameltooling.lsp.internal.parser.ParserFileHelperFactory;
 import com.github.cameltooling.lsp.internal.parser.ParserFileHelperUtil;
 
-public class CamelKafkaConnectorCamelURLRefactor {
+public class ConvertCamelKafkaConnectorURLToPropertiesRefactorAction {
 
 	public static final String CONVERT_TO_LIST_OF_PROPERTIES_NOTATION = "Convert to list of properties notation.";
 	
 	private CamelTextDocumentService camelTextDocumentService;
 
-	public CamelKafkaConnectorCamelURLRefactor(CamelTextDocumentService camelTextDocumentService) {
+	public ConvertCamelKafkaConnectorURLToPropertiesRefactorAction(CamelTextDocumentService camelTextDocumentService) {
 		this.camelTextDocumentService = camelTextDocumentService;
 	}
 
