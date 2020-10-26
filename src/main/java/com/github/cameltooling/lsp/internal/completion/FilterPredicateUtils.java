@@ -21,6 +21,7 @@ import java.util.function.Predicate;
 
 import org.eclipse.lsp4j.CompletionItem;
 
+import com.github.cameltooling.lsp.internal.catalog.model.BaseOptionModel;
 import com.github.cameltooling.lsp.internal.catalog.model.EndpointOptionModel;
 import com.github.cameltooling.lsp.internal.instancemodel.OptionParamURIInstance;
 
@@ -90,7 +91,7 @@ public class FilterPredicateUtils {
 	 * @param isProducer	flag if endpoint is producer endpoint or not
 	 * @return	the predicate
 	 */
-	public static Predicate<EndpointOptionModel> matchesProducerConsumerGroups(boolean isProducer) {
+	public static Predicate<BaseOptionModel> matchesProducerConsumerGroups(boolean isProducer) {
 		return endpoint -> {
 			String group = endpoint.getGroup();
 			if (isProducer) {
