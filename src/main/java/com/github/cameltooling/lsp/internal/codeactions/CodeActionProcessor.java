@@ -62,7 +62,7 @@ public class CodeActionProcessor {
 	}
 	
 	private Collection<? extends Either<Command, CodeAction>> computeConvertCamelKafkaConnectorUrl(CodeActionParams params) {
-		return new CamelKafkaConnectorCamelURLRefactor(camelTextDocumentService).getCodeActions(params);
+		return new ConvertCamelKafkaConnectorURLToPropertiesRefactorAction(camelTextDocumentService).getCodeActions(params);
 	}
 
 	private List<Either<Command, CodeAction>> computeQuickfixes(CodeActionParams params) {
