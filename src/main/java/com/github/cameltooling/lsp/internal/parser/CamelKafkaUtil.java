@@ -27,9 +27,13 @@ import org.slf4j.LoggerFactory;
 public class CamelKafkaUtil {
 	
 	private static final Logger LOGGER = LoggerFactory.getLogger(CamelKafkaUtil.class);
-
-	public static final String CAMEL_SINK_URL = "camel.sink.url";
-	public static final String CAMEL_SOURCE_URL = "camel.source.url";
+	
+	public static final String CAMEL_PREFIX = "camel.";
+	public static final String SINK = "sink";
+	public static final String SOURCE = "source";
+	private static final String URL_SUFFIX = ".url";
+	public static final String CAMEL_SINK_URL = CAMEL_PREFIX + SINK + URL_SUFFIX;
+	public static final String CAMEL_SOURCE_URL = CAMEL_PREFIX + SOURCE + URL_SUFFIX;
 	public static final String CONNECTOR_CLASS = "connector.class";
 	public static final String KEY_CONVERTER = "key.converter";
 	public static final String VALUE_CONVERTER = "value.converter";
