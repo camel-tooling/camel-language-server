@@ -38,6 +38,7 @@ import org.eclipse.lsp4j.jsonrpc.messages.Either;
 
 import com.github.cameltooling.lsp.internal.CamelTextDocumentService;
 import com.github.cameltooling.lsp.internal.instancemodel.CamelURIInstance;
+import com.github.cameltooling.lsp.internal.instancemodel.OptionParamValueURIInstance;
 import com.github.cameltooling.lsp.internal.parser.CamelKafkaUtil;
 import com.github.cameltooling.lsp.internal.parser.ParserFileHelper;
 import com.github.cameltooling.lsp.internal.parser.ParserFileHelperFactory;
@@ -114,8 +115,10 @@ public class ConvertCamelKafkaConnectorURLToPropertiesRefactorAction {
 	private String computeOptions(CamelURIInstance camelURIInstance, String sinkOrSource) {
 		return camelURIInstance.getOptionParams()
 				.stream()
+				.filter(optionParam -> optionParam.getValue() != null)
 				.map(optionParam -> {
-					String optionValue = optionParam.getValue().getValueName() != null ? optionParam.getValue().getValueName() : "";
+					OptionParamValueURIInstance value = optionParam.getValue();
+					String optionValue = value.getValueName() != null ? value.getValueName() : "";
 					return CamelKafkaUtil.CAMEL_PREFIX+sinkOrSource+".endpoint."+optionParam.getKey().getKeyName()+"="+optionValue;
 				})
 				.collect(Collectors.joining("\n"));

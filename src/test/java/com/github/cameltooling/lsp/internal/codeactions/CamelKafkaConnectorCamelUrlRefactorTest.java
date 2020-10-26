@@ -49,6 +49,13 @@ class CamelKafkaConnectorCamelUrlRefactorTest extends AbstractCamelLanguageServe
 	}
 	
 	@Test
+	void testSimpleRefactorWithURlFinishingbyQuestionmark() throws Exception {
+		testConvertToListRefactor(
+				"camel.source.url=timer:aName?",
+				new String[] {"camel.source.path.timerName=aName"});
+	}
+	
+	@Test
 	void testeRefactorWithEmptyoptionValue() throws Exception {
 		testConvertToListRefactor(
 				"camel.source.url=timer:aName?daemon=",
