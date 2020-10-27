@@ -16,6 +16,8 @@
  */
 package com.github.cameltooling.lsp.internal.catalog.model;
 
+import java.util.List;
+
 public class BaseOptionModel {
 	private String name;
 	private String kind;
@@ -26,6 +28,24 @@ public class BaseOptionModel {
 	private boolean deprecated;
 	private boolean secret;
 	private String description;
+	private Object defaultValue;
+	private List<String> enums;
+
+	public Object getDefaultValue() {
+		return defaultValue;
+	}
+
+	public void setDefaultValue(Object defaultValue) {
+		this.defaultValue = defaultValue;
+	}
+
+	public List<String> getEnums() {
+		return enums;
+	}
+
+	public void setEnums(List<String> enums) {
+		this.enums = enums;
+	}
 
 	public String getName() {
 		return name;

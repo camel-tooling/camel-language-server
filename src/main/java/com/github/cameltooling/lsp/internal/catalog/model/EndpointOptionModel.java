@@ -16,23 +16,11 @@
  */
 package com.github.cameltooling.lsp.internal.catalog.model;
 
-import java.util.List;
-
 public class EndpointOptionModel extends BaseOptionModel {
 
-	private List<String> enums;
 	private String prefix;
 	private boolean multiValue;
-	private Object defaultValue;
 	private String enumValues;
-
-	public List<String> getEnums() {
-		return enums;
-	}
-
-	public void setEnums(List<String> enums) {
-		this.enums = enums;
-	}
 
 	public String getPrefix() {
 		return prefix;
@@ -48,14 +36,6 @@ public class EndpointOptionModel extends BaseOptionModel {
 
 	public void setMultiValue(boolean multiValue) {
 		this.multiValue = multiValue;
-	}
-
-	public Object getDefaultValue() {
-		return defaultValue;
-	}
-
-	public void setDefaultValue(Object defaultValue) {
-		this.defaultValue = defaultValue;
 	}
 
 	public String getEnumValues() {
