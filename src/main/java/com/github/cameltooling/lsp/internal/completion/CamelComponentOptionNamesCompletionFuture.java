@@ -53,7 +53,7 @@ public class CamelComponentOptionNamesCompletionFuture implements Function<Camel
 					CompletionItem completionItem = new CompletionItem(parameterDisplayName);
 					completionItem.setDocumentation(parameter.getDescription());
 					completionItem.setDetail(parameter.getJavaType());
-					completionItem.setDeprecated(Boolean.valueOf(parameter.getDeprecated()));
+					completionItem.setDeprecated(parameter.isDeprecated());
 					String insertText = parameterDisplayName;
 					if (hasValueProvided() && parameter.getDefaultValue() != null) {
 						insertText += String.format("=%s", parameter.getDefaultValue());

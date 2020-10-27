@@ -72,7 +72,7 @@ public class CamelOptionNamesCompletionsFuture implements Function<CamelCatalog,
 					completionItem.setInsertText(insertText);
 					completionItem.setDocumentation(parameter.getDescription());
 					completionItem.setDetail(parameter.getJavaType());
-					completionItem.setDeprecated(Boolean.valueOf(parameter.getDeprecated()));
+					completionItem.setDeprecated(parameter.isDeprecated());
 					CompletionResolverUtils.applyTextEditToCompletionItem(uriElement, completionItem);
 					return completionItem;
 				})

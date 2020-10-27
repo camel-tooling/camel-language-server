@@ -6,7 +6,7 @@
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -16,6 +16,23 @@
  */
 package com.github.cameltooling.lsp.internal.catalog.model;
 
-public class ComponentOptionModel extends BaseOptionModel {
+import java.util.List;
 
+public class ApiOptionMethodDescriptorModel {
+
+	private String description;
+	private List<String> signatures;
+	
+	public String getDescription() {
+		return description;
+	}
+	public void setDescription(String description) {
+		this.description = description;
+	}
+	public List<String> getSignatures() {
+		return signatures;
+	}
+	public void setSignatures(List<String> signatures) {
+		this.signatures = signatures;
+	}
 }

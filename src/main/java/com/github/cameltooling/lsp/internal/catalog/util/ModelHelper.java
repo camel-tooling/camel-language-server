@@ -19,6 +19,7 @@ package com.github.cameltooling.lsp.internal.catalog.util;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.apache.camel.util.json.DeserializationException;
 import org.apache.camel.util.json.JsonObject;
@@ -26,6 +27,12 @@ import org.apache.camel.util.json.Jsoner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.github.cameltooling.lsp.internal.catalog.model.ApiOptionMethodDescriptorModel;
+import com.github.cameltooling.lsp.internal.catalog.model.ApiOptionMethodsModel;
+import com.github.cameltooling.lsp.internal.catalog.model.ApiOptionModel;
+import com.github.cameltooling.lsp.internal.catalog.model.ApiPropertyMethodOptionModel;
+import com.github.cameltooling.lsp.internal.catalog.model.ApiPropertyOptionModel;
+import com.github.cameltooling.lsp.internal.catalog.model.BaseOptionModel;
 import com.github.cameltooling.lsp.internal.catalog.model.ComponentModel;
 import com.github.cameltooling.lsp.internal.catalog.model.ComponentOptionModel;
 import com.github.cameltooling.lsp.internal.catalog.model.EndpointOptionModel;
@@ -73,50 +80,139 @@ public final class ModelHelper {
 		component.setVersion((String) modelComponent.getOrDefault("version", ""));
 
 		if (includeOptions) {
-			Map<String, Map<String, Object>> modelComponentProperties = obj.getMap("componentProperties");
-			if (modelComponentProperties != null) {
-				for (Map.Entry<String, Map<String, Object>> modelComponentProperty : modelComponentProperties
-						.entrySet()) {
-					ComponentOptionModel option = new ComponentOptionModel();
-					Map<String, Object> options = modelComponentProperty.getValue();
-					option.setName(modelComponentProperty.getKey());
-					option.setKind((String) options.getOrDefault("kind", ""));
-					option.setGroup((String) options.getOrDefault("group", ""));
-					option.setRequired(getSafeBoolean("required", options));
-					option.setType((String) options.getOrDefault("type", ""));
-					option.setJavaType((String) options.getOrDefault("javaType", ""));
-					option.setEnums((List<String>) options.getOrDefault("enum", Collections.emptyList()));
-					option.setDeprecated(getSafeBoolean("deprecated", options));
-					option.setSecret(getSafeBoolean("secret", options));
-					option.setDefaultValue(options.getOrDefault("defaultValue", ""));
-					option.setDescription((String) options.getOrDefault("description", ""));
-					component.addComponentOption(option);
-				}
-			}
-
-			Map<String, Map<String, Object>> modelProperties = obj.getMap("properties");
-			if (modelProperties != null) {
-				for (Map.Entry<String, Map<String, Object>> modelProperty : modelProperties.entrySet()) {
-					EndpointOptionModel option = new EndpointOptionModel();
-					Map<String, Object> options = modelProperty.getValue();
-					option.setName(modelProperty.getKey());
-					option.setKind((String) options.getOrDefault("kind", ""));
-					option.setGroup((String) options.getOrDefault("group", ""));
-					option.setRequired(getSafeBoolean("required", options));
-					option.setType((String) options.getOrDefault("type", ""));
-					option.setJavaType((String) options.getOrDefault("javaType", ""));
-					option.setEnums((List<String>) options.getOrDefault("enum", Collections.emptyList()));
-					option.setPrefix((String) options.getOrDefault("prefix", ""));
-					option.setMultiValue(getSafeBoolean("multiValue", options));
-					option.setDeprecated(getSafeBoolean("deprecated", options));
-					option.setSecret(getSafeBoolean("secret", options));
-					option.setDefaultValue(options.getOrDefault("defaultValue", ""));
-					option.setDescription((String) options.getOrDefault("description", ""));
-					component.addEndpointOption(option);
-				}
-			}
+			populateComponentProperties(obj, component);
+			populateProperties(obj, component);
+			populateApis(obj, component);
+			populateApiProperties(obj, component);
 		}
 		return component;
+	}
+
+	private static void populateApiProperties(JsonObject obj, ComponentModel component) {
+		Map<String, Map<String, Object>> apiProperties = obj.getMap("apiProperties");
+		if (apiProperties != null) {
+			for (Map.Entry<String, Map<String, Object>> apiProperty : apiProperties.entrySet()) {
+				ApiPropertyOptionModel option = createApiPropertyOptionModel(apiProperty);
+				component.addApiPropertyOptionModel(option);
+			}
+		}
+	}
+
+	private static void populateApis(JsonObject obj, ComponentModel component) {
+		Map<String, Map<String, Object>> apis = obj.getMap("apis");
+		if (apis != null) {
+			for (Map.Entry<String, Map<String, Object>> api : apis.entrySet()) {
+				ApiOptionModel option = createApiOptionModel(api);
+				component.addApiOption(option);
+			}
+		}
+	}
+
+	private static void populateProperties(JsonObject obj, ComponentModel component) {
+		Map<String, Map<String, Object>> modelProperties = obj.getMap("properties");
+		if (modelProperties != null) {
+			for (Map.Entry<String, Map<String, Object>> modelProperty : modelProperties.entrySet()) {
+				EndpointOptionModel option = createEndpointOptionModel(modelProperty);
+				component.addEndpointOption(option);
+			}
+		}
+	}
+
+	private static void populateComponentProperties(JsonObject obj, ComponentModel component) {
+		Map<String, Map<String, Object>> modelComponentProperties = obj.getMap("componentProperties");
+		if (modelComponentProperties != null) {
+			for (Map.Entry<String, Map<String, Object>> modelComponentProperty : modelComponentProperties.entrySet()) {
+				ComponentOptionModel option = createComponentOptionModel(modelComponentProperty);
+				component.addComponentOption(option);
+			}
+		}
+	}
+
+	private static ApiPropertyOptionModel createApiPropertyOptionModel(
+			Map.Entry<String, Map<String, Object>> apiProperty) {
+		ApiPropertyOptionModel option = new ApiPropertyOptionModel();
+		option.setName(apiProperty.getKey());
+		Map<String, Map<String, Object>> methods = (Map<String, Map<String, Object>>) apiProperty.getValue().getOrDefault("methods", Collections.emptyMap());
+		for (Map.Entry<String, Map<String, Object>> method : methods.entrySet()) {
+			String methodName = method.getKey();
+			ApiPropertyMethodOptionModel methodDescriptor = new ApiPropertyMethodOptionModel();
+			Map<String, Map<String, Object>> properties = (Map<String, Map<String, Object>>) method.getValue().getOrDefault("properties", Collections.emptyMap());
+			for (Entry<String, Map<String, Object>> propertyEntry : properties.entrySet()) {
+				methodDescriptor.add(createEndpointOptionModel(propertyEntry));
+			}
+			if("creator".equals(methodName)) {
+				option.setCreator(methodDescriptor);
+			} else if("deleter".equals(methodName)) {
+				option.setDeleter(methodDescriptor);
+			} else if("fetcher".equals(methodName)) {
+				option.setFetcher(methodDescriptor);
+			} else if("reader".equals(methodName)) {
+				option.setReader(methodDescriptor);
+			} else if("updater".equals(methodName)) {
+				option.setUpdater(methodDescriptor);
+			}
+		}
+		return option;
+	}
+
+	private static ApiOptionModel createApiOptionModel(Map.Entry<String, Map<String, Object>> api) {
+		ApiOptionModel option = new ApiOptionModel();
+		option.setName(api.getKey());
+		Map<String, Object> options = api.getValue();
+		option.setConsumerOnly(getSafeBoolean("consumerOnly", options));
+		option.setProducerOnly(getSafeBoolean("producerOnly", options));
+		option.setAliases((List<String>) options.getOrDefault("aliases", Collections.emptyList()));
+		Map<String, Map<String, Object>> methods = (Map<String, Map<String, Object>>) options.getOrDefault("methods", Collections.emptyMap());
+		ApiOptionMethodsModel apiOptionsMethodsModel = new ApiOptionMethodsModel();
+		for (Map.Entry<String, Map<String, Object>> method : methods.entrySet()) {
+			String methodName = method.getKey();
+			ApiOptionMethodDescriptorModel methodDescriptor = new ApiOptionMethodDescriptorModel();
+			methodDescriptor.setDescription((String)method.getValue().getOrDefault("description", ""));
+			methodDescriptor.setSignatures((List<String>)method.getValue().getOrDefault("signatures", Collections.emptyList()));
+			if("creator".equals(methodName)) {
+				apiOptionsMethodsModel.setCreator(methodDescriptor);
+			} else if("deleter".equals(methodName)) {
+				apiOptionsMethodsModel.setDeleter(methodDescriptor);
+			} else if("fetcher".equals(methodName)) {
+				apiOptionsMethodsModel.setFetcher(methodDescriptor);
+			} else if("reader".equals(methodName)) {
+				apiOptionsMethodsModel.setReader(methodDescriptor);
+			} else if("updater".equals(methodName)) {
+				apiOptionsMethodsModel.setUpdater(methodDescriptor);
+			}
+		}
+		option.setApiOptionsMethodsModel(apiOptionsMethodsModel);
+		return option;
+	}
+
+	private static EndpointOptionModel createEndpointOptionModel(Map.Entry<String, Map<String, Object>> modelProperty) {
+		EndpointOptionModel option = new EndpointOptionModel();
+		fillBaseOptions(modelProperty, option);
+		Map<String, Object> options = modelProperty.getValue();
+		option.setPrefix((String) options.getOrDefault("prefix", ""));
+		option.setMultiValue(getSafeBoolean("multiValue", options));
+		return option;
+	}
+
+	private static ComponentOptionModel createComponentOptionModel(Map.Entry<String, Map<String, Object>> modelComponentProperty) {
+		ComponentOptionModel option = new ComponentOptionModel();
+		fillBaseOptions(modelComponentProperty, option);
+		return option;
+	}
+
+	private static void fillBaseOptions(Map.Entry<String, Map<String, Object>> modelComponentProperty, BaseOptionModel option) {
+		Map<String, Object> options = modelComponentProperty.getValue();
+		option.setName(modelComponentProperty.getKey());
+		option.setKind((String) options.getOrDefault("kind", ""));
+		option.setGroup((String) options.getOrDefault("group", ""));
+		option.setRequired(getSafeBoolean("required", options));
+		option.setType((String) options.getOrDefault("type", ""));
+		option.setJavaType((String) options.getOrDefault("javaType", ""));
+		option.setDeprecated(getSafeBoolean("deprecated", options));
+		option.setSecret(getSafeBoolean("secret", options));
+		option.setDescription((String) options.getOrDefault("description", ""));
+		option.setEnums((List<String>) options.getOrDefault("enum", Collections.emptyList()));
+		option.setDefaultValue(options.getOrDefault("defaultValue", ""));
 	}
 
 	/**

@@ -38,6 +38,8 @@ public class ComponentModel {
 	private String version;
 	private final List<ComponentOptionModel> componentOptions = new ArrayList<>();
 	private final List<EndpointOptionModel> endpointOptions = new ArrayList<>();
+	private final List<ApiOptionModel> apiOptions = new ArrayList<>();
+	private final List<ApiPropertyOptionModel> apiPropertyOptions = new ArrayList<>();
 
 	public String getKind() {
 		return kind;
@@ -164,7 +166,6 @@ public class ComponentModel {
 	}
 
 	public void addComponentOption(ComponentOptionModel option) {
-
 		componentOptions.add(option);
 	}
 
@@ -182,6 +183,22 @@ public class ComponentModel {
 
 	public EndpointOptionModel getEndpointOption(String name) {
 		return endpointOptions.stream().filter(o -> o.getName().equals(name)).findFirst().orElse(null);
+	}
+
+	public List<ApiOptionModel> getApis() {
+		return apiOptions;
+	}
+
+	public void addApiOption(ApiOptionModel option) {
+		apiOptions.add(option);
+	}
+
+	public List<ApiPropertyOptionModel> getApiProperties() {
+		return apiPropertyOptions;
+	}
+	
+	public void addApiPropertyOptionModel(ApiPropertyOptionModel option) {
+		apiPropertyOptions.add(option);
 	}
 
 }
