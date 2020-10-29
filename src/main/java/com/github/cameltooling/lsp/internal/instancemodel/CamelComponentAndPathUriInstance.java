@@ -16,6 +16,7 @@
  */
 package com.github.cameltooling.lsp.internal.instancemodel;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -36,7 +37,8 @@ import com.github.cameltooling.lsp.internal.completion.CamelComponentSchemesComp
  */
 public class CamelComponentAndPathUriInstance extends CamelUriElementInstance {
 
-	private static final String CAMEL_PATH_SEPARATOR_REGEX = ":|/";
+	private static final String CAMEL_PATH_PRIMARY_SEPARATOR_REGEX = ":";
+	private static final String CAMEL_PATH_POTENTIAL_SECONDARY_SEPARATOR_REGEX = "/";
 	
 	private CamelURIInstance parent;
 	private CamelComponentURIInstance component;
@@ -60,13 +62,23 @@ public class CamelComponentAndPathUriInstance extends CamelUriElementInstance {
 	}
 
 	private void initPathParams(String uriToParse, int posDoubleDot, int posEndofPathParams) {
-		String[] allPathParams = uriToParse.substring(posDoubleDot + 1, posEndofPathParams).split(CAMEL_PATH_SEPARATOR_REGEX);
+		String pathParamsSubstring = uriToParse.substring(posDoubleDot + 1, posEndofPathParams);
+		String[] splitsForDoubleDots = pathParamsSubstring.split(CAMEL_PATH_PRIMARY_SEPARATOR_REGEX);
 		int currentPosition = posDoubleDot + 1;
 		int pathParamIndex = 0;
-		for (String pathParam : allPathParams) {
-			pathParams.add(new PathParamURIInstance(this, pathParam, currentPosition, currentPosition+pathParam.length(), pathParamIndex));
-			currentPosition += pathParam.length() + 1;
-			pathParamIndex++;
+		for(String splitForDoubleDot : splitsForDoubleDots) {
+			String[] splitsForSlash = splitForDoubleDot.split(CAMEL_PATH_POTENTIAL_SECONDARY_SEPARATOR_REGEX);
+			if(Arrays.asList(splitsForSlash).contains("")) {
+				pathParams.add(new PathParamURIInstance(this, splitForDoubleDot, currentPosition, currentPosition+splitForDoubleDot.length(), pathParamIndex));
+				currentPosition += splitForDoubleDot.length() + 1;
+				pathParamIndex++;
+			} else {
+				for (String splitForSlash : splitsForSlash) {
+					pathParams.add(new PathParamURIInstance(this, splitForSlash, currentPosition, currentPosition+splitForSlash.length(), pathParamIndex));
+					currentPosition += splitForSlash.length() + 1;
+					pathParamIndex++;
+				}
+			}
 		}
 	}
 	

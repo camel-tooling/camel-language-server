@@ -75,6 +75,11 @@ class CamelKafkaConnectorCamelUrlRefactorTest extends AbstractCamelLanguageServe
 				"camel.sink.url=activemq:test1:test2",
 				new String[] {"camel.sink.path.destinationType=test1","camel.sink.path.destinationName=test2"});
 	}
+	
+	@Test
+	void testRefactorWithPathUsingSlashes() throws Exception {
+		testConvertToListRefactor("camel.source.url=aws2-s3://myName", new String[] {"camel.source.path.bucketNameOrArn=//myName"});
+	}
 
 	private void testConvertToListRefactor(String text, String[] expected) throws URISyntaxException, InterruptedException, ExecutionException {
 		CamelLanguageServer languageServer = initializeLanguageServer(text, ".properties");

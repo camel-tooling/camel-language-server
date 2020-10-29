@@ -81,6 +81,13 @@ class CamelURIInstanceTest {
 	}
 	
 	@Test
+	void testPathParamWithSlashNotUsedAsDelimiter() throws Exception {
+		CamelURIInstance camelURIInstance = new CamelURIInstance("aws2-s3://myName", (Node) null, null);
+		assertThat(camelURIInstance.getComponentAndPathUriElementInstance().getPathParams()).containsOnly(
+				new PathParamURIInstance(camelURIInstance.getComponentAndPathUriElementInstance(), "//myName", 8, 16, 0));
+	}
+	
+	@Test
 	void testOptionParam() throws Exception {
 		CamelURIInstance camelURIInstance = new CamelURIInstance("timer:timerName?delay=1000", (Node) null, null);
 		OptionParamURIInstance optionParam = camelURIInstance.getOptionParams().iterator().next();
