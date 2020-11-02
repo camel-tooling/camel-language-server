@@ -131,7 +131,10 @@ public class CamelComponentAndPathUriInstance extends CamelUriElementInstance {
 	
 	@Override
 	public CompletableFuture<List<CompletionItem>> getCompletions(CompletableFuture<CamelCatalog> camelCatalog, int positionInCamelUri, TextDocumentItem docItem) {
-		if(getStartPositionInUri() <= positionInCamelUri && positionInCamelUri <= getEndPositionInUri()) {
+		CamelUriElementInstance specificElement = getSpecificElement(positionInCamelUri);
+		if (specificElement != null && specificElement != component && specificElement != this) {
+			return specificElement.getCompletions(camelCatalog, positionInCamelUri, docItem);
+		} else if(getStartPositionInUri() <= positionInCamelUri && positionInCamelUri <= getEndPositionInUri()) {
 			return camelCatalog.thenApply(new CamelComponentSchemesCompletionsFuture(this, getFilter(positionInCamelUri), docItem));
 		} else {
 			return CompletableFuture.completedFuture(Collections.emptyList());
@@ -144,7 +147,7 @@ public class CamelComponentAndPathUriInstance extends CamelUriElementInstance {
 	 * @param positionInUri	the position
 	 * @return	the filter string or null if not to be filtered
 	 */
-	private String getFilter(int positionInUri) {
+	protected String getFilter(int positionInUri) {
 		String componentName = getComponent().getComponentName();
 		if (componentName != null && componentName.trim().length()>0 && getStartPositionInUri() != positionInUri) {
 			String filter = componentName.substring(getStartPositionInUri(), positionInUri < componentName.length() ? positionInUri : componentName.length());

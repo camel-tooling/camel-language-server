@@ -165,6 +165,28 @@ public class CamelCompletionForApisTest extends AbstractCamelLanguageServerTest 
 		assertThat(completions).isEmpty();
 	}
 	
+	@Test
+	void testApiName() throws Exception {
+		String text = "camel.sink.url=aComponentWithApis:a";
+		CamelLanguageServer languageServer = initializeLanguageServer(text, ".properties");
+		List<CompletionItem> completions = getCompletionFor(languageServer, new Position(0, text.length())).get().getLeft();
+		assertThat(completions).hasSize(1);
+		CompletionItem accountCompletionItem = completions.get(0);
+		assertThat(accountCompletionItem.getLabel()).isEqualTo("account");
+		assertThat(accountCompletionItem.getInsertText()).isEqualTo("account");
+		assertThat(accountCompletionItem.getTextEdit().getNewText()).isEqualTo("account");
+		Range expectedRange = new Range(new Position(0,  text.length() -1), new Position(0, text.length()));
+		assertThat(accountCompletionItem.getTextEdit().getRange()).isEqualTo(expectedRange);
+	}
+	
+	@Test
+	void testWithOnlyPath() throws Exception {
+		String text = "camel.sink.url=aComponentWithApis:account/create";
+		CamelLanguageServer languageServer = initializeLanguageServer(text, ".properties");
+		List<CompletionItem> completions = getCompletionFor(languageServer, new Position(0, text.length())).get().getLeft();
+		assertThat(completions).isEmpty();
+	}
+	
 	@Override
 	protected Map<Object, Object> getInitializationOptions() {
 		return createMapSettingsWithComponent(SIMPLIFIED_JSON);
