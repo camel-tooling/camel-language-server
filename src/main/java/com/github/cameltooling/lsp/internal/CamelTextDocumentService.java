@@ -136,7 +136,7 @@ public class CamelTextDocumentService implements TextDocumentService {
 	}
 
 	private boolean isOnCamelKModeline(int line, TextDocumentItem textDocumentItem) {
-		return line == 0 && new CamelKModelineParser().retrieveModelineCamelKStart(new ParserFileHelperUtil().getLine(textDocumentItem, 0)) != null;
+		return new CamelKModelineParser().retrieveModelineCamelKStart(new ParserFileHelperUtil().getLine(textDocumentItem, line)) != null;
 	}
 
 	@Override
@@ -153,7 +153,7 @@ public class CamelTextDocumentService implements TextDocumentService {
 		if (uri.endsWith(".properties")){
 			return new CamelPropertiesFileHoverProcessor(textDocumentItem).getHover(hoverParams.getPosition(), getCamelCatalog(), getCamelKafkaConnectorManager());
 		} else if(isOnCamelKModeline(hoverParams.getPosition().getLine(), textDocumentItem)) {
-			return new CamelKModelineHoverProcessor(textDocumentItem).getHover(hoverParams.getPosition().getCharacter(), getCamelCatalog());
+			return new CamelKModelineHoverProcessor(textDocumentItem).getHover(hoverParams.getPosition(), getCamelCatalog());
 		} else {
 			return new CamelURIHoverProcessor(textDocumentItem, getCamelCatalog()).getHover(hoverParams.getPosition());
 		}

@@ -20,6 +20,7 @@ import java.util.concurrent.CompletableFuture;
 
 import org.apache.camel.catalog.CamelCatalog;
 import org.eclipse.lsp4j.Hover;
+import org.eclipse.lsp4j.Position;
 import org.eclipse.lsp4j.TextDocumentItem;
 
 import com.github.cameltooling.lsp.internal.modelinemodel.CamelKModeline;
@@ -33,9 +34,10 @@ public class CamelKModelineHoverProcessor {
 		this.textDocumentItem = textDocumentItem;
 	}
 
-	public CompletableFuture<Hover> getHover(int characterPosition, CompletableFuture<CamelCatalog> camelCatalog) {
-		CamelKModeline camelKModeline = new CamelKModeline(new ParserFileHelperUtil().getLine(textDocumentItem, 0), textDocumentItem);
-		return camelKModeline.getHover(characterPosition, camelCatalog);
+	public CompletableFuture<Hover> getHover(Position position, CompletableFuture<CamelCatalog> camelCatalog) {
+		int lineNumber = position.getLine();
+		CamelKModeline camelKModeline = new CamelKModeline(new ParserFileHelperUtil().getLine(textDocumentItem, lineNumber), textDocumentItem, lineNumber);
+		return camelKModeline.getHover(position, camelCatalog);
 	}
 
 }

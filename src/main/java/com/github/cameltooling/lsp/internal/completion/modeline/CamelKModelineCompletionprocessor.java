@@ -38,8 +38,8 @@ public class CamelKModelineCompletionprocessor {
 	}
 
 	public CompletableFuture<List<CompletionItem>>  getCompletions(Position position) {
-		String modelineString = new ParserFileHelperUtil().getLine(textDocumentItem, 0);
-		return new CamelKModeline(modelineString, textDocumentItem).getCompletions(position.getCharacter(), camelCatalog);
+		String modelineString = new ParserFileHelperUtil().getLine(textDocumentItem, position.getLine());
+		return new CamelKModeline(modelineString, textDocumentItem, position.getLine()).getCompletions(position.getCharacter(), camelCatalog);
 	}
 
 }

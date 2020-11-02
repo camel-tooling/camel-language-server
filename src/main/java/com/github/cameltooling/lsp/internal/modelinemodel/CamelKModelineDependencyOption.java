@@ -36,10 +36,12 @@ public class CamelKModelineDependencyOption implements ICamelKModelineOptionValu
 
 	private String value;
 	private int startPosition;
+	private int line;
 
-	public CamelKModelineDependencyOption(String value, int startPosition) {
+	public CamelKModelineDependencyOption(String value, int startPosition, int line) {
 		this.value = value;
 		this.startPosition = startPosition;
+		this.line = line;
 	}
 
 	@Override
@@ -116,6 +118,11 @@ public class CamelKModelineDependencyOption implements ICamelKModelineOptionValu
 		return catalog.findComponentNames().stream().map(
 				componentName -> ModelHelper.generateComponentModel(catalog.componentJSonSchema(componentName), true))
 				.filter(componentModel -> value.equals(componentModel.getArtifactId())).findAny();
+	}
+
+	@Override
+	public int getLine() {
+		return line;
 	}
 
 }

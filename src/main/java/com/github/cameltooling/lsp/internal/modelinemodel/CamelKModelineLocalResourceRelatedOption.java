@@ -46,11 +46,17 @@ public abstract class CamelKModelineLocalResourceRelatedOption implements ICamel
 	private String value;
 	private int startPosition;
 	private String documentItemUri;
+	private int line;
 
-	public CamelKModelineLocalResourceRelatedOption(String value, int startPosition, String documentItemUri) {
+	public CamelKModelineLocalResourceRelatedOption(String value, int startPosition, String documentItemUri, int line) {
 		this.value = value;
 		this.startPosition = startPosition;
 		this.documentItemUri = documentItemUri;
+		this.line = line;
+	}
+	
+	public int getLine() {
+		return line;
 	}
 
 	@Override

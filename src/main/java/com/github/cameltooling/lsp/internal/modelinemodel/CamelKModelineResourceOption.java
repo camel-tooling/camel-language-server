@@ -23,8 +23,8 @@ import com.github.cameltooling.lsp.internal.completion.modeline.CamelKModelineOp
 
 public class CamelKModelineResourceOption extends CamelKModelineLocalResourceRelatedOption {
 	
-	public CamelKModelineResourceOption(String value, int startPosition, String documentItemUri) {
-		super(value, startPosition, documentItemUri);
+	public CamelKModelineResourceOption(String value, int startPosition, String documentItemUri, int line) {
+		super(value, startPosition, documentItemUri, line);
 	}
 
 	@Override

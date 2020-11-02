@@ -53,6 +53,16 @@ class CamelKModelineTraitPropertyNameTest extends AbstractCamelLanguageServerTes
 	}
 	
 	@Test
+	void testProvideCompletionOnSecondLine() throws Exception {
+		CamelLanguageServer camelLanguageServer = initializeLanguageServer("\n// camel-k: trait=quarkus.");
+		
+		CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = getCompletionFor(camelLanguageServer, new Position(1, 26));
+		
+		List<CompletionItem> completionItems = completions.get().getLeft();
+		assertThat(completionItems).hasSize(2);
+	}
+	
+	@Test
 	void testProvideCompletionWithPartialName() throws Exception {
 		CamelLanguageServer camelLanguageServer = initializeLanguageServer("// camel-k: trait=quarkus.na");
 		

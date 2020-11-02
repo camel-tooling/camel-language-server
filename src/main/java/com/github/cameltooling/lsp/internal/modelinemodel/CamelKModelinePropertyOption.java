@@ -32,8 +32,10 @@ public class CamelKModelinePropertyOption implements ICamelKModelineOptionValue 
 	private CamelPropertyEntryInstance value;
 	private int startPosition;
 	private String fullStringValue;
+	private int line;
 
-	public CamelKModelinePropertyOption(String value, int startPosition, TextDocumentItem documentItem) {
+	public CamelKModelinePropertyOption(String value, int startPosition, TextDocumentItem documentItem, int line) {
+		this.line = line;
 		this.value = new CamelPropertyEntryInstance(value, new Position(0, startPosition), documentItem);
 		this.fullStringValue = value;
 		this.startPosition = startPosition;
@@ -62,6 +64,10 @@ public class CamelKModelinePropertyOption implements ICamelKModelineOptionValue 
 	@Override
 	public CompletableFuture<Hover> getHover(int characterPosition, CompletableFuture<CamelCatalog> camelCatalog) {
 		return value.getHover(new Position(0, characterPosition), camelCatalog, null);
+	}
+	
+	public int getLine() {
+		return line;
 	}
 
 }

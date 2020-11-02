@@ -38,8 +38,10 @@ public class CamelKModelineOption implements ILineRangeDefineable {
 	private String optionName;
 	private ICamelKModelineOptionValue optionValue;
 	private int startCharacter;
+	private int line;
 
-	public CamelKModelineOption(String option, int startCharacter, TextDocumentItem documentItem) {
+	public CamelKModelineOption(String option, int startCharacter, TextDocumentItem documentItem, int line) {
+		this.line = line;
 		int nameValueIndexSeparator = option.indexOf('=');
 		this.startCharacter = startCharacter;
 		this.optionName = option.substring(0, nameValueIndexSeparator != -1 ? nameValueIndexSeparator : option.length());
@@ -54,19 +56,19 @@ public class CamelKModelineOption implements ILineRangeDefineable {
 			}
 			int startPosition = getStartPositionInLine() + optionName.length() + 1;
 			if(CamelKModelineOptionNames.OPTION_NAME_TRAIT.equals(optionName)) {
-				return new CamelKModelineTraitOption(value, startPosition);
+				return new CamelKModelineTraitOption(value, startPosition, line);
 			} else if(CamelKModelineOptionNames.OPTION_NAME_DEPENDENCY.equals(optionName)) {
-				return new CamelKModelineDependencyOption(value, startPosition);
+				return new CamelKModelineDependencyOption(value, startPosition, line);
 			} else if(CamelKModelineOptionNames.OPTION_NAME_PROPERTY.equals(optionName)) {
-				return new CamelKModelinePropertyOption(value, startPosition, documentItem);
+				return new CamelKModelinePropertyOption(value, startPosition, documentItem, line);
 			} else if(CamelKModelineOptionNames.OPTION_NAME_PROPERTY_FILE.equals(optionName)) {
-				return new CamelKModelinePropertyFileOption(value, startPosition, documentItem.getUri());
+				return new CamelKModelinePropertyFileOption(value, startPosition, documentItem.getUri(), line);
 			} else if(CamelKModelineOptionNames.OPTION_NAME_RESOURCE.equals(optionName)) {
-				return new CamelKModelineResourceOption(value, startPosition, documentItem.getUri());
+				return new CamelKModelineResourceOption(value, startPosition, documentItem.getUri(), line);
 			} else if(CamelKModelineOptionNames.OPTION_NAME_OPEN_API.equals(optionName)) {
-				return new CamelKModelineOpenAPIOption(value, startPosition, documentItem.getUri());
+				return new CamelKModelineOpenAPIOption(value, startPosition, documentItem.getUri(), line);
 			}else {
-				return new GenericCamelKModelineOptionValue(value, startPosition);
+				return new GenericCamelKModelineOptionValue(value, startPosition, line);
 			}
 		} else {
 			return null;
@@ -81,7 +83,7 @@ public class CamelKModelineOption implements ILineRangeDefineable {
 	
 	@Override
 	public int getLine() {
-		return 0;
+		return line;
 	}
 
 	@Override
@@ -119,8 +121,8 @@ public class CamelKModelineOption implements ILineRangeDefineable {
 		}
 	}
 	
-	public CompletableFuture<Hover> getHover(int characterPosition, CompletableFuture<CamelCatalog> camelCatalog) {
-		if(getStartPositionInLine() <= characterPosition && characterPosition <= getStartPositionInLine() + optionName.length()) {
+	public CompletableFuture<Hover> getHover(Position position, CompletableFuture<CamelCatalog> camelCatalog) {
+		if(getStartPositionInLine() <= position.getCharacter() && position.getCharacter() <= getStartPositionInLine() + optionName.length()) {
 			String description = CamelKModelineOptionNames.getDescription(optionName);
 			if(description != null) {
 				Hover hover = new Hover();
@@ -129,8 +131,8 @@ public class CamelKModelineOption implements ILineRangeDefineable {
 				return CompletableFuture.completedFuture(hover);
 			}
 		}
-		if(optionValue != null && optionValue.isInRange(characterPosition)) {
-			return optionValue.getHover(characterPosition, camelCatalog);
+		if(optionValue != null && optionValue.isInRange(position.getCharacter())) {
+			return optionValue.getHover(position.getCharacter(), camelCatalog);
 		}
 		return CompletableFuture.completedFuture(null);
 	}
