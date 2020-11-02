@@ -16,14 +16,23 @@
  */
 package com.github.cameltooling.lsp.internal.instancemodel;
 
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 import org.apache.camel.catalog.CamelCatalog;
 import org.eclipse.lsp4j.CompletionItem;
 import org.eclipse.lsp4j.TextDocumentItem;
 
+import com.github.cameltooling.lsp.internal.catalog.model.ApiOptionModel;
+import com.github.cameltooling.lsp.internal.catalog.model.ApiPropertyMethodOptionModel;
+import com.github.cameltooling.lsp.internal.catalog.model.ApiPropertyOptionModel;
 import com.github.cameltooling.lsp.internal.catalog.model.ComponentModel;
+import com.github.cameltooling.lsp.internal.catalog.model.EndpointOptionModel;
 
 public abstract class CamelUriElementInstance implements ILineRangeDefineable{
 	
@@ -75,4 +84,50 @@ public abstract class CamelUriElementInstance implements ILineRangeDefineable{
 	public abstract String getDescription(ComponentModel componentModel);
 	
 	public abstract CamelURIInstance getCamelUriInstance();
+
+	public List<EndpointOptionModel> findAvailableApiProperties(ComponentModel componentModel) {
+		CamelURIInstance camelUriInstance = getCamelUriInstance();
+		PathParamURIInstance apiNamePath = camelUriInstance.getComponentAndPathUriElementInstance().getApiNamePath();
+		PathParamURIInstance methodNamePath = camelUriInstance.getComponentAndPathUriElementInstance().getMethodNamePath();
+		Optional<ApiPropertyMethodOptionModel> apisPropertiesModel = componentModel.getApiProperties().stream()
+				.filter(apiProperty -> isCorrespondingApiName(apiNamePath, apiProperty))
+				.map(apiProperty -> findApiPropertyModel(componentModel, methodNamePath, apiProperty))
+				.filter(Objects::nonNull).findAny();
+		if (apisPropertiesModel.isPresent()) {
+			return apisPropertiesModel.get().getProperties();
+		} else {
+			return Collections.emptyList();
+		}
+	}
+	
+	private boolean isCorrespondingApiName(PathParamURIInstance apiNamePath, ApiPropertyOptionModel apiProperty) {
+		return apiNamePath != null && apiProperty.getName().equals(apiNamePath.getValue());
+	}
+
+	private ApiPropertyMethodOptionModel findApiPropertyModel(ComponentModel componentModel, PathParamURIInstance methodNamePath, ApiPropertyOptionModel apiProperty) {
+		Optional<ApiOptionModel> correspondingApi = componentModel.getApis()
+				.stream()
+				.filter(api -> apiProperty.getName().equals(api.getName()))
+				.findAny();
+		if(correspondingApi.isPresent()) {
+			Map<String, String> aliasesMapping = new HashMap<>();
+			for(String aliasFullString : correspondingApi.get().getAliases()) {
+				String[] splittedAlias = aliasFullString.split("=");
+				aliasesMapping.put(splittedAlias[1], splittedAlias[0]);
+			}
+			String methodKind = aliasesMapping.get(methodNamePath.getValue());
+			if("^creator$".equals(methodKind)) {
+				return apiProperty.getCreator();
+			} else if("^deleter$".equals(methodKind)) {
+				return apiProperty.getDeleter();
+			} else if("^fetcher$".equals(methodKind)) {
+				return apiProperty.getFetcher();
+			} else if("^reader$".equals(methodKind)) {
+				return apiProperty.getReader();
+			} else if("^updater$".equals(methodKind)) {
+				return apiProperty.getUpdater();
+			}
+		}
+		return null;
+	}
 }
