@@ -20,10 +20,12 @@ public class GenericCamelKModelineOptionValue implements ICamelKModelineOptionVa
 
 	private String value;
 	private int startPosition;
+	private int line;
 
-	public GenericCamelKModelineOptionValue(String value, int startPosition) {
+	public GenericCamelKModelineOptionValue(String value, int startPosition, int line) {
 		this.value = value;
 		this.startPosition = startPosition;
+		this.line = line;
 	}
 
 	@Override
@@ -38,6 +40,11 @@ public class GenericCamelKModelineOptionValue implements ICamelKModelineOptionVa
 	
 	public String getValueAsString() {
 		return value;
+	}
+	
+	@Override
+	public int getLine() {
+		return line;
 	}
 
 }

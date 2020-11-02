@@ -47,6 +47,17 @@ class CamelKModelineTraitDefinitionNameTest extends AbstractCamelLanguageServerT
 	}
 	
 	@Test
+	void testProvideCompletionOnSecondLine() throws Exception {
+		CamelLanguageServer camelLanguageServer = initializeLanguageServer("\n// camel-k: trait=");
+		
+		CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = getCompletionFor(camelLanguageServer, new Position(1, 18));
+		
+		List<CompletionItem> completionItems = completions.get().getLeft();
+		assertThat(completionItems).hasSize(28);
+		checkPlatformCompletionAvailable(completionItems, "platform.", 18, 18);
+	}
+	
+	@Test
 	void testProvideCompletionWithPartialName() throws Exception {
 		CamelLanguageServer camelLanguageServer = initializeLanguageServer("// camel-k: trait=pla");
 		

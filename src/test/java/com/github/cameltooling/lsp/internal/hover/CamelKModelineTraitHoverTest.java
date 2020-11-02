@@ -66,6 +66,15 @@ class CamelKModelineTraitHoverTest extends AbstractCamelLanguageServerTest {
 	}
 	
 	@Test
+	void testProvideHoverOnSecondLine() throws Exception {
+		CamelLanguageServer camelLanguageServer = initializeLanguageServer("\n// camel-k: trait=quarkus.enabled", ".java");
+		HoverParams hoverParams = new HoverParams(new TextDocumentIdentifier(DUMMY_URI+".java"), new Position(1, 28));
+		CompletableFuture<Hover> hover = camelLanguageServer.getTextDocumentService().hover(hoverParams);
+		
+		assertThat(hover.get().getContents().getLeft().get(0).getLeft()).isEqualTo("Can be used to enable or disable a trait. All traits share this common property.");
+	}
+	
+	@Test
 	void testProvideNoErroOnHoverOnDefinitionNameForUnknownDefinitionName() throws Exception {
 		checkNoHover("// camel-k: trait=unknown.enabled=true", 20);
 	}

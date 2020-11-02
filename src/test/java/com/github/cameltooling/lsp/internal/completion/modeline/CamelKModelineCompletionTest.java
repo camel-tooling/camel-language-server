@@ -44,6 +44,17 @@ class CamelKModelineCompletionTest extends AbstractCamelLanguageServerTest {
 	}
 	
 	@Test
+	void testProvideCompletionOnSecondLine() throws Exception {
+		CamelLanguageServer camelLanguageServer = initializeLanguageServer("\n// camel-k: ");
+		
+		CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = getCompletionFor(camelLanguageServer, new Position(1, 12));
+		
+		List<CompletionItem> completionItems = completions.get().getLeft();
+		assertThat(completionItems).hasSize(10);
+		checkTraitCompletionAvailable(completionItems);
+	}
+	
+	@Test
 	void testProvideCompletionWithPartialName() throws Exception {
 		CamelLanguageServer camelLanguageServer = initializeLanguageServer("// camel-k: tr");
 		

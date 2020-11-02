@@ -49,7 +49,7 @@ class CamelKModelineTraitOptionTest {
 	}
 
 	private CamelKModelineTraitOption retrieveFirstTrait(String modelineWithMixedSeparator) {
-		List<CamelKModelineOption> options = new CamelKModeline(modelineWithMixedSeparator, null).getOptions();
+		List<CamelKModelineOption> options = new CamelKModeline(modelineWithMixedSeparator, null, 0).getOptions();
 		assertThat(options).hasSize(1);
 		return (CamelKModelineTraitOption) options.get(0).getOptionValue();
 	}

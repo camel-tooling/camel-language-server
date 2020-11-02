@@ -18,6 +18,7 @@ package com.github.cameltooling.lsp.internal.diagnostic;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.io.FileNotFoundException;
 import java.util.Comparator;
 import java.util.List;
 
@@ -29,7 +30,16 @@ class CamelKModelineDiagnosticTest extends AbstractDiagnosticTest {
 
 	@Test
 	void testDuplicatedTraitsInModeline() throws Exception {
-		testDiagnostic("camelk-with-duplicated-traits-in-modeline", 2, ".java");
+		testDuplicatedTraitsInModeline("camelk-with-duplicated-traits-in-modeline", 0);
+	}
+	
+	@Test
+	void testDuplicatedTraitsInModelineWrittenOnSecondLIne() throws Exception {
+		testDuplicatedTraitsInModeline("camelk-with-duplicated-traits-in-modeline-written-secondline", 1);
+	}
+
+	private void testDuplicatedTraitsInModeline(String fileUnderTest, int lineNumber) throws FileNotFoundException {
+		testDiagnostic(fileUnderTest, 2, ".java");
 		List<Diagnostic> diagnostics = lastPublishedDiagnostics.getDiagnostics();
 		diagnostics.sort(new Comparator<Diagnostic>() {
 
@@ -40,11 +50,11 @@ class CamelKModelineDiagnosticTest extends AbstractDiagnosticTest {
 		});
 		Diagnostic diagnostic1 = diagnostics.get(0);
 		Range range1 = diagnostic1.getRange();
-		checkRange(range1, 0, 18, 0, 38);
+		checkRange(range1, lineNumber, 18, lineNumber, 38);
 		assertThat(diagnostic1.getMessage()).isEqualTo("More than one trait defines the same property: quarkus.enabled");
 		Diagnostic diagnostic2 = diagnostics.get(1);
 		Range range2 = diagnostic2.getRange();
-		checkRange(range2, 0, 45, 0, 66);
+		checkRange(range2, lineNumber, 45, lineNumber, 66);
 		assertThat(diagnostic2.getMessage()).isEqualTo("More than one trait defines the same property: quarkus.enabled");
 	}
 	

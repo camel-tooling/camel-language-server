@@ -49,6 +49,20 @@ class CamelKModelineDependencyCompletionTest extends AbstractCamelLanguageServer
 	}
 	
 	@Test
+	void testProvideCompletionForCamelComponentDependencyOnSecondLine() throws Exception {
+		CamelLanguageServer camelLanguageServer = initializeLanguageServer("\n// camel-k: dependency=");
+		
+		CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = getCompletionFor(camelLanguageServer, new Position(1, 23));
+		
+		List<CompletionItem> completionItems = completions.get().getLeft();
+		assertThat(completionItems).isNotEmpty();
+		assertThat(completionItems.stream().filter(completionItem -> !completionItem.getLabel().startsWith("mvn")).map(completionitem -> completionitem.getLabel())).allMatch(compleItemLabel -> compleItemLabel.startsWith("camel-"));
+		CompletionItem timerCompletionItem = completionItems.stream().filter(completionItem -> "camel-timer".equals(completionItem.getLabel())).findFirst().get();
+		assertThat(timerCompletionItem.getDocumentation().getLeft()).isEqualTo("Generate messages in specified intervals using java.util.Timer.");
+		assertThat(timerCompletionItem.getTextEdit().getRange().getStart().getLine()).isEqualTo(1);
+	}
+	
+	@Test
 	void testProvideCompletionWithInsertAndReplaceForCamelComponentDependency() throws Exception {
 		CamelLanguageServer camelLanguageServer = initializeLanguageServer("// camel-k: dependency=camel-example");
 		

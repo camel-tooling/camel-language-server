@@ -35,10 +35,12 @@ public class CamelKModelineTraitOption implements ICamelKModelineOptionValue {
 	private String optionValue;
 	private CamelKModelineTraitDefinition traitDefinition;
 	private CamelKModelineTraitDefinitionProperty traitProperty;
+	private int line;
 
-	public CamelKModelineTraitOption(String optionValue, int startPosition) {
+	public CamelKModelineTraitOption(String optionValue, int startPosition, int line) {
 		this.optionValue = optionValue;
 		this.startPosition = startPosition;
+		this.line = line;
 		this.endPosition = startPosition + optionValue.length();
 		this.traitDefinition = createTraitDefinition(optionValue, startPosition);
 		this.traitProperty = createTraitProperty(optionValue);
@@ -50,9 +52,9 @@ public class CamelKModelineTraitOption implements ICamelKModelineOptionValue {
 			int indexOfEqualSeparator = optionValue.indexOf('=', indexOfDotSeparator);
 			int startPositionOfTraitDefintionProperty = getStartPositionInLine() + indexOfDotSeparator + 1;
 			if(indexOfEqualSeparator != -1) {
-				return new CamelKModelineTraitDefinitionProperty(this, optionValue.substring(indexOfDotSeparator + 1, indexOfEqualSeparator), startPositionOfTraitDefintionProperty);
+				return new CamelKModelineTraitDefinitionProperty(this, optionValue.substring(indexOfDotSeparator + 1, indexOfEqualSeparator), startPositionOfTraitDefintionProperty, line);
 			} else {
-				return new CamelKModelineTraitDefinitionProperty(this, optionValue.substring(indexOfDotSeparator + 1), startPositionOfTraitDefintionProperty);
+				return new CamelKModelineTraitDefinitionProperty(this, optionValue.substring(indexOfDotSeparator + 1), startPositionOfTraitDefintionProperty, line);
 			}
 		}
 		return null;
@@ -61,10 +63,14 @@ public class CamelKModelineTraitOption implements ICamelKModelineOptionValue {
 	private CamelKModelineTraitDefinition createTraitDefinition(String optionValue, int startPosition) {
 		int indexOfDotSeparator = optionValue.indexOf('.');
 		if(indexOfDotSeparator != -1) {
-			return new CamelKModelineTraitDefinition(this, optionValue.substring(0, indexOfDotSeparator), startPosition);
+			return new CamelKModelineTraitDefinition(this, optionValue.substring(0, indexOfDotSeparator), startPosition, line);
 		} else {
-			return new CamelKModelineTraitDefinition(this, optionValue, startPosition);
+			return new CamelKModelineTraitDefinition(this, optionValue, startPosition, line);
 		}
+	}
+	
+	public int getLine() {
+		return line;
 	}
 
 	@Override

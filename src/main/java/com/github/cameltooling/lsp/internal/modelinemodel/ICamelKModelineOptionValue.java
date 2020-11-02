@@ -28,10 +28,6 @@ import com.github.cameltooling.lsp.internal.instancemodel.ILineRangeDefineable;
 
 public interface ICamelKModelineOptionValue extends ILineRangeDefineable {
 
-	public default int getLine() {
-		return 0;
-	}
-
 	public String getValueAsString();
 
 	public default CompletableFuture<List<CompletionItem>> getCompletions(int position, CompletableFuture<CamelCatalog> camelCatalog) {
