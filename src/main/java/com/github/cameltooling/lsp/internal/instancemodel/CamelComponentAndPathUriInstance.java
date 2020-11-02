@@ -16,7 +16,6 @@
  */
 package com.github.cameltooling.lsp.internal.instancemodel;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -71,20 +70,25 @@ public class CamelComponentAndPathUriInstance extends CamelUriElementInstance {
 		int currentPosition = posDoubleDot + 1;
 		int pathParamIndex = 0;
 		for(String splitForDoubleDot : splitsForDoubleDots) {
-			String[] splitsForSlash = splitForDoubleDot.split(CAMEL_PATH_POTENTIAL_SECONDARY_SEPARATOR_REGEX);
-			if(Arrays.asList(splitsForSlash).contains("")) {
+			if(splitForDoubleDot.startsWith("/")) {
 				PathParamURIInstance pathParamURIInstance = new PathParamURIInstance(this, splitForDoubleDot, currentPosition, currentPosition+splitForDoubleDot.length(), pathParamIndex);
 				pathParams.add(pathParamURIInstance);
 				currentPosition += splitForDoubleDot.length() + 1;
 				initApiPathParams(pathParamIndex, pathParamURIInstance);
 				pathParamIndex++;
 			} else {
+				String[] splitsForSlash = splitForDoubleDot.split(CAMEL_PATH_POTENTIAL_SECONDARY_SEPARATOR_REGEX);
 				for (String splitForSlash : splitsForSlash) {
 					PathParamURIInstance pathParamURIInstance = new PathParamURIInstance(this, splitForSlash, currentPosition, currentPosition+splitForSlash.length(), pathParamIndex);
 					pathParams.add(pathParamURIInstance);
 					currentPosition += splitForSlash.length() + 1;
 					initApiPathParams(pathParamIndex, pathParamURIInstance);
 					pathParamIndex++;
+				}
+				if(splitForDoubleDot.endsWith("/")) {
+					PathParamURIInstance pathParamURIInstance = new PathParamURIInstance(this, "", currentPosition, currentPosition, pathParamIndex);
+					pathParams.add(pathParamURIInstance);
+					initApiPathParams(pathParamIndex, pathParamURIInstance);
 				}
 			}
 		}

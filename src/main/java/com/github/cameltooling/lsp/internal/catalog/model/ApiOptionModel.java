@@ -16,9 +16,17 @@
  */
 package com.github.cameltooling.lsp.internal.catalog.model;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class ApiOptionModel {
+	
+	public static final String API_METHOD_KIND_UPDATER = "^updater$";
+	public static final String API_METHOD_KIND_READER = "^reader$";
+	public static final String API_METHOD_KIND_FETCHER = "^fetcher$";
+	public static final String API_METHOD_KIND_DELETER = "^deleter$";
+	public static final String API_METHOD_KIND_CREATOR = "^creator$";
 	
 	private String name;
 	private boolean consumerOnly;
@@ -55,5 +63,27 @@ public class ApiOptionModel {
 	}
 	public void setName(String name) {
 		this.name = name;
+	}
+	
+	public Map<String, String> getAliasToKind() {
+		Map<String, String> aliasesMapping = new HashMap<>();
+		if (aliases != null) {
+			for (String aliasFullString : aliases) {
+				String[] splittedAlias = aliasFullString.split("=");
+				aliasesMapping.put(splittedAlias[1], splittedAlias[0]);
+			}
+		}
+		return aliasesMapping;
+	}
+	
+	public Map<String, String> getKindToAlias() {
+		Map<String, String> aliasesMapping = new HashMap<>();
+		if (aliases != null) {
+			for (String aliasFullString : aliases) {
+				String[] splittedAlias = aliasFullString.split("=");
+				aliasesMapping.put(splittedAlias[0], splittedAlias[1]);
+			}
+		}
+		return aliasesMapping;
 	}
 }

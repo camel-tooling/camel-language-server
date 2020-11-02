@@ -17,7 +17,6 @@
 package com.github.cameltooling.lsp.internal.instancemodel;
 
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -35,7 +34,7 @@ import com.github.cameltooling.lsp.internal.catalog.model.ComponentModel;
 import com.github.cameltooling.lsp.internal.catalog.model.EndpointOptionModel;
 
 public abstract class CamelUriElementInstance implements ILineRangeDefineable{
-	
+
 	private int startPositionInUri;
 	private int endPositionInUri;
 	private TextDocumentItem document;
@@ -110,21 +109,17 @@ public abstract class CamelUriElementInstance implements ILineRangeDefineable{
 				.filter(api -> apiProperty.getName().equals(api.getName()))
 				.findAny();
 		if(correspondingApi.isPresent()) {
-			Map<String, String> aliasesMapping = new HashMap<>();
-			for(String aliasFullString : correspondingApi.get().getAliases()) {
-				String[] splittedAlias = aliasFullString.split("=");
-				aliasesMapping.put(splittedAlias[1], splittedAlias[0]);
-			}
+			Map<String, String> aliasesMapping = correspondingApi.get().getAliasToKind();
 			String methodKind = aliasesMapping.get(methodNamePath.getValue());
-			if("^creator$".equals(methodKind)) {
+			if(ApiOptionModel.API_METHOD_KIND_CREATOR.equals(methodKind)) {
 				return apiProperty.getCreator();
-			} else if("^deleter$".equals(methodKind)) {
+			} else if(ApiOptionModel.API_METHOD_KIND_DELETER.equals(methodKind)) {
 				return apiProperty.getDeleter();
-			} else if("^fetcher$".equals(methodKind)) {
+			} else if(ApiOptionModel.API_METHOD_KIND_FETCHER.equals(methodKind)) {
 				return apiProperty.getFetcher();
-			} else if("^reader$".equals(methodKind)) {
+			} else if(ApiOptionModel.API_METHOD_KIND_READER.equals(methodKind)) {
 				return apiProperty.getReader();
-			} else if("^updater$".equals(methodKind)) {
+			} else if(ApiOptionModel.API_METHOD_KIND_UPDATER.equals(methodKind)) {
 				return apiProperty.getUpdater();
 			}
 		}

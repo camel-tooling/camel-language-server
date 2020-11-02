@@ -180,8 +180,30 @@ public class CamelCompletionForApisTest extends AbstractCamelLanguageServerTest 
 	}
 	
 	@Test
-	void testWithOnlyPath() throws Exception {
-		String text = "camel.sink.url=aComponentWithApis:account/create";
+	void testWithPartialMethodName() throws Exception {
+		String text = "camel.sink.url=aComponentWithApis:account/f";
+		CamelLanguageServer languageServer = initializeLanguageServer(text, ".properties");
+		List<CompletionItem> completions = getCompletionFor(languageServer, new Position(0, text.length())).get().getLeft();
+		assertThat(completions).hasSize(1);
+		CompletionItem accountCompletionItem = completions.get(0);
+		assertThat(accountCompletionItem.getLabel()).isEqualTo("fetch");
+		assertThat(accountCompletionItem.getInsertText()).isEqualTo("fetch");
+		assertThat(accountCompletionItem.getTextEdit().getNewText()).isEqualTo("fetch");
+		Range expectedRange = new Range(new Position(0,  text.length() -1), new Position(0, text.length()));
+		assertThat(accountCompletionItem.getTextEdit().getRange()).isEqualTo(expectedRange);
+	}
+	
+	@Test
+	void testMethodName() throws Exception {
+		String text = "camel.sink.url=aComponentWithApis:account/";
+		CamelLanguageServer languageServer = initializeLanguageServer(text, ".properties");
+		List<CompletionItem> completions = getCompletionFor(languageServer, new Position(0, text.length())).get().getLeft();
+		assertThat(completions).hasSize(2);
+	}
+	
+	@Test
+	void testNoCompletionWithNonApiBasedComponent() throws Exception {
+		String text = "camel.sink.url=avro:transport:host:port/messageName";
 		CamelLanguageServer languageServer = initializeLanguageServer(text, ".properties");
 		List<CompletionItem> completions = getCompletionFor(languageServer, new Position(0, text.length())).get().getLeft();
 		assertThat(completions).isEmpty();

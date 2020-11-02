@@ -16,9 +16,12 @@
  */
 package com.github.cameltooling.lsp.internal.instancemodel;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
@@ -30,6 +33,7 @@ import org.eclipse.lsp4j.TextDocumentItem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.github.cameltooling.lsp.internal.catalog.model.ApiOptionMethodsModel;
 import com.github.cameltooling.lsp.internal.catalog.model.ApiOptionModel;
 import com.github.cameltooling.lsp.internal.catalog.model.ComponentModel;
 import com.github.cameltooling.lsp.internal.catalog.util.ModelHelper;
@@ -62,27 +66,88 @@ public class PathParamURIInstance extends CamelUriElementInstance {
 	@Override
 	public CompletableFuture<List<CompletionItem>> getCompletions(CompletableFuture<CamelCatalog> camelCatalog, int positionInCamelUri, TextDocumentItem docItem) {
 		if(pathParamIndex == 0) {
-			return camelCatalog.thenApply(catalog -> {
-				ComponentModel model = ModelHelper.generateComponentModel(catalog.componentJSonSchema(getComponentName()), true);
-				String start = value.substring(0, positionInCamelUri - getStartPositionInUri());
-				List<ApiOptionModel> apis = model.getApis();
-				if(apis !=null && !apis.isEmpty()) {
-					return apis.stream()
-						.map(apiOption -> {
-							String optionName = apiOption.getName();
-							CompletionItem completionItem = new CompletionItem(optionName);
-							completionItem.setInsertText(optionName);
-							CompletionResolverUtils.applyTextEditToCompletionItem(this, completionItem);
-							return completionItem;
-						})
-						.filter(FilterPredicateUtils.matchesCompletionFilter(start))
-						.collect(Collectors.toList());
-				} else {
-					return new CamelComponentSchemesCompletionsFuture(uriInstance, uriInstance.getFilter(positionInCamelUri), docItem).apply(catalog);
-				}
-			});
+			return getCompletionForApiName(camelCatalog, positionInCamelUri, docItem);
+		}
+		if(pathParamIndex == 1) {
+			return getCompletionForApiMethodName(camelCatalog, positionInCamelUri, docItem);
 		}
 		return CompletableFuture.completedFuture(Collections.emptyList());
+	}
+
+	private CompletableFuture<List<CompletionItem>> getCompletionForApiMethodName(CompletableFuture<CamelCatalog> camelCatalog, int positionInCamelUri, TextDocumentItem docItem) {
+		return camelCatalog.thenApply(catalog -> {
+			ComponentModel model = ModelHelper.generateComponentModel(catalog.componentJSonSchema(getComponentName()), true);
+			List<ApiOptionModel> apis = model.getApis();
+			if (apis != null && !apis.isEmpty()) {
+				Optional<ApiOptionModel> optionModel = apis.stream()
+						.filter(apiOption -> {
+							PathParamURIInstance apiNamePath = uriInstance.getApiNamePath();
+							return apiNamePath != null && apiOption.getName().equals(apiNamePath.getValue());
+						}).findAny();
+				if (optionModel.isPresent()) {
+					List<CompletionItem> completionItems = getCompletionForApiMethodName(optionModel.get());
+					String start = value.substring(0, positionInCamelUri - getStartPositionInUri());
+					return completionItems.stream()
+							.filter(FilterPredicateUtils.matchesCompletionFilter(start))
+							.collect(Collectors.toList());
+				}
+				return Collections.emptyList();
+			} else {
+				return new CamelComponentSchemesCompletionsFuture(uriInstance, uriInstance.getFilter(positionInCamelUri), docItem).apply(catalog);
+			}
+		});
+	}
+
+	private List<CompletionItem> getCompletionForApiMethodName(ApiOptionModel apiOptionModel) {
+		List<CompletionItem> completionItems = new ArrayList<>();
+		ApiOptionMethodsModel apiOptionsMethodsModel = apiOptionModel.getApiOptionsMethodsModel();
+			Map<String, String> aliasesAsMap = apiOptionModel.getKindToAlias();
+			if (apiOptionsMethodsModel.getCreator() != null) {
+				completionItems.add(createCompletionItem(aliasesAsMap.get(ApiOptionModel.API_METHOD_KIND_CREATOR)));
+			}
+			if (apiOptionsMethodsModel.getDeleter() != null) {
+				completionItems.add(createCompletionItem(aliasesAsMap.get(ApiOptionModel.API_METHOD_KIND_DELETER)));
+			}
+			if (apiOptionsMethodsModel.getFetcher() != null) {
+				completionItems.add(createCompletionItem(aliasesAsMap.get(ApiOptionModel.API_METHOD_KIND_FETCHER)));
+			}
+			if (apiOptionsMethodsModel.getReader() != null) {
+				completionItems.add(createCompletionItem(aliasesAsMap.get(ApiOptionModel.API_METHOD_KIND_READER)));
+			}
+			if (apiOptionsMethodsModel.getUpdater() != null) {
+				completionItems.add(createCompletionItem(aliasesAsMap.get(ApiOptionModel.API_METHOD_KIND_UPDATER)));
+			}
+		return completionItems;
+	}
+
+	private CompletionItem createCompletionItem(String name) {
+		CompletionItem completionItem = new CompletionItem(name);
+		completionItem.setInsertText(name);
+		CompletionResolverUtils.applyTextEditToCompletionItem(this, completionItem);
+		return completionItem;
+	}
+
+	private CompletableFuture<List<CompletionItem>> getCompletionForApiName(
+			CompletableFuture<CamelCatalog> camelCatalog, int positionInCamelUri, TextDocumentItem docItem) {
+		return camelCatalog.thenApply(catalog -> {
+			ComponentModel model = ModelHelper.generateComponentModel(catalog.componentJSonSchema(getComponentName()), true);
+			String start = value.substring(0, positionInCamelUri - getStartPositionInUri());
+			List<ApiOptionModel> apis = model.getApis();
+			if(apis !=null && !apis.isEmpty()) {
+				return apis.stream()
+					.map(apiOption -> {
+						String optionName = apiOption.getName();
+						CompletionItem completionItem = new CompletionItem(optionName);
+						completionItem.setInsertText(optionName);
+						CompletionResolverUtils.applyTextEditToCompletionItem(this, completionItem);
+						return completionItem;
+					})
+					.filter(FilterPredicateUtils.matchesCompletionFilter(start))
+					.collect(Collectors.toList());
+			} else {
+				return new CamelComponentSchemesCompletionsFuture(uriInstance, uriInstance.getFilter(positionInCamelUri), docItem).apply(catalog);
+			}
+		});
 	}
 
 	@Override
