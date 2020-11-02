@@ -18,6 +18,7 @@ package com.github.cameltooling.lsp.internal.instancemodel;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 import org.apache.camel.catalog.CamelCatalog;
@@ -83,8 +84,16 @@ public class OptionParamURIInstance extends CamelUriElementInstance {
 
 	@Override
 	public String getDescription(ComponentModel componentModel) {
-		EndpointOptionModel model = componentModel.getEndpointOption(getKey().getKeyName());
-		return model != null ? model.getDescription() : String.format(INVALID_URI_OPTION, getKey().getKeyName());
+		String keyName = getKey().getKeyName();
+		EndpointOptionModel model = componentModel.getEndpointOption(keyName);
+		if(model != null) {
+			return model.getDescription();
+		} else {
+			Optional<EndpointOptionModel> apiProperty = findAvailableApiProperties(componentModel).stream()
+					.filter(endpointOptionModel -> endpointOptionModel.getName().equals(keyName))
+					.findAny();
+			return apiProperty.isPresent() ? apiProperty.get().getDescription() : String.format(INVALID_URI_OPTION, keyName);
+		}
 	}
 	
 	@Override

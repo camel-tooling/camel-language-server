@@ -30,9 +30,9 @@ import com.github.cameltooling.lsp.internal.AbstractCamelLanguageServerTest;
 import com.github.cameltooling.lsp.internal.CamelLanguageServer;
 
 
-class CamelCompletionForApisTest extends AbstractCamelLanguageServerTest {
+public class CamelCompletionForApisTest extends AbstractCamelLanguageServerTest {
 	
-	private static final String SIMPLIFIED_JSON = "{\n"
+	public static final String SIMPLIFIED_JSON = "{\n"
 			+ "	\"component\": {\n"
 			+ "		\"kind\": \"component\",\n"
 			+ "		\"name\": \"aComponentWithApis\",\n"
@@ -101,7 +101,7 @@ class CamelCompletionForApisTest extends AbstractCamelLanguageServerTest {
 			+ "							\"javaType\": \"java.lang.String\",\n"
 			+ "							\"deprecated\": false,\n"
 			+ "							\"secret\": false,\n"
-			+ "							\"description\": \"Fetch by unique Account Sid\",\n"
+			+ "							\"description\": \"A Property Fetcher description\",\n"
 			+ "							\"optional\": false\n"
 			+ "						}\n"
 			+ "					}\n"
