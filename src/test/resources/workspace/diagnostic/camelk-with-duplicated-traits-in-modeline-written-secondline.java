@@ -1,4 +1,4 @@
-
+// a random comment
 // camel-k: trait=quarkus.enabled=true trait=quarkus.enabled=false
 
 public class MyRouteBuilder extends RouteBuilder {
