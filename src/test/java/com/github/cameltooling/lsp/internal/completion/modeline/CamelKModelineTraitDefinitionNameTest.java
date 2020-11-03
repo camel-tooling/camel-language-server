@@ -48,7 +48,9 @@ class CamelKModelineTraitDefinitionNameTest extends AbstractCamelLanguageServerT
 	
 	@Test
 	void testProvideCompletionOnSecondLine() throws Exception {
-		CamelLanguageServer camelLanguageServer = initializeLanguageServer("\n// camel-k: trait=");
+		CamelLanguageServer camelLanguageServer = initializeLanguageServer(
+				"// camel-k: dependency=camel-timer\n" +
+				"// camel-k: trait=");
 		
 		CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = getCompletionFor(camelLanguageServer, new Position(1, 18));
 		
