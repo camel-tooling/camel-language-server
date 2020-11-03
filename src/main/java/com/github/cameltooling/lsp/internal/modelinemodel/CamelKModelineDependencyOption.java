@@ -63,9 +63,28 @@ public class CamelKModelineDependencyOption implements ICamelKModelineOptionValu
 			String filter = value != null ? value.substring(0, position - getStartPositionInLine()) : "";
 			return camelCatalog
 					.thenApply(retrieveCamelComponentCompletionItems(filter))
-					.thenApply(addMvnDependencyCompletionItem(filter));
+					.thenApply(addMvnDependencyCompletionItem(filter))
+					.thenApply(addJitpackCompletionItem(filter));
 		}
 		return ICamelKModelineOptionValue.super.getCompletions(position, camelCatalog);
+	}
+
+	private Function<List<CompletionItem>, List<CompletionItem>> addJitpackCompletionItem(String filter) {
+		return completionItems -> {
+			if(filter != null || !"".equals(filter)) {
+				completionItems.add(createJitpackCompletionItem());
+			}
+			return completionItems;
+		};
+	}
+
+	private CompletionItem createJitpackCompletionItem() {
+		CompletionItem completionItem = new CompletionItem("jitpack:<gitProvider>.<username>:<repo>:<version>");
+		completionItem.setSortText("1"); // allows to be before Camel Components in completion list
+		completionItem.setInsertTextFormat(InsertTextFormat.Snippet);
+		completionItem.setInsertText("jitpack:${1|com.github,com.gitlab,com.bitbucket,com.gitee,com.azure|}.${2:username}:${3:repo}:${4:master-SNAPSHOT}");
+		CompletionResolverUtils.applyTextEditToCompletionItem(this, completionItem);
+		return completionItem;
 	}
 
 	private Function<List<CompletionItem>, List<CompletionItem>> addMvnDependencyCompletionItem(String filter) {
