@@ -38,7 +38,7 @@ public abstract class AbstractConnectorClassDependentCompletionProcessor {
 	protected TextDocumentItem textDocumentItem;
 
 
-	public AbstractConnectorClassDependentCompletionProcessor(TextDocumentItem textDocumentItem, CamelPropertyValueInstance camelPropertyValueInstance, CamelKafkaConnectorCatalogManager camelKafkaConnectorManager) {
+	protected AbstractConnectorClassDependentCompletionProcessor(TextDocumentItem textDocumentItem, CamelPropertyValueInstance camelPropertyValueInstance, CamelKafkaConnectorCatalogManager camelKafkaConnectorManager) {
 		this.textDocumentItem = textDocumentItem;
 		this.camelPropertyValueInstance = camelPropertyValueInstance;
 		this.camelKafkaConnectorManager = camelKafkaConnectorManager;
