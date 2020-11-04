@@ -61,7 +61,7 @@ public final class CamelComponentSchemesCompletionsFuture implements Function<Ca
 			.map(componentModel -> {
 				CompletionItem completionItem = new CompletionItem(componentModel.getSyntax());
 				completionItem.setDocumentation(componentModel.getDescription());
-				completionItem.setDeprecated(Boolean.valueOf(componentModel.getDeprecated()));
+				CompletionResolverUtils.applyDeprecation(completionItem, componentModel.getDeprecated());
 				CompletionResolverUtils.applyTextEditToCompletionItem(uriElement, completionItem);
 				return completionItem;
 			})
