@@ -94,8 +94,24 @@ class CamelPropertiesFileHoverTest extends AbstractCamelLanguageServerTest {
 	}
 	
 	@Test
+	void testHoverOnPropertyInCamelURL() throws Exception {
+		String propertyEntry = "camel.sink.url=acomponent:withsyntax?aProperty=test";
+		CompletableFuture<Hover> hover = getHover(propertyEntry, 42);
+		
+		assertThat(hover.get().getContents().getLeft().get(0).getLeft()).isEqualTo("A parameter description of a property");
+	}
+	
+	@Test
+	void testHoverOnSchemaInCamelURL() throws Exception {
+		String propertyEntry = "camel.sink.url=acomponent:withsyntax";
+		CompletableFuture<Hover> hover = getHover(propertyEntry, 17);
+		
+		assertThat(hover.get().getContents().getLeft().get(0).getLeft()).isEqualTo("Description of my component.");
+	}
+	
+	@Test
 	void testNoHoverOnUnknownCamelMainOptions() throws Exception {
-		String propertyEntry = "camel.main.unknown=true";
+		String propertyEntry = "camel.main.unknown=";
 		CompletableFuture<Hover> hover = getHover(propertyEntry, 13);
 		
 		assertThat(hover.get()).isNull();

@@ -96,7 +96,7 @@ public class CamelPropertyEntryInstance implements ILineRangeDefineable {
 		if (isOnPropertyKey(position)) {
 			return camelPropertyKeyInstance.getHover(position, camelCatalog, camelKafkaConnectorCatalog);
 		} else {
-			return CompletableFuture.completedFuture(null);
+			return camelPropertyValueInstance.getHover(position, camelCatalog);
 		}
 	}
 
