@@ -35,7 +35,7 @@ public abstract class DiagnosticService {
 	
 	protected CompletableFuture<CamelCatalog> camelCatalog;
 
-	public DiagnosticService(CompletableFuture<CamelCatalog> camelCatalog) {
+	protected DiagnosticService(CompletableFuture<CamelCatalog> camelCatalog) {
 		this.camelCatalog = camelCatalog;
 	}
 
