@@ -21,6 +21,7 @@ import java.util.concurrent.CompletableFuture;
 
 import org.apache.camel.catalog.CamelCatalog;
 import org.eclipse.lsp4j.CompletionItem;
+import org.eclipse.lsp4j.Hover;
 import org.eclipse.lsp4j.Position;
 import org.eclipse.lsp4j.TextDocumentItem;
 
@@ -30,6 +31,7 @@ import com.github.cameltooling.lsp.internal.completion.CamelEndpointCompletionPr
 import com.github.cameltooling.lsp.internal.completion.CamelKafkaConnectorClassCompletionProcessor;
 import com.github.cameltooling.lsp.internal.completion.CamelKafkaConverterCompletionProcessor;
 import com.github.cameltooling.lsp.internal.completion.KafkaConnectTransformerTypeCompletionProcessor;
+import com.github.cameltooling.lsp.internal.hover.CamelURIHoverProcessor;
 import com.github.cameltooling.lsp.internal.instancemodel.ILineRangeDefineable;
 import com.github.cameltooling.lsp.internal.parser.CamelKafkaUtil;
 
@@ -95,6 +97,15 @@ public class CamelPropertyValueInstance implements ILineRangeDefineable {
 	@Override
 	public int getEndPositionInLine() {
 		return getStartPositionInLine() + (camelPropertyValue != null ? camelPropertyValue.length() : 0);
+	}
+
+	public CompletableFuture<Hover> getHover(Position position, CompletableFuture<CamelCatalog> camelCatalog) {
+		String propertyKey = key.getCamelPropertyKey();
+		if (new CamelKafkaUtil().isCamelURIForKafka(propertyKey)) {
+			return new CamelURIHoverProcessor(textDocumentItem, camelCatalog).getHover(position);
+		} else {
+			return CompletableFuture.completedFuture(null);
+		}
 	}
 
 }
