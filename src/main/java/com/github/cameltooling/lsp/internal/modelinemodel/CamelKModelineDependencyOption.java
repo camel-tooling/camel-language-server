@@ -83,7 +83,7 @@ public class CamelKModelineDependencyOption implements ICamelKModelineOptionValu
 			.map(componentModel -> {
 				CompletionItem completionItem = new CompletionItem(componentModel.getArtifactId());
 				completionItem.setDocumentation(componentModel.getDescription());
-				completionItem.setDeprecated(Boolean.valueOf(componentModel.getDeprecated()));
+				CompletionResolverUtils.applyDeprecation(completionItem, componentModel.getDeprecated());
 				CompletionResolverUtils.applyTextEditToCompletionItem(this, completionItem);
 				return completionItem;
 			})

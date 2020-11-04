@@ -43,7 +43,7 @@ public class CamelComponentIdsCompletionsFuture implements Function<CamelCatalog
 			.map(componentModel -> {
 				CompletionItem completionItem = new CompletionItem(componentModel.getScheme());
 				completionItem.setDocumentation(componentModel.getDescription());
-				completionItem.setDeprecated(Boolean.valueOf(componentModel.getDeprecated()));
+				CompletionResolverUtils.applyDeprecation(completionItem, componentModel.getDeprecated());
 				CompletionResolverUtils.applyTextEditToCompletionItem(camelComponentNamePropertyFileInstance, completionItem);
 				return completionItem;
 			})

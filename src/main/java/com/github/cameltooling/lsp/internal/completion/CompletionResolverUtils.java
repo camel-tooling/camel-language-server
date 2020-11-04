@@ -17,10 +17,12 @@
 package com.github.cameltooling.lsp.internal.completion;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.camel.parser.helper.CamelXmlHelper;
 import org.eclipse.lsp4j.CompletionItem;
+import org.eclipse.lsp4j.CompletionItemTag;
 import org.eclipse.lsp4j.Position;
 import org.eclipse.lsp4j.Range;
 import org.eclipse.lsp4j.TextDocumentItem;
@@ -75,6 +77,13 @@ public class CompletionResolverUtils {
 			}
 		}
 		return endpointIDs;
+	}
+
+	public static void applyDeprecation(CompletionItem completionItem, boolean isDeprecated) {
+		completionItem.setDeprecated(isDeprecated);
+		if (isDeprecated) {
+			completionItem.setTags(Collections.singletonList(CompletionItemTag.Deprecated));
+		}
 	}
 
 }

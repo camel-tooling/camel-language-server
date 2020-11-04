@@ -23,6 +23,7 @@ import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 import org.eclipse.lsp4j.CompletionItem;
+import org.eclipse.lsp4j.CompletionItemTag;
 import org.eclipse.lsp4j.CompletionList;
 import org.eclipse.lsp4j.Position;
 import org.eclipse.lsp4j.jsonrpc.messages.Either;
@@ -40,6 +41,7 @@ class CamelDeprecationIndicatorInCompletionTest extends AbstractCamelLanguageSer
 		List<CompletionItem> items = completions.get().getLeft();
 		assertThat(items.size()).isEqualTo(1);
 		assertThat(items.get(0).getDeprecated()).isTrue();
+		assertThat(items.get(0).getTags()).contains(CompletionItemTag.Deprecated);
 	}
 	
 	@Test
@@ -49,6 +51,7 @@ class CamelDeprecationIndicatorInCompletionTest extends AbstractCamelLanguageSer
 		List<CompletionItem> items = completions.get().getLeft();
 		assertThat(items.size()).isEqualTo(1);
 		assertThat(items.get(0).getDeprecated()).isTrue();
+		assertThat(items.get(0).getTags()).contains(CompletionItemTag.Deprecated);
 	}
 	
 	@Override

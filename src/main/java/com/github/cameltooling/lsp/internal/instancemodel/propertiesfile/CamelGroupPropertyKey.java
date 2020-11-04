@@ -31,6 +31,7 @@ import org.eclipse.lsp4j.CompletionItem;
 import org.eclipse.lsp4j.Hover;
 import org.eclipse.lsp4j.Position;
 
+import com.github.cameltooling.lsp.internal.completion.CompletionResolverUtils;
 import com.github.cameltooling.lsp.internal.instancemodel.ILineRangeDefineable;
 
 /**
@@ -120,7 +121,7 @@ public class CamelGroupPropertyKey implements ILineRangeDefineable {
 								}
 								CompletionItem completionItem = new CompletionItem(realOptionName);
 								completionItem.setDocumentation(option.getDescription());
-								completionItem.setDeprecated(option.isDeprecated());
+								CompletionResolverUtils.applyDeprecation(completionItem, option.isDeprecated());
 								completionItem.setInsertText(realOptionName + "=");
 								return completionItem;
 							}).collect(Collectors.toList());
