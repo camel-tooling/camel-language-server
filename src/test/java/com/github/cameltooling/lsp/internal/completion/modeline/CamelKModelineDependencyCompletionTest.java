@@ -63,7 +63,7 @@ class CamelKModelineDependencyCompletionTest extends AbstractCamelLanguageServer
 		
 		List<CompletionItem> completionItems = completions.get().getLeft();
 		assertThat(completionItems).isNotEmpty();
-		assertThat(completionItems.stream().filter(completionItem -> !completionItem.getLabel().startsWith("mvn")).map(completionitem -> completionitem.getLabel())).allMatch(compleItemLabel -> compleItemLabel.startsWith("camel-"));
+		assertThat(completionItems.stream().filter(isNotMvnOrJitPack()).map(completionitem -> completionitem.getLabel())).allMatch(compleItemLabel -> compleItemLabel.startsWith("camel-"));
 		CompletionItem timerCompletionItem = completionItems.stream().filter(completionItem -> "camel-timer".equals(completionItem.getLabel())).findFirst().get();
 		assertThat(timerCompletionItem.getDocumentation().getLeft()).isEqualTo("Generate messages in specified intervals using java.util.Timer.");
 		assertThat(timerCompletionItem.getTextEdit().getRange().getStart().getLine()).isEqualTo(1);
