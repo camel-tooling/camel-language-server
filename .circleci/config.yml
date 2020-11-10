@@ -6,15 +6,18 @@ orbs:
 workflows:
   maven_test:
     jobs:
-      - maven/test - JDK 8:
+      - maven/test:
          command: 'verify -V'
          executor:
+           name: cimg/openjdk
            tag: 8.0
-      - maven/test - JDK 11:
+      - maven/test:
          command: 'verify -V'
          executor:
+           name: cimg/openjdk
            tag: 11.0
-      - maven/test - JDK 15:
+      - maven/test:
          command: 'verify -V'
          executor:
+           name: cimg/openjdk
            tag: 15.0
