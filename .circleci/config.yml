@@ -10,4 +10,4 @@ workflows:
          command: 'verify -V'
          matrix:
            parameters:
-             java-version: ['8.0', '11.0', '15.0']
+             executor: ['8.0', '11.0', '15.0']
