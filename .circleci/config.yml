@@ -6,15 +6,15 @@ orbs:
 workflows:
   maven_test:
     jobs:
-      - maven/test:
+      - maven/test - JDK 8:
          command: 'verify -V'
          executor:
            tag: 8.0
-      - maven/test:
+      - maven/test - JDK 11:
          command: 'verify -V'
          executor:
            tag: 11.0
-      - maven/test:
+      - maven/test - JDK 15:
          command: 'verify -V'
          executor:
            tag: 15.0
