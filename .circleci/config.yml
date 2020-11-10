@@ -17,7 +17,7 @@ jobs:
 
   jdk15:
     docker:
-      - image: circleci/openjdk:15-stretch
+      - image: circleci/openjdk:15-buster
     steps:
       - checkout
       - run: mvn verify -V
