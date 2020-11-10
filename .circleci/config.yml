@@ -1,5 +1,8 @@
 version: 2.0
 
+orbs:
+  sonarcloud: sonarsource/sonarcloud@1.0.2
+
 jobs:
   jdk8:
     docker:
@@ -28,17 +31,32 @@ jobs:
     steps:
       - checkout
       - run: mvn verify -V -P !build-extras -Dtest="*,!RunnerStandardIOTest,!RunnerWebSocketTest"
+      - sonarcloud/scan
 
 workflows:
   version: 2
 
   build-then-test:
     jobs:
-      - jdk8
-      - jdk11
-      - jdk15
+      - jdk8:
+          filters:
+            branches:
+              ignore: /^dependabot.*$/
+      - jdk11:
+          filters:
+            branches:
+              ignore: /^dependabot.*$/
+      - jdk15:
+          filters:
+            branches:
+              ignore: /^dependabot.*$/
       - coverage:
           requires:
             - jdk8
             - jdk11
             - jdk15
+          filters:
+            branches:
+              only:
+                master
+          context: sonarcloud
