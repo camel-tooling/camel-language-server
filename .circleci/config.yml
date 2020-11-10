@@ -1,9 +1,13 @@
 version: 2.1
 
 orbs:
-  maven: circleci/maven@0.0.12
+  maven: circleci/maven@1.0.3
 
 workflows:
   maven_test:
     jobs:
-      - maven/test # checkout, build, test, and upload test results
+      - maven/test:
+         command: 'verify -V'
+         matrix:
+           parameters:
+             tag: ['8.0', '11.0', '15.0']
