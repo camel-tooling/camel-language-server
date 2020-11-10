@@ -8,6 +8,13 @@ workflows:
     jobs:
       - maven/test:
          command: 'verify -V'
-         matrix:
-           parameters:
-             executor.tag: ["8.0","11.0","15.0"]
+         executor:
+           tag: 8.0
+      - maven/test:
+         command: 'verify -V'
+         executor:
+           tag: 11.0
+      - maven/test:
+         command: 'verify -V'
+         executor:
+           tag: 15.0
