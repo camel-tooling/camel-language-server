@@ -1,23 +1,26 @@
-version: 2.1
+version: 2.0
 
-orbs:
-  maven: circleci/maven@1.0.3
+jobs:
+  test:
+    docker:
+      - image: circleci/openjdk:stretch
+    steps:
+      - checkout
+      - run: mvn test
+
+  build:
+    docker:
+      - image: circleci/openjdk:stretch
+    steps:
+      - checkout
+      - run: mvn -Dmaven.test.skip=true package
 
 workflows:
-  maven_test:
+  version: 2
+
+  build-then-test:
     jobs:
-      - maven/test:
-         command: 'verify -V'
-         executor:
-           name: cimg/openjdk
-           tag: 8.0
-      - maven/test:
-         command: 'verify -V'
-         executor:
-           name: cimg/openjdk
-           tag: 11.0
-      - maven/test:
-         command: 'verify -V'
-         executor:
-           name: cimg/openjdk
-           tag: 15.0
+      - build
+      - test:
+          requires:
+            - build
