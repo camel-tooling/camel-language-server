@@ -1,8 +1,5 @@
 version: 2.0
 
-orbs:
-  sonarcloud: sonarsource/sonarcloud@1.0.2
-
 jobs:
   jdk8:
     docker:
@@ -60,3 +57,6 @@ workflows:
               only:
                 circleci-project-setup
           context: sonarcloud
+
+orbs:
+  sonarcloud: sonarsource/sonarcloud@1.0.2
