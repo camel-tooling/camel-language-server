@@ -25,7 +25,7 @@ jobs:
       - checkout
       - run: mvn verify -V
 
-  coverage:
+  sonar:
     docker:
       - image: circleci/openjdk:8-stretch
     steps:
@@ -50,7 +50,7 @@ workflows:
           filters:
             branches:
               ignore: /^dependabot.*$/
-      - coverage:
+      - sonar:
           requires:
             - jdk8
             - jdk11
