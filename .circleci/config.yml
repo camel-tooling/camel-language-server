@@ -1,26 +1,44 @@
 version: 2.0
 
 jobs:
-  test:
+  jdk8:
     docker:
-      - image: circleci/openjdk:stretch
+      - image: circleci/openjdk:8-strech
     steps:
       - checkout
-      - run: mvn test
+      - run: mvn verify -V
 
-  build:
+  jdk11:
     docker:
-      - image: circleci/openjdk:stretch
+      - image: circleci/openjdk:11-stretch
     steps:
       - checkout
-      - run: mvn -Dmaven.test.skip=true package
+      - run: mvn verify -V
+
+  jdk15:
+    docker:
+      - image: circleci/openjdk:15-stretch
+    steps:
+      - checkout
+      - run: mvn verify -V
+
+  coverage:
+    docker:
+      - image: circleci/openjdk:8-stretch
+    steps:
+      - checkout
+      - run: mvn verify -V -P !build-extras -Dtest="*,!RunnerStandardIOTest,!RunnerWebSocketTest"
 
 workflows:
   version: 2
 
   build-then-test:
     jobs:
-      - build
-      - test:
+      - jdk8
+      - jdk11
+      - jdk15
+      - coverage:
           requires:
-            - build
+            - jdk8
+            - jdk11
+            - jdk15
