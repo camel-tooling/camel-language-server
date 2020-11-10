@@ -3,7 +3,7 @@ version: 2.0
 jobs:
   jdk8:
     docker:
-      - image: circleci/openjdk:8-strech
+      - image: circleci/openjdk:8-stretch
     steps:
       - checkout
       - run: mvn verify -V
