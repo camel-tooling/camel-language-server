@@ -56,6 +56,9 @@
 		<commons-text.version>1.9</commons-text.version>
 		
 		<sonar.host.url>https://sonarcloud.io</sonar.host.url>
+		<sonar.organization>camel-tooling</sonar.organization>
+		<sonar.projectKey>camel-lsp-server</sonar.projectKey>
+		<sonar.projectName>Camel LSP Server</sonar.projectName>
 	</properties>
 
 	<distributionManagement>
