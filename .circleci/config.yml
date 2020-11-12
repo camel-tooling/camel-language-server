@@ -42,10 +42,9 @@ jobs:
   deploy:
     docker:
       - image: circleci/openjdk:8-stretch
-    environment:
-      GPG_DIR: $CIRCLE_WORKING_DIRECTORY/cd
     steps:
       - checkout
+      - run: export GPG_DIR=${CIRCLE_WORKING_DIRECTORY}/cd
       - run: ./cd/before-deploy.sh
       - run: ./cd/deploy.sh
 
