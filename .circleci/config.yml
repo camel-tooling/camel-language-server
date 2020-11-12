@@ -27,8 +27,7 @@ jobs:
       - image: circleci/openjdk:8-stretch
     steps:
       - checkout
-      - run: mvn verify -V -P !build-extras -Dtest="*,!RunnerStandardIOTest,!RunnerWebSocketTest"
-      - sonarcloud/scan
+      - run: mvn verify -V -P !build-extras -Dtest="*,!RunnerStandardIOTest,!RunnerWebSocketTest" sonar:sonar -Dsonar.login=${SONAR_TOKEN}
 
 workflows:
   version: 2
@@ -57,6 +56,3 @@ workflows:
               only:
                 circleci-project-setup
           context: sonarcloud
-
-orbs:
-  sonarcloud: sonarsource/sonarcloud@1.0.2
