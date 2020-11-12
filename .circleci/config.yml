@@ -69,7 +69,8 @@ workflows:
       - deploy:
           requires:
              - sonar
-          branches:
-            only: circleci-project-setup
-          tags:
-            only: /.*/
+          filters:
+            branches:
+              only: circleci-project-setup
+            tags:
+              only: /.*/
