@@ -29,6 +29,14 @@ jobs:
       - checkout
       - run: mvn verify -V -P !build-extras -Dtest="*,!RunnerStandardIOTest,!RunnerWebSocketTest" sonar:sonar -Dsonar.login=${SONAR_TOKEN}
 
+  deploy:
+    docker:
+      - image: circleci/openjdk:8-stretch
+    steps:
+      - checkout
+      - run: ./cd/before-deploy.sh
+      - run: ./cd/deploy.sh
+
 workflows:
   version: 2
 
@@ -55,4 +63,13 @@ workflows:
             branches:
               only:
                 circleci-project-setup
+            tags:
+              only: /.*/
           context: sonarcloud
+      - deploy:
+          requires:
+             - sonar
+          branches:
+            only: circleci-project-setup
+          tags:
+            only: /.*/
