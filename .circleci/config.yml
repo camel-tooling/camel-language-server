@@ -27,7 +27,17 @@ jobs:
       - image: circleci/openjdk:8-stretch
     steps:
       - checkout
-      - run: mvn verify -P !build-extras -Dtest="*,!RunnerStandardIOTest,!RunnerWebSocketTest" -B sonar:sonar -Dsonar.login=${SONAR_TOKEN} -Dsonar.organization="camel-tooling" -Dsonar.projectKey="camel-lsp-server" -Dsonar.projectName="Camel LSP Server" -Dsonar.host.url=https://sonarcloud.io
+      - run: > 
+          mvn verify
+          -P !build-extras
+          -Dtest="*,!RunnerStandardIOTest,!RunnerWebSocketTest"
+          -B
+          sonar:sonar
+          -Dsonar.login=${SONAR_TOKEN}
+          -Dsonar.organization="camel-tooling"
+          -Dsonar.projectKey="camel-lsp-server"
+          -Dsonar.projectName="Camel LSP Server"
+          -Dsonar.host.url=https://sonarcloud.io
 
   deploy:
     docker:
