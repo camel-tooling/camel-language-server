@@ -42,18 +42,9 @@ workflows:
 
   build-then-test:
     jobs:
-      - jdk8:
-          filters:
-            branches:
-              ignore: /^dependabot.*$/
-      - jdk11:
-          filters:
-            branches:
-              ignore: /^dependabot.*$/
-      - jdk15:
-          filters:
-            branches:
-              ignore: /^dependabot.*$/
+      - jdk8
+      - jdk11
+      - jdk15
       - sonar:
           requires:
             - jdk8
