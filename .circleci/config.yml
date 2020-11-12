@@ -39,6 +39,16 @@ jobs:
           -Dsonar.projectName="Camel LSP Server"
           -Dsonar.host.url=https://sonarcloud.io
 
+  deploy:
+    docker:
+      - image: circleci/openjdk:8-stretch
+    steps:
+      - checkout
+      - run: echo 'export GPG_DIR=`pwd`/cd' >> $BASH_ENV
+      - run: echo 'export GPG_TTY=$(tty)' >> $BASH_ENV
+      - run: ./cd/before-deploy.sh
+      - run: ./cd/deploy.sh
+
 workflows:
   version: 2
 
@@ -57,3 +67,11 @@ workflows:
               only:
                 master
           context: sonarcloud
+      - deploy:
+          requires:
+             - jdk8
+             - jdk11
+             - jdk15
+          filters:
+            branches:
+              only: master
