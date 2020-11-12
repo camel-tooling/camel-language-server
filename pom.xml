@@ -54,6 +54,8 @@
 		<awaitility.version>4.0.3</awaitility.version>
 		<tyrus.version>1.17</tyrus.version>
 		<commons-text.version>1.9</commons-text.version>
+		
+		<sonar.host.url>https://sonarcloud.io</sonar.host.url>
 	</properties>
 
 	<distributionManagement>
