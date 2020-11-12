@@ -71,7 +71,9 @@ workflows:
           context: sonarcloud
       - deploy:
           requires:
-             - sonar
+            - jdk8
+            - jdk11
+            - jdk15
           filters:
             branches:
               only: circleci-project-setup
