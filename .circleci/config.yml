@@ -44,7 +44,7 @@ jobs:
       - image: circleci/openjdk:8-stretch
     steps:
       - checkout
-      - run: export GPG_DIR=${CIRCLE_WORKING_DIRECTORY}/cd
+      - run: echo 'export GPG_DIR=${CIRCLE_WORKING_DIRECTORY}/cd' >> $BASH_ENV
       - run: echo ${GPG_DIR}
       - run: ./cd/before-deploy.sh
       - run: ./cd/deploy.sh
