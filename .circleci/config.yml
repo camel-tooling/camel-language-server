@@ -46,6 +46,8 @@ jobs:
       - checkout
       - run: echo 'export GPG_DIR=`pwd`/cd' >> $BASH_ENV
       - run: echo ${GPG_DIR}
+      - run: echo 'export GPG_TTY=$(tty)' >> $BASH_ENV
+      - run: echo ${GPG_TTY}
       - run: ./cd/before-deploy.sh
       - run: ./cd/deploy.sh
 
