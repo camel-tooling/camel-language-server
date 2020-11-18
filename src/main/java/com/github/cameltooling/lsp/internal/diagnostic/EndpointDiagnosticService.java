@@ -41,6 +41,7 @@ import org.eclipse.lsp4j.Position;
 import org.eclipse.lsp4j.Range;
 import org.eclipse.lsp4j.TextDocumentItem;
 import org.jboss.forge.roaster.Roaster;
+import org.jboss.forge.roaster.model.JavaType;
 import org.jboss.forge.roaster.model.source.JavaClassSource;
 
 import com.github.cameltooling.lsp.internal.catalog.diagnostic.BooleanErrorMsg;
@@ -95,8 +96,11 @@ public class EndpointDiagnosticService extends DiagnosticService {
 				logExceptionValidatingDocument(uri, e);
 			}
 		} else if(uri.endsWith(".java")) {
-			JavaClassSource clazz = (JavaClassSource) Roaster.parse(camelText);
-			RouteBuilderParser.parseRouteBuilderEndpoints(clazz, "", "/"+uri, endpoints);
+			JavaType<?> parsedJavaFile = Roaster.parse(camelText);
+			if (parsedJavaFile instanceof JavaClassSource) {
+				JavaClassSource clazz = (JavaClassSource) parsedJavaFile;
+				RouteBuilderParser.parseRouteBuilderEndpoints(clazz, "", "/"+uri, endpoints);
+			}
 		}
 		return endpoints;
 	}

@@ -19,6 +19,7 @@ package com.github.cameltooling.lsp.internal.documentsymbol;
 import java.io.File;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.camel.parser.RouteBuilderParser;
@@ -29,6 +30,7 @@ import org.eclipse.lsp4j.SymbolInformation;
 import org.eclipse.lsp4j.TextDocumentItem;
 import org.eclipse.lsp4j.jsonrpc.messages.Either;
 import org.jboss.forge.roaster.Roaster;
+import org.jboss.forge.roaster.model.JavaType;
 import org.jboss.forge.roaster.model.source.JavaClassSource;
 
 public class DocumentSymbolJavaProcessor extends AbstractDocumentSymbolProcessor {
@@ -38,12 +40,17 @@ public class DocumentSymbolJavaProcessor extends AbstractDocumentSymbolProcessor
 	}
 
 	public List<Either<SymbolInformation, DocumentSymbol>> getSymbolInformations() {
-		JavaClassSource clazz = (JavaClassSource) Roaster.parse(textDocumentItem.getText());
-		String absolutePathOfCamelFile = new File(URI.create(textDocumentItem.getUri())).getAbsolutePath();
-		List<CamelNodeDetails> camelNodes = RouteBuilderParser.parseRouteBuilderTree(clazz, "", absolutePathOfCamelFile, true);
-		List<CamelEndpointDetails> endpoints = new ArrayList<>();
-		RouteBuilderParser.parseRouteBuilderEndpoints(clazz, "", absolutePathOfCamelFile, endpoints);
-		return createSymbolInformations(camelNodes, endpoints);
+		JavaType<?> parsedJavaFile = Roaster.parse(textDocumentItem.getText());
+		if(parsedJavaFile instanceof JavaClassSource) {
+			JavaClassSource clazz = (JavaClassSource) parsedJavaFile;
+			String absolutePathOfCamelFile = new File(URI.create(textDocumentItem.getUri())).getAbsolutePath();
+			List<CamelNodeDetails> camelNodes = RouteBuilderParser.parseRouteBuilderTree(clazz, "", absolutePathOfCamelFile, true);
+			List<CamelEndpointDetails> endpoints = new ArrayList<>();
+			RouteBuilderParser.parseRouteBuilderEndpoints(clazz, "", absolutePathOfCamelFile, endpoints);
+			return createSymbolInformations(camelNodes, endpoints);
+		} else {
+			return Collections.emptyList();
+		}
 	}
 
 }

@@ -186,4 +186,9 @@ class CamelDiagnosticTest extends AbstractDiagnosticTest {
 	void testUnknowPropertyOnLenientPropertiesComponent() throws Exception {
 		testDiagnostic("camel-with-unknownParameter-forlenientcomponent", 0, ".xml");
 	}
+	
+	@Test
+	void testJavaInterface() throws Exception {
+		testDiagnostic("AnInterface", 0, ".java");
+	}
 }
