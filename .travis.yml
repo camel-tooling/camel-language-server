@@ -23,8 +23,8 @@ jobs:
       jdk: openjdk15
       script:
         - mvn verify -V
-    - stage: deploy
-      name: "Sonar Analysis and Deployment"
+    - stage: sonar
+      name: "Sonar Analysis"
       jdk: openjdk11
       before_install: "export VERSION_SUFFIX=`grep '<version>' pom.xml -m 1 | cut -d'>' -f 2 | cut -d'<' -f 1 | cut -d'-' -f 2`"
       script:
@@ -36,17 +36,10 @@ jobs:
         - if [[ $TRAVIS_PULL_REQUEST == "false" && $TRAVIS_BRANCH == "master" && $IS_SNAPSHOT == "true" || -n "$TRAVIS_TAG" && $IS_SNAPSHOT == "false" ]]; then 
           mvn verify -P !build-extras -Dtest="*,!RunnerStandardIOTest,!RunnerWebSocketTest" -B sonar:sonar -Dsonar.login=${SONAR_TOKEN} -Dsonar.organization="camel-tooling" -Dsonar.projectKey="camel-lsp-server" -Dsonar.projectName="Camel LSP Server"; 
          fi
-        - if [[ $TRAVIS_PULL_REQUEST == "false" && $TRAVIS_BRANCH == "master" && $IS_SNAPSHOT == "true" ]]; then
-         ./cd/before-deploy.sh;
-         ./cd/deploy.sh;
-         elif [[ -n "$TRAVIS_TAG" && $IS_SNAPSHOT == "false" ]]; then
-         ./cd/before-deploy.sh;
-         ./cd/deploy.sh;
-         fi
       addons:
         sonarcloud:
           organization: camel-tooling
 stages:
  - test
- - name: deploy
+ - name: sonar
    if: branch = master AND NOT type = pull_request OR tag IS present
