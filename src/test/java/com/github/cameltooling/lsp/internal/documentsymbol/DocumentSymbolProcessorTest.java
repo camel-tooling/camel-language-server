@@ -274,6 +274,12 @@ class DocumentSymbolProcessorTest extends AbstractCamelLanguageServerTest {
 		assertThat(range.getEnd().getCharacter()).isEqualTo(40);
 	}
 	
+	@Test
+	void testInterfaceNotThrowingException() throws Exception {
+		File f = new File("src/test/resources/workspace/AnInterface.java");
+		testRetrieveDocumentSymbol(f, 0);
+	}
+	
 	private List<Either<SymbolInformation, DocumentSymbol>> testRetrieveDocumentSymbol(String textTotest, int expectedSize) throws URISyntaxException, InterruptedException, ExecutionException, IOException {
 		File camelFile = new File(tempDir, "DocumentSymbolInformation.xml");
 		Files.write(textTotest.getBytes(), camelFile);
