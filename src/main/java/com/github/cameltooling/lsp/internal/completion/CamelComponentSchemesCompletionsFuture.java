@@ -79,7 +79,7 @@ public final class CamelComponentSchemesCompletionsFuture implements Function<Ca
 				result.add(completionItem);
 			}
 		} catch (Exception ex) {
-			LOGGER.error("Error retrieving existing " + uriElement.getComponentName() + " endpoints!", ex);
+			LOGGER.error(String.format("Error retrieving existing %s endpoints!", uriElement.getComponentName()), ex);
 		}
 		return result;
 	}
