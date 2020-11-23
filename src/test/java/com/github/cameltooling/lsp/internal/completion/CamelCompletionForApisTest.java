@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.eclipse.lsp4j.CompletionItem;
+import org.eclipse.lsp4j.CompletionItemKind;
 import org.eclipse.lsp4j.Position;
 import org.eclipse.lsp4j.Range;
 import org.junit.jupiter.api.Test;
@@ -136,6 +137,7 @@ public class CamelCompletionForApisTest extends AbstractCamelLanguageServerTest 
 		assertThat(completions).hasSize(1);
 		CompletionItem completionItemForPropertyFetcher = completions.get(0);
 		assertThat(completionItemForPropertyFetcher.getLabel()).isEqualTo("aPropertyFetcher");
+		assertThat(completionItemForPropertyFetcher.getKind()).isEqualTo(CompletionItemKind.Variable);
 		assertThat(completionItemForPropertyFetcher.getTextEdit().getRange()).isEqualTo(new Range(new Position(0, text.length()), new Position(0, text.length())));
 	}
 	
