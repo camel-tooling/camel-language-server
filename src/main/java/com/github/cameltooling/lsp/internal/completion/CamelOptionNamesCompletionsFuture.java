@@ -16,17 +16,19 @@
  */
 package com.github.cameltooling.lsp.internal.completion;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.apache.camel.catalog.CamelCatalog;
 import org.eclipse.lsp4j.CompletionItem;
+import org.eclipse.lsp4j.CompletionItemKind;
 
 import com.github.cameltooling.lsp.internal.catalog.model.BaseOptionModel;
 import com.github.cameltooling.lsp.internal.catalog.model.ComponentModel;
+import com.github.cameltooling.lsp.internal.catalog.model.EndpointOptionModel;
 import com.github.cameltooling.lsp.internal.catalog.util.ModelHelper;
 import com.github.cameltooling.lsp.internal.instancemodel.CamelUriElementInstance;
 import com.github.cameltooling.lsp.internal.instancemodel.OptionParamKeyURIInstance;
@@ -52,43 +54,48 @@ public class CamelOptionNamesCompletionsFuture implements Function<CamelCatalog,
 
 	@Override
 	public List<CompletionItem> apply(CamelCatalog catalog) {
-		List<BaseOptionModel> allOptions = retrieveAllProperties(catalog);
-		return allOptions.stream()
-				.filter(endpoint -> "parameter".equals(endpoint.getKind()))
-				// filter wrong option groups
-				.filter(FilterPredicateUtils.matchesProducerConsumerGroups(isProducer))
-				.map(parameter -> {
-					CompletionItem completionItem = new CompletionItem(parameter.getName());
-					String insertText = parameter.getName();
-					
-					boolean hasValue = false;
-					if (uriElement instanceof OptionParamKeyURIInstance) {
-						OptionParamKeyURIInstance param = (OptionParamKeyURIInstance)uriElement;
-						hasValue = param.getOptionParamURIInstance().getValue() != null;
-					}
-					
-					if(!hasValue && parameter.getDefaultValue() != null) {
-						insertText += String.format("=%s", parameter.getDefaultValue());
-					}
-					completionItem.setInsertText(insertText);
-					completionItem.setDocumentation(parameter.getDescription());
-					completionItem.setDetail(parameter.getJavaType());
-					CompletionResolverUtils.applyDeprecation(completionItem, parameter.isDeprecated());
-					CompletionResolverUtils.applyTextEditToCompletionItem(uriElement, completionItem);
-					return completionItem;
-				})
+		ComponentModel componentModel = ModelHelper.generateComponentModel(catalog.componentJSonSchema(camelComponentName), true);
+		List<EndpointOptionModel> endpointOptions = componentModel.getEndpointOptions();
+		Stream<CompletionItem> endpointOptionsFiltered = initialFilter(endpointOptions).map(createCompletionItem(CompletionItemKind.Property));
+		
+		List<EndpointOptionModel> availableApiProperties = uriElement.findAvailableApiProperties(componentModel);
+		Stream<CompletionItem> availableApiPropertiesFiltered = initialFilter(availableApiProperties).map(createCompletionItem(CompletionItemKind.Variable));
+		
+		return Stream.concat(endpointOptionsFiltered, availableApiPropertiesFiltered)
 				// filter duplicated uri options
 				.filter(FilterPredicateUtils.removeDuplicatedOptions(alreadyDefinedOptions, positionInCamelURI))
 				.filter(FilterPredicateUtils.matchesCompletionFilter(filterString))
 				.collect(Collectors.toList());
 	}
 
-	private List<BaseOptionModel> retrieveAllProperties(CamelCatalog catalog) {
-		ComponentModel componentModel = ModelHelper.generateComponentModel(catalog.componentJSonSchema(camelComponentName), true);
-		List<BaseOptionModel> allOptions = new ArrayList<>();
-		allOptions.addAll(componentModel.getEndpointOptions());
-		allOptions.addAll(uriElement.findAvailableApiProperties(componentModel));
-		return allOptions;
+	private Stream<EndpointOptionModel> initialFilter(List<EndpointOptionModel> endpointOptions) {
+		return endpointOptions.stream()
+				.filter(endpoint -> "parameter".equals(endpoint.getKind()))
+				// filter wrong option groups
+				.filter(FilterPredicateUtils.matchesProducerConsumerGroups(isProducer));
 	}
 
+	private Function<? super BaseOptionModel, ? extends CompletionItem> createCompletionItem(CompletionItemKind kind) {
+		return parameter -> {
+			CompletionItem completionItem = new CompletionItem(parameter.getName());
+			String insertText = parameter.getName();
+			
+			boolean hasValue = false;
+			if (uriElement instanceof OptionParamKeyURIInstance) {
+				OptionParamKeyURIInstance param = (OptionParamKeyURIInstance)uriElement;
+				hasValue = param.getOptionParamURIInstance().getValue() != null;
+			}
+			
+			if(!hasValue && parameter.getDefaultValue() != null) {
+				insertText += String.format("=%s", parameter.getDefaultValue());
+			}
+			completionItem.setInsertText(insertText);
+			completionItem.setDocumentation(parameter.getDescription());
+			completionItem.setDetail(parameter.getJavaType());
+			completionItem.setKind(kind);
+			CompletionResolverUtils.applyDeprecation(completionItem, parameter.isDeprecated());
+			CompletionResolverUtils.applyTextEditToCompletionItem(uriElement, completionItem);
+			return completionItem;
+		};
+	}
 }

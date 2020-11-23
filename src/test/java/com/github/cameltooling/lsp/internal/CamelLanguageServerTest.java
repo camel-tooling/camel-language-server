@@ -27,6 +27,7 @@ import org.apache.camel.tooling.model.MainModel;
 import org.apache.log4j.Logger;
 import org.apache.log4j.spi.LoggingEvent;
 import org.eclipse.lsp4j.CompletionItem;
+import org.eclipse.lsp4j.CompletionItemKind;
 import org.eclipse.lsp4j.CompletionList;
 import org.eclipse.lsp4j.Position;
 import org.eclipse.lsp4j.Range;
@@ -217,6 +218,7 @@ class CamelLanguageServerTest extends AbstractCamelLanguageServerTest {
 				expectedanyOrderAttributeCompletionItem.setDetail("boolean");
 				expectedanyOrderAttributeCompletionItem.setInsertText("anyOrder=false");
 				expectedanyOrderAttributeCompletionItem.setTextEdit(new TextEdit(new Range(new Position(12, 47), new Position(12, 47)), "anyOrder=false"));
+				expectedanyOrderAttributeCompletionItem.setKind(CompletionItemKind.Property);
 				assertThat(completions.get().getLeft()).contains(expectedanyOrderAttributeCompletionItem);
 			}
 		}
@@ -234,6 +236,7 @@ class CamelLanguageServerTest extends AbstractCamelLanguageServerTest {
 				expectedanyOrderAttributeCompletionItem.setDetail("boolean");
 				expectedanyOrderAttributeCompletionItem.setInsertText("anyOrder=false");
 				expectedanyOrderAttributeCompletionItem.setTextEdit(new TextEdit(new Range(new Position(12, 46), new Position(12, 46)), "anyOrder=false"));
+				expectedanyOrderAttributeCompletionItem.setKind(CompletionItemKind.Property);
 				assertThat(completions.get().getLeft()).contains(expectedanyOrderAttributeCompletionItem);
 			}
 		}
@@ -251,6 +254,7 @@ class CamelLanguageServerTest extends AbstractCamelLanguageServerTest {
 				expectedanyOrderAttributeCompletionItem.setDetail("boolean");
 				expectedanyOrderAttributeCompletionItem.setInsertText("anyOrder=false");
 				expectedanyOrderAttributeCompletionItem.setTextEdit(new TextEdit(new Range(new Position(12, 47), new Position(12, 47)), "anyOrder=false"));
+				expectedanyOrderAttributeCompletionItem.setKind(CompletionItemKind.Property);
 				assertThat(completions.get().getLeft()).contains(expectedanyOrderAttributeCompletionItem);
 			}
 		}
@@ -268,6 +272,7 @@ class CamelLanguageServerTest extends AbstractCamelLanguageServerTest {
 				expectedanyOrderAttributeCompletionItem.setDetail("boolean");
 				expectedanyOrderAttributeCompletionItem.setInsertText("anyOrder=false");
 				expectedanyOrderAttributeCompletionItem.setTextEdit(new TextEdit(new Range(new Position(12, 45), new Position(12, 45)), "anyOrder=false"));
+				expectedanyOrderAttributeCompletionItem.setKind(CompletionItemKind.Property);
 				assertThat(completions.get().getLeft()).contains(expectedanyOrderAttributeCompletionItem);
 			}
 		}
@@ -285,6 +290,7 @@ class CamelLanguageServerTest extends AbstractCamelLanguageServerTest {
 				expectedanyOrderAttributeCompletionItem.setDetail("boolean");
 				expectedanyOrderAttributeCompletionItem.setInsertText("anyOrder=false");
 				expectedanyOrderAttributeCompletionItem.setTextEdit(new TextEdit(new Range(new Position(12, 45), new Position(12, 45)), "anyOrder=false"));
+				expectedanyOrderAttributeCompletionItem.setKind(CompletionItemKind.Property);
 				assertThat(completions.get().getLeft()).contains(expectedanyOrderAttributeCompletionItem);
 			}
 		}
@@ -302,6 +308,7 @@ class CamelLanguageServerTest extends AbstractCamelLanguageServerTest {
 				expectedanyOrderAttributeCompletionItem.setDetail("boolean");
 				expectedanyOrderAttributeCompletionItem.setInsertText("anyOrder=false");
 				expectedanyOrderAttributeCompletionItem.setTextEdit(new TextEdit(new Range(new Position(12, 50), new Position(12, 50)), "anyOrder=false"));
+				expectedanyOrderAttributeCompletionItem.setKind(CompletionItemKind.Property);
 				assertThat(completions.get().getLeft()).contains(expectedanyOrderAttributeCompletionItem);
 			}
 		}
