@@ -39,7 +39,7 @@ public abstract class CamelUriElementInstance implements ILineRangeDefineable{
 	private int endPositionInUri;
 	private TextDocumentItem document;
 
-	public CamelUriElementInstance(int startPositionInUri, int endPositionInUri) {
+	protected CamelUriElementInstance(int startPositionInUri, int endPositionInUri) {
 		this.startPositionInUri = startPositionInUri;
 		this.endPositionInUri = endPositionInUri;
 	}

@@ -39,7 +39,7 @@ public abstract class AbstractDocumentSymbolProcessor {
 
 	protected TextDocumentItem textDocumentItem;
 
-	public AbstractDocumentSymbolProcessor(TextDocumentItem textDocumentItem) {
+	protected AbstractDocumentSymbolProcessor(TextDocumentItem textDocumentItem) {
 		this.textDocumentItem = textDocumentItem;
 	}
 
