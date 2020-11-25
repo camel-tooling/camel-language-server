@@ -7,6 +7,8 @@ jobs:
     steps:
       - checkout
       - run: mvn verify -V
+      - store_test_results:
+          path: target/surefire-reports
 
   jdk11:
     docker:
@@ -14,6 +16,8 @@ jobs:
     steps:
       - checkout
       - run: mvn verify -V
+      - store_test_results:
+          path: target/surefire-reports
 
   jdk15:
     docker:
@@ -21,6 +25,8 @@ jobs:
     steps:
       - checkout
       - run: mvn verify -V
+      - store_test_results:
+          path: target/surefire-reports
 
   sonar:
     docker:
