@@ -28,6 +28,15 @@ jobs:
       - store_test_results:
           path: target/surefire-reports
 
+  windows:
+    executor:
+      name: win/default
+    steps:
+      - checkout
+      - run: .\mvnw.cmd verify -V
+      - store_test_results:
+          path: target/surefire-reports    
+
   sonar:
     docker:
       - image: circleci/openjdk:8-stretch
@@ -63,11 +72,13 @@ workflows:
       - jdk8
       - jdk11
       - jdk15
+      - windows
       - sonar:
           requires:
             - jdk8
             - jdk11
             - jdk15
+            - windows
           filters:
             branches:
               only:
@@ -78,6 +89,10 @@ workflows:
              - jdk8
              - jdk11
              - jdk15
+             - windows
           filters:
             branches:
               only: master
+
+orbs:
+  win: circleci/windows@2.4.0
