@@ -50,6 +50,7 @@ import com.github.cameltooling.lsp.internal.catalog.diagnostic.IntegerErrorMsg;
 import com.github.cameltooling.lsp.internal.catalog.diagnostic.InvalidDurationErrorMsg;
 import com.github.cameltooling.lsp.internal.catalog.diagnostic.NumberErrorMsg;
 import com.github.cameltooling.lsp.internal.catalog.diagnostic.ReferenceErrorMsg;
+import com.github.cameltooling.lsp.internal.catalog.diagnostic.RequiredErrorMsg;
 import com.github.cameltooling.lsp.internal.catalog.diagnostic.UnknownErrorMsg;
 import com.github.cameltooling.lsp.internal.parser.ParserFileHelperUtil;
 
@@ -241,8 +242,11 @@ public class EndpointDiagnosticService extends DiagnosticService {
 		computeErrorMessage(sb, validationResult.getInvalidBoolean(), new BooleanErrorMsg());
 		computeErrorMessage(sb, validationResult.getInvalidReference(), new ReferenceErrorMsg());
 		computeErrorMessage(sb, validationResult.getInvalidDuration(), new InvalidDurationErrorMsg());
+		computeErrorMessage(sb, validationResult.getRequired(), new RequiredErrorMsg());
 		computeErrorMessage(sb, validationResult.getSyntaxError());
 		return sb.toString();
 	}
+
+
 
 }

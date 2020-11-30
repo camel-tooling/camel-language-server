@@ -94,6 +94,20 @@ class CamelDiagnosticTest extends AbstractDiagnosticTest {
 	}
 	
 	@Test
+	void testMissingMethodNameForApiBasedComponent() throws Exception {
+		testDiagnostic("camel-with-missing-methodname", 2, ".xml");
+		Diagnostic diagnostic = lastPublishedDiagnostics.getDiagnostics().get(0);
+		assertThat(diagnostic.getMessage()).isNotNull();
+		Range range = diagnostic.getRange();
+		checkRange(range, 9, 17, 9, 32);
+		
+		Diagnostic diagnostic2 = lastPublishedDiagnostics.getDiagnostics().get(1);
+		assertThat(diagnostic2.getMessage()).isNotNull();
+		Range range2 = diagnostic2.getRange();
+		checkRange(range2, 9, 17, 9, 32);
+	}
+	
+	@Test
 	void testValidationErrorWithSyntaxError() throws Exception {
 		testDiagnostic("camel-with-endpoint-error-withampersand", 1, ".xml");
 		Diagnostic diagnostic = lastPublishedDiagnostics.getDiagnostics().get(0);

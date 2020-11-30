@@ -17,6 +17,7 @@
 package com.github.cameltooling.lsp.internal.diagnostic;
 
 import java.util.Map;
+import java.util.Set;
 import java.util.Map.Entry;
 import java.util.concurrent.CompletableFuture;
 
@@ -56,5 +57,10 @@ public abstract class DiagnosticService {
 			}
 		}
 	}
-
+	
+	protected void computeErrorMessage(StringBuilder sb, Set<String> setOfErrors, CamelDiagnosticMessage<Set<String>> errorMsgComputer) {
+		if(setOfErrors != null && !setOfErrors.isEmpty()) {
+			sb.append(errorMsgComputer.getErrorMessage(setOfErrors)).append("\n");
+		}
+	}
 }
