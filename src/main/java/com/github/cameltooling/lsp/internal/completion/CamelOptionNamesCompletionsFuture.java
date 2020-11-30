@@ -93,9 +93,16 @@ public class CamelOptionNamesCompletionsFuture implements Function<CamelCatalog,
 			completionItem.setDocumentation(parameter.getDescription());
 			completionItem.setDetail(parameter.getJavaType());
 			completionItem.setKind(kind);
+			configureSortTextToHaveApiBasedOptionsBefore(kind, completionItem, insertText);
 			CompletionResolverUtils.applyDeprecation(completionItem, parameter.isDeprecated());
 			CompletionResolverUtils.applyTextEditToCompletionItem(uriElement, completionItem);
 			return completionItem;
 		};
+	}
+
+	private void configureSortTextToHaveApiBasedOptionsBefore(CompletionItemKind kind, CompletionItem completionItem, String insertText) {
+		if(CompletionItemKind.Variable.equals(kind)) {
+			completionItem.setSortText("1-"+insertText);
+		}
 	}
 }
