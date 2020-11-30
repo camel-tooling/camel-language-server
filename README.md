@@ -1,6 +1,5 @@
 [![Central](https://img.shields.io/maven-central/v/com.github.camel-tooling/camel-lsp-server.svg?style=plastic)]()
 [![GitHub tag](https://img.shields.io/github/tag/camel-tooling/camel-language-server.svg?style=plastic)]()
-[![Build Status](https://travis-ci.com/camel-tooling/camel-language-server.svg?branch=master)](https://travis-ci.com/camel-tooling/camel-language-server)
 [![CircleCI](https://circleci.com/gh/camel-tooling/camel-language-server.svg?style=shield)](https://circleci.com/gh/camel-tooling/camel-language-server)
 [![Sonar](https://sonarcloud.io/api/project_badges/measure?project=camel-lsp-server&metric=alert_status)](https://sonarcloud.io/dashboard?id=camel-lsp-server)
 [![License](https://img.shields.io/badge/license-Apache%202-blue.svg)]()
