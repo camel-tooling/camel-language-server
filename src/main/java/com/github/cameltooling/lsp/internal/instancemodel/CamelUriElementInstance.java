@@ -108,7 +108,7 @@ public abstract class CamelUriElementInstance implements ILineRangeDefineable{
 				.stream()
 				.filter(api -> apiProperty.getName().equals(api.getName()))
 				.findAny();
-		if(correspondingApi.isPresent()) {
+		if(correspondingApi.isPresent() && methodNamePath != null) {
 			Map<String, String> aliasesMapping = correspondingApi.get().getAliasToKind();
 			String methodKind = aliasesMapping.get(methodNamePath.getValue());
 			if(ApiOptionModel.API_METHOD_KIND_CREATOR.equals(methodKind)) {
