@@ -18,6 +18,7 @@ package com.github.cameltooling.lsp.internal.completion;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
@@ -33,6 +34,9 @@ import com.github.cameltooling.lsp.internal.CamelLanguageServer;
 
 public class CamelCompletionForApisTest extends AbstractCamelLanguageServerTest {
 	
+	private static final Comparator<CompletionItem> COMPLETIONITEM_COMPARATOR =
+			Comparator.comparing(CompletionItem::getSortText, Comparator.nullsLast(Comparator.naturalOrder()))
+				.thenComparing(Comparator.comparing(CompletionItem::getLabel));
 	public static final String SIMPLIFIED_JSON = "{\n"
 			+ "	\"component\": {\n"
 			+ "		\"kind\": \"component\",\n"
@@ -56,6 +60,20 @@ public class CamelCompletionForApisTest extends AbstractCamelLanguageServerTest 
 			+ "		\"consumerOnly\": false,\n"
 			+ "		\"producerOnly\": false,\n"
 			+ "		\"lenientProperties\": false\n"
+			+ "	},\n"
+			+ " \"properties\": {"
+			+ "		\"aaaProperty\": {\n"
+			+ "			\"kind\": \"parameter\",\n"
+			+ "			\"displayName\": \"aaa property with alphabethical order before other API properties\",\n"
+			+ "			\"group\": \"common\",\n"
+			+ "			\"label\": \"\",\n"
+			+ "			\"required\": false,\n"
+			+ "			\"type\": \"string\",\n"
+			+ "			\"javaType\": \"java.lang.String\",\n"
+			+ "			\"deprecated\": false,\n"
+			+ "			\"secret\": false,\n"
+			+ "			\"description\": \"A property description\"\n"
+			+ "		}"
 			+ "	},\n"
 			+ "	\"apis\": {\n"
 			+ "		\"account\": {\n"
@@ -134,7 +152,8 @@ public class CamelCompletionForApisTest extends AbstractCamelLanguageServerTest 
 		String text = "camel.sink.url=aComponentWithApis:account/fetch?";
 		CamelLanguageServer languageServer = initializeLanguageServer(text, ".properties");
 		List<CompletionItem> completions = getCompletionFor(languageServer, new Position(0, text.length())).get().getLeft();
-		assertThat(completions).hasSize(1);
+		assertThat(completions).hasSize(2);
+		completions.sort(COMPLETIONITEM_COMPARATOR);
 		CompletionItem completionItemForPropertyFetcher = completions.get(0);
 		assertThat(completionItemForPropertyFetcher.getLabel()).isEqualTo("aPropertyFetcher");
 		assertThat(completionItemForPropertyFetcher.getKind()).isEqualTo(CompletionItemKind.Variable);
@@ -155,7 +174,8 @@ public class CamelCompletionForApisTest extends AbstractCamelLanguageServerTest 
 		String text = "camel.sink.url=aComponentWithApis:account/update?";
 		CamelLanguageServer languageServer = initializeLanguageServer(text, ".properties");
 		List<CompletionItem> completions = getCompletionFor(languageServer, new Position(0, text.length())).get().getLeft();
-		assertThat(completions).hasSize(1);
+		assertThat(completions).hasSize(2);
+		completions.sort(COMPLETIONITEM_COMPARATOR);
 		assertThat(completions.get(0).getLabel()).isEqualTo("aPropertyUpdater");
 	}
 	
@@ -164,7 +184,7 @@ public class CamelCompletionForApisTest extends AbstractCamelLanguageServerTest 
 		String text = "camel.sink.url=aComponentWithApis:account/create?";
 		CamelLanguageServer languageServer = initializeLanguageServer(text, ".properties");
 		List<CompletionItem> completions = getCompletionFor(languageServer, new Position(0, text.length())).get().getLeft();
-		assertThat(completions).isEmpty();
+		assertThat(completions.stream().filter(completion -> CompletionItemKind.Variable.equals(completion.getKind()))).isEmpty();
 	}
 	
 	@Test
