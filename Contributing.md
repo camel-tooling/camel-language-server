@@ -51,7 +51,7 @@ Eclipse desktop allows to debug Language Server projects being written in the sa
 * Wait that it is reviewed and merged
 * Create a tag
 * Push the tag to camel-tooling organization repository
-** A build will start automatically on https://travis-ci.org/camel-tooling/camel-language-server
+** A build will start automatically on [Circle CI](https://app.circleci.com/pipelines/github/camel-tooling/camel-language-server)
 ** Ensure build is OK
 * Modify pom version to use an incremented snapshot version to prepare next release iteration
 * Provide a PR
