@@ -21,6 +21,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Stream;
 
 import org.eclipse.lsp4j.CompletionItem;
 import org.eclipse.lsp4j.CompletionItemKind;
@@ -184,7 +185,11 @@ public class CamelCompletionForApisTest extends AbstractCamelLanguageServerTest 
 		String text = "camel.sink.url=aComponentWithApis:account/create?";
 		CamelLanguageServer languageServer = initializeLanguageServer(text, ".properties");
 		List<CompletionItem> completions = getCompletionFor(languageServer, new Position(0, text.length())).get().getLeft();
-		assertThat(completions.stream().filter(completion -> CompletionItemKind.Variable.equals(completion.getKind()))).isEmpty();
+		assertThat(filterApiBasedOptions(completions)).isEmpty();
+	}
+
+	private Stream<CompletionItem> filterApiBasedOptions(List<CompletionItem> completions) {
+		return completions.stream().filter(completion -> CompletionItemKind.Variable.equals(completion.getKind()));
 	}
 	
 	@Test
@@ -236,7 +241,7 @@ public class CamelCompletionForApisTest extends AbstractCamelLanguageServerTest 
 		String text = "camel.sink.url=aComponentWithApis:account?";
 		CamelLanguageServer languageServer = initializeLanguageServer(text, ".properties");
 		List<CompletionItem> completions = getCompletionFor(languageServer, new Position(0, text.length())).get().getLeft();
-		assertThat(completions).isEmpty();
+		assertThat(filterApiBasedOptions(completions)).isEmpty();
 	}
 	
 	@Test
@@ -244,7 +249,7 @@ public class CamelCompletionForApisTest extends AbstractCamelLanguageServerTest 
 		String text = "camel.sink.url=aComponentWithApis:account/invalid?";
 		CamelLanguageServer languageServer = initializeLanguageServer(text, ".properties");
 		List<CompletionItem> completions = getCompletionFor(languageServer, new Position(0, text.length())).get().getLeft();
-		assertThat(completions).isEmpty();
+		assertThat(filterApiBasedOptions(completions)).isEmpty();
 	}
 	
 	@Test
@@ -252,7 +257,7 @@ public class CamelCompletionForApisTest extends AbstractCamelLanguageServerTest 
 		String text = "camel.sink.url=aComponentWithApis?";
 		CamelLanguageServer languageServer = initializeLanguageServer(text, ".properties");
 		List<CompletionItem> completions = getCompletionFor(languageServer, new Position(0, text.length())).get().getLeft();
-		assertThat(completions).isEmpty();
+		assertThat(filterApiBasedOptions(completions)).isEmpty();
 	}
 	
 	@Override
