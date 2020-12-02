@@ -41,7 +41,7 @@ public abstract class DiagnosticService {
 	}
 
 	protected void logExceptionValidatingDocument(String docUri, Exception e) {
-		LOGGER.warn("Error while trying to validate the document {0}", docUri, e);
+		LOGGER.warn("Error while trying to validate the document {}", docUri, e);
 	}
 	
 	protected void computeErrorMessage(StringBuilder sb, String syntaxError) {
