@@ -30,7 +30,7 @@ jobs:
 
   sonar:
     docker:
-      - image: circleci/openjdk:8-stretch
+      - image: circleci/openjdk:11-stretch
     steps:
       - checkout
       - run: > 
