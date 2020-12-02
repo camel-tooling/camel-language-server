@@ -52,7 +52,7 @@ class CamelKModelineCamelPropertyFileTest extends AbstractCamelLanguageServerTes
 		List<CompletionItem> completionItems = completions.get().getLeft();
 		assertThat(completionItems).containsOnly(
 				createExpectedCompletionItem("a.properties"),
-				createExpectedCompletionItem("myFolder/aSecond.properties"));
+				createExpectedCompletionItem("myFolder"+File.separator+"aSecond.properties"));
 	}
 
 	private CompletionItem createExpectedCompletionItem(String text) {

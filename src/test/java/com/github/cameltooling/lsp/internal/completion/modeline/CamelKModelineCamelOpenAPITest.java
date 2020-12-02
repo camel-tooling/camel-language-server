@@ -52,7 +52,7 @@ class CamelKModelineCamelOpenAPITest extends AbstractCamelLanguageServerTest {
 		List<CompletionItem> completionItems = completions.get().getLeft();
 		assertThat(completionItems).containsOnly(
 				createExpectedCompletionItem("a.json"),
-				createExpectedCompletionItem("myFolder/aSecond.yaml"));
+				createExpectedCompletionItem("myFolder"+File.separator+"aSecond.yaml"));
 	}
 
 	private CompletionItem createExpectedCompletionItem(String text) {
