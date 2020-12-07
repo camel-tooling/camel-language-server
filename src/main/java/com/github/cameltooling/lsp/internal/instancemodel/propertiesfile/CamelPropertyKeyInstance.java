@@ -17,6 +17,7 @@
 package com.github.cameltooling.lsp.internal.instancemodel.propertiesfile;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -25,6 +26,7 @@ import java.util.stream.Collectors;
 import org.apache.camel.catalog.CamelCatalog;
 import org.apache.camel.tooling.model.MainModel;
 import org.eclipse.lsp4j.CompletionItem;
+import org.eclipse.lsp4j.Diagnostic;
 import org.eclipse.lsp4j.Hover;
 import org.eclipse.lsp4j.Position;
 import org.eclipse.lsp4j.Range;
@@ -182,6 +184,13 @@ public class CamelPropertyKeyInstance implements ILineRangeDefineable {
 
 	public boolean shouldUseDashedCase() {
 		return camelPropertyEntryInstance.shouldUseDashedCase();
+	}
+
+	public Collection<Diagnostic> validate(CamelKafkaConnectorCatalogManager camelKafkaConnectorManager) {
+		if(camelSinkOrSourcePropertyKey != null) {
+			return camelSinkOrSourcePropertyKey.validate(camelKafkaConnectorManager);
+		}
+		return Collections.emptyList();
 	}
 
 }

@@ -16,7 +16,10 @@
  */
 package com.github.cameltooling.lsp.internal.catalog.util;
 
+import java.util.Optional;
+
 import org.apache.camel.kafkaconnector.catalog.CamelKafkaConnectorCatalog;
+import org.apache.camel.kafkaconnector.model.CamelKafkaConnectorModel;
 
 public class CamelKafkaConnectorCatalogManager {
 	
@@ -24,5 +27,13 @@ public class CamelKafkaConnectorCatalogManager {
 		
 	public CamelKafkaConnectorCatalog getCatalog() {
 		return catalog;
+	}
+	
+	public Optional<CamelKafkaConnectorModel> findConnectorModel(String connectorClass) {
+		return catalog.getConnectorsModel()
+				.values()
+				.stream()
+				.filter(connector -> connectorClass != null && connectorClass.equals(connector.getConnectorClass()))
+				.findAny();
 	}
 }

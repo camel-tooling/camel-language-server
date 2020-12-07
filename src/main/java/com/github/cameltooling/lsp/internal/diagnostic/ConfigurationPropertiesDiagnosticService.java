@@ -46,7 +46,7 @@ import com.github.cameltooling.lsp.internal.catalog.diagnostic.UnknownErrorMsg;
 public class ConfigurationPropertiesDiagnosticService extends DiagnosticService {
 
 	public ConfigurationPropertiesDiagnosticService(CompletableFuture<CamelCatalog> camelCatalog) {
-		super(camelCatalog);
+		super(camelCatalog, null);
 	}
 	
 	public Map<String, ConfigurationPropertiesValidationResult> computeCamelConfigurationPropertiesErrors(String camelText, String uri) {
