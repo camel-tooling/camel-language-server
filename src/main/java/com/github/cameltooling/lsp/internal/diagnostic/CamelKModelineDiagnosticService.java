@@ -37,7 +37,7 @@ import com.github.cameltooling.lsp.internal.parser.CamelKModelineParser;
 public class CamelKModelineDiagnosticService extends DiagnosticService {
 
 	public CamelKModelineDiagnosticService() {
-		super(null);
+		super(null, null);
 	}
 
 	public Collection<Diagnostic> compute(String camelText, TextDocumentItem documentItem) {

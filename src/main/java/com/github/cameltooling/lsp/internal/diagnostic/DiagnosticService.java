@@ -17,8 +17,8 @@
 package com.github.cameltooling.lsp.internal.diagnostic;
 
 import java.util.Map;
-import java.util.Set;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 
 import org.apache.camel.catalog.CamelCatalog;
@@ -26,18 +26,21 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.github.cameltooling.lsp.internal.catalog.diagnostic.CamelDiagnosticMessage;
+import com.github.cameltooling.lsp.internal.catalog.util.CamelKafkaConnectorCatalogManager;
 
 public abstract class DiagnosticService {
 	
-	protected static final String APACHE_CAMEL_VALIDATION = "Apache Camel validation";
+	public static final String APACHE_CAMEL_VALIDATION = "Apache Camel validation";
 	protected static final Logger LOGGER = LoggerFactory.getLogger(DiagnosticService.class);
 	public static final String ERROR_CODE_UNKNOWN_PROPERTIES = "camel.diagnostic.unknown.properties";
 	public static final String ERROR_CODE_INVALID_ENUM = "camel.diagnostic.invalid.enum";
 	
 	protected CompletableFuture<CamelCatalog> camelCatalog;
+	protected CamelKafkaConnectorCatalogManager camelKafkaConnectorCatalogManager;
 
-	protected DiagnosticService(CompletableFuture<CamelCatalog> camelCatalog) {
+	protected DiagnosticService(CompletableFuture<CamelCatalog> camelCatalog, CamelKafkaConnectorCatalogManager camelKafkaConnectorCatalogManager) {
 		this.camelCatalog = camelCatalog;
+		this.camelKafkaConnectorCatalogManager = camelKafkaConnectorCatalogManager;
 	}
 
 	protected void logExceptionValidatingDocument(String docUri, Exception e) {

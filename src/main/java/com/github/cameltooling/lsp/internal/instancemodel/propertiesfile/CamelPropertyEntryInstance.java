@@ -16,11 +16,14 @@
  */
 package com.github.cameltooling.lsp.internal.instancemodel.propertiesfile;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 import org.apache.camel.catalog.CamelCatalog;
 import org.eclipse.lsp4j.CompletionItem;
+import org.eclipse.lsp4j.Diagnostic;
 import org.eclipse.lsp4j.Hover;
 import org.eclipse.lsp4j.Position;
 import org.eclipse.lsp4j.TextDocumentItem;
@@ -103,6 +106,13 @@ public class CamelPropertyEntryInstance implements ILineRangeDefineable {
 	public boolean shouldUseDashedCase() {
 		return textDocumentItem != null
 				&& new DashedCaseDetector().hasDashedCaseInCamelPropertyOption(textDocumentItem.getText());
+	}
+
+	public Collection<Diagnostic> validate(CamelKafkaConnectorCatalogManager camelKafkaConnectorManager) {
+		if (camelPropertyKeyInstance != null) {
+			return camelPropertyKeyInstance.validate(camelKafkaConnectorManager);
+		}
+		return Collections.emptyList();
 	}
 
 }

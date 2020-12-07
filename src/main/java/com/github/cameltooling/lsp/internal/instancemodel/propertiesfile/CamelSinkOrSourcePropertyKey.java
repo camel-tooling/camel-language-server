@@ -16,6 +16,7 @@
  */
 package com.github.cameltooling.lsp.internal.instancemodel.propertiesfile;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -23,15 +24,20 @@ import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 import org.apache.camel.kafkaconnector.model.CamelKafkaConnectorModel;
+import org.apache.camel.kafkaconnector.model.CamelKafkaConnectorOptionModel;
 import org.apache.camel.util.StringHelper;
 import org.eclipse.lsp4j.CompletionItem;
+import org.eclipse.lsp4j.Diagnostic;
+import org.eclipse.lsp4j.DiagnosticSeverity;
 import org.eclipse.lsp4j.Hover;
 import org.eclipse.lsp4j.Position;
+import org.eclipse.lsp4j.Range;
 import org.eclipse.lsp4j.TextDocumentItem;
 
 import com.github.cameltooling.lsp.internal.catalog.util.CamelKafkaConnectorCatalogManager;
 import com.github.cameltooling.lsp.internal.completion.CompletionResolverUtils;
 import com.github.cameltooling.lsp.internal.completion.FilterPredicateUtils;
+import com.github.cameltooling.lsp.internal.diagnostic.DiagnosticService;
 import com.github.cameltooling.lsp.internal.instancemodel.ILineRangeDefineable;
 import com.github.cameltooling.lsp.internal.parser.CamelKafkaUtil;
 
@@ -82,7 +88,7 @@ public class CamelSinkOrSourcePropertyKey implements ILineRangeDefineable {
 	public CompletableFuture<List<CompletionItem>> getCompletions(Position position, CamelKafkaConnectorCatalogManager camelKafkaConnectorManager) {
 		if (connectorClass != null) {
 			boolean shouldUseDashed = camelPropertyKeyInstance.shouldUseDashedCase();
-			Optional<CamelKafkaConnectorModel> camelKafkaConnectorModel = findConnectorModel(camelKafkaConnectorManager);
+			Optional<CamelKafkaConnectorModel> camelKafkaConnectorModel = camelKafkaConnectorManager.findConnectorModel(connectorClass);
 			if (camelKafkaConnectorModel.isPresent()) {
 				String filterString = optionKey.substring(0, position.getCharacter() - getStartPositionInLine());
 				List<CompletionItem> completions = camelKafkaConnectorModel.get()
@@ -107,17 +113,11 @@ public class CamelSinkOrSourcePropertyKey implements ILineRangeDefineable {
 		return CompletableFuture.completedFuture(Collections.emptyList());
 	}
 
-	private Optional<CamelKafkaConnectorModel> findConnectorModel(CamelKafkaConnectorCatalogManager camelKafkaConnectorManager) {
-		return camelKafkaConnectorManager.getCatalog().getConnectorsModel()
-				.values()
-				.stream()
-				.filter(connector -> connectorClass.equals(connector.getConnectorClass()))
-				.findAny();
-	}
+
 
 	public CompletableFuture<Hover> getHover(CamelKafkaConnectorCatalogManager camelKafkaConnectorManager) {
 		if (connectorClass != null) {
-			Optional<CamelKafkaConnectorModel> camelKafkaConnectorModel = findConnectorModel(camelKafkaConnectorManager);
+			Optional<CamelKafkaConnectorModel> camelKafkaConnectorModel = camelKafkaConnectorManager.findConnectorModel(connectorClass);
 			if (camelKafkaConnectorModel.isPresent()) {
 				String propertyKey = getPrefix() + optionKey;
 				String camelCasePropertyKey = StringHelper.dashToCamelCase(propertyKey);
@@ -131,6 +131,31 @@ public class CamelSinkOrSourcePropertyKey implements ILineRangeDefineable {
 			}
 		}
 		return CompletableFuture.completedFuture(null);
+	}
+
+	public String getOptionKey() {
+		return optionKey;
+	}
+
+	public Collection<Diagnostic> validate(CamelKafkaConnectorCatalogManager camelKafkaConnectorManager) {
+		Optional<CamelKafkaConnectorModel> connectorModelOptional = camelKafkaConnectorManager.findConnectorModel(connectorClass);
+		if (!"url".equals(optionKey) && connectorModelOptional.isPresent()) {
+			String propertyKey = getPrefix() + optionKey;
+			String camelCasePropertyKey = StringHelper.dashToCamelCase(propertyKey);
+			Optional<CamelKafkaConnectorOptionModel> optionModel = connectorModelOptional.get()
+					.getOptions()
+					.stream()
+					.filter(option -> camelCasePropertyKey.equals(option.getName()))
+					.findAny();
+			if(!optionModel.isPresent()) {
+				return Collections.singleton(new Diagnostic(
+						new Range(new Position(getLine(), getStartPositionInLine()), new Position(getLine(), getEndPositionInLine())),
+						"Unknown property " + optionKey,
+						DiagnosticSeverity.Error,
+						DiagnosticService.APACHE_CAMEL_VALIDATION));
+			}
+		}
+		return Collections.emptyList();
 	}
 
 }
