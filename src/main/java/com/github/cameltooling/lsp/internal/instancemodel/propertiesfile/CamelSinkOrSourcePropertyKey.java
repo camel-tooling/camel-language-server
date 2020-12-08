@@ -138,21 +138,23 @@ public class CamelSinkOrSourcePropertyKey implements ILineRangeDefineable {
 	}
 
 	public Collection<Diagnostic> validate(CamelKafkaConnectorCatalogManager camelKafkaConnectorManager) {
-		Optional<CamelKafkaConnectorModel> connectorModelOptional = camelKafkaConnectorManager.findConnectorModel(connectorClass);
-		if (!"url".equals(optionKey) && connectorModelOptional.isPresent()) {
-			String propertyKey = getPrefix() + optionKey;
-			String camelCasePropertyKey = StringHelper.dashToCamelCase(propertyKey);
-			Optional<CamelKafkaConnectorOptionModel> optionModel = connectorModelOptional.get()
-					.getOptions()
-					.stream()
-					.filter(option -> camelCasePropertyKey.equals(option.getName()))
-					.findAny();
-			if(!optionModel.isPresent()) {
-				return Collections.singleton(new Diagnostic(
-						new Range(new Position(getLine(), getStartPositionInLine()), new Position(getLine(), getEndPositionInLine())),
-						"Unknown property " + optionKey,
-						DiagnosticSeverity.Error,
-						DiagnosticService.APACHE_CAMEL_VALIDATION));
+		if (!"url".equals(optionKey) && (optionKey.startsWith("endpoint") || optionKey.startsWith("path"))) {
+			Optional<CamelKafkaConnectorModel> connectorModelOptional = camelKafkaConnectorManager.findConnectorModel(connectorClass);
+			if (connectorModelOptional.isPresent()) {
+				String propertyKey = getPrefix() + optionKey;
+				String camelCasePropertyKey = StringHelper.dashToCamelCase(propertyKey);
+				Optional<CamelKafkaConnectorOptionModel> optionModel = connectorModelOptional.get()
+						.getOptions()
+						.stream()
+						.filter(option -> camelCasePropertyKey.equals(option.getName()))
+						.findAny();
+				if (!optionModel.isPresent()) {
+					return Collections.singleton(new Diagnostic(
+							new Range(new Position(getLine(), getStartPositionInLine()), new Position(getLine(), getEndPositionInLine())),
+							"Unknown property " + optionKey,
+							DiagnosticSeverity.Error,
+							DiagnosticService.APACHE_CAMEL_VALIDATION));
+				}
 			}
 		}
 		return Collections.emptyList();

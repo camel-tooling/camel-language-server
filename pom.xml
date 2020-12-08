@@ -48,6 +48,7 @@
 		<slf4j.version>1.7.30</slf4j.version>
 		<junit.version>5.7.0</junit.version>
 		<assertj.version>3.18.1</assertj.version>
+		<jgit.version>5.9.0.202009080501-r</jgit.version>
 		<camel.version>3.6.0</camel.version>
 		<camel.kafka.connector.version>0.6.1</camel.kafka.connector.version>
 		<roaster.version>2.21.1.Final</roaster.version>
@@ -162,6 +163,11 @@
 			<plugin>
 				<artifactId>maven-surefire-plugin</artifactId>
 				<version>2.22.2</version>
+				<configuration>
+					<systemProperties>
+						<camel.kafka.connector.version>${camel.kafka.connector.version}</camel.kafka.connector.version>
+					</systemProperties>
+				</configuration>
 			</plugin>
 			
 			<plugin>
@@ -266,6 +272,18 @@
 			<groupId>org.assertj</groupId>
 			<artifactId>assertj-core</artifactId>
 			<version>${assertj.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.jgit</groupId>
+			<artifactId>org.eclipse.jgit</artifactId>
+			<version>${jgit.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.jgit</groupId>
+			<artifactId>org.eclipse.jgit.ssh.apache</artifactId>
+			<version>${jgit.version}</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
