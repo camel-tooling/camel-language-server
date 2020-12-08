@@ -18,8 +18,10 @@ package com.github.cameltooling.lsp.internal.instancemodel.propertiesfile;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
@@ -138,26 +140,54 @@ public class CamelSinkOrSourcePropertyKey implements ILineRangeDefineable {
 	}
 
 	public Collection<Diagnostic> validate(CamelKafkaConnectorCatalogManager camelKafkaConnectorManager) {
+		Set<Diagnostic> diagnostics = new HashSet<>();
+		Optional<CamelKafkaConnectorModel> connectorModelOptional = camelKafkaConnectorManager.findConnectorModel(connectorClass);
+		if (connectorModelOptional.isPresent()) {
+			CamelKafkaConnectorModel connectorModel = connectorModelOptional.get();
+			diagnostics.addAll(validateExistingProperty(connectorModel));
+			diagnostics.addAll(validateSourceSinkMatch(connectorModel));
+			diagnostics.addAll(validateSinkSourceMatch(connectorModel));
+		}
+		return diagnostics;
+	}
+
+	private Collection<? extends Diagnostic> validateSinkSourceMatch(CamelKafkaConnectorModel connectorModel) {
+		return validateTypeMatch(connectorModel, "sink", "source");
+	}
+
+	private Collection<Diagnostic> validateSourceSinkMatch(CamelKafkaConnectorModel connectorModel) {
+		return validateTypeMatch(connectorModel, "source", "sink");
+	}
+	
+	private Collection<Diagnostic> validateTypeMatch(CamelKafkaConnectorModel connectorModel, String connectorClassTypeChecked, String propertyPrefixTypeChecked) {
+		if(connectorClassTypeChecked.equals(connectorModel.getType()) && prefix.startsWith(CamelPropertyKeyInstance.CAMEL_KEY_PREFIX + propertyPrefixTypeChecked)) {
+			return Collections.singleton(new Diagnostic(
+				new Range(new Position(camelPropertyKeyInstance.getLine(), camelPropertyKeyInstance.getStartPositionInLine()), new Position(camelPropertyKeyInstance.getLine(), camelPropertyKeyInstance.getEndPositionInLine())),
+				"`"+propertyPrefixTypeChecked+"` property used although the connector class is of type `"+connectorClassTypeChecked+"`: " + camelPropertyKeyInstance.getCamelPropertyKey(),
+				DiagnosticSeverity.Error,
+				DiagnosticService.APACHE_CAMEL_VALIDATION));
+		}
+		return Collections.emptySet();
+	}
+
+	private Set<Diagnostic> validateExistingProperty(CamelKafkaConnectorModel connectorModel) {
 		if (!"url".equals(optionKey) && (optionKey.startsWith("endpoint") || optionKey.startsWith("path"))) {
-			Optional<CamelKafkaConnectorModel> connectorModelOptional = camelKafkaConnectorManager.findConnectorModel(connectorClass);
-			if (connectorModelOptional.isPresent()) {
-				String propertyKey = getPrefix() + optionKey;
-				String camelCasePropertyKey = StringHelper.dashToCamelCase(propertyKey);
-				Optional<CamelKafkaConnectorOptionModel> optionModel = connectorModelOptional.get()
-						.getOptions()
-						.stream()
-						.filter(option -> camelCasePropertyKey.equals(option.getName()))
-						.findAny();
-				if (!optionModel.isPresent()) {
-					return Collections.singleton(new Diagnostic(
-							new Range(new Position(getLine(), getStartPositionInLine()), new Position(getLine(), getEndPositionInLine())),
-							"Unknown property " + optionKey,
-							DiagnosticSeverity.Error,
-							DiagnosticService.APACHE_CAMEL_VALIDATION));
-				}
+			String propertyKey = getPrefix() + optionKey;
+			String camelCasePropertyKey = StringHelper.dashToCamelCase(propertyKey);
+			Optional<CamelKafkaConnectorOptionModel> optionModel = connectorModel
+					.getOptions()
+					.stream()
+					.filter(option -> camelCasePropertyKey.equals(option.getName()))
+					.findAny();
+			if (!optionModel.isPresent()) {
+				return Collections.singleton(new Diagnostic(
+						new Range(new Position(getLine(), getStartPositionInLine()), new Position(getLine(), getEndPositionInLine())),
+						"Unknown property " + optionKey,
+						DiagnosticSeverity.Error,
+						DiagnosticService.APACHE_CAMEL_VALIDATION));
 			}
 		}
-		return Collections.emptyList();
+		return Collections.emptySet();
 	}
 
 }
