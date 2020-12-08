@@ -60,6 +60,11 @@ class CamelKafkaConnectorPropertiesDiagnosticTest extends AbstractDiagnosticTest
 		testDiagnostic("ckc-source-valid-with-generic-property", 0);
 	}
 	
+	@Test
+	void testInvalidSourcePropertyForSinkConnectorClass() throws Exception {
+		testDiagnostic("ckc-sink-invalid-source-property", 1);
+	}
+	
 	private void testDiagnostic(String fileUnderTest, int expectedNumberOfError) throws FileNotFoundException {
 		super.testDiagnostic(fileUnderTest, expectedNumberOfError, ".properties");
 	}
