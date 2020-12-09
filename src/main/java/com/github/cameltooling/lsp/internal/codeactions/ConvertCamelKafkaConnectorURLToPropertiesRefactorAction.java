@@ -69,7 +69,7 @@ public class ConvertCamelKafkaConnectorURLToPropertiesRefactorAction {
 						ParserFileHelper parserFileHelper = new ParserFileHelperFactory().getCorrespondingParserFileHelper(openedDocument, startLine);
 						if (parserFileHelper != null) {
 							String camelComponentUri = parserFileHelper.getCamelComponentUri(openedDocument, new Position(startLine, equalIndex + 1));
-							if (camelComponentUri != null) {
+							if (camelComponentUri != null && !camelComponentUri.isEmpty()) {
 								TextEdit textEdit = createTextEdit(openedDocument, startLine, line, equalIndex, parserFileHelper, camelComponentUri);
 								return createCodeAction(uri, textEdit);
 							}
