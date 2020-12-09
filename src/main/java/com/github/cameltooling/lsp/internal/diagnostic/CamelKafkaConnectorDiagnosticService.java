@@ -22,8 +22,10 @@ import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import org.apache.camel.kafkaconnector.model.CamelKafkaConnectorModel;
 import org.eclipse.lsp4j.Diagnostic;
@@ -51,11 +53,17 @@ public class CamelKafkaConnectorDiagnosticService extends DiagnosticService {
 				int lineNumber = 0;
 				String line;
 				try {
+					Set<CamelPropertyEntryInstance> camelPropertyEntries = new HashSet<>();
 					while((line = reader.readLine())!= null) {
 						CamelPropertyEntryInstance camelPropertyEntryInstance = new CamelPropertyEntryInstance(line, new Position(lineNumber, 0), documentItem);
-						lspDiagnostics.addAll(camelPropertyEntryInstance.validate(camelKafkaConnectorCatalogManager));
+						camelPropertyEntries.add(camelPropertyEntryInstance);
 						lineNumber++;
 					}
+					
+					for (CamelPropertyEntryInstance camelPropertyEntryInstance : camelPropertyEntries) {
+						lspDiagnostics.addAll(camelPropertyEntryInstance.validate(camelKafkaConnectorCatalogManager, camelPropertyEntries));
+					}
+					
 					return lspDiagnostics;
 				} catch (IOException e) {
 					logExceptionValidatingDocument(docUri, e);
@@ -64,5 +72,5 @@ public class CamelKafkaConnectorDiagnosticService extends DiagnosticService {
 		}
 		return Collections.emptyList();
 	}
-
+	
 }
