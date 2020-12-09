@@ -80,13 +80,21 @@ class CamelKafkaConnectorCamelUrlRefactorTest extends AbstractCamelLanguageServe
 	void testRefactorWithPathUsingSlashes() throws Exception {
 		testConvertToListRefactor("camel.source.url=aws2-s3://myName", new String[] {"camel.source.path.bucketNameOrArn=//myName"});
 	}
+	
+	@Test
+	void testNoNPEWithEmptyURL() throws Exception {
+		List<Either<Command,CodeAction>> codeActions = retrieveCodeActions("camel.source.url=");
+		assertThat(codeActions).isEmpty();
+	}
+	
+	@Test
+	void testNoNPEWithMissingEqual() throws Exception {
+		List<Either<Command,CodeAction>> codeActions = retrieveCodeActions("camel.source.url");
+		assertThat(codeActions).isEmpty();
+	}
 
 	private void testConvertToListRefactor(String text, String[] expected) throws URISyntaxException, InterruptedException, ExecutionException {
-		CamelLanguageServer languageServer = initializeLanguageServer(text, ".properties");
-		CodeActionContext context = new CodeActionContext(Collections.emptyList(), Collections.singletonList(CodeActionKind.Refactor));
-		Range range = new Range(new Position(0,0), new Position(0, 0));
-		CodeActionParams params = new CodeActionParams(new TextDocumentIdentifier(DUMMY_URI+".properties"), range, context);
-		List<Either<Command,CodeAction>> codeActions = languageServer.getTextDocumentService().codeAction(params).get();
+		List<Either<Command, CodeAction>> codeActions = retrieveCodeActions(text);
 		assertThat(codeActions).hasSize(1);
 		CodeAction codeAction = codeActions.get(0).getRight();
 		assertThat(codeAction).isNotNull();
@@ -98,6 +106,14 @@ class CamelKafkaConnectorCamelUrlRefactorTest extends AbstractCamelLanguageServe
 		TextEdit textEdit = textEdits.get(0);
 		assertThat(textEdit.getRange()).isEqualTo(new Range(new Position(0,0), new Position(0, text.length())));
 		assertThat(textEdit.getNewText().split("\n")).containsExactlyInAnyOrder(expected);
+	}
+
+	private List<Either<Command, CodeAction>> retrieveCodeActions(String text) throws URISyntaxException, InterruptedException, ExecutionException {
+		CamelLanguageServer languageServer = initializeLanguageServer(text, ".properties");
+		CodeActionContext context = new CodeActionContext(Collections.emptyList(), Collections.singletonList(CodeActionKind.Refactor));
+		Range range = new Range(new Position(0,0), new Position(0, 0));
+		CodeActionParams params = new CodeActionParams(new TextDocumentIdentifier(DUMMY_URI+".properties"), range, context);
+		return languageServer.getTextDocumentService().codeAction(params).get();
 	}
 
 }
