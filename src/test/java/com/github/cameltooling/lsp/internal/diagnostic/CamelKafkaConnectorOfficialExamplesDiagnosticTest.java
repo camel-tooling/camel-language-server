@@ -19,6 +19,8 @@ package com.github.cameltooling.lsp.internal.diagnostic;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.stream.Stream;
 
@@ -40,41 +42,65 @@ class CamelKafkaConnectorOfficialExamplesDiagnosticTest extends AbstractDiagnost
 	
 	private static String CAMEL_KAFKA_CONNECTOR_VERSION = System.getProperty("camel.kafka.connector.version");
 
-	private static Git repo;
+	private static Git mainGitrepo;
+	private static Git specificExampleGitrepo;
+
+	private static File mainRepoDirectory;
+	private static File specificExampleRepoDirectory;
 	
 	@BeforeAll
 	public static void beforeAll() throws InvalidRemoteException, TransportException, GitAPIException {
 		assertThat(CAMEL_KAFKA_CONNECTOR_VERSION)
 			.as("The Camel Kafka Connector version needs to be set as JVM property to play this test. It is done automatically when calling from Maven.")
 			.isNotNull();
-		repo = Git.cloneRepository()
+		mainRepoDirectory = new File(folderWithExamples.toFile(), "camel-kafka-connector");
+		mainGitrepo = Git.cloneRepository()
 			.setURI("https://github.com/apache/camel-kafka-connector")
-			.setDirectory(folderWithExamples.toFile())
+			.setDirectory(mainRepoDirectory)
 			.setBranch("refs/tags/camel-kafka-connector-"+ CAMEL_KAFKA_CONNECTOR_VERSION)
 			.call();
+		
+		specificExampleRepoDirectory = new File(folderWithExamples.toFile(), "camel-kafka-connector-examples");
+		specificExampleGitrepo = Git.cloneRepository()
+				.setURI("https://github.com/apache/camel-kafka-connector-examples")
+				.setDirectory(specificExampleRepoDirectory)
+				.call();
 	}
 	
 	@AfterAll
 	public static void afterAll() {
-		if(repo != null) {
-			repo.close();
+		if(mainGitrepo != null) {
+			mainGitrepo.close();
+		}
+		if(specificExampleGitrepo != null) {
+			specificExampleGitrepo.close();
 		}
 	}
 	
+	@ParameterizedTest
+	@MethodSource
+	void testMainGitRepoExamples(File fileExample) throws Exception {
+		testDiagnostic(fileExample, 0, ".properties");
+	}
 	
 	@ParameterizedTest
 	@MethodSource
-	void testExamples(File fileExample) throws Exception {
+	void testSpecificGitRepoExamples(File fileExample) throws Exception {
 		testDiagnostic(fileExample, 0, ".properties");
 	}
 	
 	@ValueSource
-	static Stream<File> testExamples() {
-		File[] exampleFiles = folderWithExamples.resolve("examples").toFile().listFiles();
+	static Stream<File> testMainGitRepoExamples() {
+		File[] exampleFiles = new File(mainRepoDirectory, "examples").listFiles();
 		assertThat(exampleFiles).as("Allows to detect if examples has moved for instance.").hasSizeGreaterThan(14);
 		return Stream.of(exampleFiles)
 				// filtering example due to https://github.com/apache/camel-kafka-connector/issues/767
 				.filter(file -> !"CamelAmqpSourceConnector.properties".equals(file.getName()));
+	}
+	
+	@ValueSource
+	static Stream<File> testSpecificGitRepoExamples() throws IOException {
+		return Files.walk(specificExampleRepoDirectory.toPath()).map(Path::toFile).filter(file -> file.getName().endsWith(".properties"));
 	}
 	
 }
