@@ -41,6 +41,13 @@ class CamelKafkaConnectorPropertiesDiagnosticTest extends AbstractDiagnosticTest
 	}
 	
 	@Test
+	void testInvalidMixOfUrlPropertyAndEndpointProperty() throws Exception {
+		testDiagnostic("ckc-sink-invalid-mix-url-and-endpoint", 1);
+		Diagnostic diagnostic = lastPublishedDiagnostics.getDiagnostics().get(0);
+		new RangeChecker().check(diagnostic.getRange(), 2, 0, 2, 14);
+	}
+	
+	@Test
 	void testValidPropertyUrl() throws Exception {
 		testDiagnostic("ckc-sink-valid-url", 0);
 	}

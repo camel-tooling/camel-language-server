@@ -19,6 +19,7 @@ package com.github.cameltooling.lsp.internal.instancemodel.propertiesfile;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 
 import org.apache.camel.catalog.CamelCatalog;
@@ -108,9 +109,9 @@ public class CamelPropertyEntryInstance implements ILineRangeDefineable {
 				&& new DashedCaseDetector().hasDashedCaseInCamelPropertyOption(textDocumentItem.getText());
 	}
 
-	public Collection<Diagnostic> validate(CamelKafkaConnectorCatalogManager camelKafkaConnectorManager) {
+	public Collection<Diagnostic> validate(CamelKafkaConnectorCatalogManager camelKafkaConnectorManager, Set<CamelPropertyEntryInstance> allCamelPropertyEntriesOfTheFile) {
 		if (camelPropertyKeyInstance != null) {
-			return camelPropertyKeyInstance.validate(camelKafkaConnectorManager);
+			return camelPropertyKeyInstance.validate(camelKafkaConnectorManager, allCamelPropertyEntriesOfTheFile);
 		}
 		return Collections.emptyList();
 	}

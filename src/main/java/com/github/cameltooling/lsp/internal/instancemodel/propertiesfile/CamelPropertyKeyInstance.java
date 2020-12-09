@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
@@ -186,9 +187,9 @@ public class CamelPropertyKeyInstance implements ILineRangeDefineable {
 		return camelPropertyEntryInstance.shouldUseDashedCase();
 	}
 
-	public Collection<Diagnostic> validate(CamelKafkaConnectorCatalogManager camelKafkaConnectorManager) {
+	public Collection<Diagnostic> validate(CamelKafkaConnectorCatalogManager camelKafkaConnectorManager, Set<CamelPropertyEntryInstance> allCamelPropertyEntriesOfTheFile) {
 		if(camelSinkOrSourcePropertyKey != null) {
-			return camelSinkOrSourcePropertyKey.validate(camelKafkaConnectorManager);
+			return camelSinkOrSourcePropertyKey.validate(camelKafkaConnectorManager, allCamelPropertyEntriesOfTheFile);
 		}
 		return Collections.emptyList();
 	}

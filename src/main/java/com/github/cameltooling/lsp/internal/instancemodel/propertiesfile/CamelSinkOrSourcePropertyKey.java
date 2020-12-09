@@ -139,7 +139,7 @@ public class CamelSinkOrSourcePropertyKey implements ILineRangeDefineable {
 		return optionKey;
 	}
 
-	public Collection<Diagnostic> validate(CamelKafkaConnectorCatalogManager camelKafkaConnectorManager) {
+	public Collection<Diagnostic> validate(CamelKafkaConnectorCatalogManager camelKafkaConnectorManager, Set<CamelPropertyEntryInstance> allCamelPropertyEntriesOfTheFile) {
 		Set<Diagnostic> diagnostics = new HashSet<>();
 		Optional<CamelKafkaConnectorModel> connectorModelOptional = camelKafkaConnectorManager.findConnectorModel(connectorClass);
 		if (connectorModelOptional.isPresent()) {
@@ -147,11 +147,36 @@ public class CamelSinkOrSourcePropertyKey implements ILineRangeDefineable {
 			diagnostics.addAll(validateExistingProperty(connectorModel));
 			diagnostics.addAll(validateSourceSinkMatch(connectorModel));
 			diagnostics.addAll(validateSinkSourceMatch(connectorModel));
+			diagnostics.addAll(validateUrlNotMixedWithListOfProperties(connectorModel, allCamelPropertyEntriesOfTheFile));
 		}
 		return diagnostics;
 	}
 
-	private Collection<? extends Diagnostic> validateSinkSourceMatch(CamelKafkaConnectorModel connectorModel) {
+	private Collection<Diagnostic> validateUrlNotMixedWithListOfProperties(CamelKafkaConnectorModel connectorModel, Set<CamelPropertyEntryInstance> allCamelPropertyEntriesOfTheFile) {
+		if("url".equals(optionKey)) {
+			Set<String> modelProperties = connectorModel
+					.getOptions()
+					.stream()
+					.map(CamelKafkaConnectorOptionModel::getName)
+					.filter(propertyName -> propertyName.startsWith(prefix))
+					.collect(Collectors.toSet());
+			
+			Set<String> camelComponentProperties = allCamelPropertyEntriesOfTheFile.stream()
+									.map(property -> property.getCamelPropertyKeyInstance().getCamelPropertyKey())
+									.filter(propertyKey -> modelProperties.contains(StringHelper.dashToCamelCase(propertyKey)))
+									.collect(Collectors.toSet());
+			if(!camelComponentProperties.isEmpty()) {
+				return Collections.singleton(new Diagnostic(
+						new Range(new Position(camelPropertyKeyInstance.getLine(), camelPropertyKeyInstance.getStartPositionInLine()), new Position(camelPropertyKeyInstance.getLine(), camelPropertyKeyInstance.getEndPositionInLine())),
+						"Camel URL cannot be used when the component is configured through a list of Properties. Properties used: " + camelComponentProperties.stream().collect(Collectors.joining(",")),
+						DiagnosticSeverity.Error,
+						DiagnosticService.APACHE_CAMEL_VALIDATION));
+			}
+		}
+		return Collections.emptySet();
+	}
+
+	private Collection<Diagnostic> validateSinkSourceMatch(CamelKafkaConnectorModel connectorModel) {
 		return validateTypeMatch(connectorModel, "sink", "source");
 	}
 
