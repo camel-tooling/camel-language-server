@@ -103,6 +103,11 @@ public class CamelSinkOrSourcePropertyKey implements ILineRangeDefineable {
 								realOptionName = StringHelper.camelCaseToDash(realOptionName);
 							}
 							CompletionItem completionItem = new CompletionItem(realOptionName);
+							if(option.getDefaultValue() != null) {
+								completionItem.setInsertText(realOptionName+"="+option.getDefaultValue());
+							} else {
+								completionItem.setInsertText(realOptionName+"=");
+							}
 							CompletionResolverUtils.applyTextEditToCompletionItem(this, completionItem);
 							completionItem.setDocumentation(option.getDescription());
 							return completionItem;
