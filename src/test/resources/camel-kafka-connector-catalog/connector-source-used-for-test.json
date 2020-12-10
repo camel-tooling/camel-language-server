@@ -23,25 +23,21 @@
 		"camel.source.endpoint.aMediumEndpointOption": {
 			"name": "camel.source.endpoint.aMediumEndpointOption",
 			"description": "Description of camel.source.endpoint.aMediumEndpointOption",
-			"defaultValue": "null",
 			"priority": "MEDIUM"
 		},
 		"camel.source.endpoint.aHighEndpointOption": {
 			"name": "camel.source.endpoint.aHighEndpointOption",
 			"description": "Description of camel.source.endpoint.aHighComponenttOption",
-			"defaultValue": "null",
 			"priority": "HIGH"
 		},
 		"camel.component.avalue.aMediumComponentOption": {
 			"name": "camel.component.avalue.aMediumComponentOption",
 			"description": "Description of camel.component.avalue.aMediumComponentOption",
-			"defaultValue": "null",
 			"priority": "MEDIUM"
 		},
 		"camel.component.avlue.aHighComponentOption": {
 			"name": "camel.component.avalue.aHighComponentOption",
 			"description": "Description of camel.component.avalue.aHighComponentOption",
-			"defaultValue": "null",
 			"priority": "HIGH"
 		}
 	}
