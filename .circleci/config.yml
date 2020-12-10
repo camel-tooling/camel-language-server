@@ -26,16 +26,7 @@ jobs:
       - checkout
       - run: mvn verify -V
       - store_test_results:
-          path: target/surefire-reports
-
-  windows:
-    executor:
-      name: win/default
-    steps:
-      - checkout
-      - run: .\mvnw.cmd verify -V
-      - store_test_results:
-          path: target/surefire-reports    
+          path: target/surefire-reports   
 
   sonar:
     docker:
@@ -72,13 +63,11 @@ workflows:
       - jdk8
       - jdk11
       - jdk15
-      - windows
       - sonar:
           requires:
             - jdk8
             - jdk11
             - jdk15
-            - windows
           filters:
             branches:
               only:
@@ -89,7 +78,6 @@ workflows:
              - jdk8
              - jdk11
              - jdk15
-             - windows
           filters:
             branches:
               only: master
