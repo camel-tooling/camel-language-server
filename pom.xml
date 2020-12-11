@@ -48,7 +48,7 @@
 		<slf4j.version>1.7.30</slf4j.version>
 		<junit.version>5.7.0</junit.version>
 		<assertj.version>3.18.1</assertj.version>
-		<jgit.version>5.9.0.202009080501-r</jgit.version>
+		<jgit.version>5.10.0.202012080955-r</jgit.version>
 		<camel.version>3.6.0</camel.version>
 		<camel.kafka.connector.version>0.6.1</camel.kafka.connector.version>
 		<roaster.version>2.21.1.Final</roaster.version>
