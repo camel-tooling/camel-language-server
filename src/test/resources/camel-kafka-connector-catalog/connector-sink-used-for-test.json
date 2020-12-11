@@ -44,6 +44,13 @@
 			"defaultValue": "null",
 			"priority": "HIGH"
 		}
+		,
+		"camel.sink.endpoint.aRequiredWithoutDefault": {
+			"name": "camel.sink.endpoint.aRequiredWithoutDefault",
+			"description": "Description of camel.sink.endpoint.aRequiredWithoutDefault",
+			"priority": "HIGH",
+			"required": "true"
+		}
 	},
 	"converters": [
 		"org.test.kafkaconnector.converters.TestSinkObjectConverter"

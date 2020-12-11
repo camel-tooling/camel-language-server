@@ -18,11 +18,16 @@ package com.github.cameltooling.lsp.internal.parser;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.util.Collection;
+import java.util.Optional;
 import java.util.Properties;
 
+import org.apache.camel.kafkaconnector.model.CamelKafkaConnectorModel;
 import org.eclipse.lsp4j.TextDocumentItem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.github.cameltooling.lsp.internal.catalog.util.CamelKafkaConnectorCatalogManager;
 
 public class CamelKafkaUtil {
 	
@@ -69,6 +74,17 @@ public class CamelKafkaUtil {
 			LOGGER.error("Cannot load Properties file to search for 'connector.class' property value.", e);
 		}
 		return null;
+	}
+
+	public Optional<CamelKafkaConnectorModel> findConnectorModel(TextDocumentItem textDocumentItem, CamelKafkaConnectorCatalogManager camelKafkaConnectorManager) {
+		String connectorClass = findConnectorClass(textDocumentItem);
+		if (connectorClass != null) {
+			Collection<CamelKafkaConnectorModel> camelKafkaConnectors = camelKafkaConnectorManager.getCatalog().getConnectorsModel().values();
+			return camelKafkaConnectors.stream()
+					.filter(iteratorModel -> connectorClass.equals(iteratorModel.getConnectorClass()))
+					.findAny();
+		}
+		return Optional.empty();
 	}
 
 }

@@ -17,20 +17,30 @@
 package com.github.cameltooling.lsp.internal.instancemodel.propertiesfile;
 
 import java.util.Collection;
-import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
 
 import org.apache.camel.catalog.CamelCatalog;
+import org.apache.camel.kafkaconnector.model.CamelKafkaConnectorModel;
+import org.apache.camel.kafkaconnector.model.CamelKafkaConnectorOptionModel;
+import org.apache.camel.util.StringHelper;
 import org.eclipse.lsp4j.CompletionItem;
 import org.eclipse.lsp4j.Diagnostic;
+import org.eclipse.lsp4j.DiagnosticSeverity;
 import org.eclipse.lsp4j.Hover;
 import org.eclipse.lsp4j.Position;
+import org.eclipse.lsp4j.Range;
 import org.eclipse.lsp4j.TextDocumentItem;
 
 import com.github.cameltooling.lsp.internal.catalog.util.CamelKafkaConnectorCatalogManager;
+import com.github.cameltooling.lsp.internal.diagnostic.DiagnosticService;
 import com.github.cameltooling.lsp.internal.instancemodel.ILineRangeDefineable;
+import com.github.cameltooling.lsp.internal.parser.CamelKafkaUtil;
 
 /**
  * Represents one entry in properties file or in Camel K modeline. For instance, the whole entry "camel.component.timer.delay=1000"
@@ -110,10 +120,53 @@ public class CamelPropertyEntryInstance implements ILineRangeDefineable {
 	}
 
 	public Collection<Diagnostic> validate(CamelKafkaConnectorCatalogManager camelKafkaConnectorManager, Set<CamelPropertyEntryInstance> allCamelPropertyEntriesOfTheFile) {
+		Collection<Diagnostic> diagnostics = new HashSet<>();
 		if (camelPropertyKeyInstance != null) {
-			return camelPropertyKeyInstance.validate(camelKafkaConnectorManager, allCamelPropertyEntriesOfTheFile);
+			diagnostics.addAll(camelPropertyKeyInstance.validate(camelKafkaConnectorManager, allCamelPropertyEntriesOfTheFile));
+			diagnostics.addAll(validateRequiredPropertiesWithoutDefaultValues(camelKafkaConnectorManager, allCamelPropertyEntriesOfTheFile));
 		}
-		return Collections.emptyList();
+		return diagnostics;
+	}
+
+	private Collection<? extends Diagnostic> validateRequiredPropertiesWithoutDefaultValues(
+			CamelKafkaConnectorCatalogManager camelKafkaConnectorManager,
+			Set<CamelPropertyEntryInstance> allCamelPropertyEntriesOfTheFile) {
+		Collection<Diagnostic> diagnostics = new HashSet<>();
+		CamelKafkaUtil camelKafkaUtil = new CamelKafkaUtil();
+		if (camelPropertyKeyInstance != null && camelKafkaUtil.isConnectorClassForCamelKafkaConnector(camelPropertyKeyInstance.getCamelPropertyKey())) {
+			Optional<CamelKafkaConnectorModel> model = camelKafkaUtil.findConnectorModel(textDocumentItem, camelKafkaConnectorManager);
+			if (model.isPresent()) {
+				Set<String> allPropertykeys = findAllKeys(allCamelPropertyEntriesOfTheFile);
+				if (!(allPropertykeys.contains("camel.sink.url") || allPropertykeys.contains("camel.source.url"))) {
+					Set<String> missingMandatoryProperties = findMissingProperties(model.get(), allPropertykeys);
+					if (!missingMandatoryProperties.isEmpty()) {
+						diagnostics.add(new Diagnostic(
+								new Range(new Position(getLine(), getStartPositionInLine()),new Position(getLine(), getEndPositionInLine())),
+								"Some required properties without default values are missing. Properties missing: " + missingMandatoryProperties.stream().collect(Collectors.joining(",")),
+								DiagnosticSeverity.Error,
+								DiagnosticService.APACHE_CAMEL_VALIDATION));
+					}
+				}
+			}
+		}
+		return diagnostics;
+	}
+
+	private Set<String> findAllKeys(Set<CamelPropertyEntryInstance> allCamelPropertyEntriesOfTheFile) {
+		return allCamelPropertyEntriesOfTheFile.stream()
+				.map(CamelPropertyEntryInstance::getCamelPropertyKeyInstance).filter(Objects::nonNull)
+				.map(CamelPropertyKeyInstance::getCamelPropertyKey).filter(Objects::nonNull)
+				.map(StringHelper::dashToCamelCase)
+				.collect(Collectors.toSet());
+	}
+
+	private Set<String> findMissingProperties(CamelKafkaConnectorModel camelKafkaConnectorModel, Set<String> allPropertykeys) {
+		return camelKafkaConnectorModel.getOptions().stream()
+				.filter(option -> "true".equals(option.getRequired()) && option.getDefaultValue() == null)
+				.map(CamelKafkaConnectorOptionModel::getName)
+				.map(StringHelper::dashToCamelCase)
+				.filter(optionName -> !allPropertykeys.contains(optionName))
+				.collect(Collectors.toSet());
 	}
 
 }

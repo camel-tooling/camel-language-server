@@ -100,7 +100,11 @@ class CamelKafkaConnectorOfficialExamplesDiagnosticTest extends AbstractDiagnost
 	
 	@ValueSource
 	static Stream<File> testSpecificGitRepoExamples() throws IOException {
-		return Files.walk(specificExampleRepoDirectory.toPath()).map(Path::toFile).filter(file -> file.getName().endsWith(".properties"));
+		return Files.walk(specificExampleRepoDirectory.toPath())
+				.map(Path::toFile)
+				.filter(file -> file.getName().endsWith(".properties"))
+				// filtering example due to https://issues.apache.org/jira/browse/CAMEL-15938
+				.filter(file -> !file.getAbsolutePath().contains("aws2-iam"));
 	}
 	
 }
