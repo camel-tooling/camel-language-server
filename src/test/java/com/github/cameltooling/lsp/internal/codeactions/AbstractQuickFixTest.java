@@ -22,6 +22,7 @@ import static org.awaitility.Awaitility.await;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.time.Duration;
 import java.util.Collections;
 import java.util.List;
@@ -60,9 +61,19 @@ public abstract class AbstractQuickFixTest extends AbstractCamelLanguageServerTe
 		return createdChanges.get(0);
 	}
 	
+	/**
+	 * @param fileName inside src/test/resources/workspace/diagnostic/ folder
+	 * @return
+	 * @throws FileNotFoundException
+	 */
 	protected TextDocumentIdentifier initAnLaunchDiagnostic(String fileName) throws FileNotFoundException {
 		File f = new File("src/test/resources/workspace/diagnostic/"+fileName);
-		camelLanguageServer = initializeLanguageServerWithFileName(new FileInputStream(f), fileName);
+		FileInputStream streamWithContentToTest = new FileInputStream(f);
+		return initAndLaunchDiagnostic(fileName, streamWithContentToTest);
+	}
+
+	protected TextDocumentIdentifier initAndLaunchDiagnostic(String fileName, InputStream streamWithContentToTest) {
+		camelLanguageServer = initializeLanguageServerWithFileName(streamWithContentToTest, fileName);
 		
 		TextDocumentIdentifier textDocumentIdentifier = new TextDocumentIdentifier(fileName);
 		DidSaveTextDocumentParams params = new DidSaveTextDocumentParams(textDocumentIdentifier);

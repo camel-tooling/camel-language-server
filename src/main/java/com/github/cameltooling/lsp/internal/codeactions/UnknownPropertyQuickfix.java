@@ -18,11 +18,14 @@ package com.github.cameltooling.lsp.internal.codeactions;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
 import org.apache.camel.catalog.CamelCatalog;
+import org.apache.camel.kafkaconnector.model.CamelKafkaConnectorModel;
+import org.apache.camel.kafkaconnector.model.CamelKafkaConnectorOptionModel;
 import org.eclipse.lsp4j.CompletionItem;
 import org.eclipse.lsp4j.Position;
 import org.eclipse.lsp4j.TextDocumentItem;
@@ -30,8 +33,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.github.cameltooling.lsp.internal.CamelTextDocumentService;
+import com.github.cameltooling.lsp.internal.catalog.util.CamelKafkaConnectorCatalogManager;
 import com.github.cameltooling.lsp.internal.completion.CamelEndpointCompletionProcessor;
 import com.github.cameltooling.lsp.internal.diagnostic.DiagnosticService;
+import com.github.cameltooling.lsp.internal.instancemodel.propertiesfile.CamelPropertyKeyInstance;
+import com.github.cameltooling.lsp.internal.parser.CamelKafkaUtil;
 
 public class UnknownPropertyQuickfix extends AbstractQuickfix {
 	
@@ -45,20 +51,41 @@ public class UnknownPropertyQuickfix extends AbstractQuickfix {
 		return DiagnosticService.ERROR_CODE_UNKNOWN_PROPERTIES;
 	}
 
-	protected List<String> retrievePossibleValues(TextDocumentItem textDocumentItem, CompletableFuture<CamelCatalog> camelCatalog, Position position) {
-		try {
-			return new CamelEndpointCompletionProcessor(textDocumentItem, camelCatalog)
-					.getCompletions(position)
-					.thenApply(completionItems -> completionItems.stream().map(CompletionItem::getInsertText).collect(Collectors.toList()))
-					.get();
-		} catch (InterruptedException e) {
-			LOGGER.error("Interruption while computing possible properties for quickfix", e);
-			Thread.currentThread().interrupt();
-			return Collections.emptyList();
-		} catch (ExecutionException e) {
-			LOGGER.error("Exception while computing possible properties for quickfix", e);
-			return Collections.emptyList();
+	protected List<String> retrievePossibleValues(TextDocumentItem textDocumentItem,
+			CompletableFuture<CamelCatalog> camelCatalog,
+			CamelKafkaConnectorCatalogManager camelKafkaConnectorManager,
+			Position position) {
+		if (textDocumentItem.getUri().endsWith(".properties")) {
+			Optional<CamelKafkaConnectorModel> optionalModel = camelKafkaConnectorManager.findConnectorModel(new CamelKafkaUtil().findConnectorClass(textDocumentItem));
+			if (optionalModel.isPresent()) {
+				return optionalModel.get().getOptions()
+						.stream()
+						.map(CamelKafkaConnectorOptionModel::getName)
+						.map(this::removePrefix)
+						.collect(Collectors.toList());
+			}
+		} else {
+			try {
+				return new CamelEndpointCompletionProcessor(textDocumentItem, camelCatalog).getCompletions(position)
+						.thenApply(completionItems -> completionItems.stream().map(CompletionItem::getInsertText)
+								.collect(Collectors.toList()))
+						.get();
+			} catch (InterruptedException e) {
+				LOGGER.error("Interruption while computing possible properties for quickfix", e);
+				Thread.currentThread().interrupt();
+				return Collections.emptyList();
+			} catch (ExecutionException e) {
+				LOGGER.error("Exception while computing possible properties for quickfix", e);
+				return Collections.emptyList();
+			}
 		}
+		return Collections.emptyList();
+	}
+
+	private String removePrefix(String value) {
+		return value
+				.replace(CamelPropertyKeyInstance.CAMEL_SINK_KEY_PREFIX, "")
+				.replace(CamelPropertyKeyInstance.CAMEL_SOURCE_KEY_PREFIX, "");
 	}
 
 }

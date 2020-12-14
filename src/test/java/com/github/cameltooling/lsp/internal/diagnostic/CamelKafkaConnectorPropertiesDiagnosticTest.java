@@ -17,8 +17,8 @@
 package com.github.cameltooling.lsp.internal.diagnostic;
 
 import java.io.BufferedReader;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.stream.Collectors;
@@ -82,7 +82,7 @@ class CamelKafkaConnectorPropertiesDiagnosticTest extends AbstractDiagnosticTest
 	}
 	
 	@Override
-	protected CamelLanguageServer initializeLanguageServer(FileInputStream stream, String extension) {
+	protected CamelLanguageServer initializeLanguageServer(InputStream stream, String extension) {
 		CamelLanguageServer languageServer = super.initializeLanguageServer(stream, extension);
 		CamelKafkaConnectorCatalog catalog = languageServer.getTextDocumentService().getCamelKafkaConnectorManager().getCatalog();
 		catalog.addConnector("connector-source-used-for-test", getContentAsString("/camel-kafka-connector-catalog/connector-source-used-for-test.json"));
