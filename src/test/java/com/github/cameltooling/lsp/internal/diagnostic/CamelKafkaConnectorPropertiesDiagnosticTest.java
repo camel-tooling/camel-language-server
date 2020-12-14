@@ -72,6 +72,11 @@ class CamelKafkaConnectorPropertiesDiagnosticTest extends AbstractDiagnosticTest
 		testDiagnostic("ckc-sink-invalid-source-property", 1);
 	}
 	
+	@Test
+	void testDuplicatedKeyMixingDashedAndCamelCase() throws Exception {
+		testDiagnostic("ckc-with-duplicatedKeyMixingDashedAndCamelCase", 2);
+	}
+	
 	private void testDiagnostic(String fileUnderTest, int expectedNumberOfError) throws FileNotFoundException {
 		super.testDiagnostic(fileUnderTest, expectedNumberOfError, ".properties");
 	}
