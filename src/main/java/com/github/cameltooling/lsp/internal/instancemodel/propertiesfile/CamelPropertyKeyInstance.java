@@ -19,15 +19,20 @@ package com.github.cameltooling.lsp.internal.instancemodel.propertiesfile;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 import org.apache.camel.catalog.CamelCatalog;
 import org.apache.camel.tooling.model.MainModel;
+import org.apache.camel.util.StringHelper;
 import org.eclipse.lsp4j.CompletionItem;
 import org.eclipse.lsp4j.Diagnostic;
+import org.eclipse.lsp4j.DiagnosticSeverity;
 import org.eclipse.lsp4j.Hover;
 import org.eclipse.lsp4j.Position;
 import org.eclipse.lsp4j.Range;
@@ -36,6 +41,7 @@ import org.eclipse.lsp4j.TextEdit;
 
 import com.github.cameltooling.lsp.internal.catalog.util.CamelKafkaConnectorCatalogManager;
 import com.github.cameltooling.lsp.internal.completion.FilterPredicateUtils;
+import com.github.cameltooling.lsp.internal.diagnostic.DiagnosticService;
 import com.github.cameltooling.lsp.internal.instancemodel.ILineRangeDefineable;
 import com.google.gson.Gson;
 
@@ -188,10 +194,29 @@ public class CamelPropertyKeyInstance implements ILineRangeDefineable {
 	}
 
 	public Collection<Diagnostic> validate(CamelKafkaConnectorCatalogManager camelKafkaConnectorManager, Set<CamelPropertyEntryInstance> allCamelPropertyEntriesOfTheFile) {
+		Collection<Diagnostic> diagnostics = new HashSet<>();
 		if(camelSinkOrSourcePropertyKey != null) {
-			return camelSinkOrSourcePropertyKey.validate(camelKafkaConnectorManager, allCamelPropertyEntriesOfTheFile);
+			diagnostics.addAll(camelSinkOrSourcePropertyKey.validate(camelKafkaConnectorManager, allCamelPropertyEntriesOfTheFile));
 		}
-		return Collections.emptyList();
+		if(camelPropertyKey != null && camelPropertyKey.startsWith(CAMEL_KEY_PREFIX)) {
+			Optional<String> duplicateByDashCamelNotationDifference = allCamelPropertyEntriesOfTheFile.stream()
+				.map(CamelPropertyEntryInstance::getCamelPropertyKeyInstance)
+				.filter(Objects::nonNull)
+				.map(CamelPropertyKeyInstance::getCamelPropertyKey)
+				.filter(Objects::nonNull)
+				.filter(iterCamelPropertyKey ->
+					!iterCamelPropertyKey.equals(camelPropertyKey)
+					&& StringHelper.dashToCamelCase(iterCamelPropertyKey).equals(StringHelper.dashToCamelCase(camelPropertyKey)))
+				.findAny();
+			if(duplicateByDashCamelNotationDifference.isPresent()) {
+				diagnostics.add(new Diagnostic(
+						new Range(new Position(getLine(), getStartPositionInLine()), new Position(getLine(), getEndPositionInLine())),
+						"Duplicated properties using different Dash/camel case notation: " + duplicateByDashCamelNotationDifference.get(),
+						DiagnosticSeverity.Error,
+						DiagnosticService.APACHE_CAMEL_VALIDATION));
+			}
+		}
+		return diagnostics;
 	}
 
 }
