@@ -214,7 +214,8 @@ public class CamelSinkOrSourcePropertyKey implements ILineRangeDefineable {
 						new Range(new Position(getLine(), getStartPositionInLine()), new Position(getLine(), getEndPositionInLine())),
 						"Unknown property " + optionKey,
 						DiagnosticSeverity.Error,
-						DiagnosticService.APACHE_CAMEL_VALIDATION));
+						DiagnosticService.APACHE_CAMEL_VALIDATION,
+						DiagnosticService.ERROR_CODE_UNKNOWN_PROPERTIES));
 			}
 		}
 		return Collections.emptySet();

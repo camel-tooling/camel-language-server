@@ -49,8 +49,8 @@ public class CamelPropertyKeyInstance implements ILineRangeDefineable {
 	
 	static final String CAMEL_KEY_PREFIX = "camel.";
 	static final String CAMEL_COMPONENT_KEY_PREFIX = "camel.component.";
-	static final String CAMEL_SINK_KEY_PREFIX = "camel.sink.";
-	static final String CAMEL_SOURCE_KEY_PREFIX = "camel.source.";
+	public static final String CAMEL_SINK_KEY_PREFIX = "camel.sink.";
+	public static final String CAMEL_SOURCE_KEY_PREFIX = "camel.source.";
 	
 	private String camelPropertyKey;
 	private CamelGroupPropertyKey propertyGroup;

@@ -20,8 +20,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URISyntaxException;
 import java.nio.file.Paths;
@@ -168,7 +168,7 @@ public abstract class AbstractCamelLanguageServerTest {
 		return Collections.emptyMap();
 	}
 	
-	protected CamelLanguageServer initializeLanguageServer(FileInputStream stream, String suffixFileName) {
+	protected CamelLanguageServer initializeLanguageServer(InputStream stream, String suffixFileName) {
 		try (BufferedReader buffer = new BufferedReader(new InputStreamReader(stream))) {
             return initializeLanguageServer(buffer.lines().collect(Collectors.joining("\n")), suffixFileName);
         } catch (ExecutionException | InterruptedException | URISyntaxException | IOException ex) {
@@ -176,7 +176,7 @@ public abstract class AbstractCamelLanguageServerTest {
         }
 	}
 	
-	protected CamelLanguageServer initializeLanguageServerWithFileName(FileInputStream stream, String fileName) {
+	protected CamelLanguageServer initializeLanguageServerWithFileName(InputStream stream, String fileName) {
 		try (BufferedReader buffer = new BufferedReader(new InputStreamReader(stream))) {
             return initializeLanguageServerWithFileName(buffer.lines().collect(Collectors.joining("\n")), fileName);
         } catch (ExecutionException | InterruptedException | URISyntaxException | IOException ex) {

@@ -32,6 +32,11 @@
 			"defaultValue": "null",
 			"priority": "HIGH"
 		},
+		"camel.sink.endpoint.withAnEnoughDifferentNameToTestQuickfix": {
+			"name": "camel.sink.endpoint.withAnEnoughDifferentNameToTestQuickfix",
+			"description": "Description of camel.sink.endpoint.withAnEnoughDifferentNameToTestQuickfix",
+			"priority": "HIGH"
+		},
 		"camel.component.avalue.aMediumComponentOption": {
 			"name": "camel.component.avalue.aMediumComponentOption",
 			"description": "Description of camel.component.avalue.aMediumComponentOption",
