@@ -36,12 +36,12 @@ class CamelKModelineComponentPropertyHoverTest extends AbstractCamelLanguageServ
 
 	@Test
 	void testProvideDocumentationOnHoverOfComponentName() throws Exception {
-		testProvideDocumentationOnHover("// camel-k: property=camel.component.timer.basicPropertyBinding=true", 38, "Generate messages in specified intervals using java.util.Timer.");
+		testProvideDocumentationOnHover("// camel-k: property=camel.component.timer.autowiredEnabled=true", 38, "Generate messages in specified intervals using java.util.Timer.");
 	}
 	
 	@Test
 	void testProvideDocumentationOnHoverOfComponentAttribute() throws Exception {
-		testProvideDocumentationOnHover("// camel-k: property=camel.component.timer.basicPropertyBinding=true", 50, "Whether the component should use basic property binding (Camel 2.x) or the newer property binding with additional capabilities");
+		testProvideDocumentationOnHover("// camel-k: property=camel.component.timer.autowiredEnabled=true", 50, "Whether autowiring is enabled. This is used for automatic autowiring options (the option must be marked as autowired) by looking up in the registry to find if there is a single instance of matching type, which then gets configured on the component. This can be used for automatic configuring JDBC data sources, JMS connection factories, AWS Clients, etc.");
 	}
 	
 	@Test
@@ -61,8 +61,8 @@ class CamelKModelineComponentPropertyHoverTest extends AbstractCamelLanguageServ
 	
 	@Test
 	void testRange() throws Exception {
-		Hover hover = testProvideDocumentationOnHover("// camel-k: property=camel.component.timer.basicPropertyBinding=true", 50, "Whether the component should use basic property binding (Camel 2.x) or the newer property binding with additional capabilities");
-		assertThat(hover.getRange()).isEqualTo(new Range(new Position(0, 43), new Position(0, 63)));
+		Hover hover = testProvideDocumentationOnHover("// camel-k: property=camel.component.timer.autowiredEnabled=true", 50, "Whether autowiring is enabled. This is used for automatic autowiring options (the option must be marked as autowired) by looking up in the registry to find if there is a single instance of matching type, which then gets configured on the component. This can be used for automatic configuring JDBC data sources, JMS connection factories, AWS Clients, etc.");
+		assertThat(hover.getRange()).isEqualTo(new Range(new Position(0, 43), new Position(0, 59)));
 	}
 	
 	private Hover testProvideDocumentationOnHover(String modeline, int position, String expectedDescription) throws URISyntaxException, InterruptedException, ExecutionException {
