@@ -16,6 +16,7 @@
  */
 package com.github.cameltooling.lsp.internal.instancemodel.propertiesfile;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
@@ -55,10 +56,12 @@ public class CamelSinkOrSourcePropertyKey implements ILineRangeDefineable {
 	private CamelPropertyKeyInstance camelPropertyKeyInstance;
 	private String connectorClass;
 	private String prefix;
+	private TextDocumentItem textDocumentItem;
 
 	public CamelSinkOrSourcePropertyKey(String optionKey, CamelPropertyKeyInstance camelPropertyKeyInstance, TextDocumentItem textDocumentItem, String prefix) {
 		this.optionKey = optionKey;
 		this.camelPropertyKeyInstance = camelPropertyKeyInstance;
+		this.textDocumentItem = textDocumentItem;
 		this.connectorClass = new CamelKafkaUtil().findConnectorClass(textDocumentItem);
 		this.prefix = prefix;
 	}
@@ -93,31 +96,37 @@ public class CamelSinkOrSourcePropertyKey implements ILineRangeDefineable {
 			Optional<CamelKafkaConnectorModel> camelKafkaConnectorModel = camelKafkaConnectorManager.findConnectorModel(connectorClass);
 			if (camelKafkaConnectorModel.isPresent()) {
 				String filterString = optionKey.substring(0, position.getCharacter() - getStartPositionInLine());
-				List<CompletionItem> completions = camelKafkaConnectorModel.get()
-						.getOptions()
-						.stream()
-						.filter(option -> option.getName().startsWith(getPrefix()))
-						.map(option -> {
-							String realOptionName = option.getName().replace(getPrefix(), "");
-							if(shouldUseDashed) {
-								realOptionName = StringHelper.camelCaseToDash(realOptionName);
-							}
-							CompletionItem completionItem = new CompletionItem(realOptionName);
-							if(option.getDefaultValue() != null) {
-								completionItem.setInsertText(realOptionName+"="+option.getDefaultValue());
-							} else {
-								completionItem.setInsertText(realOptionName+"=");
-							}
-							CompletionResolverUtils.applyTextEditToCompletionItem(this, completionItem);
-							completionItem.setDocumentation(option.getDescription());
-							return completionItem;
-						})
-						.filter(FilterPredicateUtils.matchesCompletionFilter(filterString))
-						.collect(Collectors.toList());
+				List<CompletionItem> completions = new ArrayList<>();
+				completions.addAll(retrieveCompletionForSpecificConnector(shouldUseDashed, camelKafkaConnectorModel.get(), filterString));
+				completions.addAll(new CamelKafkaUtil().getBasicPropertiesCompletion(camelKafkaConnectorManager, textDocumentItem, shouldUseDashed, filterString, camelPropertyKeyInstance));
 				return CompletableFuture.completedFuture(completions);
 			}
 		}
 		return CompletableFuture.completedFuture(Collections.emptyList());
+	}
+
+	private List<CompletionItem> retrieveCompletionForSpecificConnector(boolean shouldUseDashed,
+			CamelKafkaConnectorModel camelKafkaConnectorModel, String filterString) {
+		return camelKafkaConnectorModel.getOptions()
+				.stream()
+				.filter(option -> option.getName().startsWith(getPrefix()))
+				.map(option -> {
+					String realOptionName = option.getName().replace(getPrefix(), "");
+					if(shouldUseDashed) {
+						realOptionName = StringHelper.camelCaseToDash(realOptionName);
+					}
+					CompletionItem completionItem = new CompletionItem(realOptionName);
+					if(option.getDefaultValue() != null) {
+						completionItem.setInsertText(realOptionName+"="+option.getDefaultValue());
+					} else {
+						completionItem.setInsertText(realOptionName+"=");
+					}
+					CompletionResolverUtils.applyTextEditToCompletionItem(this, completionItem);
+					completionItem.setDocumentation(option.getDescription());
+					return completionItem;
+				})
+				.filter(FilterPredicateUtils.matchesCompletionFilter(filterString))
+				.collect(Collectors.toList());
 	}
 
 

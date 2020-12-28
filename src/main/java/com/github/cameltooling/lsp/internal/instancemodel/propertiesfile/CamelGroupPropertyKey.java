@@ -16,6 +16,7 @@
  */
 package com.github.cameltooling.lsp.internal.instancemodel.propertiesfile;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -30,9 +31,12 @@ import org.apache.camel.util.StringHelper;
 import org.eclipse.lsp4j.CompletionItem;
 import org.eclipse.lsp4j.Hover;
 import org.eclipse.lsp4j.Position;
+import org.eclipse.lsp4j.TextDocumentItem;
 
+import com.github.cameltooling.lsp.internal.catalog.util.CamelKafkaConnectorCatalogManager;
 import com.github.cameltooling.lsp.internal.completion.CompletionResolverUtils;
 import com.github.cameltooling.lsp.internal.instancemodel.ILineRangeDefineable;
+import com.github.cameltooling.lsp.internal.parser.CamelKafkaUtil;
 
 /**
  * Represents one key in properties file. For instance, with
@@ -44,10 +48,12 @@ public class CamelGroupPropertyKey implements ILineRangeDefineable {
 	private String groupConfiguration;
 	private CamelPropertyKeyInstance camelPropertyKeyInstance;
 	private String groupName;
+	private TextDocumentItem textDocumentItem;
 
-	public CamelGroupPropertyKey(String groupProperty, CamelPropertyKeyInstance camelPropertyKeyInstance) {
+	public CamelGroupPropertyKey(String groupProperty, CamelPropertyKeyInstance camelPropertyKeyInstance, TextDocumentItem textDocumentItem) {
 		this.groupConfiguration = groupProperty;
 		this.camelPropertyKeyInstance = camelPropertyKeyInstance;
+		this.textDocumentItem = textDocumentItem;
 		int secondDotIndex = groupProperty.indexOf('.');
 		if (secondDotIndex != -1) {
 			groupName = groupProperty.substring(0, secondDotIndex);
@@ -106,31 +112,43 @@ public class CamelGroupPropertyKey implements ILineRangeDefineable {
 		return getStartPositionInLine() + groupName.length() <= position.getCharacter();
 	}
 
-	public CompletableFuture<List<CompletionItem>> getCompletions(Position position, CompletableFuture<CamelCatalog> camelCatalog) {
+	public CompletableFuture<List<CompletionItem>> getCompletions(Position position, CompletableFuture<CamelCatalog> camelCatalog, CamelKafkaConnectorCatalogManager camelkafkaConnectorManager) {
 		if (isInGroupAttribute(position)) {
 			boolean shouldUseDashed = shouldUseDashedCase();
 			return camelCatalog.thenApply(catalog -> {
 				if (catalog instanceof DefaultCamelCatalog) {
-					MainModel mainModel = ((DefaultCamelCatalog) catalog).mainModel();
-					String groupPrefix = CamelPropertyKeyInstance.CAMEL_KEY_PREFIX + groupName + ".";
-					return mainModel.getOptions().stream().filter(option -> option.getName().startsWith(groupPrefix))
-							.map(option -> {
-								String realOptionName = option.getName().substring(groupPrefix.length());
-								if(shouldUseDashed) {
-									realOptionName = StringHelper.camelCaseToDash(realOptionName);
-								}
-								CompletionItem completionItem = new CompletionItem(realOptionName);
-								completionItem.setDocumentation(option.getDescription());
-								CompletionResolverUtils.applyDeprecation(completionItem, option.isDeprecated());
-								completionItem.setInsertText(realOptionName + "=");
-								return completionItem;
-							}).collect(Collectors.toList());
+					List<CompletionItem> completions = new ArrayList<>();
+					completions.addAll(retrieveCamelMainCompletions(shouldUseDashed, catalog));
+					completions.addAll(retrieveCamelKafkaConnectorBasicProperties(shouldUseDashed, camelkafkaConnectorManager, textDocumentItem));
+					return completions;
 				} else {
 					return Collections.emptyList();
 				}
 			});
 		}
 		return CompletableFuture.completedFuture(Collections.emptyList());
+	}
+
+	private List<CompletionItem> retrieveCamelKafkaConnectorBasicProperties(boolean shouldUseDashed, CamelKafkaConnectorCatalogManager camelkafkaConnectorManager, TextDocumentItem textDocumentItem) {
+		String groupPrefix = CamelPropertyKeyInstance.CAMEL_KEY_PREFIX + groupName;
+		return new CamelKafkaUtil().getBasicPropertiesCompletion(camelkafkaConnectorManager, textDocumentItem, shouldUseDashed, groupPrefix, camelPropertyKeyInstance);
+	}
+
+	private List<CompletionItem> retrieveCamelMainCompletions(boolean shouldUseDashed, CamelCatalog catalog) {
+		MainModel mainModel = ((DefaultCamelCatalog) catalog).mainModel();
+		String groupPrefix = CamelPropertyKeyInstance.CAMEL_KEY_PREFIX + groupName + ".";
+		return mainModel.getOptions().stream().filter(option -> option.getName().startsWith(groupPrefix))
+				.map(option -> {
+					String realOptionName = option.getName().substring(groupPrefix.length());
+					if(shouldUseDashed) {
+						realOptionName = StringHelper.camelCaseToDash(realOptionName);
+					}
+					CompletionItem completionItem = new CompletionItem(realOptionName);
+					completionItem.setDocumentation(option.getDescription());
+					CompletionResolverUtils.applyDeprecation(completionItem, option.isDeprecated());
+					completionItem.setInsertText(realOptionName + "=");
+					return completionItem;
+				}).collect(Collectors.toList());
 	}
 
 	private boolean shouldUseDashedCase() {
