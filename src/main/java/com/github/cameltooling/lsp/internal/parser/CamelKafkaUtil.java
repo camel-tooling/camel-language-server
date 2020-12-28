@@ -18,11 +18,21 @@ package com.github.cameltooling.lsp.internal.parser;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.util.Collections;
+import java.util.List;
 import java.util.Properties;
+import java.util.stream.Collectors;
 
+import org.apache.camel.util.StringHelper;
+import org.apache.kafka.common.config.ConfigDef;
+import org.eclipse.lsp4j.CompletionItem;
 import org.eclipse.lsp4j.TextDocumentItem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.github.cameltooling.lsp.internal.catalog.util.CamelKafkaConnectorCatalogManager;
+import com.github.cameltooling.lsp.internal.completion.CompletionResolverUtils;
+import com.github.cameltooling.lsp.internal.instancemodel.ILineRangeDefineable;
 
 public class CamelKafkaUtil {
 	
@@ -69,6 +79,35 @@ public class CamelKafkaUtil {
 			LOGGER.error("Cannot load Properties file to search for 'connector.class' property value.", e);
 		}
 		return null;
+	}
+
+	public List<CompletionItem> getBasicPropertiesCompletion(
+			CamelKafkaConnectorCatalogManager camelkafkaConnectorManager,
+			TextDocumentItem textDocumentItem,
+			boolean shouldUseDashed,
+			String groupPrefix,
+			ILineRangeDefineable lineRangeDefineableItem) {
+		if (camelkafkaConnectorManager != null) {
+			ConfigDef basicPropertiesConfigDef = camelkafkaConnectorManager.retrieveBasicPropertiesConfigDef(textDocumentItem);
+			if (basicPropertiesConfigDef != null) {
+				return basicPropertiesConfigDef.configKeys().values().stream()
+						.filter(configKey -> configKey.name.startsWith(groupPrefix)).map(configKey -> {
+							String realOptionName = configKey.name;
+							if (shouldUseDashed) {
+								realOptionName = StringHelper.camelCaseToDash(realOptionName);
+							}
+							CompletionItem completionItem = new CompletionItem(realOptionName);
+							completionItem.setDocumentation(configKey.documentation);
+							completionItem.setInsertText(realOptionName + "="
+									+ (configKey.hasDefault() && configKey.defaultValue != null ? configKey.defaultValue
+											: ""));
+							CompletionResolverUtils.applyTextEditToCompletionItem(lineRangeDefineableItem,
+									completionItem);
+							return completionItem;
+						}).collect(Collectors.toList());
+			}
+		}
+		return Collections.emptyList();
 	}
 
 }

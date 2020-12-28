@@ -20,9 +20,14 @@ import java.util.Optional;
 
 import org.apache.camel.kafkaconnector.catalog.CamelKafkaConnectorCatalog;
 import org.apache.camel.kafkaconnector.model.CamelKafkaConnectorModel;
+import org.apache.kafka.common.config.ConfigDef;
+import org.eclipse.lsp4j.TextDocumentItem;
+
+import com.github.cameltooling.lsp.internal.parser.CamelKafkaUtil;
 
 public class CamelKafkaConnectorCatalogManager {
 	
+	private static final String CAMEL_KAFKA_CONNECTOR_TYPE_SOURCE = "source";
 	private CamelKafkaConnectorCatalog catalog = new CamelKafkaConnectorCatalog();
 		
 	public CamelKafkaConnectorCatalog getCatalog() {
@@ -35,5 +40,19 @@ public class CamelKafkaConnectorCatalogManager {
 				.stream()
 				.filter(connector -> connectorClass != null && connectorClass.equals(connector.getConnectorClass()))
 				.findAny();
+	}
+
+	public ConfigDef retrieveBasicPropertiesConfigDef(TextDocumentItem textDocumentItem) {
+		ConfigDef basicPropertiesConfigDef = null;
+		Optional<CamelKafkaConnectorModel> optional = findConnectorModel(new CamelKafkaUtil().findConnectorClass(textDocumentItem));
+		if(optional.isPresent()) {
+			CamelKafkaConnectorModel model = optional.get();
+			if(CAMEL_KAFKA_CONNECTOR_TYPE_SOURCE.equals(model.getType())) {
+				basicPropertiesConfigDef = getCatalog().getBasicConfigurationForSource();
+			} else {
+				basicPropertiesConfigDef = getCatalog().getBasicConfigurationForSink();
+			}
+		}
+		return basicPropertiesConfigDef;
 	}
 }
