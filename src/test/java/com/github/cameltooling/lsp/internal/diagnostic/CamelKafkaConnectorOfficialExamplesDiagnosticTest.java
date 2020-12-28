@@ -93,9 +93,7 @@ class CamelKafkaConnectorOfficialExamplesDiagnosticTest extends AbstractDiagnost
 	static Stream<File> testMainGitRepoExamples() {
 		File[] exampleFiles = new File(mainRepoDirectory, "examples").listFiles();
 		assertThat(exampleFiles).as("Allows to detect if examples has moved for instance.").hasSizeGreaterThan(14);
-		return Stream.of(exampleFiles)
-				// filtering example due to https://github.com/apache/camel-kafka-connector/issues/767
-				.filter(file -> !"CamelAmqpSourceConnector.properties".equals(file.getName()));
+		return Stream.of(exampleFiles);
 	}
 	
 	@ValueSource
