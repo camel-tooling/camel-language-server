@@ -44,6 +44,7 @@ class CamelKafkaConnectorClassCompletionTest extends AbstractCamelKafkaConnector
 		CompletionItem completionItem = completionItems.stream().filter(ci -> connectorClassName.equals(ci.getInsertText())).findAny().get();
 		assertThat(completionItem.getLabel()).isEqualTo("TestSourceConnector");
 		assertThat(completionItem.getDetail()).isEqualTo(connectorClassName);
+		assertThat(completionItem.getDocumentation().getLeft()).isEqualTo("Description of TestSourceConnector");
 		assertThat(completionItem.getTextEdit().getNewText()).isEqualTo(connectorClassName);
 		assertThat(completionItem.getTextEdit().getRange()).isEqualTo(new Range(new Position(0, 16), new Position(0, 16)));
 	}
