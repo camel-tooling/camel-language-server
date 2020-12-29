@@ -42,7 +42,9 @@ public class CamelKafkaConnectorClassCompletionProcessor {
 		List<CompletionItem> completions = camelKafkaConnectors.stream()
 				.map(camelKafkaConnector -> {
 					String qualifiedConnectorClassName = camelKafkaConnector.getConnectorClass();
-					return new CompletionItemCreator().createForQualifiedClassName(qualifiedConnectorClassName, camelPropertyValueInstance);
+					CompletionItem completionItem = new CompletionItemCreator().createForQualifiedClassName(qualifiedConnectorClassName, camelPropertyValueInstance);
+					completionItem.setDocumentation(camelKafkaConnector.getDescription());
+					return completionItem;
 				})
 				.filter(FilterPredicateUtils.matchesCompletionFilter(startFilter))
 				.collect(Collectors.toList());

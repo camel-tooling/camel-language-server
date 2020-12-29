@@ -17,9 +17,11 @@
 package com.github.cameltooling.lsp.internal.instancemodel.propertiesfile;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 import org.apache.camel.catalog.CamelCatalog;
+import org.apache.camel.kafkaconnector.model.CamelKafkaConnectorModel;
 import org.eclipse.lsp4j.CompletionItem;
 import org.eclipse.lsp4j.Hover;
 import org.eclipse.lsp4j.Position;
@@ -99,13 +101,18 @@ public class CamelPropertyValueInstance implements ILineRangeDefineable {
 		return getStartPositionInLine() + (camelPropertyValue != null ? camelPropertyValue.length() : 0);
 	}
 
-	public CompletableFuture<Hover> getHover(Position position, CompletableFuture<CamelCatalog> camelCatalog) {
+	public CompletableFuture<Hover> getHover(Position position, CompletableFuture<CamelCatalog> camelCatalog, CamelKafkaConnectorCatalogManager camelKafkaConnectorManager) {
 		String propertyKey = key.getCamelPropertyKey();
-		if (new CamelKafkaUtil().isCamelURIForKafka(propertyKey)) {
+		CamelKafkaUtil camelKafkaUtil = new CamelKafkaUtil();
+		if (camelKafkaUtil.isCamelURIForKafka(propertyKey)) {
 			return new CamelURIHoverProcessor(textDocumentItem, camelCatalog).getHover(position);
-		} else {
-			return CompletableFuture.completedFuture(null);
+		} else if (camelKafkaUtil.isConnectorClassForCamelKafkaConnector(propertyKey)) {
+			Optional<CamelKafkaConnectorModel> optional = camelKafkaConnectorManager.findConnectorModel(camelPropertyValue);
+			if(optional.isPresent()) {
+				return  CompletableFuture.completedFuture(createHover(optional.get().getDescription()));
+			}
 		}
+		return CompletableFuture.completedFuture(null);
 	}
 
 }
