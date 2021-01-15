@@ -280,6 +280,12 @@ class DocumentSymbolProcessorTest extends AbstractCamelLanguageServerTest {
 		testRetrieveDocumentSymbol(f, 0);
 	}
 	
+	@Test
+	void testInvalidJavaFileNotThrowingException() throws Exception {
+		File f = new File("src/test/resources/workspace/AnInvalid.java");
+		testRetrieveDocumentSymbol(f, 0);
+	}
+	
 	private List<Either<SymbolInformation, DocumentSymbol>> testRetrieveDocumentSymbol(String textTotest, int expectedSize) throws URISyntaxException, InterruptedException, ExecutionException, IOException {
 		File camelFile = new File(tempDir, "DocumentSymbolInformation.xml");
 		Files.write(textTotest.getBytes(), camelFile);

@@ -97,10 +97,14 @@ public class EndpointDiagnosticService extends DiagnosticService {
 				logExceptionValidatingDocument(uri, e);
 			}
 		} else if(uri.endsWith(".java")) {
-			JavaType<?> parsedJavaFile = Roaster.parse(camelText);
-			if (parsedJavaFile instanceof JavaClassSource) {
-				JavaClassSource clazz = (JavaClassSource) parsedJavaFile;
-				RouteBuilderParser.parseRouteBuilderEndpoints(clazz, "", "/"+uri, endpoints);
+			try {
+				JavaType<?> parsedJavaFile = Roaster.parse(camelText);
+				if (parsedJavaFile instanceof JavaClassSource) {
+					JavaClassSource clazz = (JavaClassSource) parsedJavaFile;
+					RouteBuilderParser.parseRouteBuilderEndpoints(clazz, "", "/"+uri, endpoints);
+				}
+			} catch(Exception e) {
+				logExceptionValidatingDocument(uri, e);
 			}
 		}
 		return endpoints;
