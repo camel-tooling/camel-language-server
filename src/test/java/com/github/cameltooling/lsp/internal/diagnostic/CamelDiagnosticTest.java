@@ -134,6 +134,11 @@ class CamelDiagnosticTest extends AbstractDiagnosticTest {
 	}
 	
 	@Test
+	void testNoExceptionOnInvalidJavaFile() throws Exception {
+		testDiagnostic("AnInvalid", 0, ".java");
+	}
+	
+	@Test
 	void testValidationErrorClearedOnClose() throws Exception {
 		testDiagnostic("camel-with-endpoint-error", 1, ".xml");
 		

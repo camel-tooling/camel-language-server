@@ -32,25 +32,32 @@ import org.eclipse.lsp4j.jsonrpc.messages.Either;
 import org.jboss.forge.roaster.Roaster;
 import org.jboss.forge.roaster.model.JavaType;
 import org.jboss.forge.roaster.model.source.JavaClassSource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class DocumentSymbolJavaProcessor extends AbstractDocumentSymbolProcessor {
+	
+	private static final Logger LOGGER = LoggerFactory.getLogger(DocumentSymbolJavaProcessor.class);
 
 	public DocumentSymbolJavaProcessor(TextDocumentItem textDocumentItem) {
 		super(textDocumentItem);
 	}
 
 	public List<Either<SymbolInformation, DocumentSymbol>> getSymbolInformations() {
-		JavaType<?> parsedJavaFile = Roaster.parse(textDocumentItem.getText());
-		if(parsedJavaFile instanceof JavaClassSource) {
-			JavaClassSource clazz = (JavaClassSource) parsedJavaFile;
-			String absolutePathOfCamelFile = new File(URI.create(textDocumentItem.getUri())).getAbsolutePath();
-			List<CamelNodeDetails> camelNodes = RouteBuilderParser.parseRouteBuilderTree(clazz, "", absolutePathOfCamelFile, true);
-			List<CamelEndpointDetails> endpoints = new ArrayList<>();
-			RouteBuilderParser.parseRouteBuilderEndpoints(clazz, "", absolutePathOfCamelFile, endpoints);
-			return createSymbolInformations(camelNodes, endpoints);
-		} else {
-			return Collections.emptyList();
+		try {
+			JavaType<?> parsedJavaFile = Roaster.parse(textDocumentItem.getText());
+			if (parsedJavaFile instanceof JavaClassSource) {
+				JavaClassSource clazz = (JavaClassSource) parsedJavaFile;
+				String absolutePathOfCamelFile = new File(URI.create(textDocumentItem.getUri())).getAbsolutePath();
+				List<CamelNodeDetails> camelNodes = RouteBuilderParser.parseRouteBuilderTree(clazz, "", absolutePathOfCamelFile, true);
+				List<CamelEndpointDetails> endpoints = new ArrayList<>();
+				RouteBuilderParser.parseRouteBuilderEndpoints(clazz, "", absolutePathOfCamelFile, endpoints);
+				return createSymbolInformations(camelNodes, endpoints);
+			}
+		} catch (Exception ex) {
+			LOGGER.warn("Error while computing Document symbols for "+ textDocumentItem.getUri(), ex);
 		}
+		return Collections.emptyList();
 	}
 
 }
