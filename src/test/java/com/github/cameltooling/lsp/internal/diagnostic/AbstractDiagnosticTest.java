@@ -37,7 +37,7 @@ import com.github.cameltooling.lsp.internal.RangeChecker;
 
 public abstract class AbstractDiagnosticTest extends AbstractCamelLanguageServerTest {
 
-	protected static final Duration AWAIT_TIMEOUT = Duration.ofSeconds(10000);
+	protected static final Duration AWAIT_TIMEOUT = Duration.ofMillis(10000);
 	private static final Duration AWAIT_POLL_INTERVAL = Duration.ofMillis(5);
 	protected CamelLanguageServer camelLanguageServer;
 
