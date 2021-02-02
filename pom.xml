@@ -51,6 +51,7 @@
 		<jgit.version>5.10.0.202012080955-r</jgit.version>
 		<camel.version>3.7.1</camel.version>
 		<camel.kafka.connector.version>0.7.1</camel.kafka.connector.version>
+		<camel.quarkus.version>1.6.0</camel.quarkus.version>
 		<roaster.version>2.21.1.Final</roaster.version>
 		<awaitility.version>4.0.3</awaitility.version>
 		<tyrus.version>1.17</tyrus.version>
@@ -256,6 +257,21 @@
 			<groupId>org.apache.camel.kafkaconnector</groupId>
 			<artifactId>camel-kafka-connector-catalog</artifactId>
 			<version>${camel.kafka.connector.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.camel.karaf</groupId>
+			<artifactId>camel-catalog-provider-karaf</artifactId>
+			<version>${camel.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.camel.springboot</groupId>
+			<artifactId>camel-catalog-provider-springboot</artifactId>
+			<version>${camel.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.camel.quarkus</groupId>
+			<artifactId>camel-quarkus-catalog</artifactId>
+			<version>${camel.quarkus.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.camel</groupId>

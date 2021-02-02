@@ -25,7 +25,12 @@ import java.util.concurrent.CompletableFuture;
 
 import org.apache.camel.catalog.CamelCatalog;
 import org.apache.camel.catalog.DefaultCamelCatalog;
+import org.apache.camel.catalog.DefaultRuntimeProvider;
+import org.apache.camel.catalog.RuntimeProvider;
+import org.apache.camel.catalog.karaf.KarafRuntimeProvider;
 import org.apache.camel.catalog.maven.MavenVersionManager;
+import org.apache.camel.catalog.quarkus.QuarkusRuntimeProvider;
+import org.apache.camel.springboot.catalog.SpringBootRuntimeProvider;
 import org.eclipse.lsp4j.CodeAction;
 import org.eclipse.lsp4j.CodeActionParams;
 import org.eclipse.lsp4j.CodeLens;
@@ -65,6 +70,7 @@ import org.eclipse.lsp4j.services.TextDocumentService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.github.cameltooling.lsp.internal.catalog.runtimeprovider.CamelRuntimeProvider;
 import com.github.cameltooling.lsp.internal.catalog.util.CamelKafkaConnectorCatalogManager;
 import com.github.cameltooling.lsp.internal.codeactions.CodeActionProcessor;
 import com.github.cameltooling.lsp.internal.completion.CamelEndpointCompletionProcessor;
@@ -98,27 +104,45 @@ public class CamelTextDocumentService implements TextDocumentService {
 		camelCatalog = CompletableFuture.supplyAsync(() -> new DefaultCamelCatalog(true));
 	}
 	
-	public void updateCatalog(String camelVersion, List<Map<?,?>> extraComponents) {
+	public void updateCatalog(String camelVersion, String camelCatalogRuntimeProvider, List<Map<?,?>> extraComponents) {
 		camelCatalog = CompletableFuture.supplyAsync(() -> {
 			DefaultCamelCatalog catalog = new DefaultCamelCatalog(true);
-			if (camelVersion != null && !camelVersion.isEmpty()) {
-				catalog.setVersionManager(new MavenVersionManager());
-				if (!catalog.loadVersion(camelVersion)) {
-					LOGGER.warn("Cannot load Camel catalog with version {}", camelVersion);
-				}
-			}
-			if (extraComponents != null) {
-				for (Map<?,?> extraComponent : extraComponents) {
-					JSONUtility jsonUtility = new JSONUtility();
-					Map<?,?> extraComponentTopLevel = jsonUtility.toModel(extraComponent, Map.class);
-					Map<?,?> componentAttributes = jsonUtility.toModel(extraComponentTopLevel.get("component"), Map.class);
-					String name = (String) componentAttributes.get("scheme");
-					String className = (String) componentAttributes.get("javaType");
-					catalog.addComponent(name, className, new Gson().toJson(extraComponent));
-				}
-			}
+			updateCatalogVersion(camelVersion, catalog);
+			updateCatalogRuntimeProvider(camelCatalogRuntimeProvider, catalog);
+			updateCatalogExtraComponents(extraComponents, catalog);
 			return catalog;
 		});
+	}
+
+	private void updateCatalogExtraComponents(List<Map<?, ?>> extraComponents, DefaultCamelCatalog catalog) {
+		if (extraComponents != null) {
+			for (Map<?,?> extraComponent : extraComponents) {
+				JSONUtility jsonUtility = new JSONUtility();
+				Map<?,?> extraComponentTopLevel = jsonUtility.toModel(extraComponent, Map.class);
+				Map<?,?> componentAttributes = jsonUtility.toModel(extraComponentTopLevel.get("component"), Map.class);
+				String name = (String) componentAttributes.get("scheme");
+				String className = (String) componentAttributes.get("javaType");
+				catalog.addComponent(name, className, new Gson().toJson(extraComponent));
+			}
+		}
+	}
+
+	private void updateCatalogRuntimeProvider(String camelCatalogRuntimeProvider, DefaultCamelCatalog catalog) {
+		if(camelCatalogRuntimeProvider != null && !camelCatalogRuntimeProvider.isEmpty()) {
+			RuntimeProvider runtimeProvider = CamelRuntimeProvider.getProvider(camelCatalogRuntimeProvider);
+			if(runtimeProvider != null) {
+				catalog.setRuntimeProvider(runtimeProvider);
+			}
+		}
+	}
+
+	private void updateCatalogVersion(String camelVersion, DefaultCamelCatalog catalog) {
+		if (camelVersion != null && !camelVersion.isEmpty()) {
+			catalog.setVersionManager(new MavenVersionManager());
+			if (!catalog.loadVersion(camelVersion)) {
+				LOGGER.warn("Cannot load Camel catalog with version {}", camelVersion);
+			}
+		}
 	}
 
 	@Override
