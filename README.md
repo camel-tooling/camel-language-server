@@ -87,6 +87,20 @@ To use Red Hat Integration productized version, the Red Hat Maven GA repository 
 
 For more information, check the [Grape official documentation](http://docs.groovy-lang.org/latest/html/documentation/grape.html#Grape-CustomizeIvysettings).
 
+## Specific runtime provider of Camel catalog
+
+It is possible to specify a specific runtime provider of the Camel catalog. This can be provided as Initialization Option or Workspace Configuration. The format is the same for both:
+
+```
+{
+	"camel": {
+		"Camel catalog runtime provider" : ...
+	}
+}
+```
+
+Currently supported providers can be found in [CamelRuntimeProvider](/src/main/java/com/github/cameltooling/lsp/internal/catalog/runtimeprovider/CamelRuntimeProvider) enum.
+
 ## Additional Camel components
 
 It is possible to specify a list of additional Camel components. This can be provided as Initialization Option or Workspace Configuration. The format is the same for both:

@@ -27,9 +27,10 @@ import com.github.cameltooling.lsp.internal.CamelTextDocumentService;
 
 public class SettingsManager {
 
-	private static final String CAMEL_CATALOG_VERSION = "Camel catalog version";
-	private static final String TOP_LEVEL_SETTINGS_ID = "camel";
-	private static final String EXTRA_COMPONENTS = "extra-components";
+	public static final String CAMEL_CATALOG_VERSION = "Camel catalog version";
+	public static final String TOP_LEVEL_SETTINGS_ID = "camel";
+	public static final String EXTRA_COMPONENTS = "extra-components";
+	public static final String CATALOG_RUNTIME_PROVIDER = "Camel catalog runtime provider";
 	private CamelTextDocumentService textDocumentService;
 
 	public SettingsManager(CamelTextDocumentService textDocumentService) {
@@ -49,7 +50,8 @@ public class SettingsManager {
 		Map<?, ?> camelSetting = getSetting(mapSettings, TOP_LEVEL_SETTINGS_ID, Map.class);
 		String camelCatalogVersion = getSetting(camelSetting, CAMEL_CATALOG_VERSION, String.class);
 		List<?> extraComponents = getSetting(camelSetting, EXTRA_COMPONENTS, List.class);
-		textDocumentService.updateCatalog(camelCatalogVersion, (List<Map<?, ?>>) extraComponents);
+		String camelCatalogRuntimeProvider = getSetting(camelSetting, CATALOG_RUNTIME_PROVIDER, String.class);
+		textDocumentService.updateCatalog(camelCatalogVersion, camelCatalogRuntimeProvider, (List<Map<?, ?>>) extraComponents);
 	}
 
 	private Map<?, ?> getSettings(Object settings) {
