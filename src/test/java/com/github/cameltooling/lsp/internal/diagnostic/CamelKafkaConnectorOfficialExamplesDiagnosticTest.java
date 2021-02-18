@@ -62,9 +62,9 @@ class CamelKafkaConnectorOfficialExamplesDiagnosticTest extends AbstractDiagnost
 		
 		specificExampleRepoDirectory = new File(folderWithExamples.toFile(), "camel-kafka-connector-examples");
 		specificExampleGitrepo = Git.cloneRepository()
-				.setURI("https://github.com/apupier/camel-kafka-connector-examples")
+				.setURI("https://github.com/apache/camel-kafka-connector-examples")
 				.setDirectory(specificExampleRepoDirectory)
-				.setBranch("refs/tags/"+ CAMEL_KAFKA_CONNECTOR_VERSION)
+				.setBranch("refs/heads/"+ CAMEL_KAFKA_CONNECTOR_VERSION)
 				.call();
 	}
 	
@@ -99,7 +99,17 @@ class CamelKafkaConnectorOfficialExamplesDiagnosticTest extends AbstractDiagnost
 	
 	@ValueSource
 	static Stream<File> testSpecificGitRepoExamples() throws IOException {
-		return Files.walk(specificExampleRepoDirectory.toPath()).map(Path::toFile).filter(file -> file.getName().endsWith(".properties"));
+		return Files.walk(specificExampleRepoDirectory.toPath())
+				.map(Path::toFile)
+				.filter(file -> file.getName().endsWith(".properties"))
+				// Workaround to https://github.com/apache/camel-kafka-connector-examples/issues/292
+				// and https://issues.apache.org/jira/browse/CAMEL-16248
+				// and https://issues.apache.org/jira/browse/CAMEL-16247
+				.filter(file -> !"CamelFhirSourceConnector.properties".equals(file.getName()))
+				// Workaround to https://github.com/apache/camel-kafka-connector-examples/issues/293
+				// and https://issues.apache.org/jira/browse/CAMEL-16249
+				.filter(file -> !"CamelDockerSinkConnector.properties".equals(file.getName()))
+				.filter(file -> !"CamelDockerSourceConnector.properties".equals(file.getName()));
 	}
 	
 }
