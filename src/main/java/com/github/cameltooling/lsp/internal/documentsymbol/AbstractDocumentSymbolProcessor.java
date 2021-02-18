@@ -78,7 +78,7 @@ public abstract class AbstractDocumentSymbolProcessor {
 
 	private int retrieveEndline(CamelNodeDetails camelNodeDetails) {
 		OptionalInt endLineComputedFromChildren = retrieveAllChildrenOutputs(camelNodeDetails)
-				.mapToInt(output -> Integer.valueOf(output.getLineNumberEnd()) - 1)
+				.mapToInt(output -> output.getLineNumberEnd() != null ? Integer.valueOf(output.getLineNumberEnd()) - 1 : 0)
 				.max();
 		return endLineComputedFromChildren.orElse(Integer.valueOf(camelNodeDetails.getLineNumberEnd()) - 1);
 	}
