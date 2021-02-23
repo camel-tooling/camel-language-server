@@ -20,7 +20,6 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 import org.apache.camel.catalog.CamelCatalog;
-import org.apache.camel.util.StringHelper;
 import org.eclipse.lsp4j.CompletionItem;
 import org.eclipse.lsp4j.Hover;
 import org.eclipse.lsp4j.Position;
@@ -28,6 +27,7 @@ import org.eclipse.lsp4j.Position;
 import com.github.cameltooling.lsp.internal.catalog.model.ComponentModel;
 import com.github.cameltooling.lsp.internal.catalog.model.ComponentOptionModel;
 import com.github.cameltooling.lsp.internal.catalog.util.ModelHelper;
+import com.github.cameltooling.lsp.internal.catalog.util.StringUtils;
 import com.github.cameltooling.lsp.internal.completion.CamelComponentOptionNamesCompletionFuture;
 import com.github.cameltooling.lsp.internal.instancemodel.ILineRangeDefineable;
 
@@ -98,7 +98,7 @@ public class CamelComponentParameterPropertyInstance implements ILineRangeDefine
 		String propertyWrittenName = getProperty();
 		ComponentOptionModel componentOptionModel = componentModel.getComponentOption(propertyWrittenName);
 		if(componentOptionModel == null && propertyWrittenName.contains("-")) {
-			componentOptionModel = componentModel.getComponentOption(StringHelper.dashToCamelCase(propertyWrittenName));
+			componentOptionModel = componentModel.getComponentOption(StringUtils.dashToCamelCase(propertyWrittenName));
 		}
 		return componentOptionModel;
 	}

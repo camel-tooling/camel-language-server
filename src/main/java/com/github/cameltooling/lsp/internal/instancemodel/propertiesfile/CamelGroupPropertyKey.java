@@ -34,6 +34,7 @@ import org.eclipse.lsp4j.Position;
 import org.eclipse.lsp4j.TextDocumentItem;
 
 import com.github.cameltooling.lsp.internal.catalog.util.CamelKafkaConnectorCatalogManager;
+import com.github.cameltooling.lsp.internal.catalog.util.StringUtils;
 import com.github.cameltooling.lsp.internal.completion.CompletionResolverUtils;
 import com.github.cameltooling.lsp.internal.instancemodel.ILineRangeDefineable;
 import com.github.cameltooling.lsp.internal.parser.CamelKafkaUtil;
@@ -90,7 +91,7 @@ public class CamelGroupPropertyKey implements ILineRangeDefineable {
 					String fullName = CamelPropertyKeyInstance.CAMEL_KEY_PREFIX + groupConfiguration;
 					Optional<MainOptionModel> mainOptionModel = findFirstOption(mainModel, fullName);
 					if (!mainOptionModel.isPresent() && fullName.contains("-")) {
-						mainOptionModel = findFirstOption(mainModel,StringHelper.dashToCamelCase(fullName));
+						mainOptionModel = findFirstOption(mainModel,StringUtils.dashToCamelCase(fullName));
 					}
 					if (mainOptionModel.isPresent()) {
 						return createHover(mainOptionModel.get().getDescription());
