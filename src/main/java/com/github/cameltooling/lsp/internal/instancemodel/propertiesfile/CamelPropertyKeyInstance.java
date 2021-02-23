@@ -29,7 +29,6 @@ import java.util.stream.Collectors;
 
 import org.apache.camel.catalog.CamelCatalog;
 import org.apache.camel.tooling.model.MainModel;
-import org.apache.camel.util.StringHelper;
 import org.eclipse.lsp4j.CompletionItem;
 import org.eclipse.lsp4j.Diagnostic;
 import org.eclipse.lsp4j.DiagnosticSeverity;
@@ -40,6 +39,7 @@ import org.eclipse.lsp4j.TextDocumentItem;
 import org.eclipse.lsp4j.TextEdit;
 
 import com.github.cameltooling.lsp.internal.catalog.util.CamelKafkaConnectorCatalogManager;
+import com.github.cameltooling.lsp.internal.catalog.util.StringUtils;
 import com.github.cameltooling.lsp.internal.completion.FilterPredicateUtils;
 import com.github.cameltooling.lsp.internal.diagnostic.DiagnosticService;
 import com.github.cameltooling.lsp.internal.instancemodel.ILineRangeDefineable;
@@ -214,7 +214,7 @@ public class CamelPropertyKeyInstance implements ILineRangeDefineable {
 				.filter(Objects::nonNull)
 				.filter(iterCamelPropertyKey ->
 					!iterCamelPropertyKey.equals(camelPropertyKey)
-					&& StringHelper.dashToCamelCase(iterCamelPropertyKey).equals(StringHelper.dashToCamelCase(camelPropertyKey)))
+					&& StringUtils.dashToCamelCase(iterCamelPropertyKey).equals(StringUtils.dashToCamelCase(camelPropertyKey)))
 				.findAny();
 			if(duplicateByDashCamelNotationDifference.isPresent()) {
 				diagnostics.add(new Diagnostic(

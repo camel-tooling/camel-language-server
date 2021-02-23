@@ -38,6 +38,7 @@ import org.eclipse.lsp4j.Range;
 import org.eclipse.lsp4j.TextDocumentItem;
 
 import com.github.cameltooling.lsp.internal.catalog.util.CamelKafkaConnectorCatalogManager;
+import com.github.cameltooling.lsp.internal.catalog.util.StringUtils;
 import com.github.cameltooling.lsp.internal.completion.CompletionResolverUtils;
 import com.github.cameltooling.lsp.internal.completion.FilterPredicateUtils;
 import com.github.cameltooling.lsp.internal.diagnostic.DiagnosticService;
@@ -136,7 +137,7 @@ public class CamelSinkOrSourcePropertyKey implements ILineRangeDefineable {
 			Optional<CamelKafkaConnectorModel> camelKafkaConnectorModel = camelKafkaConnectorManager.findConnectorModel(connectorClass);
 			if (camelKafkaConnectorModel.isPresent()) {
 				String propertyKey = getPrefix() + optionKey;
-				String camelCasePropertyKey = StringHelper.dashToCamelCase(propertyKey);
+				String camelCasePropertyKey = StringUtils.dashToCamelCase(propertyKey);
 				Hover hover = camelKafkaConnectorModel.get()
 						.getOptions()
 						.stream()
@@ -177,7 +178,7 @@ public class CamelSinkOrSourcePropertyKey implements ILineRangeDefineable {
 			
 			Set<String> camelComponentProperties = allCamelPropertyEntriesOfTheFile.stream()
 									.map(property -> property.getCamelPropertyKeyInstance().getCamelPropertyKey())
-									.filter(propertyKey -> modelProperties.contains(StringHelper.dashToCamelCase(propertyKey)))
+									.filter(propertyKey -> modelProperties.contains(StringUtils.dashToCamelCase(propertyKey)))
 									.collect(Collectors.toSet());
 			if(!camelComponentProperties.isEmpty()) {
 				return Collections.singleton(new Diagnostic(
@@ -212,7 +213,7 @@ public class CamelSinkOrSourcePropertyKey implements ILineRangeDefineable {
 	private Set<Diagnostic> validateExistingProperty(CamelKafkaConnectorModel connectorModel) {
 		if (!"url".equals(optionKey) && (optionKey.startsWith("endpoint") || optionKey.startsWith("path"))) {
 			String propertyKey = getPrefix() + optionKey;
-			String camelCasePropertyKey = StringHelper.dashToCamelCase(propertyKey);
+			String camelCasePropertyKey = StringUtils.dashToCamelCase(propertyKey);
 			Optional<CamelKafkaConnectorOptionModel> optionModel = connectorModel
 					.getOptions()
 					.stream()

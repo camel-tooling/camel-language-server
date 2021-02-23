@@ -16,6 +16,7 @@
  */
 package com.github.cameltooling.lsp.internal.catalog.util;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -36,5 +37,20 @@ class StringUtilsTest {
 	void isEmpty() {
 		assertTrue(StringUtils.isEmpty(null));
 		assertTrue(StringUtils.isEmpty(""));
+	}
+	
+	@Test
+	void testDashToCamelCase() throws Exception {
+		assertThat(StringUtils.dashToCamelCase("a-b")).isEqualTo("aB");
+	}
+	
+	@Test
+	void testDashToCamelCaseWithSeveralDash() throws Exception {
+		assertThat(StringUtils.dashToCamelCase("a-bb-cc-dd")).isEqualTo("aBbCcDd");
+	}
+	
+	@Test
+	void testDashToCamelCaseWithTrailingDash() throws Exception {
+		assertThat(StringUtils.dashToCamelCase("a-")).isEqualTo("a-");
 	}
 }

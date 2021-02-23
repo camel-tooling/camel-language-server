@@ -16,6 +16,8 @@
  */
 package com.github.cameltooling.lsp.internal.catalog.util;
 
+import org.apache.camel.util.StringHelper;
+
 /**
  * Various utility methods.
  */
@@ -50,6 +52,21 @@ public final class StringUtils {
 	 */
 	public static boolean isEmpty(String str) {
 		return str == null || str.trim().length() == 0;
+	}
+	
+	/**
+	 * Workaround to https://issues.apache.org/jira/browse/CAMEL-16250
+	 * 
+	 * @param dashedName
+	 * @return the camel case named, keeping last dash at end of the name.
+	 * 			It allows to detect when an invalid value is provided with just the dash that it is too much
+	 */
+	public static String dashToCamelCase(String dashedName) {
+		if(dashedName.endsWith("-")) {
+			return StringHelper.dashToCamelCase(dashedName.substring(0, dashedName.length() - 1)) + "-";
+		} else {
+			return StringHelper.dashToCamelCase(dashedName);
+		}
 	}
 
 }
