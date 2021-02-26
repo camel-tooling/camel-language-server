@@ -50,7 +50,7 @@
 		<assertj.version>3.19.0</assertj.version>
 		<jgit.version>5.10.0.202012080955-r</jgit.version>
 		<camel.version>3.8.0</camel.version>
-		<camel.kafka.connector.version>0.7.2</camel.kafka.connector.version>
+		<camel.kafka.connector.version>0.8.0</camel.kafka.connector.version>
 		<camel.quarkus.version>1.7.0</camel.quarkus.version>
 		<roaster.version>2.21.1.Final</roaster.version>
 		<awaitility.version>4.0.3</awaitility.version>

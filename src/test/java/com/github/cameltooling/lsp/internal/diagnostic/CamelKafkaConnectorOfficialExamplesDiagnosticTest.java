@@ -109,7 +109,9 @@ class CamelKafkaConnectorOfficialExamplesDiagnosticTest extends AbstractDiagnost
 				// Workaround to https://github.com/apache/camel-kafka-connector-examples/issues/293
 				// and https://issues.apache.org/jira/browse/CAMEL-16249
 				.filter(file -> !"CamelDockerSinkConnector.properties".equals(file.getName()))
-				.filter(file -> !"CamelDockerSourceConnector.properties".equals(file.getName()));
+				.filter(file -> !"CamelDockerSourceConnector.properties".equals(file.getName()))
+				// Workaround to https://github.com/apache/camel-kafka-connector-examples/issues/300
+				.filter(file -> !"CamelInfinispanSourceConnector.properties".equals(file.getName()));
 	}
 	
 }
