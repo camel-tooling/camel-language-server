@@ -64,7 +64,7 @@ class CamelKafkaConnectorOfficialExamplesDiagnosticTest extends AbstractDiagnost
 		specificExampleGitrepo = Git.cloneRepository()
 				.setURI("https://github.com/apache/camel-kafka-connector-examples")
 				.setDirectory(specificExampleRepoDirectory)
-				.setBranch("refs/heads/"+ CAMEL_KAFKA_CONNECTOR_VERSION)
+				.setBranch("refs/tags/camel-kafka-connector-examples-"+ CAMEL_KAFKA_CONNECTOR_VERSION)
 				.call();
 	}
 	
