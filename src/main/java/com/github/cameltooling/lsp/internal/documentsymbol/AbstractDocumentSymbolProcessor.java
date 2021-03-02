@@ -32,10 +32,14 @@ import org.eclipse.lsp4j.SymbolInformation;
 import org.eclipse.lsp4j.SymbolKind;
 import org.eclipse.lsp4j.TextDocumentItem;
 import org.eclipse.lsp4j.jsonrpc.messages.Either;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.github.cameltooling.lsp.internal.parser.ParserFileHelperUtil;
 
 public abstract class AbstractDocumentSymbolProcessor {
+	
+	private static final Logger LOGGER = LoggerFactory.getLogger(AbstractDocumentSymbolProcessor.class);
 
 	protected TextDocumentItem textDocumentItem;
 
@@ -78,7 +82,21 @@ public abstract class AbstractDocumentSymbolProcessor {
 
 	private int retrieveEndline(CamelNodeDetails camelNodeDetails) {
 		OptionalInt endLineComputedFromChildren = retrieveAllChildrenOutputs(camelNodeDetails)
-				.mapToInt(output -> output.getLineNumberEnd() != null ? Integer.valueOf(output.getLineNumberEnd()) - 1 : 0)
+				.mapToInt(output -> {
+					String lineNumberEndAsString = output.getLineNumberEnd();
+					if(lineNumberEndAsString != null) {
+						try {
+							return Integer.valueOf(lineNumberEndAsString) - 1;							
+						} catch(NumberFormatException ex) {
+							LOGGER.warn("The parsing of the file " + camelNodeDetails.getFileName()
+									+ " returned an invalid line number end "+lineNumberEndAsString
+									+ " for node "+camelNodeDetails.getName(), ex);
+							return 0;
+						}
+					} else {
+						return 0;
+					}
+				})
 				.max();
 		return endLineComputedFromChildren.orElse(Integer.valueOf(camelNodeDetails.getLineNumberEnd()) - 1);
 	}
