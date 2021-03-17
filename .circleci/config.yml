@@ -19,9 +19,9 @@ jobs:
       - store_test_results:
           path: target/surefire-reports
 
-  jdk15:
+  jdk16:
     docker:
-      - image: circleci/openjdk:15-buster
+      - image: circleci/openjdk:16-buster
     steps:
       - checkout
       - run: mvn verify -V
@@ -62,12 +62,12 @@ workflows:
     jobs:
       - jdk8
       - jdk11
-      - jdk15
+      - jdk16
       - sonar:
           requires:
             - jdk8
             - jdk11
-            - jdk15
+            - jdk16
           filters:
             branches:
               only:
@@ -77,7 +77,7 @@ workflows:
           requires:
              - jdk8
              - jdk11
-             - jdk15
+             - jdk16
           filters:
             branches:
               only: master
