@@ -217,7 +217,7 @@ class CamelLanguageServerTest extends AbstractCamelLanguageServerTest {
 				expectedanyOrderAttributeCompletionItem.setDeprecated(false);
 				expectedanyOrderAttributeCompletionItem.setDetail("boolean");
 				expectedanyOrderAttributeCompletionItem.setInsertText("anyOrder=false");
-				expectedanyOrderAttributeCompletionItem.setTextEdit(new TextEdit(new Range(new Position(12, 47), new Position(12, 47)), "anyOrder=false"));
+				expectedanyOrderAttributeCompletionItem.setTextEdit(Either.forLeft(new TextEdit(new Range(new Position(12, 47), new Position(12, 47)), "anyOrder=false")));
 				expectedanyOrderAttributeCompletionItem.setKind(CompletionItemKind.Property);
 				assertThat(completions.get().getLeft()).contains(expectedanyOrderAttributeCompletionItem);
 			}
@@ -235,7 +235,7 @@ class CamelLanguageServerTest extends AbstractCamelLanguageServerTest {
 				expectedanyOrderAttributeCompletionItem.setDeprecated(false);
 				expectedanyOrderAttributeCompletionItem.setDetail("boolean");
 				expectedanyOrderAttributeCompletionItem.setInsertText("anyOrder=false");
-				expectedanyOrderAttributeCompletionItem.setTextEdit(new TextEdit(new Range(new Position(12, 46), new Position(12, 46)), "anyOrder=false"));
+				expectedanyOrderAttributeCompletionItem.setTextEdit(Either.forLeft(new TextEdit(new Range(new Position(12, 46), new Position(12, 46)), "anyOrder=false")));
 				expectedanyOrderAttributeCompletionItem.setKind(CompletionItemKind.Property);
 				assertThat(completions.get().getLeft()).contains(expectedanyOrderAttributeCompletionItem);
 			}
@@ -253,7 +253,7 @@ class CamelLanguageServerTest extends AbstractCamelLanguageServerTest {
 				expectedanyOrderAttributeCompletionItem.setDeprecated(false);
 				expectedanyOrderAttributeCompletionItem.setDetail("boolean");
 				expectedanyOrderAttributeCompletionItem.setInsertText("anyOrder=false");
-				expectedanyOrderAttributeCompletionItem.setTextEdit(new TextEdit(new Range(new Position(12, 47), new Position(12, 47)), "anyOrder=false"));
+				expectedanyOrderAttributeCompletionItem.setTextEdit(Either.forLeft(new TextEdit(new Range(new Position(12, 47), new Position(12, 47)), "anyOrder=false")));
 				expectedanyOrderAttributeCompletionItem.setKind(CompletionItemKind.Property);
 				assertThat(completions.get().getLeft()).contains(expectedanyOrderAttributeCompletionItem);
 			}
@@ -271,7 +271,7 @@ class CamelLanguageServerTest extends AbstractCamelLanguageServerTest {
 				expectedanyOrderAttributeCompletionItem.setDeprecated(false);
 				expectedanyOrderAttributeCompletionItem.setDetail("boolean");
 				expectedanyOrderAttributeCompletionItem.setInsertText("anyOrder=false");
-				expectedanyOrderAttributeCompletionItem.setTextEdit(new TextEdit(new Range(new Position(12, 45), new Position(12, 45)), "anyOrder=false"));
+				expectedanyOrderAttributeCompletionItem.setTextEdit(Either.forLeft(new TextEdit(new Range(new Position(12, 45), new Position(12, 45)), "anyOrder=false")));
 				expectedanyOrderAttributeCompletionItem.setKind(CompletionItemKind.Property);
 				assertThat(completions.get().getLeft()).contains(expectedanyOrderAttributeCompletionItem);
 			}
@@ -289,7 +289,7 @@ class CamelLanguageServerTest extends AbstractCamelLanguageServerTest {
 				expectedanyOrderAttributeCompletionItem.setDeprecated(false);
 				expectedanyOrderAttributeCompletionItem.setDetail("boolean");
 				expectedanyOrderAttributeCompletionItem.setInsertText("anyOrder=false");
-				expectedanyOrderAttributeCompletionItem.setTextEdit(new TextEdit(new Range(new Position(12, 45), new Position(12, 45)), "anyOrder=false"));
+				expectedanyOrderAttributeCompletionItem.setTextEdit(Either.forLeft(new TextEdit(new Range(new Position(12, 45), new Position(12, 45)), "anyOrder=false")));
 				expectedanyOrderAttributeCompletionItem.setKind(CompletionItemKind.Property);
 				assertThat(completions.get().getLeft()).contains(expectedanyOrderAttributeCompletionItem);
 			}
@@ -307,7 +307,7 @@ class CamelLanguageServerTest extends AbstractCamelLanguageServerTest {
 				expectedanyOrderAttributeCompletionItem.setDeprecated(false);
 				expectedanyOrderAttributeCompletionItem.setDetail("boolean");
 				expectedanyOrderAttributeCompletionItem.setInsertText("anyOrder=false");
-				expectedanyOrderAttributeCompletionItem.setTextEdit(new TextEdit(new Range(new Position(12, 50), new Position(12, 50)), "anyOrder=false"));
+				expectedanyOrderAttributeCompletionItem.setTextEdit(Either.forLeft(new TextEdit(new Range(new Position(12, 50), new Position(12, 50)), "anyOrder=false")));
 				expectedanyOrderAttributeCompletionItem.setKind(CompletionItemKind.Property);
 				assertThat(completions.get().getLeft()).contains(expectedanyOrderAttributeCompletionItem);
 			}

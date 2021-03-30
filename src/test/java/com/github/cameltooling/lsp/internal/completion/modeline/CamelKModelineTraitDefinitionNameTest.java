@@ -77,7 +77,7 @@ class CamelKModelineTraitDefinitionNameTest extends AbstractCamelLanguageServerT
 		
 		assertThat(platformTraitCompletionItem).isNotNull();
 		assertThat(platformTraitCompletionItem.get().getDocumentation().getLeft()).isEqualTo("The platform trait is a base trait that is used to assign an integration platform to an integration.In case the platform is missing, the trait is allowed to create a default platform.This feature is especially useful in contexts where there's no need to provide a custom configuration for the platform(e.g. on OpenShift the default settings work, since there's an embedded container image registry).");
-		TextEdit textEdit = platformTraitCompletionItem.get().getTextEdit();
+		TextEdit textEdit = platformTraitCompletionItem.get().getTextEdit().getLeft();
 		assertThat(textEdit.getNewText()).isEqualTo(expectedTextEditNewText);
 		Range range = textEdit.getRange();
 		assertThat(range.getStart().getCharacter()).isEqualTo(expectedTextEditStart);

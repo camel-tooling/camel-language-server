@@ -53,7 +53,7 @@ class CamelPropertiesComponentOptionNameCompletionTest extends AbstractCamelProp
 		expectedCompletionItem.setDocumentation("A parameter description");
 		expectedCompletionItem.setDeprecated(false);
 		expectedCompletionItem.setDetail(String.class.getName());
-		expectedCompletionItem.setTextEdit(new TextEdit(new Range(new Position(0, 27), new Position(0, 45)), "aComponentProperty"));
+		expectedCompletionItem.setTextEdit(Either.forLeft(new TextEdit(new Range(new Position(0, 27), new Position(0, 45)), "aComponentProperty")));
 		assertThat(completions.get().getLeft()).contains(expectedCompletionItem);
 	}
 	
@@ -65,7 +65,7 @@ class CamelPropertiesComponentOptionNameCompletionTest extends AbstractCamelProp
 		expectedCompletionItem.setDocumentation("A parameter description");
 		expectedCompletionItem.setDeprecated(false);
 		expectedCompletionItem.setDetail(String.class.getName());
-		expectedCompletionItem.setTextEdit(new TextEdit(new Range(new Position(0, 27), new Position(0, 42)), "aComponentProperty"));
+		expectedCompletionItem.setTextEdit(Either.forLeft(new TextEdit(new Range(new Position(0, 27), new Position(0, 42)), "aComponentProperty")));
 		assertThat(completions.get().getLeft()).contains(expectedCompletionItem);
 	}
 	

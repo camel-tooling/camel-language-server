@@ -37,6 +37,7 @@ import org.eclipse.lsp4j.Position;
 import org.eclipse.lsp4j.Range;
 import org.eclipse.lsp4j.TextDocumentItem;
 import org.eclipse.lsp4j.TextEdit;
+import org.eclipse.lsp4j.jsonrpc.messages.Either;
 
 import com.github.cameltooling.lsp.internal.catalog.util.CamelKafkaConnectorCatalogManager;
 import com.github.cameltooling.lsp.internal.catalog.util.StringUtils;
@@ -93,7 +94,7 @@ public class CamelPropertyKeyInstance implements ILineRangeDefineable {
 			CompletionItem completionItem = new CompletionItem("camel");
 			String insertText = indexOfFirstDot != -1 ? "camel" : CAMEL_KEY_PREFIX;
 			completionItem.setInsertText(insertText);
-			completionItem.setTextEdit(new TextEdit(new Range(new Position(getLine(), getStartPositionInLine()), new Position(getLine(), indexOfFirstDot != -1 ? getStartPositionInLine() + indexOfFirstDot : getEndPositionInLine())), insertText));
+			completionItem.setTextEdit(Either.forLeft(new TextEdit(new Range(new Position(getLine(), getStartPositionInLine()), new Position(getLine(), indexOfFirstDot != -1 ? getStartPositionInLine() + indexOfFirstDot : getEndPositionInLine())), insertText)));
 			return CompletableFuture.completedFuture(Collections.singletonList(completionItem));
 		} else if (isBetweenFirstAndSecondDotOfCamelPropertyKey(position, indexOfSecondDot)) {
 			return getTopLevelCamelCompletion(camelCatalog,camelKafkaConnectorManager, indexOfSecondDot, position.getCharacter());
@@ -141,7 +142,7 @@ public class CamelPropertyKeyInstance implements ILineRangeDefineable {
 		Position end = new Position(getLine(), indexOfSecondDot != -1 ? getStartPositionInLine() + indexOfSecondDot : getEndPositionInLine());
 		Range range = new Range(start, end);
 		TextEdit textEdit = new TextEdit(range, insertText);
-		completionItem.setTextEdit(textEdit);
+		completionItem.setTextEdit(Either.forLeft(textEdit));
 		return completionItem;
 	}
 
@@ -155,7 +156,7 @@ public class CamelPropertyKeyInstance implements ILineRangeDefineable {
 			Position start = new Position(getLine(), getStartPositionInLine() + CAMEL_KEY_PREFIX.length());
 			Position end = new Position(getLine(), indexOfSecondDot != -1 ? getStartPositionInLine() + indexOfSecondDot : getEndPositionInLine());
 			Range range = new Range(start, end);
-			completionItem.setTextEdit(new TextEdit(range, insertText));
+			completionItem.setTextEdit(Either.forLeft(new TextEdit(range, insertText)));
 			return completionItem;
 		}).collect(Collectors.toList());
 	}

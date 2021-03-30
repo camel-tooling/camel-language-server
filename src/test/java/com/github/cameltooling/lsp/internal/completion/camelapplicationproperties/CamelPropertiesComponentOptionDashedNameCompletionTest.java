@@ -55,7 +55,7 @@ class CamelPropertiesComponentOptionDashedNameCompletionTest extends AbstractCam
 		expectedCompletionItem.setDocumentation("A parameter description");
 		expectedCompletionItem.setDeprecated(false);
 		expectedCompletionItem.setDetail(String.class.getName());
-		expectedCompletionItem.setTextEdit(new TextEdit(new Range(new Position(0, 27), new Position(0, 47)), "a-component-property"));
+		expectedCompletionItem.setTextEdit(Either.forLeft(new TextEdit(new Range(new Position(0, 27), new Position(0, 47)), "a-component-property")));
 		assertThat(completions.get().getLeft()).contains(expectedCompletionItem);
 	}
 	
@@ -67,7 +67,7 @@ class CamelPropertiesComponentOptionDashedNameCompletionTest extends AbstractCam
 		expectedCompletionItem.setDocumentation("A parameter description");
 		expectedCompletionItem.setDeprecated(false);
 		expectedCompletionItem.setDetail(String.class.getName());
-		expectedCompletionItem.setTextEdit(new TextEdit(new Range(new Position(0, 27), new Position(0, 45)), "a-component-property"));
+		expectedCompletionItem.setTextEdit(Either.forLeft(new TextEdit(new Range(new Position(0, 27), new Position(0, 45)), "a-component-property")));
 		assertThat(completions.get().getLeft()).contains(expectedCompletionItem);
 	}
 	

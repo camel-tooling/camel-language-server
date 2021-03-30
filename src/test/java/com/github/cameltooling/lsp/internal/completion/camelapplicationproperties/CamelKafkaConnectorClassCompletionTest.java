@@ -45,8 +45,8 @@ class CamelKafkaConnectorClassCompletionTest extends AbstractCamelKafkaConnector
 		assertThat(completionItem.getLabel()).isEqualTo("TestSourceConnector");
 		assertThat(completionItem.getDetail()).isEqualTo(connectorClassName);
 		assertThat(completionItem.getDocumentation().getLeft()).isEqualTo("Description of TestSourceConnector");
-		assertThat(completionItem.getTextEdit().getNewText()).isEqualTo(connectorClassName);
-		assertThat(completionItem.getTextEdit().getRange()).isEqualTo(new Range(new Position(0, 16), new Position(0, 16)));
+		assertThat(completionItem.getTextEdit().getLeft().getNewText()).isEqualTo(connectorClassName);
+		assertThat(completionItem.getTextEdit().getLeft().getRange()).isEqualTo(new Range(new Position(0, 16), new Position(0, 16)));
 	}
 	
 	@Test
@@ -58,8 +58,8 @@ class CamelKafkaConnectorClassCompletionTest extends AbstractCamelKafkaConnector
 		String connectorClassName = "org.test.kafkaconnector.TestSinkConnector";
 		CompletionItem completionItem = completionItems.stream().filter(ci -> connectorClassName.equals(ci.getInsertText())).findAny().get();
 		assertThat(completionItem.getFilterText()).isEqualTo(connectorClassName);
-		assertThat(completionItem.getTextEdit().getNewText()).isEqualTo(connectorClassName);
-		assertThat(completionItem.getTextEdit().getRange()).isEqualTo(new Range(new Position(0, 16), new Position(0, 57)));
+		assertThat(completionItem.getTextEdit().getLeft().getNewText()).isEqualTo(connectorClassName);
+		assertThat(completionItem.getTextEdit().getLeft().getRange()).isEqualTo(new Range(new Position(0, 16), new Position(0, 57)));
 	}
 	
 	protected CompletableFuture<Either<List<CompletionItem>, CompletionList>> retrieveCompletion(Position position, String text) throws URISyntaxException, InterruptedException, ExecutionException {

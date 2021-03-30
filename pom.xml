@@ -44,7 +44,7 @@
 		<maven.compiler.source>1.8</maven.compiler.source>
 		<maven.compiler.target>1.8</maven.compiler.target>
 		<jacoco.version>0.8.6</jacoco.version>
-		<lsp4j.version>0.10.0</lsp4j.version>
+		<lsp4j.version>0.11.0</lsp4j.version>
 		<slf4j.version>1.7.30</slf4j.version>
 		<junit.version>5.7.1</junit.version>
 		<assertj.version>3.19.0</assertj.version>
@@ -54,7 +54,7 @@
 		<camel.quarkus.version>1.7.0</camel.quarkus.version>
 		<roaster.version>2.21.1.Final</roaster.version>
 		<awaitility.version>4.0.3</awaitility.version>
-		<tyrus.version>1.17</tyrus.version>
+		<tyrus.version>2.0.0</tyrus.version>
 		<commons-text.version>1.9</commons-text.version>
 	</properties>
 
@@ -225,7 +225,7 @@
 		</dependency>
 		<dependency>
 			<groupId>org.eclipse.lsp4j</groupId>
-			<artifactId>org.eclipse.lsp4j.websocket</artifactId>
+			<artifactId>org.eclipse.lsp4j.websocket.jakarta</artifactId>
 			<version>${lsp4j.version}</version>
 		</dependency>
 		<dependency>

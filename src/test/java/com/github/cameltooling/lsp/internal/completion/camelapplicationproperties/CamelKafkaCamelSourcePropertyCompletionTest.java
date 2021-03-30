@@ -40,7 +40,7 @@ class CamelKafkaCamelSourcePropertyCompletionTest extends AbstractCamelKafkaConn
 		List<CompletionItem> completions = getCompletionFor(languageServer, new Position(1, 13)).get().getLeft();
 		Optional<CompletionItem> optionCompletion = completions.stream().filter(completion -> "path.aMediumPathOption".equals(completion.getLabel())).findAny();
 		assertThat(optionCompletion).isPresent();
-		TextEdit textEdit = optionCompletion.get().getTextEdit();
+		TextEdit textEdit = optionCompletion.get().getTextEdit().getLeft();
 		assertThat(textEdit.getRange()).isEqualTo(new Range(new Position(1, 13), new Position(1, 13)));
 		assertThat(textEdit.getNewText()).isEqualTo("path.aMediumPathOption=a default value for medium path option");
 	}
@@ -53,7 +53,7 @@ class CamelKafkaCamelSourcePropertyCompletionTest extends AbstractCamelKafkaConn
 		List<CompletionItem> completions = getCompletionFor(languageServer, new Position(1, 13)).get().getLeft();
 		Optional<CompletionItem> optionCompletion = completions.stream().filter(completion -> "endpoint.aMediumEndpointOption".equals(completion.getLabel())).findAny();
 		assertThat(optionCompletion).isPresent();
-		TextEdit textEdit = optionCompletion.get().getTextEdit();
+		TextEdit textEdit = optionCompletion.get().getTextEdit().getLeft();
 		assertThat(textEdit.getRange()).isEqualTo(new Range(new Position(1, 13), new Position(1, 13)));
 		assertThat(textEdit.getNewText()).isEqualTo("endpoint.aMediumEndpointOption=");
 	}
@@ -67,7 +67,7 @@ class CamelKafkaCamelSourcePropertyCompletionTest extends AbstractCamelKafkaConn
 		List<CompletionItem> completions = getCompletionFor(languageServer, new Position(2, 13)).get().getLeft();
 		Optional<CompletionItem> optionCompletion = completions.stream().filter(completion -> "path.a-medium-path-option".equals(completion.getLabel())).findAny();
 		assertThat(optionCompletion).isPresent();
-		TextEdit textEdit = optionCompletion.get().getTextEdit();
+		TextEdit textEdit = optionCompletion.get().getTextEdit().getLeft();
 		assertThat(textEdit.getRange()).isEqualTo(new Range(new Position(2, 13), new Position(2, 13)));
 		assertThat(textEdit.getNewText()).isEqualTo("path.a-medium-path-option=a default value for medium path option");
 	}
@@ -79,7 +79,7 @@ class CamelKafkaCamelSourcePropertyCompletionTest extends AbstractCamelKafkaConn
 		CamelLanguageServer languageServer = initializeLanguageServer(text);
 		List<CompletionItem> completions = getCompletionFor(languageServer, new Position(1, 15)).get().getLeft();
 		assertThat(completions).hasSize(2);
-		assertThat(completions.get(0).getTextEdit().getRange()).isEqualTo(new Range(new Position(1, 13), new Position(1, 16)));
+		assertThat(completions.get(0).getTextEdit().getLeft().getRange()).isEqualTo(new Range(new Position(1, 13), new Position(1, 16)));
 	}
 	
 	@Test

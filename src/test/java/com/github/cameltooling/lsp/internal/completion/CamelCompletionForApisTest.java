@@ -158,7 +158,7 @@ public class CamelCompletionForApisTest extends AbstractCamelLanguageServerTest 
 		CompletionItem completionItemForPropertyFetcher = completions.get(0);
 		assertThat(completionItemForPropertyFetcher.getLabel()).isEqualTo("aPropertyFetcher");
 		assertThat(completionItemForPropertyFetcher.getKind()).isEqualTo(CompletionItemKind.Variable);
-		assertThat(completionItemForPropertyFetcher.getTextEdit().getRange()).isEqualTo(new Range(new Position(0, text.length()), new Position(0, text.length())));
+		assertThat(completionItemForPropertyFetcher.getTextEdit().getLeft().getRange()).isEqualTo(new Range(new Position(0, text.length()), new Position(0, text.length())));
 	}
 	
 	@Test
@@ -201,9 +201,9 @@ public class CamelCompletionForApisTest extends AbstractCamelLanguageServerTest 
 		CompletionItem accountCompletionItem = completions.get(0);
 		assertThat(accountCompletionItem.getLabel()).isEqualTo("account");
 		assertThat(accountCompletionItem.getInsertText()).isEqualTo("account");
-		assertThat(accountCompletionItem.getTextEdit().getNewText()).isEqualTo("account");
+		assertThat(accountCompletionItem.getTextEdit().getLeft().getNewText()).isEqualTo("account");
 		Range expectedRange = new Range(new Position(0,  text.length() -1), new Position(0, text.length()));
-		assertThat(accountCompletionItem.getTextEdit().getRange()).isEqualTo(expectedRange);
+		assertThat(accountCompletionItem.getTextEdit().getLeft().getRange()).isEqualTo(expectedRange);
 	}
 	
 	@Test
@@ -215,9 +215,9 @@ public class CamelCompletionForApisTest extends AbstractCamelLanguageServerTest 
 		CompletionItem accountCompletionItem = completions.get(0);
 		assertThat(accountCompletionItem.getLabel()).isEqualTo("fetch");
 		assertThat(accountCompletionItem.getInsertText()).isEqualTo("fetch");
-		assertThat(accountCompletionItem.getTextEdit().getNewText()).isEqualTo("fetch");
+		assertThat(accountCompletionItem.getTextEdit().getLeft().getNewText()).isEqualTo("fetch");
 		Range expectedRange = new Range(new Position(0,  text.length() -1), new Position(0, text.length()));
-		assertThat(accountCompletionItem.getTextEdit().getRange()).isEqualTo(expectedRange);
+		assertThat(accountCompletionItem.getTextEdit().getLeft().getRange()).isEqualTo(expectedRange);
 	}
 	
 	@Test

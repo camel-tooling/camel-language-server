@@ -83,7 +83,7 @@ class CamelExtraComponentTest extends AbstractCamelLanguageServerTest {
 		CompletionItem expectedAhcCompletioncompletionItem = new CompletionItem(syntax);
 		expectedAhcCompletioncompletionItem.setDocumentation(description);
 		expectedAhcCompletioncompletionItem.setDeprecated(false);
-		expectedAhcCompletioncompletionItem.setTextEdit(new TextEdit(new Range(new Position(lineStart, characterStart), new Position(lineEnd, characterEnd)), syntax));
+		expectedAhcCompletioncompletionItem.setTextEdit(Either.forLeft(new TextEdit(new Range(new Position(lineStart, characterStart), new Position(lineEnd, characterEnd)), syntax)));
 		return expectedAhcCompletioncompletionItem;
 	}
 	

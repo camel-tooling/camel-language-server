@@ -69,7 +69,7 @@ class CamelPropertiesComponentCompletionTest extends AbstractCamelLanguageServer
 		CompletionItem expectedCompletionItem = new CompletionItem("acomponent");
 		expectedCompletionItem.setDocumentation("Description of my component.");
 		expectedCompletionItem.setDeprecated(false);
-		expectedCompletionItem.setTextEdit(new TextEdit(new Range(new Position(0, 16), new Position(0, 21)), "acomponent"));
+		expectedCompletionItem.setTextEdit(Either.forLeft(new TextEdit(new Range(new Position(0, 16), new Position(0, 21)), "acomponent")));
 		return expectedCompletionItem;
 	}
 	
