@@ -39,7 +39,7 @@ class CamelKafkaConnectorBasicPropertiesCompletionTest extends AbstractCamelKafk
 		List<CompletionItem> completions = getCompletionFor(languageServer, new Position(1, 11)).get().getLeft();
 		Optional<CompletionItem> optionCompletion = completions.stream().filter(completion -> "camel.sink.marshal".equals(completion.getLabel())).findAny();
 		assertThat(optionCompletion).isPresent();
-		assertThat(optionCompletion.get().getTextEdit().getRange()).isEqualTo(new Range(new Position(1, 0), new Position(1, 11)));
+		assertThat(optionCompletion.get().getTextEdit().getLeft().getRange()).isEqualTo(new Range(new Position(1, 0), new Position(1, 11)));
 	}
 	
 	@Test
@@ -50,8 +50,8 @@ class CamelKafkaConnectorBasicPropertiesCompletionTest extends AbstractCamelKafk
 		List<CompletionItem> completions = getCompletionFor(languageServer, new Position(1, 6)).get().getLeft();
 		Optional<CompletionItem> optionCompletion = completions.stream().filter(completion -> "camel.idempotency.enabled".equals(completion.getLabel())).findAny();
 		assertThat(optionCompletion).isPresent();
-		assertThat(optionCompletion.get().getTextEdit().getRange()).isEqualTo(new Range(new Position(1, 0), new Position(1, 6)));
-		assertThat(optionCompletion.get().getTextEdit().getNewText()).isEqualTo("camel.idempotency.enabled=false");
+		assertThat(optionCompletion.get().getTextEdit().getLeft().getRange()).isEqualTo(new Range(new Position(1, 0), new Position(1, 6)));
+		assertThat(optionCompletion.get().getTextEdit().getLeft().getNewText()).isEqualTo("camel.idempotency.enabled=false");
 	}
 	
 	@Test
@@ -62,8 +62,8 @@ class CamelKafkaConnectorBasicPropertiesCompletionTest extends AbstractCamelKafk
 		List<CompletionItem> completions = getCompletionFor(languageServer, new Position(1, 6)).get().getLeft();
 		Optional<CompletionItem> optionCompletion = completions.stream().filter(completion -> "camel.idempotency.expression.header".equals(completion.getLabel())).findAny();
 		assertThat(optionCompletion).isPresent();
-		assertThat(optionCompletion.get().getTextEdit().getRange()).isEqualTo(new Range(new Position(1, 0), new Position(1, 6)));
-		assertThat(optionCompletion.get().getTextEdit().getNewText()).isEqualTo("camel.idempotency.expression.header=");
+		assertThat(optionCompletion.get().getTextEdit().getLeft().getRange()).isEqualTo(new Range(new Position(1, 0), new Position(1, 6)));
+		assertThat(optionCompletion.get().getTextEdit().getLeft().getNewText()).isEqualTo("camel.idempotency.expression.header=");
 	}
 	
 	@Test
@@ -74,6 +74,6 @@ class CamelKafkaConnectorBasicPropertiesCompletionTest extends AbstractCamelKafk
 		List<CompletionItem> completions = getCompletionFor(languageServer, new Position(1, 9)).get().getLeft();
 		Optional<CompletionItem> optionCompletion = completions.stream().filter(completion -> "camel.idempotency.enabled".equals(completion.getLabel())).findAny();
 		assertThat(optionCompletion).isPresent();
-		assertThat(optionCompletion.get().getTextEdit().getRange()).isEqualTo(new Range(new Position(1, 0), new Position(1, 9)));
+		assertThat(optionCompletion.get().getTextEdit().getLeft().getRange()).isEqualTo(new Range(new Position(1, 0), new Position(1, 9)));
 	}
 }

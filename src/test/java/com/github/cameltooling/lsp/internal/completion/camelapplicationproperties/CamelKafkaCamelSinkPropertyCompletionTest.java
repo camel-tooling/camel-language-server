@@ -39,7 +39,7 @@ class CamelKafkaCamelSinkPropertyCompletionTest extends AbstractCamelKafkaConnec
 		List<CompletionItem> completions = getCompletionFor(languageServer, new Position(1, 11)).get().getLeft();
 		Optional<CompletionItem> optionCompletion = completions.stream().filter(completion -> "path.aMediumPathOption".equals(completion.getLabel())).findAny();
 		assertThat(optionCompletion).isPresent();
-		assertThat(optionCompletion.get().getTextEdit().getRange()).isEqualTo(new Range(new Position(1, 11), new Position(1, 11)));
+		assertThat(optionCompletion.get().getTextEdit().getLeft().getRange()).isEqualTo(new Range(new Position(1, 11), new Position(1, 11)));
 	}
 	
 	@Test
@@ -51,7 +51,7 @@ class CamelKafkaCamelSinkPropertyCompletionTest extends AbstractCamelKafkaConnec
 		List<CompletionItem> completions = getCompletionFor(languageServer, new Position(2, 11)).get().getLeft();
 		Optional<CompletionItem> optionCompletion = completions.stream().filter(completion -> "path.a-medium-path-option".equals(completion.getLabel())).findAny();
 		assertThat(optionCompletion).isPresent();
-		assertThat(optionCompletion.get().getTextEdit().getRange()).isEqualTo(new Range(new Position(2, 11), new Position(2, 11)));
+		assertThat(optionCompletion.get().getTextEdit().getLeft().getRange()).isEqualTo(new Range(new Position(2, 11), new Position(2, 11)));
 	}
 	
 	@Test
@@ -61,7 +61,7 @@ class CamelKafkaCamelSinkPropertyCompletionTest extends AbstractCamelKafkaConnec
 		CamelLanguageServer languageServer = initializeLanguageServer(text);
 		List<CompletionItem> completions = getCompletionFor(languageServer, new Position(1, 13)).get().getLeft();
 		assertThat(completions).hasSize(2);
-		assertThat(completions.get(0).getTextEdit().getRange()).isEqualTo(new Range(new Position(1, 11), new Position(1, 14)));
+		assertThat(completions.get(0).getTextEdit().getLeft().getRange()).isEqualTo(new Range(new Position(1, 11), new Position(1, 14)));
 	}
 	
 	@Test

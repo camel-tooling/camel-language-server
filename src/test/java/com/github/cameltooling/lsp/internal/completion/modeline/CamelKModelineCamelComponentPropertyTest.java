@@ -59,7 +59,7 @@ class CamelKModelineCamelComponentPropertyTest extends AbstractCamelLanguageServ
 		assertThat(completionItems).hasSizeGreaterThan(50);
 		CompletionItem timerCompletionItem = completionItems.stream().filter(completionItem -> "timer".equals(completionItem.getLabel())).findFirst().get();
 		assertThat(timerCompletionItem.getDocumentation().getLeft()).isEqualTo("Generate messages in specified intervals using java.util.Timer.");
-		TextEdit textEdit = timerCompletionItem.getTextEdit();
+		TextEdit textEdit = timerCompletionItem.getTextEdit().getLeft();
 		assertThat(textEdit).isNotNull();
 		assertThat(textEdit.getNewText()).isEqualTo("timer");
 		assertThat(textEdit.getRange().getStart().getCharacter()).isEqualTo(37);
@@ -75,11 +75,11 @@ class CamelKModelineCamelComponentPropertyTest extends AbstractCamelLanguageServ
 		List<CompletionItem> completionItems = completions.get().getLeft();
 		CompletionItem faultToleranceCompletionItem = completionItems.stream().filter(completionItem -> "faulttolerance".equals(completionItem.getLabel())).findFirst().get();
 		assertThat(faultToleranceCompletionItem).isNotNull();
-		assertThat(faultToleranceCompletionItem.getTextEdit().getNewText()).isEqualTo("faulttolerance.");
+		assertThat(faultToleranceCompletionItem.getTextEdit().getLeft().getNewText()).isEqualTo("faulttolerance.");
 		
 		CompletionItem componentCompletionItem = completionItems.stream().filter(completionItem -> "component".equals(completionItem.getLabel())).findFirst().get();
 		assertThat(componentCompletionItem).isNotNull();
-		assertThat(componentCompletionItem.getTextEdit().getNewText()).isEqualTo("component.");
+		assertThat(componentCompletionItem.getTextEdit().getLeft().getNewText()).isEqualTo("component.");
 	}
 	
 	@Test
@@ -100,15 +100,15 @@ class CamelKModelineCamelComponentPropertyTest extends AbstractCamelLanguageServ
 		List<CompletionItem> completionItems = completions.get().getLeft();
 		CompletionItem faultToleranceCompletionItem = completionItems.stream().filter(completionItem -> "faulttolerance".equals(completionItem.getLabel())).findFirst().get();
 		assertThat(faultToleranceCompletionItem).isNotNull();
-		TextEdit faulToleranceTextEdit = faultToleranceCompletionItem.getTextEdit();
+		TextEdit faulToleranceTextEdit = faultToleranceCompletionItem.getTextEdit().getLeft();
 		assertThat(faulToleranceTextEdit.getNewText()).isEqualTo("faulttolerance" + (withFinalDot? "." : ""));
 		assertThat(faulToleranceTextEdit.getRange().getStart().getCharacter()).isEqualTo(27);
 		assertThat(faulToleranceTextEdit.getRange().getEnd().getCharacter()).isEqualTo(27 + "toreplace".length());
 		
 		CompletionItem componentCompletionItem = completionItems.stream().filter(completionItem -> "component".equals(completionItem.getLabel())).findFirst().get();
 		assertThat(componentCompletionItem).isNotNull();
-		assertThat(componentCompletionItem.getTextEdit().getNewText()).isEqualTo("component" + (withFinalDot? "." : ""));
-		TextEdit componentTextEdit = componentCompletionItem.getTextEdit();
+		assertThat(componentCompletionItem.getTextEdit().getLeft().getNewText()).isEqualTo("component" + (withFinalDot? "." : ""));
+		TextEdit componentTextEdit = componentCompletionItem.getTextEdit().getLeft();
 		assertThat(componentTextEdit.getNewText()).isEqualTo("component" + (withFinalDot? "." : ""));
 		assertThat(componentTextEdit.getRange().getStart().getCharacter()).isEqualTo(27);
 		assertThat(componentTextEdit.getRange().getEnd().getCharacter()).isEqualTo(27 + "toreplace".length());
@@ -147,7 +147,7 @@ class CamelKModelineCamelComponentPropertyTest extends AbstractCamelLanguageServ
 		List<CompletionItem> completionItems = completions.get().getLeft();
 		Optional<CompletionItem> timerCompletionItem = completionItems.stream().filter(completionItem -> "camel".equals(completionItem.getLabel())).findFirst();
 		assertThat(timerCompletionItem).isNotEmpty();
-		assertThat(timerCompletionItem.get().getTextEdit().getNewText()).isEqualTo("camel.");
+		assertThat(timerCompletionItem.get().getTextEdit().getLeft().getNewText()).isEqualTo("camel.");
 	}
 	
 	@Test
@@ -159,7 +159,7 @@ class CamelKModelineCamelComponentPropertyTest extends AbstractCamelLanguageServ
 		List<CompletionItem> completionItems = completions.get().getLeft();
 		Optional<CompletionItem> timerCompletionItem = completionItems.stream().filter(completionItem -> "camel".equals(completionItem.getLabel())).findFirst();
 		assertThat(timerCompletionItem).isNotEmpty();
-		TextEdit timerTextEdit = timerCompletionItem.get().getTextEdit();
+		TextEdit timerTextEdit = timerCompletionItem.get().getTextEdit().getLeft();
 		assertThat(timerTextEdit).isNotNull();
 		assertThat(timerTextEdit.getNewText()).isEqualTo("camel");
 		Range timerTextEditRange = timerTextEdit.getRange();

@@ -57,7 +57,7 @@ class CamelKModelineCamelPropertyFileTest extends AbstractCamelLanguageServerTes
 
 	private CompletionItem createExpectedCompletionItem(String text) {
 		CompletionItem siblingCompletionItem = new CompletionItem(text);
-		siblingCompletionItem.setTextEdit(new TextEdit(new Range(new Position(0, 25), new Position(0, 25)), text));
+		siblingCompletionItem.setTextEdit(Either.forLeft(new TextEdit(new Range(new Position(0, 25), new Position(0, 25)), text)));
 		return siblingCompletionItem;
 	}
 

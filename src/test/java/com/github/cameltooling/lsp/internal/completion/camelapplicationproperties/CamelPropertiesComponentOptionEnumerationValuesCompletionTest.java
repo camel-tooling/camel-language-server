@@ -50,7 +50,7 @@ class CamelPropertiesComponentOptionEnumerationValuesCompletionTest extends Abst
 		CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = retrieveCompletion(new Position(0, 53), "camel.component.acomponent.errorHandlerLoggingLevel=T");
 		
 		CompletionItem expectedCompletionItem = new CompletionItem("TRACE");
-		expectedCompletionItem.setTextEdit(new TextEdit(new Range(new Position(0, 52), new Position(0, 53)), "TRACE"));
+		expectedCompletionItem.setTextEdit(Either.forLeft(new TextEdit(new Range(new Position(0, 52), new Position(0, 53)), "TRACE")));
 		
 		assertThat(completions.get().getLeft()).containsOnly(expectedCompletionItem);
 	}

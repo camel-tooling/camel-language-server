@@ -27,6 +27,7 @@ import org.eclipse.lsp4j.Position;
 import org.eclipse.lsp4j.Range;
 import org.eclipse.lsp4j.TextDocumentItem;
 import org.eclipse.lsp4j.TextEdit;
+import org.eclipse.lsp4j.jsonrpc.messages.Either;
 import org.w3c.dom.Node;
 
 import com.github.cameltooling.lsp.internal.instancemodel.CamelURIInstance;
@@ -53,9 +54,9 @@ public class CompletionResolverUtils {
 			
 			// replace instead of insert
 			if(item.getInsertText() != null) {
-				item.setTextEdit(new TextEdit(range, item.getInsertText()));
+				item.setTextEdit(Either.forLeft(new TextEdit(range, item.getInsertText())));
 			} else {
-				item.setTextEdit(new TextEdit(range, item.getLabel()));
+				item.setTextEdit(Either.forLeft(new TextEdit(range, item.getLabel())));
 			}
 		}
 	}

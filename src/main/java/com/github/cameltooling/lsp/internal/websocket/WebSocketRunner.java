@@ -16,7 +16,7 @@
  */
 package com.github.cameltooling.lsp.internal.websocket;
 
-import javax.websocket.DeploymentException;
+import jakarta.websocket.DeploymentException;
 
 import org.glassfish.tyrus.server.Server;
 import org.slf4j.Logger;

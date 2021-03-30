@@ -50,7 +50,7 @@ class CamelPropertiesComponentOptionBooleanValuesCompletionTest extends Abstract
 		CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = retrieveCompletion(new Position(0, 45));
 		
 		CompletionItem expectedCompletionItem = new CompletionItem("true");
-		expectedCompletionItem.setTextEdit(new TextEdit(new Range(new Position(0, 44), new Position(0, 45)), "true"));
+		expectedCompletionItem.setTextEdit(Either.forLeft(new TextEdit(new Range(new Position(0, 44), new Position(0, 45)), "true")));
 		assertThat(completions.get().getLeft()).containsOnly(expectedCompletionItem);
 	}
 		

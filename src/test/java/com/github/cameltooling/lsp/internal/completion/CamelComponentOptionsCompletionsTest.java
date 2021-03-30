@@ -46,7 +46,7 @@ class CamelComponentOptionsCompletionsTest extends AbstractCamelLanguageServerTe
 	void testProvideCamelOptionsForConsumerOnly() throws Exception {
     	CompletionItem completionItem = new CompletionItem("bridgeErrorHandler");
     	completionItem.setInsertText("bridgeErrorHandler=false");
-    	completionItem.setTextEdit(new TextEdit(new Range(new Position(0, 27), new Position(0, 27)), "bridgeErrorHandler=false"));
+    	completionItem.setTextEdit(Either.forLeft(new TextEdit(new Range(new Position(0, 27), new Position(0, 27)), "bridgeErrorHandler=false")));
     	completionItem.setDocumentation("Allows for bridging the consumer to the Camel routing Error Handler, which mean any exceptions occurred while the consumer is trying to pickup incoming messages, or the likes, will now be processed as a message and handled by the routing Error Handler. By default the consumer will use the org.apache.camel.spi.ExceptionHandler to deal with exceptions, that will be logged at WARN or ERROR level and ignored.");
     	completionItem.setDetail("boolean");
     	completionItem.setDeprecated(false);
@@ -58,7 +58,7 @@ class CamelComponentOptionsCompletionsTest extends AbstractCamelLanguageServerTe
 	void testProvideCamelOptionsForConsumerOnlyForJava() throws Exception {
     	CompletionItem completionItem = new CompletionItem("bridgeErrorHandler");
     	completionItem.setInsertText("bridgeErrorHandler=false");
-    	completionItem.setTextEdit(new TextEdit(new Range(new Position(0, 22), new Position(0, 22)), "bridgeErrorHandler=false"));
+    	completionItem.setTextEdit(Either.forLeft(new TextEdit(new Range(new Position(0, 22), new Position(0, 22)), "bridgeErrorHandler=false")));
     	completionItem.setDocumentation("Allows for bridging the consumer to the Camel routing Error Handler, which mean any exceptions occurred while the consumer is trying to pickup incoming messages, or the likes, will now be processed as a message and handled by the routing Error Handler. By default the consumer will use the org.apache.camel.spi.ExceptionHandler to deal with exceptions, that will be logged at WARN or ERROR level and ignored.");
     	completionItem.setDetail("boolean");
     	completionItem.setDeprecated(false);
@@ -70,7 +70,7 @@ class CamelComponentOptionsCompletionsTest extends AbstractCamelLanguageServerTe
 	void testProvideCamelOptionsForConsumerOrProducer() throws Exception {
     	CompletionItem completionItem = new CompletionItem("clientConfigOptions");
     	completionItem.setInsertText("clientConfigOptions=");
-    	completionItem.setTextEdit(new TextEdit(new Range(new Position(0, 23), new Position(0, 23)), "clientConfigOptions="));
+    	completionItem.setTextEdit(Either.forLeft(new TextEdit(new Range(new Position(0, 23), new Position(0, 23)), "clientConfigOptions=")));
     	completionItem.setDocumentation("To configure the AsyncHttpClientConfig using the key/values from the Map.");
     	completionItem.setDetail("java.util.Map<java.lang.String, java.lang.Object>");
     	completionItem.setDeprecated(false);
@@ -98,7 +98,7 @@ class CamelComponentOptionsCompletionsTest extends AbstractCamelLanguageServerTe
 	private CompletionItem getBridgeEndpointExpectedCompletionItem(int startCharacter, int endCharacter) {
 		CompletionItem completionItem = new CompletionItem("bridgeEndpoint");
 		completionItem.setInsertText("bridgeEndpoint=false");
-    	completionItem.setTextEdit(new TextEdit(new Range(new Position(0, startCharacter), new Position(0, endCharacter)), "bridgeEndpoint=false"));
+    	completionItem.setTextEdit(Either.forLeft(new TextEdit(new Range(new Position(0, startCharacter), new Position(0, endCharacter)), "bridgeEndpoint=false")));
     	completionItem.setDocumentation("If the option is true, then the Exchange.HTTP_URI header is ignored, and use the endpoint's URI for request. You may also set the throwExceptionOnFailure to be false to let the AhcProducer send all the fault response back.");
     	completionItem.setDetail("boolean");
     	completionItem.setKind(CompletionItemKind.Property);

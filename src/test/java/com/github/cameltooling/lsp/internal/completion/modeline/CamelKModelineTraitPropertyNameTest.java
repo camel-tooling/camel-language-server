@@ -46,7 +46,7 @@ class CamelKModelineTraitPropertyNameTest extends AbstractCamelLanguageServerTes
 		CompletionItem completionItem = findCompletionItemWithLabel(completions, "native");
 		assertThat(completionItem.getDocumentation().getLeft()).isEqualTo("The Quarkus runtime type (reserved for future use)");
 		assertThat(completionItem.getInsertText()).isEqualTo("native=false");
-		TextEdit textEdit = completionItem.getTextEdit();
+		TextEdit textEdit = completionItem.getTextEdit().getLeft();
 		assertThat(textEdit.getNewText()).isEqualTo("native=false");
 		assertThat(textEdit.getRange().getStart().getCharacter()).isEqualTo(26);
 		assertThat(textEdit.getRange().getEnd().getCharacter()).isEqualTo(26);
@@ -72,7 +72,7 @@ class CamelKModelineTraitPropertyNameTest extends AbstractCamelLanguageServerTes
 		
 		List<CompletionItem> completionItems = completions.get().getLeft();
 		assertThat(completionItems).hasSize(1);
-		TextEdit textEdit = completionItems.get(0).getTextEdit();
+		TextEdit textEdit = completionItems.get(0).getTextEdit().getLeft();
 		assertThat(textEdit.getNewText()).isEqualTo("native=false");
 		assertThat(textEdit.getRange().getStart().getCharacter()).isEqualTo(26);
 		assertThat(textEdit.getRange().getEnd().getCharacter()).isEqualTo(28);
@@ -143,7 +143,7 @@ class CamelKModelineTraitPropertyNameTest extends AbstractCamelLanguageServerTes
 		CompletionItem completionItem = findCompletionItemWithLabel(completions, "native");
 		assertThat(completionItem.getDocumentation().getLeft()).isEqualTo("The Quarkus runtime type (reserved for future use)");
 		assertThat(completionItem.getInsertText()).isEqualTo("native");
-		TextEdit textEdit = completionItem.getTextEdit();
+		TextEdit textEdit = completionItem.getTextEdit().getLeft();
 		assertThat(textEdit.getNewText()).isEqualTo("native");
 		assertThat(textEdit.getRange().getStart().getCharacter()).isEqualTo(26);
 		assertThat(textEdit.getRange().getEnd().getCharacter()).isEqualTo(33);

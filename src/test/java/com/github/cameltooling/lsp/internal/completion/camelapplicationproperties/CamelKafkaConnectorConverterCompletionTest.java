@@ -50,7 +50,7 @@ class CamelKafkaConnectorConverterCompletionTest extends AbstractCamelKafkaConne
 		CamelLanguageServer languageServer = initializeLanguageServer(text);
 		List<CompletionItem> completions = getCompletionFor(languageServer, new Position(1, 22)).get().getLeft();
 		assertThat(completions).hasSize(1);
-		assertThat(completions.get(0).getTextEdit().getRange()).isEqualTo(new Range(new Position(1, 16), new Position(1, 24)));
+		assertThat(completions.get(0).getTextEdit().getLeft().getRange()).isEqualTo(new Range(new Position(1, 16), new Position(1, 24)));
 	}
 
 	@Test

@@ -47,7 +47,7 @@ class CamelKModelineDependencyCompletionTest extends AbstractCamelLanguageServer
 		assertThat(completionItems.stream().filter(isNotMvnOrJitPack()).map(completionitem -> completionitem.getLabel())).allMatch(compleItemLabel -> compleItemLabel.startsWith("camel-"));
 		CompletionItem timerCompletionItem = completionItems.stream().filter(completionItem -> "camel-timer".equals(completionItem.getLabel())).findFirst().get();
 		assertThat(timerCompletionItem.getDocumentation().getLeft()).isEqualTo("Generate messages in specified intervals using java.util.Timer.");
-		assertThat(timerCompletionItem.getTextEdit()).isNotNull();
+		assertThat(timerCompletionItem.getTextEdit().getLeft()).isNotNull();
 		
 	}
 
@@ -66,7 +66,7 @@ class CamelKModelineDependencyCompletionTest extends AbstractCamelLanguageServer
 		assertThat(completionItems.stream().filter(isNotMvnOrJitPack()).map(completionitem -> completionitem.getLabel())).allMatch(compleItemLabel -> compleItemLabel.startsWith("camel-"));
 		CompletionItem timerCompletionItem = completionItems.stream().filter(completionItem -> "camel-timer".equals(completionItem.getLabel())).findFirst().get();
 		assertThat(timerCompletionItem.getDocumentation().getLeft()).isEqualTo("Generate messages in specified intervals using java.util.Timer.");
-		assertThat(timerCompletionItem.getTextEdit().getRange().getStart().getLine()).isEqualTo(1);
+		assertThat(timerCompletionItem.getTextEdit().getLeft().getRange().getStart().getLine()).isEqualTo(1);
 	}
 	
 	@Test
@@ -80,7 +80,7 @@ class CamelKModelineDependencyCompletionTest extends AbstractCamelLanguageServer
 		assertThat(completionItems.stream().filter(isNotMvnOrJitPack()).map(completionitem -> completionitem.getLabel())).allMatch(compleItemLabel -> compleItemLabel.startsWith("camel-"));
 		CompletionItem timerCompletionItem = completionItems.stream().filter(completionItem -> "camel-timer".equals(completionItem.getLabel())).findFirst().get();
 		assertThat(timerCompletionItem.getDocumentation().getLeft()).isEqualTo("Generate messages in specified intervals using java.util.Timer.");
-		TextEdit camelTimerTextEdit = timerCompletionItem.getTextEdit();
+		TextEdit camelTimerTextEdit = timerCompletionItem.getTextEdit().getLeft();
 		assertThat(camelTimerTextEdit).isNotNull();
 		assertThat(camelTimerTextEdit.getNewText()).isEqualTo("camel-timer");
 		assertThat(camelTimerTextEdit.getRange().getStart().getCharacter()).isEqualTo(23);
@@ -98,7 +98,7 @@ class CamelKModelineDependencyCompletionTest extends AbstractCamelLanguageServer
 		assertThat(completionItems.stream().filter(isNotMvnOrJitPack()).map(completionitem -> completionitem.getLabel())).allMatch(compleItemLabel -> compleItemLabel.startsWith("camel-"));
 		CompletionItem timerCompletionItem = completionItems.stream().filter(completionItem -> "camel-timer".equals(completionItem.getLabel())).findFirst().get();
 		assertThat(timerCompletionItem.getDocumentation().getLeft()).isEqualTo("Generate messages in specified intervals using java.util.Timer.");
-		TextEdit camelTimerTextEdit = timerCompletionItem.getTextEdit();
+		TextEdit camelTimerTextEdit = timerCompletionItem.getTextEdit().getLeft();
 		assertThat(camelTimerTextEdit).isNotNull();
 		assertThat(camelTimerTextEdit.getNewText()).isEqualTo("camel-timer");
 		assertThat(camelTimerTextEdit.getRange().getStart().getCharacter()).isEqualTo(23);
@@ -116,8 +116,8 @@ class CamelKModelineDependencyCompletionTest extends AbstractCamelLanguageServer
 		CompletionItem timerCompletionItem = completionItems.stream().filter(completionItem -> completionItem.getLabel().startsWith("mvn")).findFirst().get();
 		assertThat(timerCompletionItem.getInsertTextFormat()).isEqualTo(InsertTextFormat.Snippet);
 		assertThat(timerCompletionItem.getInsertText()).isEqualTo("mvn:${1:groupId}/${2:artifactId}:${3:version}");
-		assertThat(timerCompletionItem.getTextEdit().getRange().getStart().getCharacter()).isEqualTo(23);
-		assertThat(timerCompletionItem.getTextEdit().getRange().getEnd().getCharacter()).isEqualTo(23 + "test".length());
+		assertThat(timerCompletionItem.getTextEdit().getLeft().getRange().getStart().getCharacter()).isEqualTo(23);
+		assertThat(timerCompletionItem.getTextEdit().getLeft().getRange().getEnd().getCharacter()).isEqualTo(23 + "test".length());
 	}
 	
 	@Test
@@ -131,7 +131,7 @@ class CamelKModelineDependencyCompletionTest extends AbstractCamelLanguageServer
 		CompletionItem timerCompletionItem = completionItems.stream().filter(completionItem -> completionItem.getLabel().startsWith("jitpack")).findFirst().get();
 		assertThat(timerCompletionItem.getInsertTextFormat()).isEqualTo(InsertTextFormat.Snippet);
 		assertThat(timerCompletionItem.getInsertText()).isEqualTo("jitpack:${1|com.github,com.gitlab,com.bitbucket,com.gitee,com.azure|}.${2:username}:${3:repo}:${4:master-SNAPSHOT}");
-		assertThat(timerCompletionItem.getTextEdit().getRange().getStart().getCharacter()).isEqualTo(23);
-		assertThat(timerCompletionItem.getTextEdit().getRange().getEnd().getCharacter()).isEqualTo(23 + "test".length());
+		assertThat(timerCompletionItem.getTextEdit().getLeft().getRange().getStart().getCharacter()).isEqualTo(23);
+		assertThat(timerCompletionItem.getTextEdit().getLeft().getRange().getEnd().getCharacter()).isEqualTo(23 + "test".length());
 	}
 }

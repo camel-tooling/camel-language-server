@@ -39,7 +39,7 @@ class CompleteIdOnDirectEndpointsTest extends AbstractCamelLanguageServerTest {
 		List<CompletionItem> items = completions.get().getLeft();
 		assertThat(items).hasSize(2);
 		for (CompletionItem completionItem : items) {
-			TextEdit textEdit = completionItem.getTextEdit();
+			TextEdit textEdit = completionItem.getTextEdit().getLeft();
 			assertThat(textEdit.getNewText()).isIn("direct:name", "direct:processing");
 		}
 	}
@@ -52,7 +52,7 @@ class CompleteIdOnDirectEndpointsTest extends AbstractCamelLanguageServerTest {
 		List<CompletionItem> items = completions.get().getLeft();
 		assertThat(items).hasSize(2);
 		for (CompletionItem completionItem : items) {
-			TextEdit textEdit = completionItem.getTextEdit();
+			TextEdit textEdit = completionItem.getTextEdit().getLeft();
 			assertThat(textEdit.getNewText()).isIn("direct-vm:name", "direct-vm:processing");
 		}
 	}
@@ -65,7 +65,7 @@ class CompleteIdOnDirectEndpointsTest extends AbstractCamelLanguageServerTest {
 		List<CompletionItem> items = completions.get().getLeft();
 		assertThat(items).hasSize(2);
 		for (CompletionItem completionItem : items) {
-			TextEdit textEdit = completionItem.getTextEdit();
+			TextEdit textEdit = completionItem.getTextEdit().getLeft();
 			assertThat(textEdit.getNewText()).isIn("vm:name", "vm:processing");
 		}
 	}
@@ -78,7 +78,7 @@ class CompleteIdOnDirectEndpointsTest extends AbstractCamelLanguageServerTest {
 		List<CompletionItem> items = completions.get().getLeft();
 		assertThat(items).hasSize(2);
 		for (CompletionItem completionItem : items) {
-			TextEdit textEdit = completionItem.getTextEdit();
+			TextEdit textEdit = completionItem.getTextEdit().getLeft();
 			assertThat(textEdit.getNewText()).isIn("seda:name", "seda:processing");
 		}
 	}

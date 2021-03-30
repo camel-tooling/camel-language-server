@@ -54,7 +54,7 @@ class CamelComponentOptionEnumerationValuesTest extends AbstractCamelLanguageSer
 
 	private CompletionItem createExpectedCompletionItem(String enumOption) {
 		CompletionItem completionItem = new CompletionItem(enumOption);
-		completionItem.setTextEdit(new TextEdit(new Range(new Position(0, 43), new Position(0, 43)), enumOption));
+		completionItem.setTextEdit(Either.forLeft(new TextEdit(new Range(new Position(0, 43), new Position(0, 43)), enumOption)));
 		return completionItem;
 	}
 

@@ -57,7 +57,7 @@ class CamelKModelineCamelOpenAPITest extends AbstractCamelLanguageServerTest {
 
 	private CompletionItem createExpectedCompletionItem(String text) {
 		CompletionItem siblingCompletionItem = new CompletionItem(text);
-		siblingCompletionItem.setTextEdit(new TextEdit(new Range(new Position(0, 20), new Position(0, 20)), text));
+		siblingCompletionItem.setTextEdit(Either.forLeft(new TextEdit(new Range(new Position(0, 20), new Position(0, 20)), text)));
 		return siblingCompletionItem;
 	}
 

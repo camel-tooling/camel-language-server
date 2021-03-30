@@ -90,7 +90,7 @@ public abstract class AbstractCamelLanguageServerTest {
 		CompletionItem expectedAhcCompletioncompletionItem = new CompletionItem("ahc:httpUri");
 		expectedAhcCompletioncompletionItem.setDocumentation(AHC_DOCUMENTATION);
 		expectedAhcCompletioncompletionItem.setDeprecated(false);
-		expectedAhcCompletioncompletionItem.setTextEdit(new TextEdit(new Range(new Position(lineStart, characterStart), new Position(lineEnd, characterEnd)), "ahc:httpUri"));
+		expectedAhcCompletioncompletionItem.setTextEdit(Either.forLeft(new TextEdit(new Range(new Position(lineStart, characterStart), new Position(lineEnd, characterEnd)), "ahc:httpUri")));
 		return expectedAhcCompletioncompletionItem;
 	}
 	
@@ -250,7 +250,7 @@ public abstract class AbstractCamelLanguageServerTest {
 	}
 	
 	protected boolean hasTextEdit(CompletionItem item) {
-		return item != null && item.getTextEdit() != null;
+		return item != null && item.getTextEdit().getLeft() != null;
 	}
 
 	protected Map<Object, Object> createMapSettingsWithComponent(String component) {

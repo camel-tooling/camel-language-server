@@ -42,7 +42,7 @@ class CamelCompletionInsertAndReplaceTest extends AbstractCamelLanguageServerTes
 		List<CompletionItem> items = completions.get().getLeft();
 		assertThat(items).hasSize(2);
 		for (CompletionItem completionItem : items) {
-			TextEdit textEdit = completionItem.getTextEdit();
+			TextEdit textEdit = completionItem.getTextEdit().getLeft();
 			Range range = textEdit.getRange();
 			assertThat(range.getStart().getLine()).isZero();
 			assertThat(range.getStart().getCharacter()).isEqualTo(11 /*start of URI */);
@@ -59,7 +59,7 @@ class CamelCompletionInsertAndReplaceTest extends AbstractCamelLanguageServerTes
 		List<CompletionItem> items = completions.get().getLeft();
 		assertThat(items).hasSize(13);
 		for (CompletionItem completionItem : items) {
-			TextEdit textEdit = completionItem.getTextEdit();
+			TextEdit textEdit = completionItem.getTextEdit().getLeft();
 			Range range = textEdit.getRange();
 			assertThat(range.getStart().getLine()).isZero();
 			assertThat(range.getStart().getCharacter()).isEqualTo(45 /* just before 'bufferSize' */);
