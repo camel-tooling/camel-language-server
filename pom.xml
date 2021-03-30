@@ -51,7 +51,7 @@
 		<jgit.version>5.11.0.202103091610-r</jgit.version>
 		<camel.version>3.9.0</camel.version>
 		<camel.kafka.connector.version>0.8.0</camel.kafka.connector.version>
-		<camel.quarkus.version>1.7.0</camel.quarkus.version>
+		<camel.quarkus.version>1.8.0</camel.quarkus.version>
 		<roaster.version>2.21.1.Final</roaster.version>
 		<awaitility.version>4.0.3</awaitility.version>
 		<tyrus.version>1.17</tyrus.version>
