@@ -28,6 +28,9 @@ import org.eclipse.lsp4j.CompletionItemKind;
 import org.eclipse.lsp4j.Position;
 import org.eclipse.lsp4j.Range;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import com.github.cameltooling.lsp.internal.AbstractCamelLanguageServerTest;
 import com.github.cameltooling.lsp.internal.CamelLanguageServer;
@@ -180,14 +183,6 @@ public class CamelCompletionForApisTest extends AbstractCamelLanguageServerTest 
 		assertThat(completions.get(0).getLabel()).isEqualTo("aPropertyUpdater");
 	}
 	
-	@Test
-	void testEmptyMethod() throws Exception {
-		String text = "camel.sink.url=aComponentWithApis:account/create?";
-		CamelLanguageServer languageServer = initializeLanguageServer(text, ".properties");
-		List<CompletionItem> completions = getCompletionFor(languageServer, new Position(0, text.length())).get().getLeft();
-		assertThat(filterApiBasedOptions(completions)).isEmpty();
-	}
-
 	private Stream<CompletionItem> filterApiBasedOptions(List<CompletionItem> completions) {
 		return completions.stream().filter(completion -> CompletionItemKind.Variable.equals(completion.getKind()));
 	}
@@ -227,7 +222,22 @@ public class CamelCompletionForApisTest extends AbstractCamelLanguageServerTest 
 		List<CompletionItem> completions = getCompletionFor(languageServer, new Position(0, text.length())).get().getLeft();
 		assertThat(completions).hasSize(2);
 	}
-	
+
+	@ParameterizedTest(name = "{0}")
+	@MethodSource
+	void testBasicEmpty(String testName, String propertyUrl) throws Exception {
+		CamelLanguageServer languageServer = initializeLanguageServer(propertyUrl, ".properties");
+		List<CompletionItem> completions = getCompletionFor(languageServer, new Position(0, propertyUrl.length())).get().getLeft();
+		assertThat(filterApiBasedOptions(completions)).isEmpty();
+	}
+
+	private static Stream<Arguments> testBasicEmpty() {
+		return Stream.of(Arguments.of("Empty method", "camel.sink.url=aComponentWithApis:account/create?"),
+				Arguments.of("Empty with missing method name", "camel.sink.url=aComponentWithApis:account?"),
+				Arguments.of("Empty with invalid method name", "camel.sink.url=aComponentWithApis:account/invalid?"),
+				Arguments.of("Empty with missing API name", "camel.sink.url=aComponentWithApis?"));
+	}
+		
 	@Test
 	void testNoCompletionWithNonApiBasedComponent() throws Exception {
 		String text = "camel.sink.url=avro:transport:host:port/messageName";
@@ -236,29 +246,6 @@ public class CamelCompletionForApisTest extends AbstractCamelLanguageServerTest 
 		assertThat(completions).isEmpty();
 	}
 	
-	@Test
-	void testEmptyWithMissingMethodName() throws Exception {
-		String text = "camel.sink.url=aComponentWithApis:account?";
-		CamelLanguageServer languageServer = initializeLanguageServer(text, ".properties");
-		List<CompletionItem> completions = getCompletionFor(languageServer, new Position(0, text.length())).get().getLeft();
-		assertThat(filterApiBasedOptions(completions)).isEmpty();
-	}
-	
-	@Test
-	void testEmptyWithInvalidMethodName() throws Exception {
-		String text = "camel.sink.url=aComponentWithApis:account/invalid?";
-		CamelLanguageServer languageServer = initializeLanguageServer(text, ".properties");
-		List<CompletionItem> completions = getCompletionFor(languageServer, new Position(0, text.length())).get().getLeft();
-		assertThat(filterApiBasedOptions(completions)).isEmpty();
-	}
-	
-	@Test
-	void testEmptyWithMissingApiName() throws Exception {
-		String text = "camel.sink.url=aComponentWithApis?";
-		CamelLanguageServer languageServer = initializeLanguageServer(text, ".properties");
-		List<CompletionItem> completions = getCompletionFor(languageServer, new Position(0, text.length())).get().getLeft();
-		assertThat(filterApiBasedOptions(completions)).isEmpty();
-	}
 	
 	@Override
 	protected Map<Object, Object> getInitializationOptions() {
