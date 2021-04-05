@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
+import java.util.stream.Stream;
 
 import org.eclipse.lsp4j.CompletionItem;
 import org.eclipse.lsp4j.CompletionList;
@@ -29,6 +30,9 @@ import org.eclipse.lsp4j.Position;
 import org.eclipse.lsp4j.TextEdit;
 import org.eclipse.lsp4j.jsonrpc.messages.Either;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import com.github.cameltooling.lsp.internal.AbstractCamelLanguageServerTest;
 import com.github.cameltooling.lsp.internal.CamelLanguageServer;
@@ -88,28 +92,19 @@ class CamelKModelineTraitPropertyNameTest extends AbstractCamelLanguageServerTes
 		assertThat(completionItems).hasSize(1);
 	}
 	
-	@Test
-	void testProvideCompletionWithDefaultValueAString() throws Exception {
+	@ParameterizedTest(name = "{0}")
+	@MethodSource
+	void testProvideCompletionForDefaultvalues(String testName, String property, String explectedCompletion) throws Exception {
 		CamelLanguageServer camelLanguageServer = initializeLanguageServer("// camel-k: trait=container.");
 		CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = getCompletionFor(camelLanguageServer, new Position(0, 28));
-		CompletionItem completionItem = findCompletionItemWithLabel(completions, "port-name");
-		assertThat(completionItem.getInsertText()).isEqualTo("port-name=http");
+		CompletionItem completionItem = findCompletionItemWithLabel(completions, property);
+		assertThat(completionItem.getInsertText()).isEqualTo(explectedCompletion);
 	}
 	
-	@Test
-	void testProvideCompletionWithoutDefaultValue() throws Exception {
-		CamelLanguageServer camelLanguageServer = initializeLanguageServer("// camel-k: trait=container.");
-		CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = getCompletionFor(camelLanguageServer, new Position(0, 28));
-		CompletionItem completionItem = findCompletionItemWithLabel(completions, "request-cpu");
-		assertThat(completionItem.getInsertText()).isEqualTo("request-cpu=");
-	}
-	
-	@Test
-	void testProvideCompletionWithDefaultValueAnumber() throws Exception {
-		CamelLanguageServer camelLanguageServer = initializeLanguageServer("// camel-k: trait=container.");
-		CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = getCompletionFor(camelLanguageServer, new Position(0, 28));
-		CompletionItem completionItem = findCompletionItemWithLabel(completions, "port");
-		assertThat(completionItem.getInsertText()).isEqualTo("port=8080");
+	private static Stream<Arguments> testProvideCompletionForDefaultvalues() {
+		return Stream.of(Arguments.of("String default value", "port-name", "port-name=http"),
+				Arguments.of("Without default value", "request-cpu", "request-cpu="),
+				Arguments.of("Number default value", "port", "port=8080"));
 	}
 
 	private CompletionItem findCompletionItemWithLabel(CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions, String label) throws InterruptedException, ExecutionException {
