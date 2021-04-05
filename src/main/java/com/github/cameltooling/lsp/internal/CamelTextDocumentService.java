@@ -25,12 +25,8 @@ import java.util.concurrent.CompletableFuture;
 
 import org.apache.camel.catalog.CamelCatalog;
 import org.apache.camel.catalog.DefaultCamelCatalog;
-import org.apache.camel.catalog.DefaultRuntimeProvider;
 import org.apache.camel.catalog.RuntimeProvider;
-import org.apache.camel.catalog.karaf.KarafRuntimeProvider;
 import org.apache.camel.catalog.maven.MavenVersionManager;
-import org.apache.camel.catalog.quarkus.QuarkusRuntimeProvider;
-import org.apache.camel.springboot.catalog.SpringBootRuntimeProvider;
 import org.eclipse.lsp4j.CodeAction;
 import org.eclipse.lsp4j.CodeActionParams;
 import org.eclipse.lsp4j.CodeLens;
