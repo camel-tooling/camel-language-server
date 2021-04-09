@@ -14,14 +14,32 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.cameltooling.lsp.internal.instancemodel;
+package com.github.cameltooling.lsp.internal.kubernetes;
 
-public class ComponentNameConstants {
+import io.fabric8.knative.client.DefaultKnativeClient;
+import io.fabric8.knative.client.KnativeClient;
 
-	public static final String COMPONENT_NAME_KAFKA = "kafka";
-	public static final String COMPONENT_NAME_KAMELET = "kamelet";
-	public static final String COMPONENT_NAME_KNATIVE = "knative";
+public class KnativeConfigManager {
+
+	private static final KnativeConfigManager instance = new KnativeConfigManager();
 	
-	private ComponentNameConstants() {}
-
+	private static KnativeClient client;
+	
+	private KnativeConfigManager() {}
+	
+	public static KnativeConfigManager getInstance() {
+		return instance;
+	}
+	
+	public void setClient(KnativeClient client) {
+		KnativeConfigManager.client = client;
+	}
+	
+	public KnativeClient getClient() {
+		if(client == null) {
+			client = new DefaultKnativeClient();
+		}
+		return client;
+	}
+	
 }
