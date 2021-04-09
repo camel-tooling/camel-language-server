@@ -36,12 +36,12 @@ class CamelKModelineTraitHoverTest extends AbstractCamelLanguageServerTest {
 
 	@Test
 	void testProvideDocumentationForTraitDefinitionNameOnHover() throws Exception {
-		testHover(20, "The Quarkus trait activates the Quarkus runtime.It's disabled by default.");
+		testHover(20, "The Quarkus trait activates the Quarkus runtime. It's enabled by default.");
 	}
 	
 	@Test
 	void testRangeForTraitDefinitionOnHover() throws Exception {
-		Hover hover = testHover(20, "The Quarkus trait activates the Quarkus runtime.It's disabled by default.");
+		Hover hover = testHover(20, "The Quarkus trait activates the Quarkus runtime. It's enabled by default.");
 		assertThat(hover.getRange()).isEqualTo(new Range(new Position(0, 18), new Position(0, 25)));
 	}
 	
