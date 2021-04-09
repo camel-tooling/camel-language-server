@@ -54,13 +54,13 @@ public class PathParamURIInstance extends CamelUriElementInstance {
 	
 	private static final Logger LOGGER = LoggerFactory.getLogger(PathParamURIInstance.class);
 
-	private CamelComponentAndPathUriInstance uriInstance;
+	private CamelComponentAndPathUriInstance camelComponentAndPathUriInstance;
 	private String value;
 	private int pathParamIndex;
 
 	public PathParamURIInstance(CamelComponentAndPathUriInstance uriInstance, String value, int startPosition, int endPosition, int pathParamIndex) {
 		super(startPosition, endPosition);
-		this.uriInstance = uriInstance;
+		this.camelComponentAndPathUriInstance = uriInstance;
 		this.value = value;
 		this.pathParamIndex = pathParamIndex;
 	}
@@ -72,7 +72,7 @@ public class PathParamURIInstance extends CamelUriElementInstance {
 	@Override
 	public CompletableFuture<List<CompletionItem>> getCompletions(CompletableFuture<CamelCatalog> camelCatalog, int positionInCamelUri, TextDocumentItem docItem, SettingsManager settingsManager, KameletsCatalogManager kameletsCatalogManager) {
 		if(pathParamIndex == 0) {
-			String componentName = uriInstance.getComponentName();
+			String componentName = getCamelComponentAndPathUriInstance().getComponentName();
 			if(ComponentNameConstants.COMPONENT_NAME_KAFKA.equals(componentName)) {
 				return new KafkaTopicCompletionProvider().get(this, settingsManager);
 			} else if(ComponentNameConstants.COMPONENT_NAME_KAMELET.equals(componentName)){
@@ -82,6 +82,10 @@ public class PathParamURIInstance extends CamelUriElementInstance {
 			}
 		}
 		if(pathParamIndex == 1) {
+			String componentName = getCamelComponentAndPathUriInstance().getComponentName();
+			if(ComponentNameConstants.COMPONENT_NAME_KNATIVE.equals(componentName)) {
+				return new KnativeCompletionProvider().get(this);
+			}
 			return getCompletionForApiMethodName(camelCatalog, positionInCamelUri, docItem);
 		}
 		return CompletableFuture.completedFuture(Collections.emptyList());
@@ -94,7 +98,7 @@ public class PathParamURIInstance extends CamelUriElementInstance {
 			if (apis != null && !apis.isEmpty()) {
 				Optional<ApiOptionModel> optionModel = apis.stream()
 						.filter(apiOption -> {
-							PathParamURIInstance apiNamePath = uriInstance.getApiNamePath();
+							PathParamURIInstance apiNamePath = getCamelComponentAndPathUriInstance().getApiNamePath();
 							return apiNamePath != null && apiOption.getName().equals(apiNamePath.getValue());
 						}).findAny();
 				if (optionModel.isPresent()) {
@@ -106,7 +110,7 @@ public class PathParamURIInstance extends CamelUriElementInstance {
 				}
 				return Collections.emptyList();
 			} else {
-				return new CamelComponentSchemesCompletionsFuture(uriInstance, uriInstance.getFilter(positionInCamelUri), docItem).apply(catalog);
+				return new CamelComponentSchemesCompletionsFuture(getCamelComponentAndPathUriInstance(), getCamelComponentAndPathUriInstance().getFilter(positionInCamelUri), docItem).apply(catalog);
 			}
 		});
 	}
@@ -158,7 +162,7 @@ public class PathParamURIInstance extends CamelUriElementInstance {
 					.filter(FilterPredicateUtils.matchesCompletionFilter(start))
 					.collect(Collectors.toList());
 			} else {
-				return new CamelComponentSchemesCompletionsFuture(uriInstance, uriInstance.getFilter(positionInCamelUri), docItem).apply(catalog);
+				return new CamelComponentSchemesCompletionsFuture(getCamelComponentAndPathUriInstance(), getCamelComponentAndPathUriInstance().getFilter(positionInCamelUri), docItem).apply(catalog);
 			}
 		});
 	}
@@ -185,7 +189,7 @@ public class PathParamURIInstance extends CamelUriElementInstance {
 	
 	@Override
 	public String getComponentName() {
-		return uriInstance.getComponentName();
+		return getCamelComponentAndPathUriInstance().getComponentName();
 	}
 	
 	@Override
@@ -201,13 +205,13 @@ public class PathParamURIInstance extends CamelUriElementInstance {
 	
 	@Override
 	public CamelURIInstance getCamelUriInstance() {
-		return uriInstance.getCamelUriInstance();
+		return getCamelComponentAndPathUriInstance().getCamelUriInstance();
 	}
 	
 	public String getName(CompletableFuture<CamelCatalog> camelCatalog) {
 		try {
 			return camelCatalog.thenApply(catalog -> {
-				org.apache.camel.tooling.model.ComponentModel componentModel = catalog.componentModel(uriInstance.getComponentName());
+				org.apache.camel.tooling.model.ComponentModel componentModel = catalog.componentModel(getCamelComponentAndPathUriInstance().getComponentName());
 				if (componentModel != null) {
 					// here, it is expected that the list is sorted with the correct order of endpoint path in which they appear in the scheme
 					List<EndpointOptionModel> endpointPathOptions = componentModel.getEndpointPathOptions();
@@ -228,5 +232,9 @@ public class PathParamURIInstance extends CamelUriElementInstance {
 
 	public int getPathParamIndex() {
 		return pathParamIndex;
+	}
+
+	public CamelComponentAndPathUriInstance getCamelComponentAndPathUriInstance() {
+		return camelComponentAndPathUriInstance;
 	}
 }

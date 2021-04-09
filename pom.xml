@@ -343,7 +343,7 @@
 			<groupId>org.apache.kafka</groupId>
 			<artifactId>kafka-clients</artifactId>
 			<version>${kafka.clients.version}</version>
-		</dependency>        
+		</dependency>
 		<dependency>
 			<groupId>com.consol.citrus</groupId>
 			<artifactId>citrus-kafka</artifactId>
@@ -354,6 +354,17 @@
 			<groupId>io.fabric8</groupId>
 			<artifactId>kubernetes-client</artifactId>
 			<version>${kubernetes.client.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>io.fabric8</groupId>
+			<artifactId>knative-client</artifactId>
+			<version>${kubernetes.client.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>io.fabric8</groupId>
+			<artifactId>knative-mock</artifactId>
+			<version>${kubernetes.client.version}</version>
+			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>io.fabric8</groupId>
