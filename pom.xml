@@ -56,6 +56,8 @@
 		<awaitility.version>4.0.3</awaitility.version>
 		<tyrus.version>2.0.0</tyrus.version>
 		<commons-text.version>1.9</commons-text.version>
+		<citrus.kafka.version>3.0.0-M3</citrus.kafka.version>
+		<kafka.clients.version>2.6.0</kafka.clients.version>
 	</properties>
 
 	<distributionManagement>
@@ -332,6 +334,17 @@
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-text</artifactId>
 			<version>${commons-text.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.kafka</groupId>
+			<artifactId>kafka-clients</artifactId>
+			<version>${kafka.clients.version}</version>
+		</dependency>        
+		<dependency>
+			<groupId>com.consol.citrus</groupId>
+			<artifactId>citrus-kafka</artifactId>
+			<version>${citrus.kafka.version}</version>
+			<scope>test</scope>
 		</dependency>
 	</dependencies>
 </project>
