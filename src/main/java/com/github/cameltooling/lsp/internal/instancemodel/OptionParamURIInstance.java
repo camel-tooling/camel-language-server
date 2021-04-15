@@ -27,6 +27,7 @@ import org.eclipse.lsp4j.TextDocumentItem;
 
 import com.github.cameltooling.lsp.internal.catalog.model.ComponentModel;
 import com.github.cameltooling.lsp.internal.catalog.model.EndpointOptionModel;
+import com.github.cameltooling.lsp.internal.settings.SettingsManager;
 
 /**
  * For a Camel URI "timer:timerName?delay=10s", it represents "delay=10s"
@@ -70,7 +71,7 @@ public class OptionParamURIInstance extends CamelUriElementInstance {
 	}
 	
 	@Override
-	public CompletableFuture<List<CompletionItem>> getCompletions(CompletableFuture<CamelCatalog> camelCatalog, int positionInCamelUri, TextDocumentItem docItem) {
+	public CompletableFuture<List<CompletionItem>> getCompletions(CompletableFuture<CamelCatalog> camelCatalog, int positionInCamelUri, TextDocumentItem docItem, SettingsManager settingsManager) {
 		return CompletableFuture.completedFuture(Collections.emptyList());
 	}
 

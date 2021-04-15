@@ -32,6 +32,7 @@ import com.github.cameltooling.lsp.internal.catalog.model.ApiPropertyMethodOptio
 import com.github.cameltooling.lsp.internal.catalog.model.ApiPropertyOptionModel;
 import com.github.cameltooling.lsp.internal.catalog.model.ComponentModel;
 import com.github.cameltooling.lsp.internal.catalog.model.EndpointOptionModel;
+import com.github.cameltooling.lsp.internal.settings.SettingsManager;
 
 public abstract class CamelUriElementInstance implements ILineRangeDefineable{
 
@@ -76,7 +77,7 @@ public abstract class CamelUriElementInstance implements ILineRangeDefineable{
 		return getCamelUriInstance().getAbsoluteBounds().getStart().getLine();
 	}
 	
-	public abstract CompletableFuture<List<CompletionItem>> getCompletions(CompletableFuture<CamelCatalog> camelCatalog, int positionInCamelUri, TextDocumentItem docItem);
+	public abstract CompletableFuture<List<CompletionItem>> getCompletions(CompletableFuture<CamelCatalog> camelCatalog, int positionInCamelUri, TextDocumentItem docItem, SettingsManager settingsManager);
 	
 	public abstract String getComponentName();
 	

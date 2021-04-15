@@ -39,8 +39,8 @@ public class CamelWorkspaceService implements WorkspaceService {
 	private static final Logger LOGGER = LoggerFactory.getLogger(CamelWorkspaceService.class);
 	private SettingsManager settingsManager;
 
-	public CamelWorkspaceService(CamelTextDocumentService textDocumentService) {
-		settingsManager = new SettingsManager(textDocumentService);
+	public CamelWorkspaceService(SettingsManager settingsManager) {
+		this.settingsManager = settingsManager;
 	}
 
 	@Override

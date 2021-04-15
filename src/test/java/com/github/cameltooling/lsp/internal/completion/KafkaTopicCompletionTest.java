@@ -20,10 +20,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
 import org.eclipse.lsp4j.CompletionItem;
+import org.eclipse.lsp4j.DidChangeConfigurationParams;
 import org.eclipse.lsp4j.Position;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
@@ -33,6 +36,7 @@ import com.consol.citrus.kafka.embedded.EmbeddedKafkaServer;
 import com.consol.citrus.kafka.embedded.EmbeddedKafkaServerBuilder;
 import com.github.cameltooling.lsp.internal.AbstractCamelLanguageServerTest;
 import com.github.cameltooling.lsp.internal.CamelLanguageServer;
+import com.github.cameltooling.lsp.internal.settings.SettingsManager;
 
 class KafkaTopicCompletionTest extends AbstractCamelLanguageServerTest {
 
@@ -97,6 +101,35 @@ class KafkaTopicCompletionTest extends AbstractCamelLanguageServerTest {
 
 		assertThat(completions).hasSize(2);
 	}
+	
+	@Test
+	void testWithProvidedSetting() throws Exception {
+		String topic = "topicOnSpecificPort";
+		int kafkaPort = 9094;
+		kafkaServer = new EmbeddedKafkaServerBuilder()
+				.kafkaServerPort(kafkaPort)
+				.topics(topic)
+				.build();
+		kafkaServer.start();
+		
+		CamelLanguageServer languageServer = initLanguageServer();
+		
+		DidChangeConfigurationParams params = new DidChangeConfigurationParams(createMapSettings("localhost:"+kafkaPort));
+		languageServer.getWorkspaceService().didChangeConfiguration(params);
+		
+		List<CompletionItem> completions = getCompletionFor(languageServer, new Position(0, 17)).get().getLeft();
+
+		assertThat(completions).hasSize(1);
+		assertThat(completions.get(0).getTextEdit().getLeft().getNewText()).isEqualTo(topic);
+	}
+	
+	private Map<Object, Object> createMapSettings(String kafkaConnectionUrl) {
+		Map<Object, Object> settings = new HashMap<>();
+		settings.put(SettingsManager.KAKFA_CONNECTION_URL, kafkaConnectionUrl);
+		HashMap<Object, Object> initializationOptions = new HashMap<>();
+		initializationOptions.put(SettingsManager.TOP_LEVEL_SETTINGS_ID, settings);
+		return initializationOptions;
+	}
 
 	private void initKafkaWithTopics(String topics) {
 		kafkaServer = new EmbeddedKafkaServerBuilder().topics(topics).build();
@@ -106,9 +139,13 @@ class KafkaTopicCompletionTest extends AbstractCamelLanguageServerTest {
 	}
 
 	private List<CompletionItem> retrieveCompletionForKafkaTopicPosition() throws URISyntaxException, InterruptedException, ExecutionException {
-		String text = "<from uri=\"kafka:\" xmlns=\"http://camel.apache.org/schema/blueprint\"></from>\n";
-		CamelLanguageServer languageServer = initializeLanguageServer(text, ".xml");
+		CamelLanguageServer languageServer = initLanguageServer();
 		return getCompletionFor(languageServer, new Position(0, 17)).get().getLeft();
+	}
+
+	private CamelLanguageServer initLanguageServer() throws URISyntaxException, InterruptedException, ExecutionException {
+		String text = "<from uri=\"kafka:\" xmlns=\"http://camel.apache.org/schema/blueprint\"></from>\n";
+		return initializeLanguageServer(text, ".xml");
 	}
 
 }

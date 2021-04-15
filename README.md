@@ -126,7 +126,16 @@ There is document symbol for Camel Contexts and routes, on XML and Java DSL. In 
 
 ## Connected mode completion for Kafka component
 
-When using the Camel Kafka component, the list of topics is dynamically retrieved from the Kafka Broker when available. By default, it tries to connect to `localhost:9092`. To connect to another instance, launch the language server with the system property `CAMEL_LANGUAGE_SERVER_KAFKA_CONNECTION_URL`. For instance, `java -DCAMEL_LANGUAGE_SERVER_KAFKA_CONNECTION_URL=localhost:9093 -jar camel-lsp-server.jar`.
+When using the Camel Kafka component, the list of topics is dynamically retrieved from the Kafka Broker when available. By default, it tries to connect to `localhost:9092`. To connect to another instance, a setting can be provided, following this pattern:
+
+```
+{
+	"camel": {
+		"Kafka Connection URL" : "localhost:9092"
+	}
+}
+
+```
 
 ## Features planned
 

@@ -48,10 +48,13 @@ public class CamelLanguageServer extends AbstractLanguageServer implements Langu
 	private static final Logger LOGGER = LoggerFactory.getLogger(CamelLanguageServer.class);
 	
 	private LanguageClient client;
+	private SettingsManager settingsManager;
 	
 	public CamelLanguageServer() {
-		super.setTextDocumentService(new CamelTextDocumentService(this));
-		super.setWorkspaceService(new CamelWorkspaceService(getTextDocumentService()));
+		CamelTextDocumentService textDocumentService = new CamelTextDocumentService(this);
+		setTextDocumentService(textDocumentService);
+		settingsManager = new SettingsManager(textDocumentService);
+		setWorkspaceService(new CamelWorkspaceService(getSettingsManager()));
 	}
 
 	@Override
@@ -75,7 +78,7 @@ public class CamelLanguageServer extends AbstractLanguageServer implements Langu
 			setParentProcessId(0);
 		}
 		
-		new SettingsManager(getTextDocumentService()).apply(params);
+		getSettingsManager().apply(params);
 		
 		ServerCapabilities capabilities = createServerCapabilities();
 		InitializeResult result = new InitializeResult(capabilities);
@@ -120,6 +123,10 @@ public class CamelLanguageServer extends AbstractLanguageServer implements Langu
 
 	public LanguageClient getClient() {
 		return client;
+	}
+
+	public SettingsManager getSettingsManager() {
+		return settingsManager;
 	}
 	
 }

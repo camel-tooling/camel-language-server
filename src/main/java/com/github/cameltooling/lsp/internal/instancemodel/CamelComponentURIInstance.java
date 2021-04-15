@@ -24,6 +24,7 @@ import org.eclipse.lsp4j.CompletionItem;
 import org.eclipse.lsp4j.TextDocumentItem;
 
 import com.github.cameltooling.lsp.internal.catalog.model.ComponentModel;
+import com.github.cameltooling.lsp.internal.settings.SettingsManager;
 
 /**
  * For a Camel URI "timer:timerName?delay=10s", it represents "timer"
@@ -45,8 +46,8 @@ public class CamelComponentURIInstance extends CamelUriElementInstance {
 	}
 
 	@Override
-	public CompletableFuture<List<CompletionItem>> getCompletions(CompletableFuture<CamelCatalog> camelCatalog, int positionInCamelUri, TextDocumentItem docItem) {
-		return parent.getCompletions(camelCatalog, positionInCamelUri, docItem);		
+	public CompletableFuture<List<CompletionItem>> getCompletions(CompletableFuture<CamelCatalog> camelCatalog, int positionInCamelUri, TextDocumentItem docItem, SettingsManager settingsManager) {
+		return parent.getCompletions(camelCatalog, positionInCamelUri, docItem, settingsManager);		
 	}
 	
 	@Override

@@ -26,6 +26,7 @@ import org.eclipse.lsp4j.TextDocumentItem;
 
 import com.github.cameltooling.lsp.internal.catalog.model.ComponentModel;
 import com.github.cameltooling.lsp.internal.completion.CamelOptionValuesCompletionsFuture;
+import com.github.cameltooling.lsp.internal.settings.SettingsManager;
 
 /**
  * For a Camel URI "timer:timerName?delay=10s", it represents "10s"
@@ -47,7 +48,7 @@ public class OptionParamValueURIInstance extends CamelUriElementInstance {
 	}
 
 	@Override
-	public CompletableFuture<List<CompletionItem>> getCompletions(CompletableFuture<CamelCatalog> camelCatalog, int positionInCamelUri, TextDocumentItem docItem) {
+	public CompletableFuture<List<CompletionItem>> getCompletions(CompletableFuture<CamelCatalog> camelCatalog, int positionInCamelUri, TextDocumentItem docItem, SettingsManager settingsManager) {
 		if(getStartPositionInUri() <= positionInCamelUri && positionInCamelUri <= getEndPositionInUri()) {
 			return camelCatalog.thenApply(new CamelOptionValuesCompletionsFuture(this, getFilter(positionInCamelUri)));
 		} else {

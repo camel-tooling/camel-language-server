@@ -36,6 +36,7 @@ import com.github.cameltooling.lsp.internal.completion.KafkaConnectTransformerTy
 import com.github.cameltooling.lsp.internal.hover.CamelURIHoverProcessor;
 import com.github.cameltooling.lsp.internal.instancemodel.ILineRangeDefineable;
 import com.github.cameltooling.lsp.internal.parser.CamelKafkaUtil;
+import com.github.cameltooling.lsp.internal.settings.SettingsManager;
 
 /**
  * Represents one value in properties file.
@@ -55,10 +56,10 @@ public class CamelPropertyValueInstance implements ILineRangeDefineable {
 		this.textDocumentItem = textDocumentItem;
 	}
 
-	public CompletableFuture<List<CompletionItem>> getCompletions(Position position, CompletableFuture<CamelCatalog> camelCatalog, CamelKafkaConnectorCatalogManager camelKafkaConnectorManager) {
+	public CompletableFuture<List<CompletionItem>> getCompletions(Position position, CompletableFuture<CamelCatalog> camelCatalog, CamelKafkaConnectorCatalogManager camelKafkaConnectorManager, SettingsManager settingsManager) {
 		String propertyKey = key.getCamelPropertyKey();
 		if (new CamelKafkaUtil().isCamelURIForKafka(propertyKey)) {
-			return new CamelEndpointCompletionProcessor(textDocumentItem, camelCatalog).getCompletions(position);
+			return new CamelEndpointCompletionProcessor(textDocumentItem, camelCatalog).getCompletions(position, settingsManager);
 		} else if (new CamelKafkaUtil().isConnectorClassForCamelKafkaConnector(propertyKey)) {
 			String startFilter = computeStartFilter(position);
 			return new CamelKafkaConnectorClassCompletionProcessor(this, camelKafkaConnectorManager).getCompletions(startFilter);

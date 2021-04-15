@@ -31,6 +31,7 @@ import com.github.cameltooling.lsp.internal.instancemodel.CamelURIInstance;
 import com.github.cameltooling.lsp.internal.instancemodel.CamelUriElementInstance;
 import com.github.cameltooling.lsp.internal.parser.ParserFileHelper;
 import com.github.cameltooling.lsp.internal.parser.ParserFileHelperFactory;
+import com.github.cameltooling.lsp.internal.settings.SettingsManager;
 
 public class CamelEndpointCompletionProcessor {
 
@@ -44,7 +45,7 @@ public class CamelEndpointCompletionProcessor {
 		this.camelCatalog = camelCatalog;
 	}
 
-	public CompletableFuture<List<CompletionItem>> getCompletions(Position position) {
+	public CompletableFuture<List<CompletionItem>> getCompletions(Position position, SettingsManager settingsManager) {
 		if (textDocumentItem != null) {
 			try {
 				ParserFileHelper parserFileHelper = new ParserFileHelperFactory().getCorrespondingParserFileHelper(textDocumentItem, position.getLine());
@@ -53,7 +54,7 @@ public class CamelEndpointCompletionProcessor {
 					if (camelComponentUri != null) {
 						CamelURIInstance camelURIInstance = parserFileHelper.createCamelURIInstance(textDocumentItem, position, camelComponentUri);
 						int positionInCamelUri = parserFileHelper.getPositionInCamelURI(textDocumentItem, position);
-						return getCompletions(camelURIInstance, positionInCamelUri);
+						return getCompletions(camelURIInstance, positionInCamelUri, settingsManager);
 					}
 				}
 			} catch (Exception e) {
@@ -63,9 +64,9 @@ public class CamelEndpointCompletionProcessor {
 		return CompletableFuture.completedFuture(Collections.emptyList());
 	}
 
-	private CompletableFuture<List<CompletionItem>> getCompletions(CamelURIInstance camelURIInstance, int positionInCamelUri) {
+	private CompletableFuture<List<CompletionItem>> getCompletions(CamelURIInstance camelURIInstance, int positionInCamelUri, SettingsManager settingsManager) {
 		CamelUriElementInstance camelUriElementInstance = camelURIInstance.getSpecificElement(positionInCamelUri);
-		return camelUriElementInstance.getCompletions(camelCatalog, positionInCamelUri, textDocumentItem);
+		return camelUriElementInstance.getCompletions(camelCatalog, positionInCamelUri, textDocumentItem, settingsManager);
 	}
 
 }
