@@ -31,6 +31,7 @@ import org.eclipse.lsp4j.TextDocumentItem;
 
 import com.github.cameltooling.lsp.internal.catalog.util.CamelKafkaConnectorCatalogManager;
 import com.github.cameltooling.lsp.internal.instancemodel.ILineRangeDefineable;
+import com.github.cameltooling.lsp.internal.settings.SettingsManager;
 
 /**
  * Represents one entry in properties file or in Camel K modeline. For instance, the whole entry "camel.component.timer.delay=1000"
@@ -62,11 +63,11 @@ public class CamelPropertyEntryInstance implements ILineRangeDefineable {
 		camelPropertyValueInstance = new CamelPropertyValueInstance(camelPropertyFileValueInstanceString, camelPropertyKeyInstance, textDocumentItem);
 	}
 	
-	public CompletableFuture<List<CompletionItem>> getCompletions(Position position, CompletableFuture<CamelCatalog> camelCatalog, CamelKafkaConnectorCatalogManager camelKafkaConnectorManager) {
+	public CompletableFuture<List<CompletionItem>> getCompletions(Position position, CompletableFuture<CamelCatalog> camelCatalog, CamelKafkaConnectorCatalogManager camelKafkaConnectorManager, SettingsManager settingsManager) {
 		if (isOnPropertyKey(position)) {
 			return camelPropertyKeyInstance.getCompletions(position, camelCatalog, camelKafkaConnectorManager);
 		} else {
-			return camelPropertyValueInstance.getCompletions(position, camelCatalog, camelKafkaConnectorManager);
+			return camelPropertyValueInstance.getCompletions(position, camelCatalog, camelKafkaConnectorManager, settingsManager);
 		}
 	}
 

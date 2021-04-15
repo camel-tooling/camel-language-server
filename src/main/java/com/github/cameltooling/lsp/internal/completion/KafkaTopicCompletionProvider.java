@@ -34,6 +34,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.github.cameltooling.lsp.internal.instancemodel.PathParamURIInstance;
+import com.github.cameltooling.lsp.internal.settings.SettingsManager;
 
 public class KafkaTopicCompletionProvider {
 	
@@ -46,8 +47,11 @@ public class KafkaTopicCompletionProvider {
 	
 	private static final Logger LOGGER = LoggerFactory.getLogger(KafkaTopicCompletionProvider.class);
 
-	public CompletableFuture<List<CompletionItem>> get(PathParamURIInstance pathParamURIInstance) {
-		String kafkaConnectionURl = System.getProperty(CAMEL_LANGUAGE_SERVER_KAFKA_CONNECTION_URL, DEFAULT_CONNECTION);
+	public CompletableFuture<List<CompletionItem>> get(PathParamURIInstance pathParamURIInstance, SettingsManager settingsManager) {
+		String kafkaConnectionURl = settingsManager.getKafkaConnectionUrl();
+		if (kafkaConnectionURl == null) {
+			kafkaConnectionURl = System.getProperty(CAMEL_LANGUAGE_SERVER_KAFKA_CONNECTION_URL, DEFAULT_CONNECTION);
+		}
 		Admin adminClient = null;
 		try {
 			adminClient = Admin.create(Collections.singletonMap(AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaConnectionURl));

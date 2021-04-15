@@ -82,6 +82,7 @@ import com.github.cameltooling.lsp.internal.parser.CamelKModelineParser;
 import com.github.cameltooling.lsp.internal.parser.ParserFileHelperUtil;
 import com.github.cameltooling.lsp.internal.references.ReferencesProcessor;
 import com.github.cameltooling.lsp.internal.settings.JSONUtility;
+import com.github.cameltooling.lsp.internal.settings.SettingsManager;
 import com.google.gson.Gson;
 
 /**
@@ -147,11 +148,11 @@ public class CamelTextDocumentService implements TextDocumentService {
 		LOGGER.info("completion: {}", uri);
 		TextDocumentItem textDocumentItem = openedDocuments.get(uri);
 		if (uri.endsWith(".properties")){
-			return new CamelPropertiesCompletionProcessor(textDocumentItem, getCamelCatalog(), getCamelKafkaConnectorManager()).getCompletions(completionParams.getPosition()).thenApply(Either::forLeft);
+			return new CamelPropertiesCompletionProcessor(textDocumentItem, getCamelCatalog(), getCamelKafkaConnectorManager()).getCompletions(completionParams.getPosition(), getSettingsManager()).thenApply(Either::forLeft);
 		} else if(isOnCamelKModeline(completionParams.getPosition().getLine(), textDocumentItem)){
 			return new CamelKModelineCompletionprocessor(textDocumentItem, getCamelCatalog()).getCompletions(completionParams.getPosition()).thenApply(Either::forLeft);
 		} else {
-			return new CamelEndpointCompletionProcessor(textDocumentItem, getCamelCatalog()).getCompletions(completionParams.getPosition()).thenApply(Either::forLeft);
+			return new CamelEndpointCompletionProcessor(textDocumentItem, getCamelCatalog()).getCompletions(completionParams.getPosition(), getSettingsManager()).thenApply(Either::forLeft);
 		}
 	}
 
@@ -311,5 +312,9 @@ public class CamelTextDocumentService implements TextDocumentService {
 
 	public void setCamelKafkaConnectorManager(CamelKafkaConnectorCatalogManager camelKafkaConnectorManager) {
 		this.camelKafkaConnectorManager = camelKafkaConnectorManager;
+	}
+
+	public SettingsManager getSettingsManager() {
+		return camelLanguageServer.getSettingsManager();
 	}
 }

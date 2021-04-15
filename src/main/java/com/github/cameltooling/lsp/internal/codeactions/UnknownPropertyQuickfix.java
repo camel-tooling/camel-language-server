@@ -38,6 +38,7 @@ import com.github.cameltooling.lsp.internal.completion.CamelEndpointCompletionPr
 import com.github.cameltooling.lsp.internal.diagnostic.DiagnosticService;
 import com.github.cameltooling.lsp.internal.instancemodel.propertiesfile.CamelPropertyKeyInstance;
 import com.github.cameltooling.lsp.internal.parser.CamelKafkaUtil;
+import com.github.cameltooling.lsp.internal.settings.SettingsManager;
 
 public class UnknownPropertyQuickfix extends AbstractQuickfix {
 	
@@ -50,11 +51,13 @@ public class UnknownPropertyQuickfix extends AbstractQuickfix {
 	protected String getDiagnosticId() {
 		return DiagnosticService.ERROR_CODE_UNKNOWN_PROPERTIES;
 	}
-
+	
+	@Override
 	protected List<String> retrievePossibleValues(TextDocumentItem textDocumentItem,
 			CompletableFuture<CamelCatalog> camelCatalog,
 			CamelKafkaConnectorCatalogManager camelKafkaConnectorManager,
-			Position position) {
+			Position position,
+			SettingsManager settingsManager) {
 		if (textDocumentItem.getUri().endsWith(".properties")) {
 			Optional<CamelKafkaConnectorModel> optionalModel = camelKafkaConnectorManager.findConnectorModel(new CamelKafkaUtil().findConnectorClass(textDocumentItem));
 			if (optionalModel.isPresent()) {
@@ -66,7 +69,7 @@ public class UnknownPropertyQuickfix extends AbstractQuickfix {
 			}
 		} else {
 			try {
-				return new CamelEndpointCompletionProcessor(textDocumentItem, camelCatalog).getCompletions(position)
+				return new CamelEndpointCompletionProcessor(textDocumentItem, camelCatalog).getCompletions(position, settingsManager)
 						.thenApply(completionItems -> completionItems.stream().map(CompletionItem::getInsertText)
 								.collect(Collectors.toList()))
 						.get();

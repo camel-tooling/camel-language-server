@@ -33,6 +33,7 @@ import com.github.cameltooling.lsp.internal.CamelTextDocumentService;
 import com.github.cameltooling.lsp.internal.catalog.util.CamelKafkaConnectorCatalogManager;
 import com.github.cameltooling.lsp.internal.completion.CamelEndpointCompletionProcessor;
 import com.github.cameltooling.lsp.internal.diagnostic.DiagnosticService;
+import com.github.cameltooling.lsp.internal.settings.SettingsManager;
 
 public class InvalidEnumQuickfix extends AbstractQuickfix {
 	
@@ -43,10 +44,10 @@ public class InvalidEnumQuickfix extends AbstractQuickfix {
 	}
 
 	@Override
-	protected List<String> retrievePossibleValues(TextDocumentItem textDocumentItem, CompletableFuture<CamelCatalog> camelCatalog, CamelKafkaConnectorCatalogManager ckcCatalogmanager, Position position) {
+	protected List<String> retrievePossibleValues(TextDocumentItem textDocumentItem, CompletableFuture<CamelCatalog> camelCatalog, CamelKafkaConnectorCatalogManager ckcCatalogmanager, Position position, SettingsManager settingsManager) {
 		try {
 			return new CamelEndpointCompletionProcessor(textDocumentItem, camelCatalog)
-					.getCompletions(position)
+					.getCompletions(position, settingsManager)
 					.thenApply(completionItems -> completionItems.stream().map(CompletionItem::getLabel).collect(Collectors.toList()))
 					.get();
 		} catch (InterruptedException e) {

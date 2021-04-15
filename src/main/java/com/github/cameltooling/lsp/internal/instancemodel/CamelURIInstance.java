@@ -32,6 +32,7 @@ import org.w3c.dom.Node;
 
 import com.github.cameltooling.lsp.internal.catalog.model.ComponentModel;
 import com.github.cameltooling.lsp.internal.completion.CamelComponentSchemesCompletionsFuture;
+import com.github.cameltooling.lsp.internal.settings.SettingsManager;
 
 /**
  * represents the whole Camel URI
@@ -117,7 +118,7 @@ public class CamelURIInstance extends CamelUriElementInstance {
 	}
 
 	@Override
-	public CompletableFuture<List<CompletionItem>> getCompletions(CompletableFuture<CamelCatalog> camelCatalog, int positionInCamelUri, TextDocumentItem docItem) {
+	public CompletableFuture<List<CompletionItem>> getCompletions(CompletableFuture<CamelCatalog> camelCatalog, int positionInCamelUri, TextDocumentItem docItem, SettingsManager settingsManager) {
 		if(getStartPositionInUri() <= positionInCamelUri && positionInCamelUri <= getEndPositionInUri()) {
 			return camelCatalog.thenApply(new CamelComponentSchemesCompletionsFuture(this, getFilter(), docItem));
 		} else {
@@ -186,4 +187,5 @@ public class CamelURIInstance extends CamelUriElementInstance {
 	public Range getAbsoluteBounds() {
 		return new Range(startPositionInDocument, endPositionInDocument);
 	}
+
 }

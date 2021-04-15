@@ -41,6 +41,7 @@ import com.github.cameltooling.lsp.internal.completion.CamelComponentSchemesComp
 import com.github.cameltooling.lsp.internal.completion.CompletionResolverUtils;
 import com.github.cameltooling.lsp.internal.completion.FilterPredicateUtils;
 import com.github.cameltooling.lsp.internal.completion.KafkaTopicCompletionProvider;
+import com.github.cameltooling.lsp.internal.settings.SettingsManager;
 
 /**
  * For a Camel URI "timer:timerName?delay=10s", it represents "timerName"
@@ -66,10 +67,10 @@ public class PathParamURIInstance extends CamelUriElementInstance {
 	}
 	
 	@Override
-	public CompletableFuture<List<CompletionItem>> getCompletions(CompletableFuture<CamelCatalog> camelCatalog, int positionInCamelUri, TextDocumentItem docItem) {
+	public CompletableFuture<List<CompletionItem>> getCompletions(CompletableFuture<CamelCatalog> camelCatalog, int positionInCamelUri, TextDocumentItem docItem, SettingsManager settingsManager) {
 		if(pathParamIndex == 0) {
 			if("kafka".equals(uriInstance.getComponentName())) {
-				return new KafkaTopicCompletionProvider().get(this);
+				return new KafkaTopicCompletionProvider().get(this, settingsManager);
 			} else {
 				return getCompletionForApiName(camelCatalog, positionInCamelUri, docItem);
 			}
