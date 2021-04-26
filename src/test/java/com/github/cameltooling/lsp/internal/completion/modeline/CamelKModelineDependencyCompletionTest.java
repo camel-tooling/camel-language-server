@@ -115,7 +115,7 @@ class CamelKModelineDependencyCompletionTest extends AbstractCamelLanguageServer
 		assertThat(completionItems).isNotEmpty();
 		CompletionItem timerCompletionItem = completionItems.stream().filter(completionItem -> completionItem.getLabel().startsWith("mvn")).findFirst().get();
 		assertThat(timerCompletionItem.getInsertTextFormat()).isEqualTo(InsertTextFormat.Snippet);
-		assertThat(timerCompletionItem.getInsertText()).isEqualTo("mvn:${1:groupId}/${2:artifactId}:${3:version}");
+		assertThat(timerCompletionItem.getInsertText()).isEqualTo("mvn:${1:groupId}:${2:artifactId}:${3:version}");
 		assertThat(timerCompletionItem.getTextEdit().getLeft().getRange().getStart().getCharacter()).isEqualTo(23);
 		assertThat(timerCompletionItem.getTextEdit().getLeft().getRange().getEnd().getCharacter()).isEqualTo(23 + "test".length());
 	}
