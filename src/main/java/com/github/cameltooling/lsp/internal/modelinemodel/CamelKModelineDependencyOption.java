@@ -113,10 +113,10 @@ public class CamelKModelineDependencyOption implements ICamelKModelineOptionValu
 	}
 
 	private CompletionItem createMvnCompletionItem() {
-		CompletionItem completionItem = new CompletionItem("mvn:<groupId>/<artifactId>:<version>");
+		CompletionItem completionItem = new CompletionItem("mvn:<groupId>:<artifactId>:<version>");
 		completionItem.setSortText("1"); // allows to be before Camel Components in completion list
 		completionItem.setInsertTextFormat(InsertTextFormat.Snippet);
-		completionItem.setInsertText("mvn:${1:groupId}/${2:artifactId}:${3:version}");
+		completionItem.setInsertText("mvn:${1:groupId}:${2:artifactId}:${3:version}");
 		CompletionResolverUtils.applyTextEditToCompletionItem(this, completionItem);
 		return completionItem;
 	}
