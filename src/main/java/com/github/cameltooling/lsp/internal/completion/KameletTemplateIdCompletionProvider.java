@@ -24,6 +24,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 import org.apache.camel.kamelets.catalog.KameletsCatalog;
+import org.apache.camel.kamelets.catalog.model.KameletTypeEnum;
 import org.eclipse.lsp4j.CompletionItem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,10 +38,9 @@ public class KameletTemplateIdCompletionProvider {
 	private static final Logger LOGGER = LoggerFactory.getLogger(KameletTemplateIdCompletionProvider.class);
 
 	public CompletableFuture<List<CompletionItem>> get(PathParamURIInstance pathParamURIInstance) {
-		KameletsCatalog kameletsCatalog;
 		try {
-			kameletsCatalog = new KameletsCatalog();
-			Collection<Kamelet> kamelets = kameletsCatalog.getKamelets().values();
+			Collection<Kamelet> kamelets = retrievePotentialKamelets(pathParamURIInstance);
+			
 			List<CompletionItem> completionItems = kamelets
 					.stream()
 					.map(kamelet -> {
@@ -56,6 +56,15 @@ public class KameletTemplateIdCompletionProvider {
 		}
 		return CompletableFuture.completedFuture(Collections.emptyList());
 		
+	}
+
+	private Collection<Kamelet> retrievePotentialKamelets(PathParamURIInstance pathParamURIInstance) throws IOException {
+		KameletsCatalog kameletsCatalog = new KameletsCatalog();
+		if (pathParamURIInstance.getCamelUriInstance().isProducer()) {
+			return kameletsCatalog.getKameletsByType(KameletTypeEnum.SINK.type());
+		} else {
+			return kameletsCatalog.getKameletsByType(KameletTypeEnum.SOURCE.type());
+		}
 	}
 
 }
