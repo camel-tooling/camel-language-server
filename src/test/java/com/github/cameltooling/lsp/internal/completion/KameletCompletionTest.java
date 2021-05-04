@@ -35,11 +35,30 @@ import com.github.cameltooling.lsp.internal.CamelLanguageServer;
 class KameletCompletionTest extends AbstractCamelLanguageServerTest {
 	
 	@Test
-	void testKameletTemplateIdCompletion() throws Exception {
-		CamelLanguageServer languageServer = initLanguageServer();
+	void testKameletTemplateIdCompletionForSource() throws Exception {
+		CamelLanguageServer languageServer = initLanguageServer("<from uri=\"kamelet:\" xmlns=\"http://camel.apache.org/schema/blueprint\"></from>\n");
 		
 		List<CompletionItem> completions = getCompletionFor(languageServer, new Position(0, 19)).get().getLeft();
 		
+		assertThat(completions)
+			.hasSizeGreaterThan(10)
+			.contains(createAwsddbSourceCompletionItem())
+			.doesNotContain(createAwsKinesisSinkCompletionItem());
+	}
+	
+	@Test
+	void testKameletTemplateIdCompletionForSink() throws Exception {
+		CamelLanguageServer languageServer = initLanguageServer("<to   uri=\"kamelet:\" xmlns=\"http://camel.apache.org/schema/blueprint\"></to>\n");
+		
+		List<CompletionItem> completions = getCompletionFor(languageServer, new Position(0, 19)).get().getLeft();
+		
+		assertThat(completions)
+			.hasSizeGreaterThan(10)
+			.contains(createAwsKinesisSinkCompletionItem())
+			.doesNotContain(createAwsddbSourceCompletionItem());
+	}
+
+	private CompletionItem createAwsddbSourceCompletionItem() {
 		CompletionItem completionItem = new CompletionItem("aws-ddb-streams-source");
 		completionItem.setTextEdit(
 				Either.forLeft(
@@ -47,13 +66,27 @@ class KameletCompletionTest extends AbstractCamelLanguageServerTest {
 								new Range(new Position(0, 19), new Position(0, 19)),
 								"aws-ddb-streams-source")));
 		completionItem.setDocumentation("Receive events from AWS DynamoDB Streams.");
-		assertThat(completions)
-			.hasSizeGreaterThan(10)
-			.contains(completionItem);
+		return completionItem;
+	}
+	
+	private CompletionItem createAwsKinesisSinkCompletionItem() {
+		CompletionItem completionItem = new CompletionItem("aws-kinesis-sink");
+		completionItem.setTextEdit(
+				Either.forLeft(
+						new TextEdit(
+								new Range(new Position(0, 19), new Position(0, 19)),
+								"aws-kinesis-sink")));
+		completionItem.setDocumentation("Send data to AWS Kinesis.\n\n"
+				+ "The Kamelet expects the following header:\n\n"
+				+ "- `partition` / `ce-partition`: to set the Kinesis partition key\n\n"
+				+ "If the header won't be set the exchange ID will be used.\n\n"
+				+ "The Kamelet is also able to recognize the following header:\n\n"
+				+ "- `sequence-number` / `ce-sequence-number`: to set the Sequence number\n\n"
+				+ "This header is optional.");
+		return completionItem;
 	}
 		
-	private CamelLanguageServer initLanguageServer() throws URISyntaxException, InterruptedException, ExecutionException {
-		String text = "<from uri=\"kamelet:\" xmlns=\"http://camel.apache.org/schema/blueprint\"></from>\n";
+	private CamelLanguageServer initLanguageServer(String text) throws URISyntaxException, InterruptedException, ExecutionException {
 		return initializeLanguageServer(text, ".xml");
 	}
 	
