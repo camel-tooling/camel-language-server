@@ -51,6 +51,7 @@
 		<jgit.version>5.11.0.202103091610-r</jgit.version>
 		<camel.version>3.9.0</camel.version>
 		<camel.kafka.connector.version>0.9.0</camel.kafka.connector.version>
+		<camel.kamelet.catalog.version>main-SNAPSHOT</camel.kamelet.catalog.version>
 		<camel.quarkus.version>1.8.1</camel.quarkus.version>
 		<roaster.version>2.21.1.Final</roaster.version>
 		<awaitility.version>4.0.3</awaitility.version>
@@ -261,6 +262,11 @@
 			<version>${camel.kafka.connector.version}</version>
 		</dependency>
 		<dependency>
+			<groupId>org.apache.camel.kamelets</groupId>
+			<artifactId>camel-kamelets-catalog</artifactId>
+			<version>${camel.kamelet.catalog.version}</version>
+		</dependency>
+		<dependency>
 			<groupId>org.apache.camel.karaf</groupId>
 			<artifactId>camel-catalog-provider-karaf</artifactId>
 			<version>${camel.version}</version>
@@ -347,4 +353,17 @@
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
+	<repositories>
+        <repository>
+            <id>apache.snapshots</id>
+            <url>https://repository.apache.org/snapshots/</url>
+            <name>Apache Snapshot Repo</name>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
+        </repository>
+    </repositories>
 </project>
