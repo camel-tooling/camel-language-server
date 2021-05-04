@@ -17,6 +17,7 @@
 package com.github.cameltooling.lsp.internal.completion;
 
 import java.io.IOException;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -29,6 +30,8 @@ import org.slf4j.LoggerFactory;
 
 import com.github.cameltooling.lsp.internal.instancemodel.PathParamURIInstance;
 
+import io.fabric8.camelk.v1alpha1.Kamelet;
+
 public class KameletTemplateIdCompletionProvider {
 	
 	private static final Logger LOGGER = LoggerFactory.getLogger(KameletTemplateIdCompletionProvider.class);
@@ -37,12 +40,13 @@ public class KameletTemplateIdCompletionProvider {
 		KameletsCatalog kameletsCatalog;
 		try {
 			kameletsCatalog = new KameletsCatalog();
-			List<String> kameletsName = kameletsCatalog.getKameletsName();
-			List<CompletionItem> completionItems = kameletsName
+			Collection<Kamelet> kamelets = kameletsCatalog.getKamelets().values();
+			List<CompletionItem> completionItems = kamelets
 					.stream()
-					.map(name -> {
-						CompletionItem completionItem = new CompletionItem(name);
+					.map(kamelet -> {
+						CompletionItem completionItem = new CompletionItem(kamelet.getMetadata().getName());
 						CompletionResolverUtils.applyTextEditToCompletionItem(pathParamURIInstance, completionItem);
+						completionItem.setDocumentation(kamelet.getSpec().getDefinition().getDescription());
 						return completionItem;
 					})
 					.collect(Collectors.toList());
