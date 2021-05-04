@@ -34,6 +34,7 @@ import org.slf4j.LoggerFactory;
 
 import com.github.cameltooling.lsp.internal.CamelTextDocumentService;
 import com.github.cameltooling.lsp.internal.catalog.util.CamelKafkaConnectorCatalogManager;
+import com.github.cameltooling.lsp.internal.catalog.util.KameletsCatalogManager;
 import com.github.cameltooling.lsp.internal.completion.CamelEndpointCompletionProcessor;
 import com.github.cameltooling.lsp.internal.diagnostic.DiagnosticService;
 import com.github.cameltooling.lsp.internal.instancemodel.propertiesfile.CamelPropertyKeyInstance;
@@ -57,7 +58,8 @@ public class UnknownPropertyQuickfix extends AbstractQuickfix {
 			CompletableFuture<CamelCatalog> camelCatalog,
 			CamelKafkaConnectorCatalogManager camelKafkaConnectorManager,
 			Position position,
-			SettingsManager settingsManager) {
+			SettingsManager settingsManager,
+			KameletsCatalogManager kameletsCatalogManager) {
 		if (textDocumentItem.getUri().endsWith(".properties")) {
 			Optional<CamelKafkaConnectorModel> optionalModel = camelKafkaConnectorManager.findConnectorModel(new CamelKafkaUtil().findConnectorClass(textDocumentItem));
 			if (optionalModel.isPresent()) {
@@ -69,7 +71,7 @@ public class UnknownPropertyQuickfix extends AbstractQuickfix {
 			}
 		} else {
 			try {
-				return new CamelEndpointCompletionProcessor(textDocumentItem, camelCatalog).getCompletions(position, settingsManager)
+				return new CamelEndpointCompletionProcessor(textDocumentItem, camelCatalog, kameletsCatalogManager).getCompletions(position, settingsManager)
 						.thenApply(completionItems -> completionItems.stream().map(CompletionItem::getInsertText)
 								.collect(Collectors.toList()))
 						.get();

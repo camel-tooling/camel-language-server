@@ -30,6 +30,7 @@ import org.eclipse.lsp4j.Position;
 import org.eclipse.lsp4j.TextDocumentItem;
 
 import com.github.cameltooling.lsp.internal.catalog.util.CamelKafkaConnectorCatalogManager;
+import com.github.cameltooling.lsp.internal.catalog.util.KameletsCatalogManager;
 import com.github.cameltooling.lsp.internal.instancemodel.ILineRangeDefineable;
 import com.github.cameltooling.lsp.internal.settings.SettingsManager;
 
@@ -63,11 +64,11 @@ public class CamelPropertyEntryInstance implements ILineRangeDefineable {
 		camelPropertyValueInstance = new CamelPropertyValueInstance(camelPropertyFileValueInstanceString, camelPropertyKeyInstance, textDocumentItem);
 	}
 	
-	public CompletableFuture<List<CompletionItem>> getCompletions(Position position, CompletableFuture<CamelCatalog> camelCatalog, CamelKafkaConnectorCatalogManager camelKafkaConnectorManager, SettingsManager settingsManager) {
+	public CompletableFuture<List<CompletionItem>> getCompletions(Position position, CompletableFuture<CamelCatalog> camelCatalog, CamelKafkaConnectorCatalogManager camelKafkaConnectorManager, SettingsManager settingsManager, KameletsCatalogManager kameletsCatalogManager) {
 		if (isOnPropertyKey(position)) {
 			return camelPropertyKeyInstance.getCompletions(position, camelCatalog, camelKafkaConnectorManager);
 		} else {
-			return camelPropertyValueInstance.getCompletions(position, camelCatalog, camelKafkaConnectorManager, settingsManager);
+			return camelPropertyValueInstance.getCompletions(position, camelCatalog, camelKafkaConnectorManager, settingsManager, kameletsCatalogManager);
 		}
 	}
 

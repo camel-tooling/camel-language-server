@@ -28,6 +28,7 @@ import org.eclipse.lsp4j.Position;
 import org.eclipse.lsp4j.TextDocumentItem;
 
 import com.github.cameltooling.lsp.internal.catalog.util.CamelKafkaConnectorCatalogManager;
+import com.github.cameltooling.lsp.internal.catalog.util.KameletsCatalogManager;
 import com.github.cameltooling.lsp.internal.completion.CamelComponentOptionValuesCompletionsFuture;
 import com.github.cameltooling.lsp.internal.completion.CamelEndpointCompletionProcessor;
 import com.github.cameltooling.lsp.internal.completion.CamelKafkaConnectorClassCompletionProcessor;
@@ -56,10 +57,10 @@ public class CamelPropertyValueInstance implements ILineRangeDefineable {
 		this.textDocumentItem = textDocumentItem;
 	}
 
-	public CompletableFuture<List<CompletionItem>> getCompletions(Position position, CompletableFuture<CamelCatalog> camelCatalog, CamelKafkaConnectorCatalogManager camelKafkaConnectorManager, SettingsManager settingsManager) {
+	public CompletableFuture<List<CompletionItem>> getCompletions(Position position, CompletableFuture<CamelCatalog> camelCatalog, CamelKafkaConnectorCatalogManager camelKafkaConnectorManager, SettingsManager settingsManager, KameletsCatalogManager kameletsCatalogManager) {
 		String propertyKey = key.getCamelPropertyKey();
 		if (new CamelKafkaUtil().isCamelURIForKafka(propertyKey)) {
-			return new CamelEndpointCompletionProcessor(textDocumentItem, camelCatalog).getCompletions(position, settingsManager);
+			return new CamelEndpointCompletionProcessor(textDocumentItem, camelCatalog, kameletsCatalogManager).getCompletions(position, settingsManager);
 		} else if (new CamelKafkaUtil().isConnectorClassForCamelKafkaConnector(propertyKey)) {
 			String startFilter = computeStartFilter(position);
 			return new CamelKafkaConnectorClassCompletionProcessor(this, camelKafkaConnectorManager).getCompletions(startFilter);

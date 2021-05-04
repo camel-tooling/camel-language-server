@@ -27,6 +27,7 @@ import org.eclipse.lsp4j.TextDocumentItem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.github.cameltooling.lsp.internal.catalog.util.KameletsCatalogManager;
 import com.github.cameltooling.lsp.internal.instancemodel.CamelURIInstance;
 import com.github.cameltooling.lsp.internal.instancemodel.CamelUriElementInstance;
 import com.github.cameltooling.lsp.internal.parser.ParserFileHelper;
@@ -39,10 +40,12 @@ public class CamelEndpointCompletionProcessor {
 	private static final Logger LOGGER = LoggerFactory.getLogger(CamelEndpointCompletionProcessor.class);
 	private TextDocumentItem textDocumentItem;
 	private CompletableFuture<CamelCatalog> camelCatalog;
+	private KameletsCatalogManager kameletsCatalogManager;
 
-	public CamelEndpointCompletionProcessor(TextDocumentItem textDocumentItem, CompletableFuture<CamelCatalog> camelCatalog) {
+	public CamelEndpointCompletionProcessor(TextDocumentItem textDocumentItem, CompletableFuture<CamelCatalog> camelCatalog, KameletsCatalogManager kameletsCatalogManager) {
 		this.textDocumentItem = textDocumentItem;
 		this.camelCatalog = camelCatalog;
+		this.kameletsCatalogManager = kameletsCatalogManager;
 	}
 
 	public CompletableFuture<List<CompletionItem>> getCompletions(Position position, SettingsManager settingsManager) {
@@ -66,7 +69,7 @@ public class CamelEndpointCompletionProcessor {
 
 	private CompletableFuture<List<CompletionItem>> getCompletions(CamelURIInstance camelURIInstance, int positionInCamelUri, SettingsManager settingsManager) {
 		CamelUriElementInstance camelUriElementInstance = camelURIInstance.getSpecificElement(positionInCamelUri);
-		return camelUriElementInstance.getCompletions(camelCatalog, positionInCamelUri, textDocumentItem, settingsManager);
+		return camelUriElementInstance.getCompletions(camelCatalog, positionInCamelUri, textDocumentItem, settingsManager, kameletsCatalogManager);
 	}
 
 }
