@@ -41,6 +41,7 @@ import com.github.cameltooling.lsp.internal.completion.CamelComponentSchemesComp
 import com.github.cameltooling.lsp.internal.completion.CompletionResolverUtils;
 import com.github.cameltooling.lsp.internal.completion.FilterPredicateUtils;
 import com.github.cameltooling.lsp.internal.completion.KafkaTopicCompletionProvider;
+import com.github.cameltooling.lsp.internal.completion.KameletTemplateIdCompletionProvider;
 import com.github.cameltooling.lsp.internal.settings.SettingsManager;
 
 /**
@@ -69,8 +70,11 @@ public class PathParamURIInstance extends CamelUriElementInstance {
 	@Override
 	public CompletableFuture<List<CompletionItem>> getCompletions(CompletableFuture<CamelCatalog> camelCatalog, int positionInCamelUri, TextDocumentItem docItem, SettingsManager settingsManager) {
 		if(pathParamIndex == 0) {
-			if("kafka".equals(uriInstance.getComponentName())) {
+			String componentName = uriInstance.getComponentName();
+			if("kafka".equals(componentName)) {
 				return new KafkaTopicCompletionProvider().get(this, settingsManager);
+			} else if("kamelet".equals(componentName)){
+				return new KameletTemplateIdCompletionProvider().get(this);
 			} else {
 				return getCompletionForApiName(camelCatalog, positionInCamelUri, docItem);
 			}
