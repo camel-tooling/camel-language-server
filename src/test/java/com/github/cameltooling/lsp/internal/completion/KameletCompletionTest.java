@@ -46,6 +46,7 @@ class KameletCompletionTest extends AbstractCamelLanguageServerTest {
 						new TextEdit(
 								new Range(new Position(0, 19), new Position(0, 19)),
 								"aws-ddb-streams-source")));
+		completionItem.setDocumentation("Receive events from AWS DynamoDB Streams.");
 		assertThat(completions)
 			.hasSizeGreaterThan(10)
 			.contains(completionItem);
