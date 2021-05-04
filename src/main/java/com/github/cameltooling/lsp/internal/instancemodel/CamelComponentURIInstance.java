@@ -24,6 +24,7 @@ import org.eclipse.lsp4j.CompletionItem;
 import org.eclipse.lsp4j.TextDocumentItem;
 
 import com.github.cameltooling.lsp.internal.catalog.model.ComponentModel;
+import com.github.cameltooling.lsp.internal.catalog.util.KameletsCatalogManager;
 import com.github.cameltooling.lsp.internal.settings.SettingsManager;
 
 /**
@@ -46,8 +47,8 @@ public class CamelComponentURIInstance extends CamelUriElementInstance {
 	}
 
 	@Override
-	public CompletableFuture<List<CompletionItem>> getCompletions(CompletableFuture<CamelCatalog> camelCatalog, int positionInCamelUri, TextDocumentItem docItem, SettingsManager settingsManager) {
-		return parent.getCompletions(camelCatalog, positionInCamelUri, docItem, settingsManager);		
+	public CompletableFuture<List<CompletionItem>> getCompletions(CompletableFuture<CamelCatalog> camelCatalog, int positionInCamelUri, TextDocumentItem docItem, SettingsManager settingsManager, KameletsCatalogManager kameletsCatalogManager) {
+		return parent.getCompletions(camelCatalog, positionInCamelUri, docItem, settingsManager, kameletsCatalogManager);		
 	}
 	
 	@Override

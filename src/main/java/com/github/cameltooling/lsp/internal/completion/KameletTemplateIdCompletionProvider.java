@@ -16,7 +16,6 @@
  */
 package com.github.cameltooling.lsp.internal.completion;
 
-import java.io.IOException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -26,44 +25,45 @@ import java.util.stream.Collectors;
 import org.apache.camel.kamelets.catalog.KameletsCatalog;
 import org.apache.camel.kamelets.catalog.model.KameletTypeEnum;
 import org.eclipse.lsp4j.CompletionItem;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
+import com.github.cameltooling.lsp.internal.catalog.util.KameletsCatalogManager;
 import com.github.cameltooling.lsp.internal.instancemodel.PathParamURIInstance;
 
 import io.fabric8.camelk.v1alpha1.Kamelet;
 
 public class KameletTemplateIdCompletionProvider {
 	
-	private static final Logger LOGGER = LoggerFactory.getLogger(KameletTemplateIdCompletionProvider.class);
+	private KameletsCatalogManager kameletsCatalogManager;
 
-	public CompletableFuture<List<CompletionItem>> get(PathParamURIInstance pathParamURIInstance) {
-		try {
-			Collection<Kamelet> kamelets = retrievePotentialKamelets(pathParamURIInstance);
-			
-			List<CompletionItem> completionItems = kamelets
-					.stream()
-					.map(kamelet -> {
-						CompletionItem completionItem = new CompletionItem(kamelet.getMetadata().getName());
-						CompletionResolverUtils.applyTextEditToCompletionItem(pathParamURIInstance, completionItem);
-						completionItem.setDocumentation(kamelet.getSpec().getDefinition().getDescription());
-						return completionItem;
-					})
-					.collect(Collectors.toList());
-			return CompletableFuture.completedFuture(completionItems);
-		} catch (IOException e) {
-			LOGGER.warn("Cannot determine completion for Kamelet template Ids", e);
-		}
-		return CompletableFuture.completedFuture(Collections.emptyList());
-		
+	public KameletTemplateIdCompletionProvider(KameletsCatalogManager kameletsCatalogManager) {
+		this.kameletsCatalogManager = kameletsCatalogManager;
 	}
 
-	private Collection<Kamelet> retrievePotentialKamelets(PathParamURIInstance pathParamURIInstance) throws IOException {
-		KameletsCatalog kameletsCatalog = new KameletsCatalog();
-		if (pathParamURIInstance.getCamelUriInstance().isProducer()) {
-			return kameletsCatalog.getKameletsByType(KameletTypeEnum.SINK.type());
+	public CompletableFuture<List<CompletionItem>> get(PathParamURIInstance pathParamURIInstance) {
+		Collection<Kamelet> kamelets = retrievePotentialKamelets(pathParamURIInstance);
+			
+		List<CompletionItem> completionItems = kamelets
+			.stream()
+				.map(kamelet -> {
+					CompletionItem completionItem = new CompletionItem(kamelet.getMetadata().getName());
+					CompletionResolverUtils.applyTextEditToCompletionItem(pathParamURIInstance, completionItem);
+					completionItem.setDocumentation(kamelet.getSpec().getDefinition().getDescription());
+					return completionItem;
+				})
+				.collect(Collectors.toList());
+		return CompletableFuture.completedFuture(completionItems);
+	}
+
+	private Collection<Kamelet> retrievePotentialKamelets(PathParamURIInstance pathParamURIInstance) {
+		KameletsCatalog kameletsCatalog = kameletsCatalogManager.getCatalog();
+		if(kameletsCatalog != null) {
+			if (pathParamURIInstance.getCamelUriInstance().isProducer()) {
+				return kameletsCatalog.getKameletsByType(KameletTypeEnum.SINK.type());
+			} else {
+				return kameletsCatalog.getKameletsByType(KameletTypeEnum.SOURCE.type());
+			}
 		} else {
-			return kameletsCatalog.getKameletsByType(KameletTypeEnum.SOURCE.type());
+			return Collections.emptyList();
 		}
 	}
 
