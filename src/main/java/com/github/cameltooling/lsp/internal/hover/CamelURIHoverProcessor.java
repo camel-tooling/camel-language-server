@@ -25,6 +25,7 @@ import org.eclipse.lsp4j.TextDocumentItem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.github.cameltooling.lsp.internal.catalog.util.KameletsCatalogManager;
 import com.github.cameltooling.lsp.internal.catalog.util.StringUtils;
 import com.github.cameltooling.lsp.internal.instancemodel.CamelURIInstance;
 import com.github.cameltooling.lsp.internal.instancemodel.CamelUriElementInstance;
@@ -36,10 +37,12 @@ public class CamelURIHoverProcessor {
 	private static final Logger LOGGER = LoggerFactory.getLogger(CamelURIHoverProcessor.class);
 	private TextDocumentItem textDocumentItem;
 	private CompletableFuture<CamelCatalog> camelCatalog;
+	private KameletsCatalogManager kameletCatalogManager;
 
-	public CamelURIHoverProcessor(TextDocumentItem textDocumentItem, CompletableFuture<CamelCatalog> camelCatalog) {
+	public CamelURIHoverProcessor(TextDocumentItem textDocumentItem, CompletableFuture<CamelCatalog> camelCatalog, KameletsCatalogManager kameletCatalogManager) {
 		this.textDocumentItem = textDocumentItem;
 		this.camelCatalog = camelCatalog;
+		this.kameletCatalogManager = kameletCatalogManager;
 	}
 
 	public CompletableFuture<Hover> getHover(Position position) {
@@ -52,7 +55,7 @@ public class CamelURIHoverProcessor {
 					CamelURIInstance camelURIInstance = parserFileHelper.createCamelURIInstance(textDocumentItem, position, camelComponentUri);
 					int positionInCamelUri = parserFileHelper.getPositionInCamelURI(textDocumentItem, position);
 					CamelUriElementInstance elem = camelURIInstance.getSpecificElement(positionInCamelUri);
-					return camelCatalog.thenApply(new CamelURIHoverFuture(elem));
+					return camelCatalog.thenApply(new CamelURIHoverFuture(elem, kameletCatalogManager));
 				}
 			}
 		} catch (Exception e) {

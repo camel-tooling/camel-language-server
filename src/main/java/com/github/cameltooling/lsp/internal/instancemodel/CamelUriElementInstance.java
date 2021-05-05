@@ -82,7 +82,7 @@ public abstract class CamelUriElementInstance implements ILineRangeDefineable{
 	
 	public abstract String getComponentName();
 	
-	public abstract String getDescription(ComponentModel componentModel);
+	public abstract String getDescription(ComponentModel componentModel, KameletsCatalogManager kameletCatalogManager);
 	
 	public abstract CamelURIInstance getCamelUriInstance();
 

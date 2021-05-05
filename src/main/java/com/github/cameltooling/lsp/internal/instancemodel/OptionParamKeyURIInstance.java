@@ -85,8 +85,8 @@ public class OptionParamKeyURIInstance extends CamelUriElementInstance {
 	}
 	
 	@Override
-	public String getDescription(ComponentModel componentModel) {
-		return optionParamURIInstance.getDescription(componentModel);
+	public String getDescription(ComponentModel componentModel, KameletsCatalogManager kameletCatalogManager) {
+		return optionParamURIInstance.getDescription(componentModel, kameletCatalogManager);
 	}
 	
 	@Override

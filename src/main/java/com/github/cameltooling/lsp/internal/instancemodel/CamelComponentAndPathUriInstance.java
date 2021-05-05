@@ -172,7 +172,7 @@ public class CamelComponentAndPathUriInstance extends CamelUriElementInstance {
 	}
 
 	@Override
-	public String getDescription(ComponentModel componentModel) {
+	public String getDescription(ComponentModel componentModel, KameletsCatalogManager kameletCatalogManager) {
 		return null;
 	}
 	

@@ -103,11 +103,11 @@ public class CamelPropertyValueInstance implements ILineRangeDefineable {
 		return getStartPositionInLine() + (camelPropertyValue != null ? camelPropertyValue.length() : 0);
 	}
 
-	public CompletableFuture<Hover> getHover(Position position, CompletableFuture<CamelCatalog> camelCatalog, CamelKafkaConnectorCatalogManager camelKafkaConnectorManager) {
+	public CompletableFuture<Hover> getHover(Position position, CompletableFuture<CamelCatalog> camelCatalog, CamelKafkaConnectorCatalogManager camelKafkaConnectorManager, KameletsCatalogManager kameletCatalogManager) {
 		String propertyKey = key.getCamelPropertyKey();
 		CamelKafkaUtil camelKafkaUtil = new CamelKafkaUtil();
 		if (camelKafkaUtil.isCamelURIForKafka(propertyKey)) {
-			return new CamelURIHoverProcessor(textDocumentItem, camelCatalog).getHover(position);
+			return new CamelURIHoverProcessor(textDocumentItem, camelCatalog, kameletCatalogManager).getHover(position);
 		} else if (camelKafkaUtil.isConnectorClassForCamelKafkaConnector(propertyKey)) {
 			Optional<CamelKafkaConnectorModel> optional = camelKafkaConnectorManager.findConnectorModel(camelPropertyValue);
 			if(optional.isPresent()) {

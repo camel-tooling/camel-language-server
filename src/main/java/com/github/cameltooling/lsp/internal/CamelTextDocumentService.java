@@ -174,11 +174,11 @@ public class CamelTextDocumentService implements TextDocumentService {
 		String uri = hoverParams.getTextDocument().getUri();
 		TextDocumentItem textDocumentItem = openedDocuments.get(uri);
 		if (uri.endsWith(".properties")){
-			return new CamelPropertiesFileHoverProcessor(textDocumentItem).getHover(hoverParams.getPosition(), getCamelCatalog(), getCamelKafkaConnectorManager());
+			return new CamelPropertiesFileHoverProcessor(textDocumentItem).getHover(hoverParams.getPosition(), getCamelCatalog(), getCamelKafkaConnectorManager(), getKameletsCatalogManager());
 		} else if(isOnCamelKModeline(hoverParams.getPosition().getLine(), textDocumentItem)) {
 			return new CamelKModelineHoverProcessor(textDocumentItem).getHover(hoverParams.getPosition(), getCamelCatalog());
 		} else {
-			return new CamelURIHoverProcessor(textDocumentItem, getCamelCatalog()).getHover(hoverParams.getPosition());
+			return new CamelURIHoverProcessor(textDocumentItem, getCamelCatalog(), getKameletsCatalogManager()).getHover(hoverParams.getPosition());
 		}
 	}
 

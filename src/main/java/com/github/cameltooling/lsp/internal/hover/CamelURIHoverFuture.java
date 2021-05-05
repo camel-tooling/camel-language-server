@@ -26,15 +26,18 @@ import org.eclipse.lsp4j.Range;
 import org.eclipse.lsp4j.jsonrpc.messages.Either;
 
 import com.github.cameltooling.lsp.internal.catalog.model.ComponentModel;
+import com.github.cameltooling.lsp.internal.catalog.util.KameletsCatalogManager;
 import com.github.cameltooling.lsp.internal.catalog.util.ModelHelper;
 import com.github.cameltooling.lsp.internal.instancemodel.CamelUriElementInstance;
 
 public class CamelURIHoverFuture implements Function<CamelCatalog, Hover> {
 	
 	private CamelUriElementInstance uriElement;
+	private KameletsCatalogManager kameletCatalogManager;
 	
-	public CamelURIHoverFuture(CamelUriElementInstance uriElement) {
+	public CamelURIHoverFuture(CamelUriElementInstance uriElement, KameletsCatalogManager kameletCatalogManager) {
 		this.uriElement = uriElement;
+		this.kameletCatalogManager = kameletCatalogManager;
 	}
 
 	@Override
@@ -43,7 +46,7 @@ public class CamelURIHoverFuture implements Function<CamelCatalog, Hover> {
 		if (componentJSonSchema != null) {
 			Hover hover = new Hover();
 			ComponentModel componentModel = ModelHelper.generateComponentModel(componentJSonSchema, true);
-			hover.setContents(Collections.singletonList((Either.forLeft(uriElement.getDescription(componentModel)))));
+			hover.setContents(Collections.singletonList((Either.forLeft(uriElement.getDescription(componentModel, kameletCatalogManager)))));
 			Position start = new Position(uriElement.getLine(), uriElement.getStartPositionInLine());
 			hover.setRange(new Range(start, new Position(uriElement.getLine(), uriElement.getEndPositionInLine())));
 			return hover;

@@ -45,11 +45,16 @@ import com.github.cameltooling.lsp.internal.completion.KafkaTopicCompletionProvi
 import com.github.cameltooling.lsp.internal.completion.KameletTemplateIdCompletionProvider;
 import com.github.cameltooling.lsp.internal.settings.SettingsManager;
 
+import io.fabric8.kubernetes.api.model.apiextensions.v1.JSONSchemaProps;
+
 /**
  * For a Camel URI "timer:timerName?delay=10s", it represents "timerName"
  */
 public class PathParamURIInstance extends CamelUriElementInstance {
 	
+	private static final String COMPONENT_NAME_KAMELET = "kamelet";
+
+
 	private static final Logger LOGGER = LoggerFactory.getLogger(PathParamURIInstance.class);
 
 
@@ -74,7 +79,7 @@ public class PathParamURIInstance extends CamelUriElementInstance {
 			String componentName = uriInstance.getComponentName();
 			if("kafka".equals(componentName)) {
 				return new KafkaTopicCompletionProvider().get(this, settingsManager);
-			} else if("kamelet".equals(componentName)){
+			} else if(COMPONENT_NAME_KAMELET.equals(componentName)){
 				return new KameletTemplateIdCompletionProvider(kameletsCatalogManager).get(this);
 			} else {
 				return getCompletionForApiName(camelCatalog, positionInCamelUri, docItem);
@@ -188,7 +193,13 @@ public class PathParamURIInstance extends CamelUriElementInstance {
 	}
 	
 	@Override
-	public String getDescription(ComponentModel componentModel) {
+	public String getDescription(ComponentModel componentModel, KameletsCatalogManager kameletCatalogManager) {
+		if(pathParamIndex == 0 && COMPONENT_NAME_KAMELET.equals(getComponentName())) {
+			JSONSchemaProps kamelet = kameletCatalogManager.getCatalog().getKameletDefinition(getValue());
+			if(kamelet != null) {
+				return kamelet.getDescription();
+			}
+		}
 		return componentModel.getSyntax();
 	}
 	
