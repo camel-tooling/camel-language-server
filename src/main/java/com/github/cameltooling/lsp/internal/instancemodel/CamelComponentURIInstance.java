@@ -52,7 +52,7 @@ public class CamelComponentURIInstance extends CamelUriElementInstance {
 	}
 	
 	@Override
-	public String getDescription(ComponentModel componentModel) {
+	public String getDescription(ComponentModel componentModel, KameletsCatalogManager kameletCatalogManager) {
 		return componentModel.getDescription();
 	}
 	

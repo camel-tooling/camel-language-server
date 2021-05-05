@@ -98,11 +98,11 @@ public class CamelPropertyEntryInstance implements ILineRangeDefineable {
 		return getStartPositionInLine() + line.length();
 	}
 
-	public CompletableFuture<Hover> getHover(Position position, CompletableFuture<CamelCatalog> camelCatalog, CamelKafkaConnectorCatalogManager camelKafkaConnectorCatalog) {
+	public CompletableFuture<Hover> getHover(Position position, CompletableFuture<CamelCatalog> camelCatalog, CamelKafkaConnectorCatalogManager camelKafkaConnectorCatalog, KameletsCatalogManager kameletCatalogManager) {
 		if (isOnPropertyKey(position)) {
 			return camelPropertyKeyInstance.getHover(position, camelCatalog, camelKafkaConnectorCatalog);
 		} else {
-			return camelPropertyValueInstance.getHover(position, camelCatalog, camelKafkaConnectorCatalog);
+			return camelPropertyValueInstance.getHover(position, camelCatalog, camelKafkaConnectorCatalog, kameletCatalogManager);
 		}
 	}
 
