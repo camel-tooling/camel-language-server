@@ -16,24 +16,14 @@
  */
 package com.github.cameltooling.lsp.internal.catalog.util;
 
-import java.io.IOException;
-
 import org.apache.camel.kamelets.catalog.KameletsCatalog;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class KameletsCatalogManager {
-	
-	private static final Logger LOGGER = LoggerFactory.getLogger(KameletsCatalogManager.class);
 	
 	private KameletsCatalog kameletsCatalog;
 
 	public KameletsCatalogManager() {
-		try {
-			kameletsCatalog = new KameletsCatalog();
-		} catch (IOException e) {
-			LOGGER.error("Cannot load Kamelet Catalog", e);
-		}
+		kameletsCatalog = new KameletsCatalog();
 	}
 
 	public KameletsCatalog getCatalog() {
