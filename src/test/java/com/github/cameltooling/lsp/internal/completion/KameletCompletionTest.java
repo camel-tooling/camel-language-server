@@ -66,7 +66,8 @@ class KameletCompletionTest extends AbstractCamelLanguageServerTest {
 		
 		assertThat(completions)
 			.hasSizeGreaterThan(5)
-			.contains(createTablePropertyCompletionItem());
+			.contains(createTablePropertyCompletionItem())
+			.contains(createPropertyCompletionItemWithDefaultValue());
 	}
 
 	private CompletionItem createTablePropertyCompletionItem() {
@@ -78,6 +79,18 @@ class KameletCompletionTest extends AbstractCamelLanguageServerTest {
 								new Range(new Position(0, 42), new Position(0, 42)),
 								"table=")));
 		completionItem.setDocumentation("Name of the DynamoDB table to look at");
+		return completionItem;
+	}
+	
+	private CompletionItem createPropertyCompletionItemWithDefaultValue() {
+		CompletionItem completionItem = new CompletionItem("iteratorType");
+		completionItem.setInsertText("iteratorType=LATEST");
+		completionItem.setTextEdit(
+				Either.forLeft(
+						new TextEdit(
+								new Range(new Position(0, 42), new Position(0, 42)),
+								"iteratorType=LATEST")));
+		completionItem.setDocumentation("Defines where in the DynaboDB stream to start getting records. Note that using TRIM_HORIZON can cause a significant delay before the stream has caught up to real-time. if {AT,AFTER}_SEQUENCE_NUMBER are used, then a sequenceNumberProvider MUST be supplied. There are 4 enums and the value can be one of TRIM_HORIZON, LATEST, AT_SEQUENCE_NUMBER, AFTER_SEQUENCE_NUMBER");
 		return completionItem;
 	}
 

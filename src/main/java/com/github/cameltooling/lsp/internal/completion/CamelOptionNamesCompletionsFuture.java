@@ -27,6 +27,7 @@ import org.apache.camel.catalog.CamelCatalog;
 import org.eclipse.lsp4j.CompletionItem;
 import org.eclipse.lsp4j.CompletionItemKind;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.github.cameltooling.lsp.internal.catalog.model.BaseOptionModel;
 import com.github.cameltooling.lsp.internal.catalog.model.ComponentModel;
 import com.github.cameltooling.lsp.internal.catalog.model.EndpointOptionModel;
@@ -88,7 +89,12 @@ public class CamelOptionNamesCompletionsFuture implements Function<CamelCatalog,
 					kameletProperties = kameletDefinition.getProperties().entrySet().stream().map(property -> {
 						String propertyName = property.getKey();
 						CompletionItem completionItem = new CompletionItem(propertyName);
-						completionItem.setInsertText(propertyName + "=");
+						JsonNode defaultValue = property.getValue().getDefault();
+						String insertText = propertyName + "=";
+						if(defaultValue != null && defaultValue.isValueNode()) {
+							insertText += defaultValue.asText();
+						}
+						completionItem.setInsertText(insertText);
 						completionItem.setDocumentation(property.getValue().getDescription());
 						CompletionResolverUtils.applyTextEditToCompletionItem(uriElement, completionItem);
 						return completionItem;
