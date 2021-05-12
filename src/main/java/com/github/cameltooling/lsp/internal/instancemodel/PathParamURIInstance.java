@@ -52,11 +52,7 @@ import io.fabric8.kubernetes.api.model.apiextensions.v1.JSONSchemaProps;
  */
 public class PathParamURIInstance extends CamelUriElementInstance {
 	
-	private static final String COMPONENT_NAME_KAMELET = "kamelet";
-
-
 	private static final Logger LOGGER = LoggerFactory.getLogger(PathParamURIInstance.class);
-
 
 	private CamelComponentAndPathUriInstance uriInstance;
 	private String value;
@@ -77,9 +73,9 @@ public class PathParamURIInstance extends CamelUriElementInstance {
 	public CompletableFuture<List<CompletionItem>> getCompletions(CompletableFuture<CamelCatalog> camelCatalog, int positionInCamelUri, TextDocumentItem docItem, SettingsManager settingsManager, KameletsCatalogManager kameletsCatalogManager) {
 		if(pathParamIndex == 0) {
 			String componentName = uriInstance.getComponentName();
-			if("kafka".equals(componentName)) {
+			if(ComponentNameConstants.COMPONENT_NAME_KAFKA.equals(componentName)) {
 				return new KafkaTopicCompletionProvider().get(this, settingsManager);
-			} else if(COMPONENT_NAME_KAMELET.equals(componentName)){
+			} else if(ComponentNameConstants.COMPONENT_NAME_KAMELET.equals(componentName)){
 				return new KameletTemplateIdCompletionProvider(kameletsCatalogManager).get(this);
 			} else {
 				return getCompletionForApiName(camelCatalog, positionInCamelUri, docItem);
@@ -194,7 +190,7 @@ public class PathParamURIInstance extends CamelUriElementInstance {
 	
 	@Override
 	public String getDescription(ComponentModel componentModel, KameletsCatalogManager kameletCatalogManager) {
-		if(pathParamIndex == 0 && COMPONENT_NAME_KAMELET.equals(getComponentName())) {
+		if(pathParamIndex == 0 && ComponentNameConstants.COMPONENT_NAME_KAMELET.equals(getComponentName())) {
 			JSONSchemaProps kamelet = kameletCatalogManager.getCatalog().getKameletDefinition(getValue());
 			if(kamelet != null) {
 				return kamelet.getDescription();
@@ -228,5 +224,9 @@ public class PathParamURIInstance extends CamelUriElementInstance {
 			LOGGER.warn("Cannot retrieve Path parameter name", ee);
 			return null;
 		}
+	}
+
+	public int getPathParamIndex() {
+		return pathParamIndex;
 	}
 }

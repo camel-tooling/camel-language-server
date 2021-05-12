@@ -56,7 +56,13 @@ public class OptionParamKeyURIInstance extends CamelUriElementInstance {
 	@Override
 	public CompletableFuture<List<CompletionItem>> getCompletions(CompletableFuture<CamelCatalog> camelCatalog, int positionInCamelUri, TextDocumentItem docItem, SettingsManager settingsManager, KameletsCatalogManager kameletsCatalogManager) {
 		if(getStartPositionInUri() <= positionInCamelUri && positionInCamelUri <= getEndPositionInUri()) {
-			return camelCatalog.thenApply(new CamelOptionNamesCompletionsFuture(this, getComponentName(), optionParamURIInstance.isProducer(), getFilter(positionInCamelUri), positionInCamelUri, getAlreadyDefinedUriOptions()));
+			return camelCatalog.thenApply(new CamelOptionNamesCompletionsFuture(this,
+					getComponentName(),
+					optionParamURIInstance.isProducer(),
+					getFilter(positionInCamelUri),
+					positionInCamelUri,
+					getAlreadyDefinedUriOptions(),
+					kameletsCatalogManager));
 		} else {
 			return CompletableFuture.completedFuture(Collections.emptyList());
 		}

@@ -17,6 +17,7 @@
 package com.github.cameltooling.lsp.internal.completion;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -29,10 +30,14 @@ import org.eclipse.lsp4j.CompletionItemKind;
 import com.github.cameltooling.lsp.internal.catalog.model.BaseOptionModel;
 import com.github.cameltooling.lsp.internal.catalog.model.ComponentModel;
 import com.github.cameltooling.lsp.internal.catalog.model.EndpointOptionModel;
+import com.github.cameltooling.lsp.internal.catalog.util.KameletsCatalogManager;
 import com.github.cameltooling.lsp.internal.catalog.util.ModelHelper;
 import com.github.cameltooling.lsp.internal.instancemodel.CamelUriElementInstance;
+import com.github.cameltooling.lsp.internal.instancemodel.ComponentNameConstants;
 import com.github.cameltooling.lsp.internal.instancemodel.OptionParamKeyURIInstance;
 import com.github.cameltooling.lsp.internal.instancemodel.OptionParamURIInstance;
+
+import io.fabric8.kubernetes.api.model.apiextensions.v1.JSONSchemaProps;
 
 public class CamelOptionNamesCompletionsFuture implements Function<CamelCatalog, List<CompletionItem>>  {
 
@@ -42,14 +47,16 @@ public class CamelOptionNamesCompletionsFuture implements Function<CamelCatalog,
 	private String filterString;
 	private int positionInCamelURI;
 	private Set<OptionParamURIInstance> alreadyDefinedOptions;
+	private KameletsCatalogManager kameletsCatalogManager;
 
-	public CamelOptionNamesCompletionsFuture(CamelUriElementInstance uriElement, String camelComponentName, boolean isProducer, String filterText, int positionInCamelURI, Set<OptionParamURIInstance> alreadyDefinedOptions) {
+	public CamelOptionNamesCompletionsFuture(CamelUriElementInstance uriElement, String camelComponentName, boolean isProducer, String filterText, int positionInCamelURI, Set<OptionParamURIInstance> alreadyDefinedOptions, KameletsCatalogManager kameletsCatalogManager) {
 		this.uriElement = uriElement;
 		this.camelComponentName = camelComponentName;
 		this.isProducer = isProducer;
 		this.filterString = filterText;
 		this.positionInCamelURI = positionInCamelURI;
 		this.alreadyDefinedOptions = alreadyDefinedOptions;
+		this.kameletsCatalogManager = kameletsCatalogManager;
 	}
 
 	@Override
@@ -61,11 +68,35 @@ public class CamelOptionNamesCompletionsFuture implements Function<CamelCatalog,
 		List<EndpointOptionModel> availableApiProperties = uriElement.findAvailableApiProperties(componentModel);
 		Stream<CompletionItem> availableApiPropertiesFiltered = initialFilter(availableApiProperties).map(createCompletionItem(CompletionItemKind.Variable));
 		
-		return Stream.concat(endpointOptionsFiltered, availableApiPropertiesFiltered)
+		
+		Stream<CompletionItem> kameletProperties = retrieveKameletProperties();
+		
+		return Stream.concat(Stream.concat(endpointOptionsFiltered, availableApiPropertiesFiltered), kameletProperties)
 				// filter duplicated uri options
 				.filter(FilterPredicateUtils.removeDuplicatedOptions(alreadyDefinedOptions, positionInCamelURI))
 				.filter(FilterPredicateUtils.matchesCompletionFilter(filterString))
 				.collect(Collectors.toList());
+	}
+
+	private Stream<CompletionItem> retrieveKameletProperties() {
+		Stream<CompletionItem> kameletProperties = Stream.empty();
+		if(ComponentNameConstants.COMPONENT_NAME_KAMELET.equals(camelComponentName)) {
+			Optional<String> kameletTemplateId = uriElement.getCamelUriInstance().getComponentAndPathUriElementInstance().getPathParams().stream().filter(pathParam -> pathParam.getPathParamIndex() == 0).map(pathParam -> pathParam.getValue()).findAny();
+			if(kameletTemplateId.isPresent()) {
+				JSONSchemaProps kameletDefinition = kameletsCatalogManager.getCatalog().getKameletDefinition(kameletTemplateId.get());
+				if(kameletDefinition != null) {
+					kameletProperties = kameletDefinition.getProperties().entrySet().stream().map(property -> {
+						String propertyName = property.getKey();
+						CompletionItem completionItem = new CompletionItem(propertyName);
+						completionItem.setInsertText(propertyName + "=");
+						completionItem.setDocumentation(property.getValue().getDescription());
+						CompletionResolverUtils.applyTextEditToCompletionItem(uriElement, completionItem);
+						return completionItem;
+					});
+				}
+			}
+		}
+		return kameletProperties;
 	}
 
 	private Stream<EndpointOptionModel> initialFilter(List<EndpointOptionModel> endpointOptions) {

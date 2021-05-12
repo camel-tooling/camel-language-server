@@ -57,6 +57,29 @@ class KameletCompletionTest extends AbstractCamelLanguageServerTest {
 			.contains(createAwsKinesisSinkCompletionItem())
 			.doesNotContain(createAwsddbSourceCompletionItem());
 	}
+	
+	@Test
+	void testKameletPropertyCompletionForSource() throws Exception {
+		CamelLanguageServer languageServer = initLanguageServer("<from uri=\"kamelet:aws-ddb-streams-source?\" xmlns=\"http://camel.apache.org/schema/blueprint\"></from>\n");
+		
+		List<CompletionItem> completions = getCompletionFor(languageServer, new Position(0, 42)).get().getLeft();
+		
+		assertThat(completions)
+			.hasSizeGreaterThan(5)
+			.contains(createTablePropertyCompletionItem());
+	}
+
+	private CompletionItem createTablePropertyCompletionItem() {
+		CompletionItem completionItem = new CompletionItem("table");
+		completionItem.setInsertText("table=");
+		completionItem.setTextEdit(
+				Either.forLeft(
+						new TextEdit(
+								new Range(new Position(0, 42), new Position(0, 42)),
+								"table=")));
+		completionItem.setDocumentation("Name of the DynamoDB table to look at");
+		return completionItem;
+	}
 
 	private CompletionItem createAwsddbSourceCompletionItem() {
 		CompletionItem completionItem = new CompletionItem("aws-ddb-streams-source");
