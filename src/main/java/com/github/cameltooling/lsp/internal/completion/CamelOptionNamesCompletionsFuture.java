@@ -37,6 +37,7 @@ import com.github.cameltooling.lsp.internal.instancemodel.CamelUriElementInstanc
 import com.github.cameltooling.lsp.internal.instancemodel.ComponentNameConstants;
 import com.github.cameltooling.lsp.internal.instancemodel.OptionParamKeyURIInstance;
 import com.github.cameltooling.lsp.internal.instancemodel.OptionParamURIInstance;
+import com.github.cameltooling.lsp.internal.instancemodel.PathParamURIInstance;
 
 import io.fabric8.kubernetes.api.model.apiextensions.v1.JSONSchemaProps;
 
@@ -82,7 +83,13 @@ public class CamelOptionNamesCompletionsFuture implements Function<CamelCatalog,
 	private Stream<CompletionItem> retrieveKameletProperties() {
 		Stream<CompletionItem> kameletProperties = Stream.empty();
 		if(ComponentNameConstants.COMPONENT_NAME_KAMELET.equals(camelComponentName)) {
-			Optional<String> kameletTemplateId = uriElement.getCamelUriInstance().getComponentAndPathUriElementInstance().getPathParams().stream().filter(pathParam -> pathParam.getPathParamIndex() == 0).map(pathParam -> pathParam.getValue()).findAny();
+			Optional<String> kameletTemplateId = uriElement.getCamelUriInstance()
+					.getComponentAndPathUriElementInstance()
+					.getPathParams()
+					.stream()
+					.filter(pathParam -> pathParam.getPathParamIndex() == 0)
+					.map(PathParamURIInstance::getValue)
+					.findAny();
 			if(kameletTemplateId.isPresent()) {
 				JSONSchemaProps kameletDefinition = kameletsCatalogManager.getCatalog().getKameletDefinition(kameletTemplateId.get());
 				if(kameletDefinition != null) {
