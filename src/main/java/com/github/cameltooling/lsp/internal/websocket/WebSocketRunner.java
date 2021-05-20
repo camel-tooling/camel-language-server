@@ -31,13 +31,17 @@ public class WebSocketRunner {
 	private static final String DEFAULT_CONTEXT_PATH = "/";
 	
 	private boolean isStarted = false;
+	private boolean isStopped = false;
 
 	public void runWebSocketServer(String hostname, int port, String contextPath) {
 		hostname = hostname != null ? hostname : DEFAULT_HOSTNAME;
 		port = port != -1 ? port : DEFAULT_PORT;
 		contextPath = contextPath != null ? contextPath : DEFAULT_CONTEXT_PATH;
 		Server server = new Server(hostname, port, contextPath, null, CamelLSPWebSocketServerConfigProvider.class);
-		Runtime.getRuntime().addShutdownHook(new Thread(server::stop, "camel-lsp-websocket-server-shutdown-hook"));
+		Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+			server.stop();
+			isStopped = true;
+		}, "camel-lsp-websocket-server-shutdown-hook"));
 
 		try {
 			server.start();
@@ -50,11 +54,16 @@ public class WebSocketRunner {
 			LOGGER.error("Cannot start Camel LSP Websocket server.", e);
 		} finally {
 			server.stop();
+			isStopped = true;
 		}
 	}
 
 	public boolean isStarted() {
 		return isStarted;
+	}
+
+	public boolean isStopped() {
+		return isStopped;
 	}
 
 }
