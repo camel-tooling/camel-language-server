@@ -36,7 +36,6 @@ jobs:
       - run: > 
           mvn verify
           -P !build-extras
-          -Dtest="*,!RunnerStandardIOTest,!RunnerWebSocketTest"
           -B
           sonar:sonar
           -Dsonar.login=${SONAR_TOKEN}

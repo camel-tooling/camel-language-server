@@ -30,6 +30,7 @@ class RunnerStandardIOTest {
 
 	private PrintStream sysOut;
 	private final ByteArrayOutputStream outContent = new ByteArrayOutputStream();
+	private Thread thread;
 
 	@BeforeEach
 	void beforeClass() {
@@ -39,13 +40,17 @@ class RunnerStandardIOTest {
 
 	@AfterEach
 	void afterClass() {
+		if(thread != null) {
+			thread.interrupt();
+			await("The Thread is still alive although interrupt was called.").untilAsserted(() -> assertThat(thread.isAlive()).isFalse());
+		}
 		System.setOut(sysOut);
 	}
 
 	@Test
 	void testClientProxyAvailable() throws Exception {
 		startRunnerWithoutOption();
-		await("Wait for Server to start with a remote proxy client")
+		await("Wait for Server to be initialized")
 				.untilAsserted(() -> assertThat(Runner.server).isNotNull());
 		await("Wait for Server to start with a remote proxy client")
 				.untilAsserted(() -> assertThat(Runner.server.getClient()).isNotNull());
@@ -53,12 +58,13 @@ class RunnerStandardIOTest {
 	}
 
 	private void startRunnerWithoutOption() {
-		new Thread(new Runnable() {
+		thread = new Thread(new Runnable() {
 
 			@Override
 			public void run() {
 				Runner.main(new String[] {});
 			}
-		}).start();
+		});
+		thread.start();
 	}
 }
