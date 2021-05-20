@@ -47,6 +47,8 @@ class RunnerWebSocketTest {
 	void tearDown() {
 		if(thread != null) {
 			thread.interrupt();
+			await("The Thread is still alive although interrupt was called.").untilAsserted(() -> assertThat(thread.isAlive()).isFalse());
+			await("WebSocket Server has not been stopped.").until(() -> Runner.webSocketRunner.isStopped());
 		}
 	}
 	
@@ -105,7 +107,8 @@ class RunnerWebSocketTest {
 			throws InterruptedException, DeploymentException, IOException, URISyntaxException {
 		startRunnerWithWebsocketOption(arguments);
 		
-		await("WebSocket Server has not been started.").until(() -> {return Runner.webSocketRunner != null && Runner.webSocketRunner.isStarted(); });
+		await("WebSocket Server has not been initialized.").until(() -> Runner.webSocketRunner != null);
+		await("WebSocket Server has not been started.").until(() -> Runner.webSocketRunner.isStarted());
 
 		final ClientEndpointConfig cec = ClientEndpointConfig.Builder.create().build();
 		ClientManager client = ClientManager.createClient();
