@@ -35,7 +35,7 @@ class KameletHoverTest extends AbstractCamelLanguageServerTest {
 	void testProvideDocumentationOnHover() throws Exception {
 		CamelLanguageServer camelLanguageServer = initializeLanguageServer("<from uri=\"kamelet:aws-ddb-streams-source\" xmlns=\"http://camel.apache.org/schema/spring\"></from>\n");
 		
-		HoverParams hoverParams = new HoverParams(new TextDocumentIdentifier(DUMMY_URI+".xml"), new Position(0, 21));
+		HoverParams hoverParams = new HoverParams(new TextDocumentIdentifier(DUMMY_URI+".xml"), new Position(0, 26));
 		CompletableFuture<Hover> hover = camelLanguageServer.getTextDocumentService().hover(hoverParams);
 		
 		assertThat(hover.get().getContents().getLeft().get(0).getLeft()).isEqualTo("Receive events from AWS DynamoDB Streams.");
@@ -45,10 +45,20 @@ class KameletHoverTest extends AbstractCamelLanguageServerTest {
 	void testProvideGenericDocumentationOnHoverOnUnknownKamelet() throws Exception {
 		CamelLanguageServer camelLanguageServer = initializeLanguageServer("<from uri=\"kamelet:unknown\" xmlns=\"http://camel.apache.org/schema/spring\"></from>\n");
 		
-		HoverParams hoverParams = new HoverParams(new TextDocumentIdentifier(DUMMY_URI+".xml"), new Position(0, 21));
+		HoverParams hoverParams = new HoverParams(new TextDocumentIdentifier(DUMMY_URI+".xml"), new Position(0, 19));
 		CompletableFuture<Hover> hover = camelLanguageServer.getTextDocumentService().hover(hoverParams);
 		
 		assertThat(hover.get().getContents().getLeft().get(0).getLeft()).isEqualTo("kamelet:templateId/routeId");
+	}
+	
+	@Test
+	void testProvideDocumentationOnHoverOnKnownKameletPropertyName() throws Exception {
+		CamelLanguageServer camelLanguageServer = initializeLanguageServer("<from uri=\"kamelet:aws-ddb-streams-source?secretKey=\" xmlns=\"http://camel.apache.org/schema/spring\"></from>\n");
+		
+		HoverParams hoverParams = new HoverParams(new TextDocumentIdentifier(DUMMY_URI+".xml"), new Position(0, 50));
+		CompletableFuture<Hover> hover = camelLanguageServer.getTextDocumentService().hover(hoverParams);
+		
+		assertThat(hover.get().getContents().getLeft().get(0).getLeft()).isEqualTo("The secret key obtained from AWS");
 	}
 	
 }
