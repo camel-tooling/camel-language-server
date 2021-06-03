@@ -30,6 +30,9 @@ import com.github.cameltooling.lsp.internal.catalog.model.EndpointOptionModel;
 import com.github.cameltooling.lsp.internal.catalog.util.KameletsCatalogManager;
 import com.github.cameltooling.lsp.internal.settings.SettingsManager;
 
+import io.fabric8.camelk.v1alpha1.Kamelet;
+import io.fabric8.kubernetes.api.model.apiextensions.v1.JSONSchemaProps;
+
 /**
  * For a Camel URI "timer:timerName?delay=10s", it represents "delay=10s"
  *
@@ -90,6 +93,12 @@ public class OptionParamURIInstance extends CamelUriElementInstance {
 		EndpointOptionModel model = componentModel.getEndpointOption(keyName);
 		if(model != null) {
 			return model.getDescription();
+		} else if (componentModel.getScheme().equalsIgnoreCase("kamelet")) {
+			JSONSchemaProps prop = getKameletPropertyByKeyName(kameletCatalogManager, keyName);
+			if (prop != null) {
+				return prop.getDescription();
+			}
+			return String.format(INVALID_URI_OPTION, keyName);
 		} else {
 			Optional<EndpointOptionModel> apiProperty = findAvailableApiProperties(componentModel).stream()
 					.filter(endpointOptionModel -> endpointOptionModel.getName().equals(keyName))
@@ -101,5 +110,16 @@ public class OptionParamURIInstance extends CamelUriElementInstance {
 	@Override
 	public CamelURIInstance getCamelUriInstance() {
 		return camelURIInstance;
+	}
+	
+	private JSONSchemaProps getKameletPropertyByKeyName(KameletsCatalogManager kameletCatalogManager, String keyName) {
+		List<Kamelet> kamelets = kameletCatalogManager.getCatalog().getKameletsByName(this.camelURIInstance.getComponentAndPathUriElementInstance().getApiNamePath().getValue());
+		if (kamelets.size()>0) {
+			Kamelet kamelet = kamelets.get(0);
+			if (kamelet.getSpec().getDefinition().getProperties().containsKey(keyName)) {
+				return kamelet.getSpec().getDefinition().getProperties().get(keyName);
+			}
+		}
+		return null;
 	}
 }
