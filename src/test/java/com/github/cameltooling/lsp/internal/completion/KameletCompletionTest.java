@@ -69,10 +69,35 @@ class KameletCompletionTest extends AbstractCamelLanguageServerTest {
 			.contains(createTablePropertyCompletionItem())
 			.contains(createPropertyCompletionItemWithDefaultValue());
 	}
+	
+	@Test
+	void testKameletPropertyCompletionWithTypeForSource() throws Exception {
+		CamelLanguageServer languageServer = initLanguageServer("<from uri=\"kamelet:aws-ddb-streams-source?secretKey\" xmlns=\"http://camel.apache.org/schema/blueprint\"></from>\n");
+		
+		List<CompletionItem> completions = getCompletionFor(languageServer, new Position(0, 49)).get().getLeft();
+		
+		assertThat(completions)
+			.hasSize(1)
+			.contains(createSecretKeyPropertyCompletionItem());
+	}
 
+	private CompletionItem createSecretKeyPropertyCompletionItem() {
+		CompletionItem completionItem = new CompletionItem("secretKey");
+		completionItem.setInsertText("secretKey=");
+		completionItem.setDetail("string");
+		completionItem.setTextEdit(
+				Either.forLeft(
+						new TextEdit(
+								new Range(new Position(0, 42), new Position(0, 51)),
+								"secretKey=")));
+		completionItem.setDocumentation("The secret key obtained from AWS");
+		return completionItem;
+	}
+	
 	private CompletionItem createTablePropertyCompletionItem() {
 		CompletionItem completionItem = new CompletionItem("table");
 		completionItem.setInsertText("table=");
+		completionItem.setDetail("string");
 		completionItem.setTextEdit(
 				Either.forLeft(
 						new TextEdit(
@@ -85,6 +110,7 @@ class KameletCompletionTest extends AbstractCamelLanguageServerTest {
 	private CompletionItem createPropertyCompletionItemWithDefaultValue() {
 		CompletionItem completionItem = new CompletionItem("iteratorType");
 		completionItem.setInsertText("iteratorType=LATEST");
+		completionItem.setDetail("string");
 		completionItem.setTextEdit(
 				Either.forLeft(
 						new TextEdit(
