@@ -103,6 +103,10 @@ public class CamelOptionNamesCompletionsFuture implements Function<CamelCatalog,
 						}
 						completionItem.setInsertText(insertText);
 						completionItem.setDocumentation(property.getValue().getDescription());
+						String type = property.getValue().getType();
+						if (type != null) {
+							completionItem.setDetail(type);
+						}
 						CompletionResolverUtils.applyTextEditToCompletionItem(uriElement, completionItem);
 						return completionItem;
 					});
