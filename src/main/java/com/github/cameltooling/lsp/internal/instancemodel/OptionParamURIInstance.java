@@ -93,7 +93,7 @@ public class OptionParamURIInstance extends CamelUriElementInstance {
 		EndpointOptionModel model = componentModel.getEndpointOption(keyName);
 		if(model != null) {
 			return model.getDescription();
-		} else if (componentModel.getScheme().equalsIgnoreCase("kamelet")) {
+		} else if (ComponentNameConstants.COMPONENT_NAME_KAMELET.equalsIgnoreCase(componentModel.getScheme())) {
 			JSONSchemaProps prop = getKameletPropertyByKeyName(kameletCatalogManager, keyName);
 			if (prop != null) {
 				return prop.getDescription();
@@ -116,9 +116,7 @@ public class OptionParamURIInstance extends CamelUriElementInstance {
 		List<Kamelet> kamelets = kameletCatalogManager.getCatalog().getKameletsByName(this.camelURIInstance.getComponentAndPathUriElementInstance().getApiNamePath().getValue());
 		if (!kamelets.isEmpty()) {
 			Kamelet kamelet = kamelets.get(0);
-			if (kamelet.getSpec().getDefinition().getProperties().containsKey(keyName)) {
-				return kamelet.getSpec().getDefinition().getProperties().get(keyName);
-			}
+			return kamelet.getSpec().getDefinition().getProperties().get(keyName);
 		}
 		return null;
 	}
