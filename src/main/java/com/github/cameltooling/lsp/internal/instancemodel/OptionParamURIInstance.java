@@ -113,10 +113,16 @@ public class OptionParamURIInstance extends CamelUriElementInstance {
 	}
 	
 	private JSONSchemaProps getKameletPropertyByKeyName(KameletsCatalogManager kameletCatalogManager, String keyName) {
-		List<Kamelet> kamelets = kameletCatalogManager.getCatalog().getKameletsByName(this.camelURIInstance.getComponentAndPathUriElementInstance().getApiNamePath().getValue());
-		if (!kamelets.isEmpty()) {
-			Kamelet kamelet = kamelets.get(0);
-			return kamelet.getSpec().getDefinition().getProperties().get(keyName);
+		Optional<String> kameletTemplateId = this.getCamelUriInstance().getComponentAndPathUriElementInstance().getPathParams()
+				.stream()
+				.filter(pathParam -> pathParam.getPathParamIndex() == 0)
+				.map(pathParam -> pathParam.getValue()).findAny();
+		if(kameletTemplateId.isPresent()) {
+			List<Kamelet> kamelets = kameletCatalogManager.getCatalog().getKameletsByName(kameletTemplateId.get());
+			if (!kamelets.isEmpty()) {
+				Kamelet kamelet = kamelets.get(0);
+				return kamelet.getSpec().getDefinition().getProperties().get(keyName);
+			}
 		}
 		return null;
 	}
