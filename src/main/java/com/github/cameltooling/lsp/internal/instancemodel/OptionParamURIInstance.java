@@ -116,7 +116,7 @@ public class OptionParamURIInstance extends CamelUriElementInstance {
 		Optional<String> kameletTemplateId = this.getCamelUriInstance().getComponentAndPathUriElementInstance().getPathParams()
 				.stream()
 				.filter(pathParam -> pathParam.getPathParamIndex() == 0)
-				.map(pathParam -> pathParam.getValue()).findAny();
+				.map(PathParamURIInstance::getValue).findAny();
 		if(kameletTemplateId.isPresent()) {
 			List<Kamelet> kamelets = kameletCatalogManager.getCatalog().getKameletsByName(kameletTemplateId.get());
 			if (!kamelets.isEmpty()) {
