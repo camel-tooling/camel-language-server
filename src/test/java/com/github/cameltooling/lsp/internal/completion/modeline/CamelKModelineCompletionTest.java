@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 import org.eclipse.lsp4j.CompletionItem;
+import org.eclipse.lsp4j.CompletionItemTag;
 import org.eclipse.lsp4j.CompletionList;
 import org.eclipse.lsp4j.Position;
 import org.eclipse.lsp4j.jsonrpc.messages.Either;
@@ -89,6 +90,19 @@ class CamelKModelineCompletionTest extends AbstractCamelLanguageServerTest {
 		CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = getCompletionFor(camelLanguageServer, new Position(0, 5));
 		
 		assertThat(completions.get().getLeft()).isEmpty();
+	}
+	
+	@Test
+	void testPropertyFileOptionIsDeprecated() throws Exception {
+		CamelLanguageServer camelLanguageServer = initializeLanguageServer("// camel-k: property-file");
+		
+		CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = getCompletionFor(camelLanguageServer, new Position(0, 23));
+		
+		List<CompletionItem> completionItems = completions.get().getLeft();
+		assertThat(completionItems).hasSize(1);
+		CompletionItem completionItem = completionItems.get(0);
+		assertThat(completionItem.getLabel()).isEqualTo("property-file");
+		assertThat(completionItem.getTags()).contains(CompletionItemTag.Deprecated);
 	}
 	
 }
