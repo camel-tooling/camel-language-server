@@ -39,7 +39,7 @@ class CamelKModelineCompletionTest extends AbstractCamelLanguageServerTest {
 		CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = getCompletionFor(camelLanguageServer, new Position(0, 12));
 		
 		List<CompletionItem> completionItems = completions.get().getLeft();
-		assertThat(completionItems).hasSize(10);
+		assertThat(completionItems).hasSize(12);
 		checkTraitCompletionAvailable(completionItems);
 	}
 	
@@ -50,7 +50,7 @@ class CamelKModelineCompletionTest extends AbstractCamelLanguageServerTest {
 		CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = getCompletionFor(camelLanguageServer, new Position(1, 12));
 		
 		List<CompletionItem> completionItems = completions.get().getLeft();
-		assertThat(completionItems).hasSize(10);
+		assertThat(completionItems).hasSize(12);
 		checkTraitCompletionAvailable(completionItems);
 	}
 	
@@ -78,7 +78,7 @@ class CamelKModelineCompletionTest extends AbstractCamelLanguageServerTest {
 		CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = getCompletionFor(camelLanguageServer, new Position(0, 56));
 		
 		List<CompletionItem> completionItems = completions.get().getLeft();
-		assertThat(completionItems).hasSize(10);
+		assertThat(completionItems).hasSize(12);
 		checkTraitCompletionAvailable(completionItems);
 	}
 	
