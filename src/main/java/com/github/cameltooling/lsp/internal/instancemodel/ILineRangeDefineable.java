@@ -35,4 +35,10 @@ public interface ILineRangeDefineable {
 		hover.setRange(new Range(new Position(getLine(), getStartPositionInLine()), new Position(getLine(), getEndPositionInLine())));
 		return hover;
 	}
+	
+	public default Range getRange() {
+		return new Range(
+				new Position(getLine(), getStartPositionInLine()),
+				new Position(getLine(), getEndPositionInLine())); 
+	}
 }

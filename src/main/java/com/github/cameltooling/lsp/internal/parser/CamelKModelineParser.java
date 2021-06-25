@@ -16,6 +16,8 @@
  */
 package com.github.cameltooling.lsp.internal.parser;
 
+import org.eclipse.lsp4j.TextDocumentItem;
+
 public class CamelKModelineParser {
 
 	public static final String MODELINE_LIKE_CAMEL_K = "// camel-k:";
@@ -31,6 +33,10 @@ public class CamelKModelineParser {
 			return MODELINE_LIKE_CAMEL_K_XML;
 		}
 		return null;
+	}
+	
+	public boolean isOnCamelKModeline(int line, TextDocumentItem textDocumentItem) {
+		return retrieveModelineCamelKStart(new ParserFileHelperUtil().getLine(textDocumentItem, line)) != null;
 	}
 	
 }
