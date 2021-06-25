@@ -16,12 +16,14 @@
  */
 package com.github.cameltooling.lsp.internal.completion.modeline;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.eclipse.lsp4j.CompletionItem;
+import org.eclipse.lsp4j.CompletionItemTag;
 
 import com.github.cameltooling.lsp.internal.completion.FilterPredicateUtils;
 
@@ -56,15 +58,22 @@ public class CamelKModelineOptionNames {
 		OPTION_NAMES_WITH_DESCRIPTION.put(OPTION_NAME_OPEN_API, "Add an OpenAPI v2 spec (file path)");
 		OPTION_NAMES_WITH_DESCRIPTION.put("profile", "Trait profile used for deployment");
 		OPTION_NAMES_WITH_DESCRIPTION.put(OPTION_NAME_PROPERTY, "Add a camel property");
-		OPTION_NAMES_WITH_DESCRIPTION.put(OPTION_NAME_PROPERTY_FILE, "Bind a property file to the integration. E.g. \"property-file=integration.properties\"");
+		OPTION_NAMES_WITH_DESCRIPTION.put(OPTION_NAME_PROPERTY_FILE,
+				"Bind a property file to the integration. E.g. \"property-file=integration.properties\"\n\n"
+				+ "Deprecated since Community 1.5 and Red Hat productized 1.4. Replaced by property=file:integration.properties");
 		OPTION_NAMES_WITH_DESCRIPTION.put(OPTION_NAME_RESOURCE, "Add a resource");
 		OPTION_NAMES_WITH_DESCRIPTION.put(OPTION_NAME_TRAIT, "Configure a trait. E.g. \"trait=service.enabled=false\"");
-		COMPLETION_ITEMS = OPTION_NAMES_WITH_DESCRIPTION.entrySet().stream().map(options -> createCompletionItem(options.getKey(), options.getValue())).collect(Collectors.toList());
+		COMPLETION_ITEMS = OPTION_NAMES_WITH_DESCRIPTION.entrySet().stream()
+				.map(options -> createCompletionItem(options.getKey(), options.getValue()))
+				.collect(Collectors.toList());
 	}
 
 	private static CompletionItem createCompletionItem(String label, String documentation) {
 		CompletionItem completionItem = new CompletionItem(label);
 		completionItem.setDocumentation(documentation);
+		if (OPTION_NAME_PROPERTY_FILE.equals(label)) {
+			completionItem.setTags(Collections.singletonList(CompletionItemTag.Deprecated));
+		}
 		return completionItem;
 	}
 	
