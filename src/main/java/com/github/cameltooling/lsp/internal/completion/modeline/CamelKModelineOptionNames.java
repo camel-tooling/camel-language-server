@@ -38,8 +38,17 @@ public class CamelKModelineOptionNames {
 	public static final String OPTION_NAME_RESOURCE = "resource";
 	public static final String OPTION_NAME_OPEN_API = "open-api";
 	
+	private static final String DESCRIPTION_SINCE_COMMUNITY_1_5_PROD_1_4 = "Option is available since Community 1.5 and Red Hat productized 1.4";
+	
 	static {
 		OPTION_NAMES_WITH_DESCRIPTION = new HashMap<>();
+		OPTION_NAMES_WITH_DESCRIPTION.put("build-property",
+				"Add a build time property or properties file (syntax: [my-key=my-value|file:/path/to/my-conf.properties]\n\n"
+				+ DESCRIPTION_SINCE_COMMUNITY_1_5_PROD_1_4);
+		OPTION_NAMES_WITH_DESCRIPTION.put("config",
+				"Add a runtime configuration from a Configmap, Secret or file (syntax: [configmap|secret|file]:name[/key],"
+				+ " where name represents the local file path or the configmap/secret name and key optionally represents the configmap/secret key to be filtered)\n\n"
+				+ DESCRIPTION_SINCE_COMMUNITY_1_5_PROD_1_4);
 		OPTION_NAMES_WITH_DESCRIPTION.put(OPTION_NAME_DEPENDENCY, "An external library that should be included. E.g. for Maven dependencies \"dependency=mvn:org.my/app:1.0\"");
 		OPTION_NAMES_WITH_DESCRIPTION.put("env", "Set an environment variable in the integration container. E.g \"env=MY_VAR=my-value\"");
 		OPTION_NAMES_WITH_DESCRIPTION.put("label", "Add a label to the integration. E.g. \"label=my.company=hello\"");
