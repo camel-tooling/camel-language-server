@@ -80,7 +80,6 @@ import com.github.cameltooling.lsp.internal.hover.CamelKModelineHoverProcessor;
 import com.github.cameltooling.lsp.internal.hover.CamelPropertiesFileHoverProcessor;
 import com.github.cameltooling.lsp.internal.hover.CamelURIHoverProcessor;
 import com.github.cameltooling.lsp.internal.parser.CamelKModelineParser;
-import com.github.cameltooling.lsp.internal.parser.ParserFileHelperUtil;
 import com.github.cameltooling.lsp.internal.references.ReferencesProcessor;
 import com.github.cameltooling.lsp.internal.settings.JSONUtility;
 import com.github.cameltooling.lsp.internal.settings.SettingsManager;
@@ -151,15 +150,11 @@ public class CamelTextDocumentService implements TextDocumentService {
 		TextDocumentItem textDocumentItem = openedDocuments.get(uri);
 		if (uri.endsWith(".properties")){
 			return new CamelPropertiesCompletionProcessor(textDocumentItem, getCamelCatalog(), getCamelKafkaConnectorManager()).getCompletions(completionParams.getPosition(), getSettingsManager(), getKameletsCatalogManager()).thenApply(Either::forLeft);
-		} else if(isOnCamelKModeline(completionParams.getPosition().getLine(), textDocumentItem)){
+		} else if(new CamelKModelineParser().isOnCamelKModeline(completionParams.getPosition().getLine(), textDocumentItem)){
 			return new CamelKModelineCompletionprocessor(textDocumentItem, getCamelCatalog()).getCompletions(completionParams.getPosition()).thenApply(Either::forLeft);
 		} else {
 			return new CamelEndpointCompletionProcessor(textDocumentItem, getCamelCatalog(), getKameletsCatalogManager()).getCompletions(completionParams.getPosition(), getSettingsManager()).thenApply(Either::forLeft);
 		}
-	}
-
-	private boolean isOnCamelKModeline(int line, TextDocumentItem textDocumentItem) {
-		return new CamelKModelineParser().retrieveModelineCamelKStart(new ParserFileHelperUtil().getLine(textDocumentItem, line)) != null;
 	}
 
 	@Override
@@ -175,7 +170,7 @@ public class CamelTextDocumentService implements TextDocumentService {
 		TextDocumentItem textDocumentItem = openedDocuments.get(uri);
 		if (uri.endsWith(".properties")){
 			return new CamelPropertiesFileHoverProcessor(textDocumentItem).getHover(hoverParams.getPosition(), getCamelCatalog(), getCamelKafkaConnectorManager(), getKameletsCatalogManager());
-		} else if(isOnCamelKModeline(hoverParams.getPosition().getLine(), textDocumentItem)) {
+		} else if(new CamelKModelineParser().isOnCamelKModeline(hoverParams.getPosition().getLine(), textDocumentItem)) {
 			return new CamelKModelineHoverProcessor(textDocumentItem).getHover(hoverParams.getPosition(), getCamelCatalog());
 		} else {
 			return new CamelURIHoverProcessor(textDocumentItem, getCamelCatalog(), getKameletsCatalogManager()).getHover(hoverParams.getPosition());
