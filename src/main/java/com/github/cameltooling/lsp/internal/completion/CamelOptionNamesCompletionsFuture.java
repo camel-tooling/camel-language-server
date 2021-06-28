@@ -17,6 +17,7 @@
 package com.github.cameltooling.lsp.internal.completion;
 
 import java.util.List;
+import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
@@ -93,27 +94,35 @@ public class CamelOptionNamesCompletionsFuture implements Function<CamelCatalog,
 			if(kameletTemplateId.isPresent()) {
 				JSONSchemaProps kameletDefinition = kameletsCatalogManager.getCatalog().getKameletDefinition(kameletTemplateId.get());
 				if(kameletDefinition != null) {
-					kameletProperties = kameletDefinition.getProperties().entrySet().stream().map(property -> {
-						String propertyName = property.getKey();
-						CompletionItem completionItem = new CompletionItem(propertyName);
-						JsonNode defaultValue = property.getValue().getDefault();
-						String insertText = propertyName + "=";
-						if(defaultValue != null && defaultValue.isValueNode()) {
-							insertText += defaultValue.asText();
-						}
-						completionItem.setInsertText(insertText);
-						completionItem.setDocumentation(property.getValue().getDescription());
-						String type = property.getValue().getType();
-						if (type != null) {
-							completionItem.setDetail(type);
-						}
-						CompletionResolverUtils.applyTextEditToCompletionItem(uriElement, completionItem);
-						return completionItem;
-					});
+					kameletProperties = kameletDefinition.getProperties().entrySet().stream().map(this::createCompletionItem);
 				}
 			}
 		}
 		return kameletProperties;
+	}
+
+	private CompletionItem createCompletionItem(Entry<String, JSONSchemaProps> property) {
+		String propertyName = property.getKey();
+		CompletionItem completionItem = new CompletionItem(propertyName);
+		JSONSchemaProps schema = property.getValue();
+		String insertText = computeInsertText(propertyName, schema);
+		completionItem.setInsertText(insertText);
+		completionItem.setDocumentation(schema.getDescription());
+		String type = schema.getType();
+		if (type != null) {
+			completionItem.setDetail(type);
+		}
+		CompletionResolverUtils.applyTextEditToCompletionItem(uriElement, completionItem);
+		return completionItem;
+	}
+
+	private String computeInsertText(String propertyName, JSONSchemaProps schema) {
+		JsonNode defaultValue = schema.getDefault();
+		String insertText = propertyName + "=";
+		if(defaultValue != null && defaultValue.isValueNode()) {
+			insertText += defaultValue.asText();
+		}
+		return insertText;
 	}
 
 	private Stream<EndpointOptionModel> initialFilter(List<EndpointOptionModel> endpointOptions) {
