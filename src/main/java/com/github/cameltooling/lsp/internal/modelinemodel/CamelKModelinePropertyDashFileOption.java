@@ -22,12 +22,12 @@ import java.util.function.Predicate;
 import com.github.cameltooling.lsp.internal.completion.modeline.CamelKModelineOptionNames;
 
 /**
- * For // camel-k: property=file:aFile.properties , it represent the aFile.properties part
+ * For // camel-k: property-file=aFile.properties , it represent the aFile.properties part
  *
  */
-public class CamelKModelinePropertyFileOption extends CamelKModelineLocalResourceRelatedOption {
+public class CamelKModelinePropertyDashFileOption extends CamelKModelineLocalResourceRelatedOption {
 	
-	public CamelKModelinePropertyFileOption(String value, int startPosition, String documentItemUri, int line) {
+	public CamelKModelinePropertyDashFileOption(String value, int startPosition, String documentItemUri, int line) {
 		super(value, startPosition, documentItemUri, line);
 	}
 	
@@ -37,6 +37,6 @@ public class CamelKModelinePropertyFileOption extends CamelKModelineLocalResourc
 
 	@Override
 	protected String getPropertyName() {
-		return CamelKModelineOptionNames.OPTION_NAME_PROPERTY;
+		return CamelKModelineOptionNames.OPTION_NAME_PROPERTY_FILE;
 	}
 }

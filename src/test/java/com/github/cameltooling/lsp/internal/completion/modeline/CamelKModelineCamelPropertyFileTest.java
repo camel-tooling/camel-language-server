@@ -42,8 +42,22 @@ class CamelKModelineCamelPropertyFileTest extends AbstractCamelLanguageServerTes
 	File temporaryDir;
 	
 	@Test
+	void testProvideCompletionForPropertyDashFile() throws Exception {
+		File camelKfile = createFileStructureForTest("# camel-k: property-file=");
+		
+		CamelLanguageServer camelLanguageServer = initializeLanguageServer(camelKfile);
+		
+		CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = getCompletionFor(camelLanguageServer, new Position(0, 25), camelKfile.toURI().toString());
+		
+		List<CompletionItem> completionItems = completions.get().getLeft();
+		assertThat(completionItems).containsOnly(
+				createExpectedCompletionItem("a.properties"),
+				createExpectedCompletionItem("myFolder"+File.separator+"aSecond.properties"));
+	}
+	
+	@Test
 	void testProvideCompletionForPropertyFile() throws Exception {
-		File camelKfile = createFileStructureForTest();
+		File camelKfile = createFileStructureForTest("# camel-k: property=file:");
 		
 		CamelLanguageServer camelLanguageServer = initializeLanguageServer(camelKfile);
 		
@@ -78,9 +92,9 @@ class CamelKModelineCamelPropertyFileTest extends AbstractCamelLanguageServerTes
 	 * @return The Camel K yaml file created at the root of the temporary directory
 	 * @throws IOException
 	 */
-	private File createFileStructureForTest() throws IOException {
+	private File createFileStructureForTest(String modelineToTest) throws IOException {
 		File camelKfile = new File(temporaryDir, "test.camelk.yaml");
-		Files.write("# camel-k: property-file=".getBytes(), camelKfile);
+		Files.write(modelineToTest.getBytes(), camelKfile);
 		File aSiblingPropertyFile = new File(temporaryDir, "a.properties");
 		aSiblingPropertyFile.createNewFile();
 		
