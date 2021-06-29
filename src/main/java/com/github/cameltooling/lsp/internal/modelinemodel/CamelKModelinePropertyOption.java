@@ -34,6 +34,7 @@ import com.github.cameltooling.lsp.internal.instancemodel.propertiesfile.CamelPr
  * The property option can be written with 2 patterns: property=aKey=aValue or property=file:/path/to/file.properties
  * 
  * The {@link CamelKModelinePropertyOption#singlePropertyValue} is used to represent aKey=aValue.
+ * The {@link CamelKModelinePropertyOption#fileValue} is used to represent /path/to/file.properties.
  *
  */
 public class CamelKModelinePropertyOption implements ICamelKModelineOptionValue {
@@ -41,13 +42,16 @@ public class CamelKModelinePropertyOption implements ICamelKModelineOptionValue 
 	private static final String FILE_PREFIX = "file:";
 	
 	private CamelPropertyEntryInstance singlePropertyValue;
+	private CamelKModelinePropertyFileOption fileValue;
 	private int startPosition;
 	private String fullStringValue;
 	private int line;
 
 	public CamelKModelinePropertyOption(String value, int startPosition, TextDocumentItem documentItem, int line) {
 		this.line = line;
-		if(!value.startsWith(FILE_PREFIX)) {
+		if(value.startsWith(FILE_PREFIX)) {
+			this.fileValue = new CamelKModelinePropertyFileOption(value.substring(FILE_PREFIX.length()), startPosition + FILE_PREFIX.length(), documentItem.getUri(), line);
+		} else {
 			this.singlePropertyValue = new CamelPropertyEntryInstance(value, new Position(0, startPosition), documentItem);
 		}
 		this.fullStringValue = value;
@@ -71,7 +75,9 @@ public class CamelKModelinePropertyOption implements ICamelKModelineOptionValue 
 	
 	@Override
 	public CompletableFuture<List<CompletionItem>> getCompletions(int positionInLine, CompletableFuture<CamelCatalog> camelCatalog) {
-		if(singlePropertyValue != null) {
+		if(fileValue != null && fileValue.isInRange(positionInLine)) {
+			return fileValue.getCompletions(positionInLine, camelCatalog);
+		} else if(singlePropertyValue != null) {
 			CompletableFuture<List<CompletionItem>> camelComponentPropertyCompletionFuture = singlePropertyValue.getCompletions(new Position(0, positionInLine), camelCatalog, null, null, null);
 			if(positionInLine == getStartPositionInLine()) {
 				return mergeFutures(camelComponentPropertyCompletionFuture, createFilePrefixCompletion());
