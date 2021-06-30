@@ -39,6 +39,7 @@ public class CamelKModelineOptionNames {
 	public static final String OPTION_NAME_PROPERTY_FILE = "property-file";
 	public static final String OPTION_NAME_RESOURCE = "resource";
 	public static final String OPTION_NAME_OPEN_API = "open-api";
+	public static final String OPTION_NAME_CONFIG = "config";
 	
 	private static final String DESCRIPTION_SINCE_COMMUNITY_1_5_PROD_1_4 = "Option is available since Community 1.5 and Red Hat productized 1.4";
 	
@@ -47,7 +48,7 @@ public class CamelKModelineOptionNames {
 		OPTION_NAMES_WITH_DESCRIPTION.put("build-property",
 				"Add a build time property or properties file (syntax: [my-key=my-value|file:/path/to/my-conf.properties]\n\n"
 				+ DESCRIPTION_SINCE_COMMUNITY_1_5_PROD_1_4);
-		OPTION_NAMES_WITH_DESCRIPTION.put("config",
+		OPTION_NAMES_WITH_DESCRIPTION.put(OPTION_NAME_CONFIG,
 				"Add a runtime configuration from a Configmap, Secret or file (syntax: [configmap|secret|file]:name[/key],"
 				+ " where name represents the local file path or the configmap/secret name and key optionally represents the configmap/secret key to be filtered)\n\n"
 				+ DESCRIPTION_SINCE_COMMUNITY_1_5_PROD_1_4);
