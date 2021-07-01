@@ -93,14 +93,5 @@ class CamelKModelineCamelOpenAPITest extends AbstractCamelLanguageServerTest {
 		anotherFile.createNewFile();
 		return camelKfile;
 	}
-	
-	@Test
-	void testNoExceptionWithPartialURI() throws Exception {
-		CamelLanguageServer camelLanguageServer = initializeLanguageServer("# camel-k: resource=", ".yaml");
-		
-		CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = getCompletionFor(camelLanguageServer, new Position(0, 20));
-		
-		List<CompletionItem> completionItems = completions.get().getLeft();
-		assertThat(completionItems).isEmpty();
-	}
+
 }

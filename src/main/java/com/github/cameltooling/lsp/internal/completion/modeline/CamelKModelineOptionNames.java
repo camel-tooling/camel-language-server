@@ -62,7 +62,11 @@ public class CamelKModelineOptionNames {
 		OPTION_NAMES_WITH_DESCRIPTION.put(OPTION_NAME_PROPERTY_FILE,
 				"Bind a property file to the integration. E.g. \"property-file=integration.properties\"\n\n"
 				+ "Deprecated since Community 1.5 and Red Hat productized 1.4. Replaced by property=file:integration.properties");
-		OPTION_NAMES_WITH_DESCRIPTION.put(OPTION_NAME_RESOURCE, "Add a resource");
+		OPTION_NAMES_WITH_DESCRIPTION.put(OPTION_NAME_RESOURCE, "Add a runtime resource from a Configmap, Secret or file (syntax: [configmap|secret|file]:name[/key][@path],"
+				+ " where name represents the local file path or the configmap/secret name,"
+				+ " key optionally represents the configmap/secret key to be filtered"
+				+ " and path represents the destination path)\n\n"
+				+ DESCRIPTION_SINCE_COMMUNITY_1_5_PROD_1_4);
 		OPTION_NAMES_WITH_DESCRIPTION.put(OPTION_NAME_TRAIT, "Configure a trait. E.g. \"trait=service.enabled=false\"");
 		COMPLETION_ITEMS = OPTION_NAMES_WITH_DESCRIPTION.entrySet().stream()
 				.map(options -> createCompletionItem(options.getKey(), options.getValue()))

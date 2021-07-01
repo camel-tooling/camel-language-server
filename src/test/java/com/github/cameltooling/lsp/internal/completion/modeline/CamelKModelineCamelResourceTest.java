@@ -42,23 +42,54 @@ class CamelKModelineCamelResourceTest extends AbstractCamelLanguageServerTest {
 	File temporaryDir;
 	
 	@Test
-	void testProvideCompletionForPropertyFile() throws Exception {
-		File camelKfile = createFileStructureForTest();
+	void testProvideCompletionForResourceKind() throws Exception {
+		String text = "// camel-k: resource=";
+		CamelLanguageServer camelLanguageServer = initializeLanguageServer(text);
+		
+		CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = getCompletionFor(camelLanguageServer, new Position(0, text.length()));
+		
+		List<CompletionItem> completionItems = completions.get().getLeft();
+		assertThat(completionItems.stream().map(completionItem -> completionItem.getLabel())).containsOnly("configmap:", "secret:", "file:");
+	}
+	
+	@Test
+	void testProvideCompletionForResourceFile() throws Exception {
+		String modeline = "# camel-k: resource=file:";
+		int modelineLength = modeline.length();
+		File camelKfile = createFileStructureForTest(modeline);
 		
 		CamelLanguageServer camelLanguageServer = initializeLanguageServer(camelKfile);
 		
-		CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = getCompletionFor(camelLanguageServer, new Position(0, 20), camelKfile.toURI().toString());
+		CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = getCompletionFor(camelLanguageServer, new Position(0, modelineLength), camelKfile.toURI().toString());
 		
 		List<CompletionItem> completionItems = completions.get().getLeft();
 		assertThat(completionItems).containsOnly(
-				createExpectedCompletionItem("a.properties"),
-				createExpectedCompletionItem("myFolder"+File.separator+"aSecond.properties"),
-				createExpectedCompletionItem("anotherFile.txt"));
+				createExpectedCompletionItem("a.properties", modelineLength, modelineLength),
+				createExpectedCompletionItem("myFolder"+File.separator+"aSecond.properties", modelineLength, modelineLength),
+				createExpectedCompletionItem("anotherFile.txt", modelineLength, modelineLength));
+	}
+	
+	@Test
+	void testProvideCompletionForResourceFileWithAtPath() throws Exception {
+		String modeline = "# camel-k: resource=file:demoPath@target";
+		File camelKfile = createFileStructureForTest(modeline);
+		
+		CamelLanguageServer camelLanguageServer = initializeLanguageServer(camelKfile);
+		
+		int demoPathPosition = modeline.indexOf("demoPath");
+		CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = getCompletionFor(camelLanguageServer, new Position(0, demoPathPosition), camelKfile.toURI().toString());
+		
+		int atPosition = modeline.indexOf('@');
+		List<CompletionItem> completionItems = completions.get().getLeft();
+		assertThat(completionItems).containsOnly(
+				createExpectedCompletionItem("a.properties", demoPathPosition, atPosition),
+				createExpectedCompletionItem("myFolder"+File.separator+"aSecond.properties", demoPathPosition, atPosition),
+				createExpectedCompletionItem("anotherFile.txt", demoPathPosition, atPosition));
 	}
 
-	private CompletionItem createExpectedCompletionItem(String text) {
+	private CompletionItem createExpectedCompletionItem(String text, int expectedStart , int expectedEnd) {
 		CompletionItem siblingCompletionItem = new CompletionItem(text);
-		siblingCompletionItem.setTextEdit(Either.forLeft(new TextEdit(new Range(new Position(0, 20), new Position(0, 20)), text)));
+		siblingCompletionItem.setTextEdit(Either.forLeft(new TextEdit(new Range(new Position(0, expectedStart), new Position(0, expectedEnd)), text)));
 		return siblingCompletionItem;
 	}
 
@@ -79,9 +110,9 @@ class CamelKModelineCamelResourceTest extends AbstractCamelLanguageServerTest {
 	 * @return The Camel K yaml file created at the root of the temporary directory
 	 * @throws IOException
 	 */
-	private File createFileStructureForTest() throws IOException {
+	private File createFileStructureForTest(String modeline) throws IOException {
 		File camelKfile = new File(temporaryDir, "test.camelk.yaml");
-		Files.write("# camel-k: resource=".getBytes(), camelKfile);
+		Files.write(modeline.getBytes(), camelKfile);
 		File aSiblingPropertyFile = new File(temporaryDir, "a.properties");
 		aSiblingPropertyFile.createNewFile();
 		
@@ -94,14 +125,5 @@ class CamelKModelineCamelResourceTest extends AbstractCamelLanguageServerTest {
 		anotherFile.createNewFile();
 		return camelKfile;
 	}
-	
-	@Test
-	void testNoExceptionWithPartialURI() throws Exception {
-		CamelLanguageServer camelLanguageServer = initializeLanguageServer("# camel-k: resource=", ".yaml");
-		
-		CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = getCompletionFor(camelLanguageServer, new Position(0, 20));
-		
-		List<CompletionItem> completionItems = completions.get().getLeft();
-		assertThat(completionItems).isEmpty();
-	}
+
 }
