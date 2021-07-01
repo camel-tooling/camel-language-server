@@ -25,14 +25,19 @@ import org.eclipse.lsp4j.CompletionItem;
 
 public class CamelKModelineConfigOption implements ICamelKModelineOptionValue {
 
+	private static final String PREFIX_FILE = "file:";
 	private String value;
 	private int startPosition;
 	private int line;
+	private CamelKModelineConfigFileOption configFileValue;
 
-	public CamelKModelineConfigOption(String value, int startPosition, int line) {
+	public CamelKModelineConfigOption(String value, int startPosition, String documentItemUri, int line) {
 		this.value = value;
 		this.startPosition = startPosition;
 		this.line = line;
+		if(value.startsWith(PREFIX_FILE)) {
+			this.configFileValue = new CamelKModelineConfigFileOption(value.substring(PREFIX_FILE.length()), startPosition + PREFIX_FILE.length(), documentItemUri, line);
+		}
 	}
 
 	@Override
@@ -66,10 +71,12 @@ public class CamelKModelineConfigOption implements ICamelKModelineOptionValue {
 			secret.setDocumentation("Add a runtime configuration from a Secret (syntax: secret:name[/key], "
 					+ "where name represents the secret name, "
 					+ "key optionally represents the secret key to be filtered)");
-			CompletionItem file = new CompletionItem("file:");
+			CompletionItem file = new CompletionItem(PREFIX_FILE);
 			file.setDocumentation("Add a runtime configuration from a file (syntax: file:name, "
 					+ "where name represents the local file path)");
 			return CompletableFuture.completedFuture(Arrays.asList(configmap, secret, file));
+		} else if(configFileValue != null && configFileValue.isInRange(position)) {
+			return configFileValue.getCompletions(position, camelCatalog);
 		}
 		return ICamelKModelineOptionValue.super.getCompletions(position, camelCatalog);
 	}
