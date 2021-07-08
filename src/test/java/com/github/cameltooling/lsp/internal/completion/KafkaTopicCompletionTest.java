@@ -37,6 +37,7 @@ import com.consol.citrus.kafka.embedded.EmbeddedKafkaServerBuilder;
 import com.github.cameltooling.lsp.internal.AbstractCamelLanguageServerTest;
 import com.github.cameltooling.lsp.internal.CamelLanguageServer;
 import com.github.cameltooling.lsp.internal.settings.SettingsManager;
+import com.github.cameltooling.lsp.internal.util.RouteTextBuilder;
 
 class KafkaTopicCompletionTest extends AbstractCamelLanguageServerTest {
 
@@ -144,7 +145,7 @@ class KafkaTopicCompletionTest extends AbstractCamelLanguageServerTest {
 	}
 
 	private CamelLanguageServer initLanguageServer() throws URISyntaxException, InterruptedException, ExecutionException {
-		String text = "<from uri=\"kafka:\" xmlns=\"http://camel.apache.org/schema/blueprint\"></from>\n";
+		String text = RouteTextBuilder.createXMLBlueprintRoute("kafka:");
 		return initializeLanguageServer(text, ".xml");
 	}
 

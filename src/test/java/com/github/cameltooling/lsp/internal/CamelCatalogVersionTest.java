@@ -32,6 +32,8 @@ import org.eclipse.lsp4j.Position;
 import org.eclipse.lsp4j.jsonrpc.messages.Either;
 import org.junit.jupiter.api.Test;
 
+import com.github.cameltooling.lsp.internal.util.RouteTextBuilder;
+
 class CamelCatalogVersionTest extends AbstractCamelLanguageServerTest {
 
 	private String camelCatalogVersion;
@@ -91,7 +93,7 @@ class CamelCatalogVersionTest extends AbstractCamelLanguageServerTest {
 	}
 	
 	private CamelLanguageServer basicCompletionCheck(CompletionItem expectedCompletionItem) throws URISyntaxException, InterruptedException, ExecutionException {
-		CamelLanguageServer camelLanguageServer = initializeLanguageServer("<from uri=\"\" xmlns=\"http://camel.apache.org/schema/blueprint\"></from>\n");
+		CamelLanguageServer camelLanguageServer = initializeLanguageServer(RouteTextBuilder.createXMLBlueprintRoute(""));
 		CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = getCompletionFor(camelLanguageServer, new Position(0, 11));
 		assertThat(completions.get().getLeft()).contains(expectedCompletionItem);
 		return camelLanguageServer;

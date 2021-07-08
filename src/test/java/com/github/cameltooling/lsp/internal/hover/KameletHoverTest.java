@@ -33,6 +33,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 import com.github.cameltooling.lsp.internal.AbstractCamelLanguageServerTest;
 import com.github.cameltooling.lsp.internal.CamelLanguageServer;
+import com.github.cameltooling.lsp.internal.util.RouteTextBuilder;
 
 class KameletHoverTest extends AbstractCamelLanguageServerTest {
 
@@ -40,10 +41,9 @@ class KameletHoverTest extends AbstractCamelLanguageServerTest {
 	@MethodSource
 	void testHoverDocumentation(String testName, String camelUri, int characterPositionInCamelUriToTest, String expectedHoverContent)
 			throws URISyntaxException, InterruptedException, ExecutionException {
-		String beforeCamelUriToTest = "<from uri=\"";
-		CamelLanguageServer camelLanguageServer = initializeLanguageServer(beforeCamelUriToTest+camelUri+"\" xmlns=\"http://camel.apache.org/schema/spring\"></from>\n");
+		CamelLanguageServer camelLanguageServer = initializeLanguageServer(RouteTextBuilder.createXMLSpringRoute(camelUri));
 		
-		HoverParams hoverParams = new HoverParams(new TextDocumentIdentifier(DUMMY_URI+".xml"), new Position(0, beforeCamelUriToTest.length() + characterPositionInCamelUriToTest));
+		HoverParams hoverParams = new HoverParams(new TextDocumentIdentifier(DUMMY_URI+".xml"), new Position(0, RouteTextBuilder.XML_PREFIX_FROM.length() + characterPositionInCamelUriToTest));
 		CompletableFuture<Hover> hover = camelLanguageServer.getTextDocumentService().hover(hoverParams);
 		
 		assertThat(hover.get().getContents().getLeft().get(0).getLeft()).isEqualTo(expectedHoverContent);

@@ -16,6 +16,7 @@
  */
 package com.github.cameltooling.lsp.internal.hover;
 
+import static com.github.cameltooling.lsp.internal.util.RouteTextBuilder.createXMLSpringRoute;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.concurrent.CompletableFuture;
@@ -35,7 +36,7 @@ class CamelLanguageServerHoverTest extends AbstractCamelLanguageServerTest {
 	
 	@Test
 	void testProvideDocumentationOnHover() throws Exception {
-		CamelLanguageServer camelLanguageServer = initializeLanguageServer("<from uri=\"ahc:httpUri\" xmlns=\"http://camel.apache.org/schema/spring\"></from>\n");
+		CamelLanguageServer camelLanguageServer = initializeLanguageServer(createXMLSpringRoute("ahc:httpUri"));
 		
 		HoverParams hoverParams = new HoverParams(new TextDocumentIdentifier(DUMMY_URI+".xml"), new Position(0, 13));
 		CompletableFuture<Hover> hover = camelLanguageServer.getTextDocumentService().hover(hoverParams);
@@ -45,7 +46,7 @@ class CamelLanguageServerHoverTest extends AbstractCamelLanguageServerTest {
 	
 	@Test
 	void testRangeForCamelComponentOnHover() throws Exception {
-		CamelLanguageServer camelLanguageServer = initializeLanguageServer("<from uri=\"ahc:httpUri\" xmlns=\"http://camel.apache.org/schema/spring\"></from>\n");
+		CamelLanguageServer camelLanguageServer = initializeLanguageServer(createXMLSpringRoute("ahc:httpUri"));
 		
 		HoverParams hoverParams = new HoverParams(new TextDocumentIdentifier(DUMMY_URI+".xml"), new Position(0, 13));
 		CompletableFuture<Hover> hover = camelLanguageServer.getTextDocumentService().hover(hoverParams);
@@ -91,7 +92,7 @@ class CamelLanguageServerHoverTest extends AbstractCamelLanguageServerTest {
 	
 	@Test
 	void testDontProvideDocumentationOnHoverForBadPlaces() throws Exception {
-		CamelLanguageServer camelLanguageServer = initializeLanguageServer("<from uri=\"ahc:httpUri\" xmlns=\"http://camel.apache.org/schema/spring\"></from>\n");
+		CamelLanguageServer camelLanguageServer = initializeLanguageServer(createXMLSpringRoute("ahc:httpUri"));
 		
 		HoverParams hoverParams = new HoverParams(new TextDocumentIdentifier(DUMMY_URI+".xml"), new Position(0, 4));
 		CompletableFuture<Hover> hover = camelLanguageServer.getTextDocumentService().hover(hoverParams);
@@ -101,7 +102,7 @@ class CamelLanguageServerHoverTest extends AbstractCamelLanguageServerTest {
 	
 	@Test
 	void testDontProvideDocumentationOnHoverWhenEndingWithAnd() throws Exception {
-		CamelLanguageServer camelLanguageServer = initializeLanguageServer("<from uri=\"ahc:httpUri?test=test&\" xmlns=\"http://camel.apache.org/schema/spring\"></from>\n");
+		CamelLanguageServer camelLanguageServer = initializeLanguageServer(createXMLSpringRoute("ahc:httpUri?test=test&"));
 		
 		HoverParams hoverParams = new HoverParams(new TextDocumentIdentifier(DUMMY_URI+".xml"), new Position(0, 15));
 		CompletableFuture<Hover> hover = camelLanguageServer.getTextDocumentService().hover(hoverParams);
@@ -111,7 +112,7 @@ class CamelLanguageServerHoverTest extends AbstractCamelLanguageServerTest {
 	
 	@Test
 	void testDontProvideDocumentationOnUnknownComponent() throws Exception {
-		CamelLanguageServer camelLanguageServer = initializeLanguageServer("<from uri=\"unknowncomponent:\" xmlns=\"http://camel.apache.org/schema/spring\"></from>\n");
+		CamelLanguageServer camelLanguageServer = initializeLanguageServer(createXMLSpringRoute("unknowncomponent:"));
 		
 		HoverParams hoverParams = new HoverParams(new TextDocumentIdentifier(DUMMY_URI+".xml"), new Position(0, 15));
 		CompletableFuture<Hover> hover = camelLanguageServer.getTextDocumentService().hover(hoverParams);
@@ -121,7 +122,7 @@ class CamelLanguageServerHoverTest extends AbstractCamelLanguageServerTest {
 
 	@Test
 	void testProvideParameterDocumentationOnHover() throws Exception {
-		CamelLanguageServer camelLanguageServer = initializeLanguageServer("<from uri=\"file:bla?filter=test\" xmlns=\"http://camel.apache.org/schema/spring\"></from>\n");
+		CamelLanguageServer camelLanguageServer = initializeLanguageServer(createXMLSpringRoute("file:bla?filter=test"));
 		
 		HoverParams hoverParams = new HoverParams(new TextDocumentIdentifier(DUMMY_URI+".xml"), new Position(0, 26));
 		CompletableFuture<Hover> hover = camelLanguageServer.getTextDocumentService().hover(hoverParams);
@@ -131,7 +132,7 @@ class CamelLanguageServerHoverTest extends AbstractCamelLanguageServerTest {
 	
 	@Test
 	void testRangeForParameterOnHover() throws Exception {
-		CamelLanguageServer camelLanguageServer = initializeLanguageServer("<from uri=\"file:bla?filter=test\" xmlns=\"http://camel.apache.org/schema/spring\"></from>\n");
+		CamelLanguageServer camelLanguageServer = initializeLanguageServer(createXMLSpringRoute("file:bla?filter=test"));
 		
 		HoverParams hoverParams = new HoverParams(new TextDocumentIdentifier(DUMMY_URI+".xml"), new Position(0, 26));
 		CompletableFuture<Hover> hover = camelLanguageServer.getTextDocumentService().hover(hoverParams);
@@ -141,7 +142,7 @@ class CamelLanguageServerHoverTest extends AbstractCamelLanguageServerTest {
 	
 	@Test
 	void testProvideParameterDocumentationForUnknownParamOnHover() throws Exception {
-		CamelLanguageServer camelLanguageServer = initializeLanguageServer("<from uri=\"file:bla?test=test\" xmlns=\"http://camel.apache.org/schema/spring\"></from>\n");
+		CamelLanguageServer camelLanguageServer = initializeLanguageServer(createXMLSpringRoute("file:bla?test=test"));
 		
 		HoverParams hoverParams = new HoverParams(new TextDocumentIdentifier(DUMMY_URI+".xml"), new Position(0, 26));
 		CompletableFuture<Hover> hover = camelLanguageServer.getTextDocumentService().hover(hoverParams);
@@ -151,7 +152,7 @@ class CamelLanguageServerHoverTest extends AbstractCamelLanguageServerTest {
 	
 	@Test
 	void testProvideSyntaxForPathParameterOnHover() throws Exception {
-		CamelLanguageServer camelLanguageServer = initializeLanguageServer("<from uri=\"kafka:fl\" xmlns=\"http://camel.apache.org/schema/spring\"></from>\n");
+		CamelLanguageServer camelLanguageServer = initializeLanguageServer(createXMLSpringRoute("kafka:fl"));
 		
 		HoverParams hoverParams = new HoverParams(new TextDocumentIdentifier(DUMMY_URI+".xml"), new Position(0, 19));
 		CompletableFuture<Hover> hover = camelLanguageServer.getTextDocumentService().hover(hoverParams);
@@ -161,7 +162,7 @@ class CamelLanguageServerHoverTest extends AbstractCamelLanguageServerTest {
 	
 	@Test
 	void testProvideSyntaxForEmptyPathParameterOnHover() throws Exception {
-		CamelLanguageServer camelLanguageServer = initializeLanguageServer("<from uri=\"kafka:\" xmlns=\"http://camel.apache.org/schema/spring\"></from>\n");
+		CamelLanguageServer camelLanguageServer = initializeLanguageServer(createXMLSpringRoute("kafka:"));
 		
 		HoverParams hoverParams = new HoverParams(new TextDocumentIdentifier(DUMMY_URI+".xml"), new Position(0, 17));
 		CompletableFuture<Hover> hover = camelLanguageServer.getTextDocumentService().hover(hoverParams);

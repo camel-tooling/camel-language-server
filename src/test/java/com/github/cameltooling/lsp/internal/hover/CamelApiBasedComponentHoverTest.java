@@ -30,12 +30,13 @@ import org.junit.jupiter.api.Test;
 import com.github.cameltooling.lsp.internal.AbstractCamelLanguageServerTest;
 import com.github.cameltooling.lsp.internal.CamelLanguageServer;
 import com.github.cameltooling.lsp.internal.completion.CamelCompletionForApisTest;
+import com.github.cameltooling.lsp.internal.util.RouteTextBuilder;
 
 class CamelApiBasedComponentHoverTest extends AbstractCamelLanguageServerTest {
 	
 	@Test
 	void tesOnOption() throws Exception {
-		String text = "<from uri=\"aComponentWithApis:account/fetch?aPropertyFetcher=test\" xmlns=\"http://camel.apache.org/schema/spring\"></from>\n";
+		String text = RouteTextBuilder.createXMLSpringRoute("aComponentWithApis:account/fetch?aPropertyFetcher=test");
 		CamelLanguageServer languageServer = initializeLanguageServer(text);
 		
 		HoverParams hoverParams = new HoverParams(new TextDocumentIdentifier(DUMMY_URI+".xml"), new Position(0, 45));

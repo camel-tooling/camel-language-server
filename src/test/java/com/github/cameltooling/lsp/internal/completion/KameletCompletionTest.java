@@ -17,6 +17,7 @@
 package com.github.cameltooling.lsp.internal.completion;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static com.github.cameltooling.lsp.internal.util.RouteTextBuilder.createXMLBlueprintRoute;
 
 import java.net.URISyntaxException;
 import java.util.List;
@@ -36,7 +37,7 @@ class KameletCompletionTest extends AbstractCamelLanguageServerTest {
 	
 	@Test
 	void testKameletTemplateIdCompletionForSource() throws Exception {
-		CamelLanguageServer languageServer = initLanguageServer("<from uri=\"kamelet:\" xmlns=\"http://camel.apache.org/schema/blueprint\"></from>\n");
+		CamelLanguageServer languageServer = initLanguageServer(createXMLBlueprintRoute("kamelet:"));
 		
 		List<CompletionItem> completions = getCompletionFor(languageServer, new Position(0, 19)).get().getLeft();
 		
@@ -60,7 +61,7 @@ class KameletCompletionTest extends AbstractCamelLanguageServerTest {
 	
 	@Test
 	void testKameletPropertyCompletionForSource() throws Exception {
-		CamelLanguageServer languageServer = initLanguageServer("<from uri=\"kamelet:aws-ddb-streams-source?\" xmlns=\"http://camel.apache.org/schema/blueprint\"></from>\n");
+		CamelLanguageServer languageServer = initLanguageServer(createXMLBlueprintRoute("kamelet:aws-ddb-streams-source?"));
 		
 		List<CompletionItem> completions = getCompletionFor(languageServer, new Position(0, 42)).get().getLeft();
 		
@@ -72,7 +73,7 @@ class KameletCompletionTest extends AbstractCamelLanguageServerTest {
 	
 	@Test
 	void testKameletPropertyCompletionWithTypeForSource() throws Exception {
-		CamelLanguageServer languageServer = initLanguageServer("<from uri=\"kamelet:aws-ddb-streams-source?secretKey\" xmlns=\"http://camel.apache.org/schema/blueprint\"></from>\n");
+		CamelLanguageServer languageServer = initLanguageServer(createXMLBlueprintRoute("kamelet:aws-ddb-streams-source?secretKey"));
 		
 		List<CompletionItem> completions = getCompletionFor(languageServer, new Position(0, 49)).get().getLeft();
 		

@@ -31,12 +31,13 @@ import org.junit.jupiter.api.Test;
 
 import com.github.cameltooling.lsp.internal.AbstractCamelLanguageServerTest;
 import com.github.cameltooling.lsp.internal.CamelLanguageServer;
+import com.github.cameltooling.lsp.internal.util.RouteTextBuilder;
 
 class CamelDeprecationIndicatorInCompletionTest extends AbstractCamelLanguageServerTest {
 
 	@Test
 	void testCamelComponentDeprecation() throws Exception {
-		CamelLanguageServer camelLanguageServer = initializeLanguageServer("<from uri=\"acomponent:deprecated\" xmlns=\"http://camel.apache.org/schema/blueprint\"></from>\n");
+		CamelLanguageServer camelLanguageServer = initializeLanguageServer(RouteTextBuilder.createXMLBlueprintRoute("acomponent:deprecated"));
 		CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = getCompletionFor(camelLanguageServer, new Position(0, 15));
 		List<CompletionItem> items = completions.get().getLeft();
 		assertThat(items.size()).isEqualTo(1);
@@ -46,7 +47,7 @@ class CamelDeprecationIndicatorInCompletionTest extends AbstractCamelLanguageSer
 	
 	@Test
 	void testParameterDeprecation() throws Exception {
-		CamelLanguageServer camelLanguageServer = initializeLanguageServer("<from uri=\"acomponent:withsyntax?aparam\" xmlns=\"http://camel.apache.org/schema/blueprint\"></from>\n");
+		CamelLanguageServer camelLanguageServer = initializeLanguageServer(RouteTextBuilder.createXMLBlueprintRoute("acomponent:withsyntax?aparam"));
 		CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = getCompletionFor(camelLanguageServer, new Position(0, 39));
 		List<CompletionItem> items = completions.get().getLeft();
 		assertThat(items.size()).isEqualTo(1);
