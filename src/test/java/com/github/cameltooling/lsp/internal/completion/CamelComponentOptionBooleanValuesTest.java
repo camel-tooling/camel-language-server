@@ -31,12 +31,13 @@ import org.junit.jupiter.api.Test;
 
 import com.github.cameltooling.lsp.internal.AbstractCamelLanguageServerTest;
 import com.github.cameltooling.lsp.internal.CamelLanguageServer;
+import com.github.cameltooling.lsp.internal.util.RouteTextBuilder;
 
 class CamelComponentOptionBooleanValuesTest extends AbstractCamelLanguageServerTest {
 
 	@Test
 	void testProvideBooleanValues() throws Exception {
-		testProvideCamelOptions("<from uri=\"timer:timerName?fixedRate=\" xmlns=\"http://camel.apache.org/schema/blueprint\"></from>\n", 0, 37);
+		testProvideCamelOptions(RouteTextBuilder.createXMLBlueprintRoute("timer:timerName?fixedRate="), 0, 37);
 	}
 
 	private void testProvideCamelOptions(String textTotest, int line, int character) throws URISyntaxException, InterruptedException, ExecutionException {

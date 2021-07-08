@@ -38,6 +38,7 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 import com.github.cameltooling.lsp.internal.completion.CamelEndpointCompletionProcessor;
+import com.github.cameltooling.lsp.internal.util.RouteTextBuilder;
 import com.google.gson.Gson;
 
 
@@ -45,7 +46,7 @@ class CamelLanguageServerTest extends AbstractCamelLanguageServerTest {
 	
 	@Test
 	void testProvideCompletionForCamelBlueprintNamespace() throws Exception {
-		CamelLanguageServer camelLanguageServer = initializeLanguageServer("<from uri=\"\" xmlns=\"http://camel.apache.org/schema/blueprint\"></from>\n");
+		CamelLanguageServer camelLanguageServer = initializeLanguageServer(RouteTextBuilder.createXMLBlueprintRoute(""));
 		
 		CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = getCompletionFor(camelLanguageServer, new Position(0, 11));
 		
@@ -63,7 +64,7 @@ class CamelLanguageServerTest extends AbstractCamelLanguageServerTest {
 	
 	@Test
 	void testProvideCompletionForCamelSpringNamespace() throws Exception {
-		CamelLanguageServer camelLanguageServer = initializeLanguageServer("<from uri=\"\" xmlns=\"http://camel.apache.org/schema/spring\"></from>\n");
+		CamelLanguageServer camelLanguageServer = initializeLanguageServer(RouteTextBuilder.createXMLSpringRoute(""));
 		
 		CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = getCompletionFor(camelLanguageServer, new Position(0, 11));
 		

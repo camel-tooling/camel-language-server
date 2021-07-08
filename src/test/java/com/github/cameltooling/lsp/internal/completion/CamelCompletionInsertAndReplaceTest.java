@@ -31,12 +31,13 @@ import org.junit.jupiter.api.Test;
 
 import com.github.cameltooling.lsp.internal.AbstractCamelLanguageServerTest;
 import com.github.cameltooling.lsp.internal.CamelLanguageServer;
+import com.github.cameltooling.lsp.internal.util.RouteTextBuilder;
 
 class CamelCompletionInsertAndReplaceTest extends AbstractCamelLanguageServerTest {
 
 	@Test
 	void testComponent() throws Exception {
-		CamelLanguageServer camelLanguageServer = initializeLanguageServer("<from uri=\"ahc-wss:httpUri?binding=#true&amp;bufferSize=10&amp;synchronous=true\" xmlns=\"http://camel.apache.org/schema/blueprint\"/>\n", ".xml");
+		CamelLanguageServer camelLanguageServer = initializeLanguageServer(RouteTextBuilder.createXMLBlueprintRoute("ahc-wss:httpUri?binding=#true&amp;bufferSize=10&amp;synchronous=true"), ".xml");
 		Position positionInMiddleOfcomponentPart = new Position(0, 15);
 		CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = getCompletionFor(camelLanguageServer, positionInMiddleOfcomponentPart);
 		List<CompletionItem> items = completions.get().getLeft();
@@ -53,7 +54,7 @@ class CamelCompletionInsertAndReplaceTest extends AbstractCamelLanguageServerTes
 	
 	@Test
 	void testAttribute() throws Exception {
-		CamelLanguageServer camelLanguageServer = initializeLanguageServer("<from uri=\"ahc-wss:httpUri?binding=#true&amp;bufferSize=10&amp;synchronous=true\" xmlns=\"http://camel.apache.org/schema/blueprint\"/>\n", ".xml");
+		CamelLanguageServer camelLanguageServer = initializeLanguageServer(RouteTextBuilder.createXMLBlueprintRoute("ahc-wss:httpUri?binding=#true&amp;bufferSize=10&amp;synchronous=true"), ".xml");
 		Position positionBeforeBufferSizeAttribute = new Position(0, 45);
 		CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = getCompletionFor(camelLanguageServer, positionBeforeBufferSizeAttribute);
 		List<CompletionItem> items = completions.get().getLeft();

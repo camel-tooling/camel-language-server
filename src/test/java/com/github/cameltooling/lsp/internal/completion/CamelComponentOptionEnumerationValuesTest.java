@@ -33,12 +33,13 @@ import org.junit.jupiter.api.Test;
 
 import com.github.cameltooling.lsp.internal.AbstractCamelLanguageServerTest;
 import com.github.cameltooling.lsp.internal.CamelLanguageServer;
+import com.github.cameltooling.lsp.internal.util.RouteTextBuilder;
 
 class CamelComponentOptionEnumerationValuesTest extends AbstractCamelLanguageServerTest {
 
 	@Test
 	void testProvideEnumValues() throws Exception {
-		testProvideCamelOptions("<from uri=\"timer:timerName?exchangePattern=\" xmlns=\"http://camel.apache.org/schema/blueprint\"></from>\n", 0, 43);
+		testProvideCamelOptions(RouteTextBuilder.createXMLBlueprintRoute("timer:timerName?exchangePattern="), 0, 43);
 	}
 
 	private void testProvideCamelOptions(String textTotest, int line, int character) throws URISyntaxException, InterruptedException, ExecutionException {

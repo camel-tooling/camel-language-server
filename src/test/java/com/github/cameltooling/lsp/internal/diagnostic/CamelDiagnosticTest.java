@@ -32,6 +32,8 @@ import org.eclipse.lsp4j.VersionedTextDocumentIdentifier;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
+import com.github.cameltooling.lsp.internal.util.RouteTextBuilder;
+
 class CamelDiagnosticTest extends AbstractDiagnosticTest {
 
 	@Test
@@ -156,7 +158,7 @@ class CamelDiagnosticTest extends AbstractDiagnosticTest {
 		DidChangeTextDocumentParams params = new DidChangeTextDocumentParams();
 		params.setTextDocument(new VersionedTextDocumentIdentifier(DUMMY_URI+".xml", 2));
 		List<TextDocumentContentChangeEvent> contentChanges = new ArrayList<>();
-		contentChanges.add(new TextDocumentContentChangeEvent("<from uri=\"timer:timerName?delay=1000\" xmlns=\"http://camel.apache.org/schema/blueprint\"></from>\n"));
+		contentChanges.add(new TextDocumentContentChangeEvent(RouteTextBuilder.createXMLBlueprintRoute("timer:timerName?delay=1000")));
 		params.setContentChanges(contentChanges);
 		camelLanguageServer.getTextDocumentService().didChange(params);
 		

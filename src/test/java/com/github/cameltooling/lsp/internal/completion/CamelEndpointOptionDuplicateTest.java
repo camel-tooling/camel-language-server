@@ -33,6 +33,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 import com.github.cameltooling.lsp.internal.AbstractCamelLanguageServerTest;
 import com.github.cameltooling.lsp.internal.CamelLanguageServer;
+import com.github.cameltooling.lsp.internal.util.RouteTextBuilder;
 
 /**
  * @author lheinema
@@ -42,9 +43,9 @@ class CamelEndpointOptionDuplicateTest extends AbstractCamelLanguageServerTest {
     public static Stream<Arguments> data() {
     	return Stream.of(
     		// test for duplicate filtering of uri params
-    		arguments("<from uri=\"file:bla?noop=false&amp;\" xmlns=\"http://camel.apache.org/schema/blueprint\"></from>\n", 						0, 35, "URI with duplicate option noop", 					"noop"),
-    		arguments("<from uri=\"file:bla?noop=false&amp;recursive=true&amp;\" xmlns=\"http://camel.apache.org/schema/blueprint\"></from>\n", 	0, 54, "URI with duplicate option recursive", 				"recursive"),
-    		arguments("<from uri=\"file:bla?noop=false&amp;recursive=true&amp;\" xmlns=\"http://camel.apache.org/schema/blueprint\"></from>\n", 	0, 54, "URI with duplicate option noop after recursive", 	"noop")
+    		arguments(RouteTextBuilder.createXMLBlueprintRoute("file:bla?noop=false&amp;"), 					0, 35, "URI with duplicate option noop", 					"noop"),
+    		arguments(RouteTextBuilder.createXMLBlueprintRoute("file:bla?noop=false&amp;recursive=true&amp;"), 	0, 54, "URI with duplicate option recursive", 				"recursive"),
+    		arguments(RouteTextBuilder.createXMLBlueprintRoute("file:bla?noop=false&amp;recursive=true&amp;"), 	0, 54, "URI with duplicate option noop after recursive", 	"noop")
     	);
     }
     	

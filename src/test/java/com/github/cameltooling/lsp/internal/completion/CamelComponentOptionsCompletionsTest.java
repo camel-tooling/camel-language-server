@@ -34,6 +34,7 @@ import org.junit.jupiter.api.Test;
 
 import com.github.cameltooling.lsp.internal.AbstractCamelLanguageServerTest;
 import com.github.cameltooling.lsp.internal.CamelLanguageServer;
+import com.github.cameltooling.lsp.internal.util.RouteTextBuilder;
 
 class CamelComponentOptionsCompletionsTest extends AbstractCamelLanguageServerTest {
 	
@@ -51,7 +52,7 @@ class CamelComponentOptionsCompletionsTest extends AbstractCamelLanguageServerTe
     	completionItem.setDetail("boolean");
     	completionItem.setDeprecated(false);
     	completionItem.setKind(CompletionItemKind.Property);
-		testProvideCamelOptions("<from uri=\"timer:timerName?\" xmlns=\"http://camel.apache.org/schema/blueprint\"></from>\n", 0, 27, completionItem);
+		testProvideCamelOptions(RouteTextBuilder.createXMLBlueprintRoute("timer:timerName?"), 0, 27, completionItem);
 	}
     
     @Test
@@ -75,7 +76,7 @@ class CamelComponentOptionsCompletionsTest extends AbstractCamelLanguageServerTe
     	completionItem.setDetail("java.util.Map<java.lang.String, java.lang.Object>");
     	completionItem.setDeprecated(false);
     	completionItem.setKind(CompletionItemKind.Property);
-		testProvideCamelOptions("<from uri=\"ahc:httpUri?\" xmlns=\"http://camel.apache.org/schema/blueprint\"></from>\n", 0, 23, completionItem);
+		testProvideCamelOptions(RouteTextBuilder.createXMLBlueprintRoute("ahc:httpUri?"), 0, 23, completionItem);
 	}
     
     @Test
