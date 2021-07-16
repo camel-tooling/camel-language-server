@@ -24,6 +24,7 @@ import org.eclipse.lsp4j.CodeActionOptions;
 import org.eclipse.lsp4j.CompletionOptions;
 import org.eclipse.lsp4j.InitializeParams;
 import org.eclipse.lsp4j.InitializeResult;
+import org.eclipse.lsp4j.InitializedParams;
 import org.eclipse.lsp4j.MessageParams;
 import org.eclipse.lsp4j.MessageType;
 import org.eclipse.lsp4j.ServerCapabilities;
@@ -36,6 +37,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.github.cameltooling.lsp.internal.settings.SettingsManager;
+import com.github.cameltooling.lsp.internal.telemetry.TelemetryManager;
 
 /**
  * this is the actual server implementation
@@ -49,6 +51,7 @@ public class CamelLanguageServer extends AbstractLanguageServer implements Langu
 	
 	private LanguageClient client;
 	private SettingsManager settingsManager;
+	private TelemetryManager telemetryManager;
 	
 	public CamelLanguageServer() {
 		CamelTextDocumentService textDocumentService = new CamelTextDocumentService(this);
@@ -60,6 +63,7 @@ public class CamelLanguageServer extends AbstractLanguageServer implements Langu
 	@Override
 	public void connect(LanguageClient client) {
 		this.client = client;
+		telemetryManager = new TelemetryManager(client);
 	}
 	
 	@Override
@@ -83,6 +87,14 @@ public class CamelLanguageServer extends AbstractLanguageServer implements Langu
 		ServerCapabilities capabilities = createServerCapabilities();
 		InitializeResult result = new InitializeResult(capabilities);
 		return CompletableFuture.completedFuture(result);
+	}
+	
+	@Override
+	public void initialized(InitializedParams params) {
+		LanguageServer.super.initialized(params);
+		if(telemetryManager != null) {
+			telemetryManager.onInitialized();
+		}
 	}
 
 	private ServerCapabilities createServerCapabilities() {
