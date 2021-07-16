@@ -25,6 +25,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URISyntaxException;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -43,6 +44,7 @@ import org.eclipse.lsp4j.DocumentSymbol;
 import org.eclipse.lsp4j.DocumentSymbolParams;
 import org.eclipse.lsp4j.InitializeParams;
 import org.eclipse.lsp4j.InitializeResult;
+import org.eclipse.lsp4j.InitializedParams;
 import org.eclipse.lsp4j.Location;
 import org.eclipse.lsp4j.LocationLink;
 import org.eclipse.lsp4j.MessageActionItem;
@@ -61,6 +63,7 @@ import org.eclipse.lsp4j.services.LanguageClient;
 import org.eclipse.lsp4j.services.TextDocumentService;
 import org.junit.jupiter.api.AfterEach;
 
+import com.github.cameltooling.lsp.internal.telemetry.TelemetryEvent;
 import com.google.common.io.Files;
 import com.google.gson.Gson;
 
@@ -73,6 +76,7 @@ public abstract class AbstractCamelLanguageServerTest {
 	protected static final String DUMMY_URI = "dummyUri";
 	private String extensionUsed;
 	protected PublishDiagnosticsParams lastPublishedDiagnostics;
+	protected List<TelemetryEvent> telemetryEvents = new ArrayList<>();
 	protected CamelLanguageServer camelLanguageServer;
 
 	public AbstractCamelLanguageServerTest() {
@@ -84,6 +88,7 @@ public abstract class AbstractCamelLanguageServerTest {
 		if (camelLanguageServer != null) {
 			camelLanguageServer.stopServer();
 		}
+		telemetryEvents.clear();
 	}
 
 	protected CompletionItem createExpectedAhcCompletionItem(int lineStart, int characterStart, int lineEnd, int characterEnd) {
@@ -104,6 +109,7 @@ public abstract class AbstractCamelLanguageServerTest {
 
 		@Override
 		public void telemetryEvent(Object object) {
+			AbstractCamelLanguageServerTest.this.telemetryEvents.add((TelemetryEvent) object);
 		}
 
 		@Override
@@ -154,6 +160,9 @@ public abstract class AbstractCamelLanguageServerTest {
 
 		assertThat(initialize).isCompleted();
 		assertThat(initialize.get().getCapabilities().getCompletionProvider().getResolveProvider()).isTrue();
+		
+		InitializedParams initialized = new InitializedParams();
+		camelLanguageServer.initialized(initialized);
 	}
 	
 	private InitializeParams getInitParams() throws URISyntaxException {
