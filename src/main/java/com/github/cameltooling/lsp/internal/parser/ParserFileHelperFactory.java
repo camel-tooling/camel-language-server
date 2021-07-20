@@ -16,10 +16,16 @@
  */
 package com.github.cameltooling.lsp.internal.parser;
 
+import java.io.IOException;
+
+import javax.xml.parsers.ParserConfigurationException;
+
 import org.eclipse.lsp4j.TextDocumentItem;
+import org.xml.sax.SAXException;
 
 public class ParserFileHelperFactory {
 	
+	private static final String CAMELK_XML_FILENAME_SUFFIX = "camelk.xml";
 	private static final String CAMELK_GROOVY_FILENAME_SUFFIX = ".camelk.groovy";
 	private static final String CAMELK_KOTLIN_FILENAME_SUFFIX = ".camelk.kts";
 	private static final String CAMELK_YAML_FILENAME_SUFFIX = ".camelk.yaml";
@@ -64,7 +70,31 @@ public class ParserFileHelperFactory {
 		}
 		return null;
 	}
+
+	/**
+	 * @param textDocumentItem the Document to check if it is a Camel one or not
+	 * @return if it is most probably a Camel file. "Probably" because the heuristic is far from perfect. But it is the best that we have already implemented in the Language Server.
+	 */
+	public boolean isProbablyCamelFile(TextDocumentItem textDocumentItem) {
+		String uri = textDocumentItem.getUri();
+		return isCamelJavaDSL(textDocumentItem, uri)
+				|| isCamelXMLDSL(textDocumentItem, uri)
+				|| isCamelKJSDSL(textDocumentItem, uri)
+				|| isCamelKYamlDSL(textDocumentItem, uri)
+				|| isCamelKKotlinDSL(textDocumentItem, uri)
+				|| isCamelKGroovyDSL(textDocumentItem, uri)
+				|| isCamelKafkaConnectDSL(textDocumentItem, uri);
+	}
 	
+	private boolean isCamelXMLDSL(TextDocumentItem textDocumentItem, String uri) {
+		try {
+			return uri.endsWith(CAMELK_XML_FILENAME_SUFFIX)
+					|| uri.endsWith(".xml") && new ParserXMLFileHelper().hasElementFromCamelNamespace(textDocumentItem);
+		} catch (SAXException | IOException | ParserConfigurationException e) {
+			return false;
+		}
+	}
+
 	private boolean isCamelKJSDSL(TextDocumentItem textDocumentItem, String uri) {
 		//improve this method to provide better heuristic to detect if it is a Camel file or not
 		return uri.endsWith(CAMELK_JS_FILENAME_SUFFIX)

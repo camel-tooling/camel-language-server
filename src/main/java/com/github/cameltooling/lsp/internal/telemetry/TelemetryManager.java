@@ -9,6 +9,7 @@
 *******************************************************************************/
 package com.github.cameltooling.lsp.internal.telemetry;
 
+import java.util.Collections;
 import java.util.Map;
 
 import org.eclipse.lsp4j.services.LanguageClient;
@@ -26,6 +27,7 @@ public class TelemetryManager {
 	 * "startup" telemetry event name
 	 */
 	public static final String STARTUP_EVENT_NAME = "camel.lsp.server.initialized";
+	public static final String OPENED_DOCUMENT = "camel.lsp.open.document";
 
 	private final LanguageClient languageClient;
 
@@ -34,7 +36,7 @@ public class TelemetryManager {
 	}
 
 	/**
-	 * Send a telemetry event on start of the XML server
+	 * Send a telemetry event on start of the Camel Language server
 	 *
 	 */
 	public void onInitialized() {
@@ -47,6 +49,12 @@ public class TelemetryManager {
 	 */
 	private void telemetryEvent(String eventName, Map<String, Object> object) {
 		languageClient.telemetryEvent(new TelemetryEvent(eventName, object));
+	}
+
+	public void sendOpenedCamelFile(String uri) {
+		int lastIndexOfDot = uri.lastIndexOf('.');
+		String extension = lastIndexOfDot != -1 ? uri.substring(lastIndexOfDot + 1) : uri;
+		telemetryEvent(OPENED_DOCUMENT, Collections.singletonMap("language", extension));
 	}
 
 }

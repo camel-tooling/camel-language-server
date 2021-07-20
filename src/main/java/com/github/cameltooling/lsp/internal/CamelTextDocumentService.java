@@ -83,6 +83,7 @@ import com.github.cameltooling.lsp.internal.parser.CamelKModelineParser;
 import com.github.cameltooling.lsp.internal.references.ReferencesProcessor;
 import com.github.cameltooling.lsp.internal.settings.JSONUtility;
 import com.github.cameltooling.lsp.internal.settings.SettingsManager;
+import com.github.cameltooling.lsp.internal.telemetry.TelemetryLanguage;
 import com.google.gson.Gson;
 
 /**
@@ -257,6 +258,7 @@ public class CamelTextDocumentService implements TextDocumentService {
 		LOGGER.info("didOpen: {}", textDocument);
 		openedDocuments.put(textDocument.getUri(), textDocument);
 		new DiagnosticRunner(getCamelCatalog(), camelLanguageServer).compute(params);
+		new TelemetryLanguage(camelLanguageServer.getTelemetryManager()).compute(textDocument);
 	}
 
 	@Override
