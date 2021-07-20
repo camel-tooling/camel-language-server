@@ -141,5 +141,9 @@ public class CamelLanguageServer extends AbstractLanguageServer implements Langu
 	public SettingsManager getSettingsManager() {
 		return settingsManager;
 	}
+
+	public TelemetryManager getTelemetryManager() {
+		return telemetryManager;
+	}
 	
 }

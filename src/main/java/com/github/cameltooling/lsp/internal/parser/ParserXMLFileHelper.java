@@ -99,7 +99,7 @@ public class ParserXMLFileHelper extends ParserFileHelper {
 		}
 	}
 
-	private boolean hasElementFromCamelNamespace(TextDocumentItem textDocumentItem) throws SAXException, IOException, ParserConfigurationException {
+	public boolean hasElementFromCamelNamespace(TextDocumentItem textDocumentItem) throws SAXException, IOException, ParserConfigurationException {
 		DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 		dbf.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
 		dbf.setAttribute(XMLConstants.ACCESS_EXTERNAL_DTD, "");
