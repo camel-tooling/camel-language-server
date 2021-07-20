@@ -4,6 +4,7 @@ Telemetry events can be collected by the LSP client program.
 
 The following information is emitted when the language server starts:
 
+ * Extension of the Camel file used
  * JVM information:
     * Whether it is being run with Java or as a GraalVM native image (binary)
     * The name of the vm (`java.vm.name`)
