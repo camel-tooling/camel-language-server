@@ -8,7 +8,6 @@ updates:
   reviewers:
   - apupier
   - lhein
-  - bfitzpat
   ignore:
   - dependency-name: org.apache.kafka:kafka-clients
     versions:
