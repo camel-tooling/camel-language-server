@@ -13,7 +13,7 @@ public class OS {
 
 	private final String arch;
 
-	private final transient boolean isWindows;
+	private final boolean isWindows;
 
 	public OS() {
 		this.name = Platform.getSystemProperty("os.name");
