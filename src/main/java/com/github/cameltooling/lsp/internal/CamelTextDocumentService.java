@@ -47,6 +47,8 @@ import org.eclipse.lsp4j.DocumentOnTypeFormattingParams;
 import org.eclipse.lsp4j.DocumentRangeFormattingParams;
 import org.eclipse.lsp4j.DocumentSymbol;
 import org.eclipse.lsp4j.DocumentSymbolParams;
+import org.eclipse.lsp4j.FoldingRange;
+import org.eclipse.lsp4j.FoldingRangeRequestParams;
 import org.eclipse.lsp4j.Hover;
 import org.eclipse.lsp4j.HoverParams;
 import org.eclipse.lsp4j.Location;
@@ -76,6 +78,7 @@ import com.github.cameltooling.lsp.internal.completion.modeline.CamelKModelineCo
 import com.github.cameltooling.lsp.internal.definition.DefinitionProcessor;
 import com.github.cameltooling.lsp.internal.diagnostic.DiagnosticRunner;
 import com.github.cameltooling.lsp.internal.documentsymbol.DocumentSymbolProcessor;
+import com.github.cameltooling.lsp.internal.folding.FoldingRangeProcessor;
 import com.github.cameltooling.lsp.internal.hover.CamelKModelineHoverProcessor;
 import com.github.cameltooling.lsp.internal.hover.CamelPropertiesFileHoverProcessor;
 import com.github.cameltooling.lsp.internal.hover.CamelURIHoverProcessor;
@@ -249,6 +252,15 @@ public class CamelTextDocumentService implements TextDocumentService {
 	public CompletableFuture<WorkspaceEdit> rename(RenameParams params) {
 		LOGGER.info("rename: {}", params.getTextDocument());
 		return CompletableFuture.completedFuture(null);
+	}
+	
+	@Override
+	public CompletableFuture<List<FoldingRange>> foldingRange(FoldingRangeRequestParams params) {
+		TextDocumentIdentifier textDocument = params.getTextDocument();
+		LOGGER.info("foldingRange: {}", textDocument);
+		String uri = textDocument.getUri();
+		TextDocumentItem textDocumentItem = openedDocuments.get(uri);
+		return new FoldingRangeProcessor().computeFoldingRanges(textDocumentItem);
 	}
 
 	@Override

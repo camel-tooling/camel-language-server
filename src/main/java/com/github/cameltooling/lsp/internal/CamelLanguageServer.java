@@ -107,6 +107,7 @@ public class CamelLanguageServer extends AbstractLanguageServer implements Langu
 		capabilities.setReferencesProvider(Boolean.TRUE);
 		capabilities.setDefinitionProvider(Boolean.TRUE);
 		capabilities.setCodeActionProvider(new CodeActionOptions(Arrays.asList(CodeActionKind.QuickFix)));
+		capabilities.setFoldingRangeProvider(Boolean.TRUE);
 		return capabilities;
 	}
 

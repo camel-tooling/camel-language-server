@@ -19,27 +19,20 @@ package com.github.cameltooling.lsp.internal.documentsymbol;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.OptionalInt;
-import java.util.stream.Stream;
 
 import org.apache.camel.parser.model.CamelEndpointDetails;
 import org.apache.camel.parser.model.CamelNodeDetails;
 import org.eclipse.lsp4j.DocumentSymbol;
 import org.eclipse.lsp4j.Location;
-import org.eclipse.lsp4j.Position;
 import org.eclipse.lsp4j.Range;
 import org.eclipse.lsp4j.SymbolInformation;
 import org.eclipse.lsp4j.SymbolKind;
 import org.eclipse.lsp4j.TextDocumentItem;
 import org.eclipse.lsp4j.jsonrpc.messages.Either;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import com.github.cameltooling.lsp.internal.parser.ParserFileHelperUtil;
+import com.github.cameltooling.lsp.internal.catalog.util.CamelNodeDetailsUtils;
 
 public abstract class AbstractDocumentSymbolProcessor {
-	
-	private static final Logger LOGGER = LoggerFactory.getLogger(AbstractDocumentSymbolProcessor.class);
 
 	protected TextDocumentItem textDocumentItem;
 
@@ -51,7 +44,7 @@ public abstract class AbstractDocumentSymbolProcessor {
 		List<Either<SymbolInformation, DocumentSymbol>> symbolInformations = new ArrayList<>();
 		if (camelNodes != null) {
 			for (CamelNodeDetails camelNodeDetails : camelNodes) {
-				Range range = computeRange(camelNodeDetails);
+				Range range = new CamelNodeDetailsUtils().computeRange(camelNodeDetails, textDocumentItem);
 				Optional<String> componentName = endpoints.stream()
 						.filter(ced -> Integer.valueOf(ced.getLineNumber()) - 1 == range.getStart().getLine())
 						.map(CamelEndpointDetails::getEndpointUri)
@@ -73,42 +66,6 @@ public abstract class AbstractDocumentSymbolProcessor {
 						new Location(textDocumentItem.getUri(), range)));
 	}
 
-	private Range computeRange(CamelNodeDetails camelNodeDetails) {
-		int endLine = retrieveEndline(camelNodeDetails);
-		Position startPosition = new Position(Integer.valueOf(camelNodeDetails.getLineNumber()) - 1, 0);
-		Position endPosition = new Position(endLine, new ParserFileHelperUtil().getLine(textDocumentItem, endLine).length());
-		return new Range(startPosition, endPosition);
-	}
-
-	private int retrieveEndline(CamelNodeDetails camelNodeDetails) {
-		OptionalInt endLineComputedFromChildren = retrieveAllChildrenOutputs(camelNodeDetails)
-				.mapToInt(output -> {
-					String lineNumberEndAsString = output.getLineNumberEnd();
-					if(lineNumberEndAsString != null) {
-						try {
-							return Integer.valueOf(lineNumberEndAsString) - 1;							
-						} catch(NumberFormatException ex) {
-							LOGGER.warn("The parsing of the file " + camelNodeDetails.getFileName()
-									+ " returned an invalid line number end "+lineNumberEndAsString
-									+ " for node "+camelNodeDetails.getName(), ex);
-							return 0;
-						}
-					} else {
-						return 0;
-					}
-				})
-				.max();
-		return endLineComputedFromChildren.orElse(Integer.valueOf(camelNodeDetails.getLineNumberEnd()) - 1);
-	}
-
-	private Stream<CamelNodeDetails> retrieveAllChildrenOutputs(CamelNodeDetails camelNodeDetails) {
-		List<CamelNodeDetails> children = camelNodeDetails.getOutputs();
-		if (children != null) {
-			return Stream.concat(Stream.of(camelNodeDetails), children.stream().flatMap(this::retrieveAllChildrenOutputs));
-		} else {
-			return Stream.of(camelNodeDetails);
-		}
-	}
 
 	private String shortEndpoint(String uri) {
 	    int pos = uri.indexOf('?');
