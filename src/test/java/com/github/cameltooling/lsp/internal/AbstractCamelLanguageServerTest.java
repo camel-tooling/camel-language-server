@@ -253,7 +253,7 @@ public abstract class AbstractCamelLanguageServerTest {
 		params.setTextDocument(new TextDocumentIdentifier(DUMMY_URI+extensionUsed));
 		return textDocumentService.definition(params);
 	}
-
+	
 	public File getTestResource(String name) throws URISyntaxException {
 		return Paths.get(CamelLanguageServerTest.class.getResource(name).toURI()).toFile();
 	}
