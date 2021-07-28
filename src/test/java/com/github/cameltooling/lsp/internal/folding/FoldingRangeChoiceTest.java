@@ -27,48 +27,40 @@ import org.junit.jupiter.api.Test;
 import com.github.cameltooling.lsp.internal.AbstractCamelLanguageServerTest;
 import com.github.cameltooling.lsp.internal.CamelLanguageServer;
 
-class FoldingRangeRouteTest extends AbstractCamelLanguageServerTest {
+class FoldingRangeChoiceTest extends AbstractCamelLanguageServerTest {
 	
 	@Test
-	void testFoldingRangeOnJavaFile() throws Exception {
-		File file = new File("src/test/resources/workspace/LinearRoute.java");
+	void testFoldingRangeWithoutEnd() throws Exception {
+		File file = new File("src/test/resources/workspace/RouteWithChoice.java");
 		CamelLanguageServer languageServer = initializeLanguageServer(file);
 		
 		List<FoldingRange> foldingRanges = getFoldingRanges(file, languageServer).get();
 		
-		assertThat(foldingRanges).hasSize(1);
-		FoldingRange foldingRange = foldingRanges.get(0);
-		assertThat(foldingRange).isEqualTo(new FoldingRange(6, 9));
+		assertThat(foldingRanges).hasSize(2);
+		FoldingRange foldingRange = foldingRanges.get(1);
+		assertThat(foldingRange).isEqualTo(new FoldingRange(6, 12));
 	}
 	
 	@Test
-	void testMultipleFoldingRangeOnJavaFile() throws Exception {
-		File file = new File("src/test/resources/workspace/My3LinearRoutes.java");
+	void testFoldingRangeWithSeveralRoutes() throws Exception {
+		File file = new File("src/test/resources/workspace/RoutesWithChoice.java");
 		CamelLanguageServer languageServer = initializeLanguageServer(file);
 		
 		List<FoldingRange> foldingRanges = getFoldingRanges(file, languageServer).get();
 		
-		assertThat(foldingRanges).hasSize(3);
+		assertThat(foldingRanges).hasSize(4);
 	}
 	
 	@Test
-	void testNoFoldingRangeOnJavaFile() throws Exception {
-		File file = new File("src/test/resources/workspace/AnInterface.java");
+	void testFoldingRangeWithEnd() throws Exception {
+		File file = new File("src/test/resources/workspace/RouteWithChoiceAndEnd.java");
 		CamelLanguageServer languageServer = initializeLanguageServer(file);
 		
 		List<FoldingRange> foldingRanges = getFoldingRanges(file, languageServer).get();
 		
-		assertThat(foldingRanges).isEmpty();
-	}
-	
-	@Test
-	void testNoFoldingRangeOnInvalidJavaFile() throws Exception {
-		File file = new File("src/test/resources/workspace/AnInvalid.java");
-		CamelLanguageServer languageServer = initializeLanguageServer(file);
-		
-		List<FoldingRange> foldingRanges = getFoldingRanges(file, languageServer).get();
-		
-		assertThat(foldingRanges).isEmpty();
+		assertThat(foldingRanges).hasSize(2);
+		FoldingRange foldingRange = foldingRanges.get(1);
+		assertThat(foldingRange).isEqualTo(new FoldingRange(6, 13));
 	}
 	
 }

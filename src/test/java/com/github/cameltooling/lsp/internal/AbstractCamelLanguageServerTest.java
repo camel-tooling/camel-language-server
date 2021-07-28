@@ -42,6 +42,8 @@ import org.eclipse.lsp4j.DefinitionParams;
 import org.eclipse.lsp4j.DidOpenTextDocumentParams;
 import org.eclipse.lsp4j.DocumentSymbol;
 import org.eclipse.lsp4j.DocumentSymbolParams;
+import org.eclipse.lsp4j.FoldingRange;
+import org.eclipse.lsp4j.FoldingRangeRequestParams;
 import org.eclipse.lsp4j.InitializeParams;
 import org.eclipse.lsp4j.InitializeResult;
 import org.eclipse.lsp4j.InitializedParams;
@@ -275,6 +277,12 @@ public abstract class AbstractCamelLanguageServerTest {
 		aSiblingFolder.mkdir();
 		File aPropertiesFileInSiblingFolder = new File(aSiblingFolder, fileName);
 		aPropertiesFileInSiblingFolder.createNewFile();
+	}
+
+	protected CompletableFuture<List<FoldingRange>> getFoldingRanges(File file, CamelLanguageServer languageServer) {
+		TextDocumentIdentifier textDocumentIdentifier = new TextDocumentIdentifier(file.toURI().toString());
+		FoldingRangeRequestParams params = new FoldingRangeRequestParams(textDocumentIdentifier);
+		return languageServer.getTextDocumentService().foldingRange(params);
 	}
 	
 }

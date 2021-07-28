@@ -34,13 +34,13 @@ public class CamelNodeDetailsUtils {
 	private static final Logger LOGGER = LoggerFactory.getLogger(CamelNodeDetailsUtils.class);
 
 	public Range computeRange(CamelNodeDetails camelNodeDetails, TextDocumentItem textDocumentItem) {
-		int endLine = retrieveEndline(camelNodeDetails);
+		int endLine = retrieveEndline(camelNodeDetails, textDocumentItem);
 		Position startPosition = new Position(Integer.valueOf(camelNodeDetails.getLineNumber()) - 1, 0);
 		Position endPosition = new Position(endLine, new ParserFileHelperUtil().getLine(textDocumentItem, endLine).length());
 		return new Range(startPosition, endPosition);
 	}
 
-	private int retrieveEndline(CamelNodeDetails camelNodeDetails) {
+	private int retrieveEndline(CamelNodeDetails camelNodeDetails, TextDocumentItem textDocumentItem) {
 		OptionalInt endLineComputedFromChildren = retrieveAllChildrenOutputs(camelNodeDetails)
 				.mapToInt(output -> {
 					String lineNumberEndAsString = output.getLineNumberEnd();
@@ -58,10 +58,18 @@ public class CamelNodeDetailsUtils {
 					}
 				})
 				.max();
+		// Workaround due to the fact that the .end() is not counted by the CamelNodeDetails model.
+		if(endLineComputedFromChildren.isPresent()) {
+			int lineNumberAfter = endLineComputedFromChildren.getAsInt() + 1;
+			String theLineAfter = new ParserFileHelperUtil().getLine(textDocumentItem, lineNumberAfter);
+			if(theLineAfter != null && theLineAfter.trim().contains(".end()")) {
+				return lineNumberAfter;
+			}
+		}
 		return endLineComputedFromChildren.orElse(Integer.valueOf(camelNodeDetails.getLineNumberEnd()) - 1);
 	}
 
-	private Stream<CamelNodeDetails> retrieveAllChildrenOutputs(CamelNodeDetails camelNodeDetails) {
+	public Stream<CamelNodeDetails> retrieveAllChildrenOutputs(CamelNodeDetails camelNodeDetails) {
 		List<CamelNodeDetails> children = camelNodeDetails.getOutputs();
 		if (children != null) {
 			return Stream.concat(Stream.of(camelNodeDetails), children.stream().flatMap(this::retrieveAllChildrenOutputs));

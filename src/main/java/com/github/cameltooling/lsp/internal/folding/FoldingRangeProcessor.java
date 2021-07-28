@@ -18,6 +18,8 @@ package com.github.cameltooling.lsp.internal.folding;
 
 import java.io.File;
 import java.net.URI;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -38,6 +40,7 @@ import com.github.cameltooling.lsp.internal.catalog.util.CamelNodeDetailsUtils;
 
 public class FoldingRangeProcessor {
 	
+	private static final String CHOICE_EIP_NAME = "choice";
 	private static final Logger LOGGER = LoggerFactory.getLogger(FoldingRangeProcessor.class);
 
 	public CompletableFuture<List<FoldingRange>> computeFoldingRanges(TextDocumentItem textDocumentItem) {
@@ -49,11 +52,8 @@ public class FoldingRangeProcessor {
 					JavaClassSource clazz = (JavaClassSource) parsedJavaFile;
 					String absolutePathOfCamelFile = new File(URI.create(textDocumentItem.getUri())).getAbsolutePath();
 					List<CamelNodeDetails> camelNodes = RouteBuilderParser.parseRouteBuilderTree(clazz, "", absolutePathOfCamelFile, true);
-					List<FoldingRange> foldingRanges = camelNodes.stream().map(camelNode -> {
-						Range range = new CamelNodeDetailsUtils().computeRange(camelNode, textDocumentItem);
-						return new FoldingRange(range.getStart().getLine(), range.getEnd().getLine());
-					}).collect(Collectors.toList());
-
+					List<FoldingRange> foldingRanges = computeRouteFoldingRanges(textDocumentItem, camelNodes);
+					foldingRanges.addAll(computeChoiceFoldingRanges(textDocumentItem, camelNodes));
 					return CompletableFuture.completedFuture(foldingRanges);
 				}
 			} catch (Exception ex) {
@@ -61,6 +61,28 @@ public class FoldingRangeProcessor {
 			}
 		}
 		return CompletableFuture.completedFuture(Collections.emptyList());
+	}
+
+	private Collection<FoldingRange> computeChoiceFoldingRanges(TextDocumentItem textDocumentItem, List<CamelNodeDetails> camelNodes) {
+		List<CamelNodeDetails> allNodes = new ArrayList<>();
+		for (CamelNodeDetails camelNodeDetails : camelNodes) {
+			allNodes.addAll(new CamelNodeDetailsUtils().retrieveAllChildrenOutputs(camelNodeDetails).collect(Collectors.toList()));
+		}
+		return allNodes.stream()
+				.filter(camelNodeDetail -> CHOICE_EIP_NAME.equals(camelNodeDetail.getName()))
+				.map(camelNode -> createFoldingRange(textDocumentItem, camelNode))
+				.collect(Collectors.toList());
+	}
+
+	private List<FoldingRange> computeRouteFoldingRanges(TextDocumentItem textDocumentItem, List<CamelNodeDetails> camelNodes) {
+		return camelNodes.stream()
+				.map(camelNode -> createFoldingRange(textDocumentItem, camelNode))
+				.collect(Collectors.toList());
+	}
+
+	private FoldingRange createFoldingRange(TextDocumentItem textDocumentItem, CamelNodeDetails camelNode) {
+		Range range = new CamelNodeDetailsUtils().computeRange(camelNode, textDocumentItem);
+		return new FoldingRange(range.getStart().getLine(), range.getEnd().getLine());
 	}
 
 }
