@@ -22,6 +22,7 @@ import java.util.concurrent.CompletableFuture;
 import org.eclipse.lsp4j.CodeActionKind;
 import org.eclipse.lsp4j.CodeActionOptions;
 import org.eclipse.lsp4j.CompletionOptions;
+import org.eclipse.lsp4j.DocumentSymbolOptions;
 import org.eclipse.lsp4j.InitializeParams;
 import org.eclipse.lsp4j.InitializeResult;
 import org.eclipse.lsp4j.InitializedParams;
@@ -103,7 +104,7 @@ public class CamelLanguageServer extends AbstractLanguageServer implements Langu
 		capabilities.setTextDocumentSync(TextDocumentSyncKind.Full);
 		capabilities.setCompletionProvider(new CompletionOptions(Boolean.TRUE, Arrays.asList(".","?","&", "\"", "=")));
 		capabilities.setHoverProvider(Boolean.TRUE);
-		capabilities.setDocumentSymbolProvider(Boolean.TRUE);
+		capabilities.setDocumentSymbolProvider(new DocumentSymbolOptions("Camel"));
 		capabilities.setReferencesProvider(Boolean.TRUE);
 		capabilities.setDefinitionProvider(Boolean.TRUE);
 		capabilities.setCodeActionProvider(new CodeActionOptions(Arrays.asList(CodeActionKind.QuickFix)));
