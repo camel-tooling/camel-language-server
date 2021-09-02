@@ -63,7 +63,7 @@ class KafkaTopicCompletionTest extends AbstractCamelLanguageServerTest {
 	}
 
 	@Test
-	@Timeout(2)
+	@Timeout(3)
 	void testInvalidConnectionUrl() throws Exception {
 		String connectionURL = "localhost:9091";
 		System.setProperty(KafkaTopicCompletionProvider.CAMEL_LANGUAGE_SERVER_KAFKA_CONNECTION_URL, connectionURL);

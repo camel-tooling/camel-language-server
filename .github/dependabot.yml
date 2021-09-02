@@ -8,10 +8,3 @@ updates:
   reviewers:
   - apupier
   - lhein
-  ignore:
-  - dependency-name: org.apache.kafka:kafka-clients
-    versions:
-    - ">= 2.7.a, < 2.8"
-  - dependency-name: org.apache.kafka:kafka-clients
-    versions:
-    - 2.8.0
