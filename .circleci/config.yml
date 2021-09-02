@@ -1,15 +1,6 @@
 version: 2.1
 
 jobs:
-  jdk8:
-    docker:
-      - image: circleci/openjdk:8-stretch
-    steps:
-      - checkout
-      - run: mvn verify -V
-      - store_test_results:
-          path: target/surefire-reports
-
   jdk11:
     docker:
       - image: circleci/openjdk:11-stretch
@@ -47,7 +38,7 @@ jobs:
 
   deploy:
     docker:
-      - image: circleci/openjdk:8-stretch
+      - image: circleci/openjdk:11-stretch
     steps:
       - checkout
       - run: echo 'export GPG_DIR=`pwd`/cd' >> $BASH_ENV
@@ -60,12 +51,10 @@ workflows:
 
   build:
     jobs:
-      - jdk8
       - jdk11
       - jdk16
       - sonar:
           requires:
-            - jdk8
             - jdk11
             - jdk16
           filters:
@@ -75,7 +64,6 @@ workflows:
           context: sonarcloud
       - deploy:
           requires:
-             - jdk8
              - jdk11
              - jdk16
           filters:
