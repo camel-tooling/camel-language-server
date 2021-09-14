@@ -3,7 +3,7 @@ version: 2.1
 jobs:
   jdk11:
     docker:
-      - image: circleci/openjdk:11-stretch
+      - image: cimg/openjdk:11.0
     steps:
       - checkout
       - run: mvn verify -V
@@ -12,7 +12,7 @@ jobs:
 
   jdk16:
     docker:
-      - image: circleci/openjdk:16-buster
+      - image: cimg/openjdk:16.0
     steps:
       - checkout
       - run: mvn verify -V
@@ -21,7 +21,7 @@ jobs:
 
   sonar:
     docker:
-      - image: circleci/openjdk:11-stretch
+      - image: cimg/openjdk:11.0
     steps:
       - checkout
       - run: > 
@@ -38,7 +38,7 @@ jobs:
 
   deploy:
     docker:
-      - image: circleci/openjdk:11-stretch
+      - image: cimg/openjdk:11.0
     steps:
       - checkout
       - run: echo 'export GPG_DIR=`pwd`/cd' >> $BASH_ENV
