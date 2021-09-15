@@ -2,7 +2,7 @@
 
 ## Rebase & Merge default requirements
 
-1. Green build for master branch
+1. Green build for main branch
 2. Wait 24 hours after PR creation
 3. Green job for PR
 4. Approved PR
@@ -22,4 +22,4 @@
 1. [ ] Tagged with relevant **PR labels**
 2. [ ] Green **job for PR**
 3. [ ] PR was created more than **24 hours ago** or **All committers approved** it
-4. [ ] Green **master** branch build
+4. [ ] Green **main** branch build

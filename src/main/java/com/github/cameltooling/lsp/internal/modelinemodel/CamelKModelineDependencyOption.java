@@ -84,7 +84,7 @@ public class CamelKModelineDependencyOption implements ICamelKModelineOptionValu
 		CompletionItem completionItem = new CompletionItem("jitpack:<gitProvider>.<username>:<repo>:<version>");
 		completionItem.setSortText("1"); // allows to be before Camel Components in completion list
 		completionItem.setInsertTextFormat(InsertTextFormat.Snippet);
-		completionItem.setInsertText("jitpack:${1|com.github,com.gitlab,com.bitbucket,com.gitee,com.azure|}.${2:username}:${3:repo}:${4:master-SNAPSHOT}");
+		completionItem.setInsertText("jitpack:${1|com.github,com.gitlab,com.bitbucket,com.gitee,com.azure|}.${2:username}:${3:repo}:${4:main-SNAPSHOT}");
 		CompletionResolverUtils.applyTextEditToCompletionItem(this, completionItem);
 		return completionItem;
 	}

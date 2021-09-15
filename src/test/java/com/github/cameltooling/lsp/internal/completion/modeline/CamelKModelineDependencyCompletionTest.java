@@ -130,7 +130,7 @@ class CamelKModelineDependencyCompletionTest extends AbstractCamelLanguageServer
 		assertThat(completionItems).isNotEmpty();
 		CompletionItem timerCompletionItem = completionItems.stream().filter(completionItem -> completionItem.getLabel().startsWith("jitpack")).findFirst().get();
 		assertThat(timerCompletionItem.getInsertTextFormat()).isEqualTo(InsertTextFormat.Snippet);
-		assertThat(timerCompletionItem.getInsertText()).isEqualTo("jitpack:${1|com.github,com.gitlab,com.bitbucket,com.gitee,com.azure|}.${2:username}:${3:repo}:${4:master-SNAPSHOT}");
+		assertThat(timerCompletionItem.getInsertText()).isEqualTo("jitpack:${1|com.github,com.gitlab,com.bitbucket,com.gitee,com.azure|}.${2:username}:${3:repo}:${4:main-SNAPSHOT}");
 		assertThat(timerCompletionItem.getTextEdit().getLeft().getRange().getStart().getCharacter()).isEqualTo(23);
 		assertThat(timerCompletionItem.getTextEdit().getLeft().getRange().getEnd().getCharacter()).isEqualTo(23 + "test".length());
 	}

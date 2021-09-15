@@ -60,7 +60,7 @@ workflows:
           filters:
             branches:
               only:
-                master
+                main
           context: sonarcloud
       - deploy:
           requires:
@@ -68,7 +68,7 @@ workflows:
              - jdk16
           filters:
             branches:
-              only: master
+              only: main
 
 orbs:
   win: circleci/windows@2.4.0
