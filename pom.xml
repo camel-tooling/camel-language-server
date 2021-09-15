@@ -20,7 +20,7 @@
 	<scm>
   		<connection>scm:git:https://github.com/camel-tooling/camel-language-server.git</connection>
   		<developerConnection>scm:git:https://github.com/camel-tooling/camel-language-server.git</developerConnection>
-  		<url>https://github.com/camel-tooling/camel-language-server/tree/master</url>
+  		<url>https://github.com/camel-tooling/camel-language-server</url>
 	</scm>
 
 	<developers>
