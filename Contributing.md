@@ -67,7 +67,7 @@ As this is an implementation of Language Server Protocol for Apache Camel, it is
     * an important point is that all API is based on position (line, column) in a text file, so the LSP for Apache Camel implementation needs to be able to always provide and understand this information
 * information about LSP4J
     * LSP4J is a Java implementation of the LSP. This is library used for writing the LSP for Apache Camel
-    * it is recommended to read at least the [getting started](https://github.com/eclipse/lsp4j/blob/master/documentation/README.md)
+    * it is recommended to read at least the [getting started](https://github.com/eclipse/lsp4j/blob/main/documentation/README.md)
     * LSP4J is using Future, the goal is to provide an API which is completely asynchronous for a better User Experience, see [Future javadoc](https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/Future.html) and [Vogella doc about CompletableFuture](https://www.vogella.com/tutorials/JavaConcurrency/article.html#completablefuture) and there is also a lot of tutorial on the web
 * information about Camel
     * see [official website](https://camel.apache.org/)
