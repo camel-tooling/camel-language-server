@@ -25,13 +25,21 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.apache.camel.catalog.CamelCatalog;
+import org.apache.kafka.common.errors.ApiException;
 import org.eclipse.lsp4j.CompletionItem;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.github.cameltooling.lsp.internal.catalog.model.EndpointOptionModel;
 import com.github.cameltooling.lsp.internal.catalog.util.ModelHelper;
 import com.github.cameltooling.lsp.internal.instancemodel.OptionParamValueURIInstance;
+import com.github.cameltooling.lsp.internal.kubernetes.KubernetesConfigManager;
+
+import io.fabric8.kubernetes.client.KubernetesClient;
 
 public class CamelOptionValuesCompletionsFuture implements Function<CamelCatalog, List<CompletionItem>> {
+	
+	private static final Logger LOGGER = LoggerFactory.getLogger(CamelOptionValuesCompletionsFuture.class);
 
 	private static final String BOOLEAN_TYPE = "boolean";
 	private OptionParamValueURIInstance optionParamValueURIInstance;
@@ -57,6 +65,17 @@ public class CamelOptionValuesCompletionsFuture implements Function<CamelCatalog
 				CompletionResolverUtils.applyTextEditToCompletionItem(optionParamValueURIInstance, falseItem);
 				Stream<CompletionItem> values = Stream.of(trueItem, falseItem);
 				return values.filter(FilterPredicateUtils.matchesCompletionFilter(filterString)).collect(Collectors.toList());
+			} else if(optionParamValueURIInstance.getComponentName().startsWith("kubernetes-")
+					&& "namespace".equals(optionParamValueURIInstance.getOptionParamURIInstance().getKey().getKeyName())) {
+				try (KubernetesClient client = KubernetesConfigManager.getInstance().getClient()) {
+					return client.namespaces().list().getItems().stream().map(namespace -> {
+						var completionItem = new CompletionItem(namespace.getMetadata().getName());
+						CompletionResolverUtils.applyTextEditToCompletionItem(optionParamValueURIInstance, completionItem);
+						return completionItem;
+					}).collect(Collectors.toList());
+				} catch (ApiException e) {
+					LOGGER.error("Error while trying to provide completion for Kubernetes connected mode", e);
+				}
 			}
 		}
 		return Collections.emptyList();
