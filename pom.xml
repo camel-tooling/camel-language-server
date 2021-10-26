@@ -54,7 +54,7 @@
 		<camel.kamelet.catalog.version>0.4.0</camel.kamelet.catalog.version>
 		<camel.quarkus.version>2.3.0</camel.quarkus.version>
 		<roaster.version>2.23.2.Final</roaster.version>
-		<awaitility.version>4.1.0</awaitility.version>
+		<awaitility.version>4.1.1</awaitility.version>
 		<tyrus.version>2.0.1</tyrus.version>
 		<commons-text.version>1.9</commons-text.version>
 		<citrus.kafka.version>3.1.0</citrus.kafka.version>
