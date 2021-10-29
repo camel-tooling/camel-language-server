@@ -58,6 +58,7 @@ public final class CamelComponentSchemesCompletionsFuture implements Function<Ca
 	private List<CompletionItem> getCompletionForComponents(CamelCatalog catalog) {
 		return catalog.findComponentNames().stream()
 			.map(componentName -> ModelHelper.generateComponentModel(catalog.componentJSonSchema(componentName), true))
+			.filter(componentModel -> componentModel.getSyntax() != null)
 			.map(componentModel -> {
 				CompletionItem completionItem = new CompletionItem(componentModel.getSyntax());
 				completionItem.setDocumentation(componentModel.getDescription());
