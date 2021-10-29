@@ -101,6 +101,7 @@ public class CamelKModelineDependencyOption implements ICamelKModelineOptionValu
 	private Function<? super CamelCatalog, ? extends List<CompletionItem>> retrieveCamelComponentCompletionItems(String filter) {
 		return catalog -> catalog.findComponentNames().stream()
 			.map(componentName -> ModelHelper.generateComponentModel(catalog.componentJSonSchema(componentName), true))
+			.filter(componentModel -> componentModel.getArtifactId() != null)
 			.map(componentModel -> {
 				CompletionItem completionItem = new CompletionItem(componentModel.getArtifactId());
 				completionItem.setDocumentation(componentModel.getDescription());

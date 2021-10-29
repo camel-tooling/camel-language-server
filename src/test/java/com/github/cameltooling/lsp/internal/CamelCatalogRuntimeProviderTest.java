@@ -20,7 +20,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.net.URISyntaxException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
 import org.apache.camel.catalog.DefaultRuntimeProvider;
@@ -28,6 +30,10 @@ import org.apache.camel.catalog.RuntimeProvider;
 import org.apache.camel.catalog.karaf.KarafRuntimeProvider;
 import org.apache.camel.catalog.quarkus.QuarkusRuntimeProvider;
 import org.apache.camel.springboot.catalog.SpringBootRuntimeProvider;
+import org.eclipse.lsp4j.CompletionItem;
+import org.eclipse.lsp4j.CompletionList;
+import org.eclipse.lsp4j.Position;
+import org.eclipse.lsp4j.jsonrpc.messages.Either;
 import org.junit.jupiter.api.Test;
 
 import com.github.cameltooling.lsp.internal.catalog.runtimeprovider.CamelRuntimeProvider;
@@ -70,9 +76,13 @@ class CamelCatalogRuntimeProviderTest extends AbstractCamelLanguageServerTest {
 	private void testRuntimeProviderWithProvidedValue(String settingValue, Class<? extends RuntimeProvider> expectedRuntimeProviderType)
 			throws URISyntaxException, InterruptedException, ExecutionException {
 		runtimeProvider = settingValue;
-		CamelLanguageServer camelLanguageServer = initializeLanguageServer("");
+		CamelLanguageServer camelLanguageServer = initializeLanguageServer("// camel-k: dependency=\nfrom('');", ".groovy");
 		RuntimeProvider usedRuntimeProvider = camelLanguageServer.getTextDocumentService().getCamelCatalog().get().getRuntimeProvider();
 		assertThat(usedRuntimeProvider).isExactlyInstanceOf(expectedRuntimeProviderType);
+		CompletableFuture<Either<List<CompletionItem>, CompletionList>> camelUriCompletion = getCompletionFor(camelLanguageServer, new Position(1, "from('".length()));
+		assertThat(camelUriCompletion.get().getLeft()).isNotEmpty();
+		CompletableFuture<Either<List<CompletionItem>, CompletionList>> dependencyCompletion = getCompletionFor(camelLanguageServer, new Position(0, "// camel-k: dependency=".length()));
+		assertThat(dependencyCompletion.get().getLeft()).isNotEmpty();
 	}
 
 	@Override
