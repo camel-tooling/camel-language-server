@@ -144,7 +144,7 @@ class KameletCompletionTest extends AbstractCamelLanguageServerTest {
 				+ "- `partition` / `ce-partition`: to set the Kinesis partition key\n\n"
 				+ "If the header won't be set the exchange ID will be used.\n\n"
 				+ "The Kamelet is also able to recognize the following header:\n\n"
-				+ "- `sequence-number` / `ce-sequence-number`: to set the Sequence number\n\n"
+				+ "- `sequence-number` / `ce-sequencenumber`: to set the Sequence number\n\n"
 				+ "This header is optional.");
 		return completionItem;
 	}
