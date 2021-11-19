@@ -47,11 +47,11 @@ class CamelKModelineTraitPropertyNameTest extends AbstractCamelLanguageServerTes
 		
 		List<CompletionItem> completionItems = completions.get().getLeft();
 		assertThat(completionItems).hasSize(2);
-		CompletionItem completionItem = findCompletionItemWithLabel(completions, "native");
-		assertThat(completionItem.getDocumentation().getLeft()).isEqualTo("The Quarkus runtime type (reserved for future use)");
-		assertThat(completionItem.getInsertText()).isEqualTo("native=false");
+		CompletionItem completionItem = findCompletionItemWithLabel(completions, "package-type");
+		assertThat(completionItem.getDocumentation().getLeft()).isEqualTo("The Quarkus package types, either `fast-jar` or `native` (default `fast-jar`).In case both `fast-jar` and `native` are specified, two `IntegrationKit` resources are created,with the `native` kit having precedence over the `fast-jar` one once ready.The order influences the resolution of the current kit for the integration.The kit corresponding to the first package type will be assigned to theintegration in case no existing kit that matches the integration exists.");
+		assertThat(completionItem.getInsertText()).isEqualTo("package-type=");
 		TextEdit textEdit = completionItem.getTextEdit().getLeft();
-		assertThat(textEdit.getNewText()).isEqualTo("native=false");
+		assertThat(textEdit.getNewText()).isEqualTo("package-type=");
 		assertThat(textEdit.getRange().getStart().getCharacter()).isEqualTo(26);
 		assertThat(textEdit.getRange().getEnd().getCharacter()).isEqualTo(26);
 	}
@@ -70,21 +70,21 @@ class CamelKModelineTraitPropertyNameTest extends AbstractCamelLanguageServerTes
 	
 	@Test
 	void testProvideCompletionWithPartialName() throws Exception {
-		CamelLanguageServer camelLanguageServer = initializeLanguageServer("// camel-k: trait=quarkus.na");
+		CamelLanguageServer camelLanguageServer = initializeLanguageServer("// camel-k: trait=quarkus.pa");
 		
 		CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = getCompletionFor(camelLanguageServer, new Position(0, 28));
 		
 		List<CompletionItem> completionItems = completions.get().getLeft();
 		assertThat(completionItems).hasSize(1);
 		TextEdit textEdit = completionItems.get(0).getTextEdit().getLeft();
-		assertThat(textEdit.getNewText()).isEqualTo("native=false");
+		assertThat(textEdit.getNewText()).isEqualTo("package-type=");
 		assertThat(textEdit.getRange().getStart().getCharacter()).isEqualTo(26);
 		assertThat(textEdit.getRange().getEnd().getCharacter()).isEqualTo(28);
 	}
 	
 	@Test
 	void testProvideCompletionForYaml() throws Exception {
-		CamelLanguageServer camelLanguageServer = initializeLanguageServerWithFileName("# camel-k: trait=quarkus.na", "modeline.camelk.yaml");
+		CamelLanguageServer camelLanguageServer = initializeLanguageServerWithFileName("# camel-k: trait=quarkus.pa", "modeline.camelk.yaml");
 		
 		CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = getCompletionFor(camelLanguageServer, new Position(0, 27), "modeline.camelk.yaml");
 		
@@ -102,7 +102,7 @@ class CamelKModelineTraitPropertyNameTest extends AbstractCamelLanguageServerTes
 	}
 	
 	private static Stream<Arguments> testProvideCompletionForDefaultvalues() {
-		return Stream.of(Arguments.of("String default value", "port-name", "port-name=http"),
+		return Stream.of(Arguments.of("String default value", "service-port-name", "service-port-name=http"),
 				Arguments.of("Without default value", "request-cpu", "request-cpu="),
 				Arguments.of("Number default value", "port", "port=8080"));
 	}
@@ -135,11 +135,11 @@ class CamelKModelineTraitPropertyNameTest extends AbstractCamelLanguageServerTes
 		
 		List<CompletionItem> completionItems = completions.get().getLeft();
 		assertThat(completionItems).hasSize(2);
-		CompletionItem completionItem = findCompletionItemWithLabel(completions, "native");
-		assertThat(completionItem.getDocumentation().getLeft()).isEqualTo("The Quarkus runtime type (reserved for future use)");
-		assertThat(completionItem.getInsertText()).isEqualTo("native");
+		CompletionItem completionItem = findCompletionItemWithLabel(completions, "package-type");
+		assertThat(completionItem.getDocumentation().getLeft()).isEqualTo("The Quarkus package types, either `fast-jar` or `native` (default `fast-jar`).In case both `fast-jar` and `native` are specified, two `IntegrationKit` resources are created,with the `native` kit having precedence over the `fast-jar` one once ready.The order influences the resolution of the current kit for the integration.The kit corresponding to the first package type will be assigned to theintegration in case no existing kit that matches the integration exists.");
+		assertThat(completionItem.getInsertText()).isEqualTo("package-type");
 		TextEdit textEdit = completionItem.getTextEdit().getLeft();
-		assertThat(textEdit.getNewText()).isEqualTo("native");
+		assertThat(textEdit.getNewText()).isEqualTo("package-type");
 		assertThat(textEdit.getRange().getStart().getCharacter()).isEqualTo(26);
 		assertThat(textEdit.getRange().getEnd().getCharacter()).isEqualTo(33);
 	}

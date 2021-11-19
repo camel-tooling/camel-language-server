@@ -35,7 +35,7 @@ import com.github.cameltooling.lsp.internal.CamelLanguageServer;
 
 class CamelKModelineTraitDefinitionNameTest extends AbstractCamelLanguageServerTest {
 
-	private static final int NUMBER_OF_TRAITS = 30;
+	private static final int NUMBER_OF_TRAITS = 36;
 
 	@Test
 	void testProvideCompletionAfterEqual() throws Exception {
