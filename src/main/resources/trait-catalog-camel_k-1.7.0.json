@@ -39,6 +39,12 @@
 				"description": "To create a default (empty) platform when the platform is missing."
 			},
 			{
+				"name": "global",
+				"type": "bool",
+				"defaultValue": false,
+				"description": "Indicates if the platform should be created globally in the case of global operator (default true)."
+			},
+			{
 				"name": "auto",
 				"type": "bool",
 				"defaultValue": false,
@@ -66,9 +72,37 @@
 				"name": "runtime-version",
 				"type": "string",
 				"description": "The camel-k-runtime version to use for the integration. It overrides the default version set in the Integration Platform."
+			},
+			{
+				"name": "properties",
+				"type": "slice:string",
+				"description": "A list of properties to be provided to the Integration runtime"
 			}
 		],
 		"description": "The Camel trait can be used to configure versions of Apache Camel K runtime and related libraries, it cannot be disabled."
+	},
+	{
+		"name": "service-binding",
+		"platform": false,
+		"profiles": [
+			"Kubernetes",
+			"Knative",
+			"OpenShift"
+		],
+		"properties": [
+			{
+				"name": "enabled",
+				"type": "bool",
+				"defaultValue": false,
+				"description": "Can be used to enable or disable a trait. All traits share this common property."
+			},
+			{
+				"name": "services",
+				"type": "slice:string",
+				"description": "List of Services in the form [[apigroup/]version:]kind:[namespace/]name"
+			}
+		],
+		"description": "The Service Binding trait allows users to connect to Services in Kubernetes: https://github.com/k8s-service-bindings/spec#service-binding As the specification is still evolving this is subject to change"
 	},
 	{
 		"name": "openapi",
@@ -118,6 +152,29 @@
 		"description": "The kamelets trait is a platform trait used to inject Kamelets into the integration runtime."
 	},
 	{
+		"name": "error-handler",
+		"platform": true,
+		"profiles": [
+			"Kubernetes",
+			"Knative",
+			"OpenShift"
+		],
+		"properties": [
+			{
+				"name": "enabled",
+				"type": "bool",
+				"defaultValue": false,
+				"description": "Can be used to enable or disable a trait. All traits share this common property."
+			},
+			{
+				"name": "ref",
+				"type": "string",
+				"description": "The error handler ref name provided or found in application properties"
+			}
+		],
+		"description": "The error-handler is a platform trait used to inject Error Handler source into the integration runtime."
+	},
+	{
 		"name": "dependencies",
 		"platform": true,
 		"profiles": [
@@ -155,33 +212,14 @@
 				"type": "bool",
 				"defaultValue": false,
 				"description": "Enable verbose logging on build components that support it (e.g. Kaniko build pod)."
+			},
+			{
+				"name": "properties",
+				"type": "slice:string",
+				"description": "A list of properties to be provided to the build task"
 			}
 		],
 		"description": "The builder trait is internally used to determine the best strategy to build and configure IntegrationKits."
-	},
-	{
-		"name": "quarkus",
-		"platform": true,
-		"profiles": [
-			"Kubernetes",
-			"Knative",
-			"OpenShift"
-		],
-		"properties": [
-			{
-				"name": "enabled",
-				"type": "bool",
-				"defaultValue": false,
-				"description": "Can be used to enable or disable a trait. All traits share this common property."
-			},
-			{
-				"name": "native",
-				"type": "bool",
-				"defaultValue": false,
-				"description": "The Quarkus runtime type (reserved for future use)"
-			}
-		],
-		"description": "The Quarkus trait activates the Quarkus runtime. It's enabled by default."
 	},
 	{
 		"name": "environment",
@@ -203,9 +241,61 @@
 				"type": "bool",
 				"defaultValue": true,
 				"description": "Enables injection of `NAMESPACE` and `POD_NAME` environment variables (default `true`)"
+			},
+			{
+				"name": "vars",
+				"type": "slice:string",
+				"description": "A list of variables to be created on the Pod. Must have KEY=VALUE syntax (ie, MY_VAR=\"my value\")."
 			}
 		],
 		"description": "The environment trait is used internally to inject standard environment variables in the integration container, such as `NAMESPACE`, `POD_NAME` and others."
+	},
+	{
+		"name": "logging",
+		"platform": false,
+		"profiles": [
+			"Kubernetes",
+			"Knative",
+			"OpenShift"
+		],
+		"properties": [
+			{
+				"name": "enabled",
+				"type": "bool",
+				"defaultValue": false,
+				"description": "Can be used to enable or disable a trait. All traits share this common property."
+			},
+			{
+				"name": "color",
+				"type": "bool",
+				"defaultValue": false,
+				"description": "Colorize the log output"
+			},
+			{
+				"name": "format",
+				"type": "string",
+				"description": "Logs message format"
+			},
+			{
+				"name": "level",
+				"type": "string",
+				"defaultValue": "INFO",
+				"description": "Adjust the logging level (defaults to INFO)"
+			},
+			{
+				"name": "json",
+				"type": "bool",
+				"defaultValue": false,
+				"description": "Output the logs in JSON"
+			},
+			{
+				"name": "json-pretty-print",
+				"type": "bool",
+				"defaultValue": false,
+				"description": "Enable \"pretty printing\" of the JSON logs"
+			}
+		],
+		"description": "The Logging trait is used to configure Integration runtime logging options (such as color and format). The logging backend is provided by Quarkus, whose configuration is documented at https://quarkus.io/guides/logging."
 	},
 	{
 		"name": "master",
@@ -327,7 +417,7 @@
 				"description": "Allows to explicitly select the desired deployment kind between `deployment`, `cron-job` or `knative-service` when creating the resources for running the integration."
 			}
 		],
-		"description": "The deployer trait can be used to explicitly select the kind of high level resource that will deploy the integration."
+		"description": "The deployer trait is responsible for deploying the resources owned by the integration, and can be used to explicitly select the underlying controller that will manage the integration pods."
 	},
 	{
 		"name": "pdb",
@@ -398,6 +488,21 @@
 				"type": "bool",
 				"defaultValue": false,
 				"description": "Automatically deploy the integration as CronJob when all routes areeither starting from a periodic consumer (only `cron`, `timer` and `quartz` are supported) or a passive consumer (e.g. `direct` is a passive consumer).It's required that all periodic consumers have the same period and it can be expressed as cron schedule (e.g. `1m` can be expressed as `0/1 * * * *`,while `35m` or `50s` cannot)."
+			},
+			{
+				"name": "starting-deadline-seconds",
+				"type": "int64",
+				"description": "Optional deadline in seconds for starting the job if it misses scheduledtime for any reason.  Missed jobs executions will be counted as failed ones."
+			},
+			{
+				"name": "active-deadline-seconds",
+				"type": "int64",
+				"description": "Specifies the duration in seconds, relative to the start time, that the jobmay be continuously active before it is considered to be failed.It defaults to 60s."
+			},
+			{
+				"name": "backoff-limit",
+				"type": "int32",
+				"description": "Specifies the number of retries before marking the job failed.It defaults to 2."
 			}
 		],
 		"description": "The Cron trait can be used to customize the behaviour of periodic timer/cron based integrations. While normally an integration requires a pod to be always up and running, some periodic tasks, such as batch jobs, require to be activated at specific hours of the day or with a periodic delay of minutes. For such tasks, the cron trait can materialize the integration as a Kubernetes CronJob instead of a standard deployment, in order to save resources when the integration does not need to be executed. Integrations that start from the following components are evaluated by the cron trait: `timer`, `cron`, `quartz`. The rules for using a Kubernetes CronJob are the following: - `timer`: when periods can be written as cron expressions. E.g. `timer:tick?period=60000`. - `cron`, `quartz`: when the cron expression does not contain seconds (or the \"seconds\" part is set to 0). E.g. `cron:tab?schedule=0/2${plus}*{plus}*{plus}*{plus}?` or `quartz:trigger?cron=0{plus}0/2{plus}*{plus}*{plus}*{plus}?`."
@@ -415,7 +520,12 @@
 				"name": "enabled",
 				"type": "bool",
 				"defaultValue": false,
-				"description": ""
+				"description": "Can be used to enable or disable a trait. All traits share this common property."
+			},
+			{
+				"name": "progress-deadline-seconds",
+				"type": "int32",
+				"description": "The maximum time in seconds for the deployment to make progress before itis considered to be failed. It defaults to 60s."
 			}
 		],
 		"description": "The Deployment trait is responsible for generating the Kubernetes deployment that will make sure the integration will run in the cluster."
@@ -442,6 +552,29 @@
 			}
 		],
 		"description": "The GC Trait garbage-collects all resources that are no longer necessary upon integration updates."
+	},
+	{
+		"name": "toleration",
+		"platform": false,
+		"profiles": [
+			"Kubernetes",
+			"Knative",
+			"OpenShift"
+		],
+		"properties": [
+			{
+				"name": "enabled",
+				"type": "bool",
+				"defaultValue": false,
+				"description": "Can be used to enable or disable a trait. All traits share this common property."
+			},
+			{
+				"name": "taints",
+				"type": "slice:string",
+				"description": "The list of taints to tolerate, in the form `Key[=Value]:Effect[:Seconds]`"
+			}
+		],
+		"description": "This trait sets Tolerations over Integration pods. Tolerations allow (but do not require) the pods to schedule onto nodes with matching taints. See https://kubernetes.io/docs/concepts/scheduling-eviction/taint-and-toleration/ for more details. The toleration should be expressed in a similar manner that of taints, i.e., `Key[=Value]:Effect[:Seconds]`, where values in square brackets are optional. For examples: - `node-role.kubernetes.io/master:NoSchedule` - `node.kubernetes.io/network-unavailable:NoExecute:3000` - `disktype=ssd:PreferNoSchedule` It's disabled by default."
 	},
 	{
 		"name": "affinity",
@@ -573,7 +706,6 @@
 			{
 				"name": "port-name",
 				"type": "string",
-				"defaultValue": "http",
 				"description": "To configure a different port name for the port exposed by the container (default `http`)."
 			},
 			{
@@ -595,69 +727,177 @@
 				"description": "The main container name. It's named `integration` by default."
 			},
 			{
+				"name": "image",
+				"type": "string",
+				"description": "The main container image"
+			},
+			{
+				"name": "image-pull-policy",
+				"type": "string",
+				"description": "The pull policy: Always|Never|IfNotPresent"
+			},
+			{
 				"name": "probes-enabled",
 				"type": "bool",
 				"defaultValue": false,
-				"description": "ProbesEnabled enable/disable probes on the container (default `false`)"
+				"description": "DeprecatedProbesEnabled enable/disable probes on the container (default `false`)Deprecated: replaced by the health trait."
 			},
 			{
-				"name": "probe-path",
+				"name": "liveness-scheme",
 				"type": "string",
-				"defaultValue": "/health",
-				"description": "Path to access on the probe ( default `/health`). Note that this property is not supportedon quarkus runtime and setting it will result in the integration failing to start."
+				"defaultValue": "HTTP",
+				"description": "Scheme to use when connecting. Defaults to HTTP. Applies to the liveness probe.Deprecated: replaced by the health trait."
 			},
 			{
 				"name": "liveness-initial-delay",
 				"type": "int32",
-				"description": "Number of seconds after the container has started before liveness probes are initiated."
+				"description": "Number of seconds after the container has started before liveness probes are initiated.Deprecated: replaced by the health trait."
 			},
 			{
 				"name": "liveness-timeout",
 				"type": "int32",
-				"description": "Number of seconds after which the probe times out. Applies to the liveness probe."
+				"description": "Number of seconds after which the probe times out. Applies to the liveness probe.Deprecated: replaced by the health trait."
 			},
 			{
 				"name": "liveness-period",
 				"type": "int32",
-				"description": "How often to perform the probe. Applies to the liveness probe."
+				"description": "How often to perform the probe. Applies to the liveness probe.Deprecated: replaced by the health trait."
 			},
 			{
 				"name": "liveness-success-threshold",
 				"type": "int32",
-				"description": "Minimum consecutive successes for the probe to be considered successful after having failed.Applies to the liveness probe."
+				"description": "Minimum consecutive successes for the probe to be considered successful after having failed.Applies to the liveness probe.Deprecated: replaced by the health trait."
 			},
 			{
 				"name": "liveness-failure-threshold",
 				"type": "int32",
-				"description": "Minimum consecutive failures for the probe to be considered failed after having succeeded.Applies to the liveness probe."
+				"description": "Minimum consecutive failures for the probe to be considered failed after having succeeded.Applies to the liveness probe.Deprecated: replaced by the health trait."
+			},
+			{
+				"name": "readiness-scheme",
+				"type": "string",
+				"defaultValue": "HTTP",
+				"description": "Scheme to use when connecting. Defaults to HTTP. Applies to the readiness probe.Deprecated: replaced by the health trait."
 			},
 			{
 				"name": "readiness-initial-delay",
 				"type": "int32",
-				"description": "Number of seconds after the container has started before readiness probes are initiated."
+				"description": "Number of seconds after the container has started before readiness probes are initiated.Deprecated: replaced by the health trait."
 			},
 			{
 				"name": "readiness-timeout",
 				"type": "int32",
-				"description": "Number of seconds after which the probe times out. Applies to the readiness probe."
+				"description": "Number of seconds after which the probe times out. Applies to the readiness probe.Deprecated: replaced by the health trait."
 			},
 			{
 				"name": "readiness-period",
 				"type": "int32",
-				"description": "How often to perform the probe. Applies to the readiness probe."
+				"description": "How often to perform the probe. Applies to the readiness probe.Deprecated: replaced by the health trait."
 			},
 			{
 				"name": "readiness-success-threshold",
 				"type": "int32",
-				"description": "Minimum consecutive successes for the probe to be considered successful after having failed.Applies to the readiness probe."
+				"description": "Minimum consecutive successes for the probe to be considered successful after having failed.Applies to the readiness probe.Deprecated: replaced by the health trait."
 			},
 			{
 				"name": "readiness-failure-threshold",
 				"type": "int32",
-				"description": "Minimum consecutive failures for the probe to be considered failed after having succeeded.Applies to the readiness probe."
+				"description": "Minimum consecutive failures for the probe to be considered failed after having succeeded.Applies to the readiness probe.Deprecated: replaced by the health trait."
 			}
 		],
-		"description": "The Container trait can be used to configure properties of the container where the integration will run. It also provides configuration for Services associated to the container."
+		"description": "The Container trait can be used to configure properties of the container where the integration will run. It also provides configuration for Services associated to the container. nolint: tagliatelle"
+	},
+	{
+		"name": "health",
+		"platform": false,
+		"profiles": [
+			"Kubernetes",
+			"Knative",
+			"OpenShift"
+		],
+		"properties": [
+			{
+				"name": "enabled",
+				"type": "bool",
+				"defaultValue": false,
+				"description": "Can be used to enable or disable a trait. All traits share this common property."
+			},
+			{
+				"name": "liveness-probe-enabled",
+				"type": "bool",
+				"defaultValue": false,
+				"description": "Configures the liveness probe for the integration container (default `false`)."
+			},
+			{
+				"name": "liveness-scheme",
+				"type": "string",
+				"defaultValue": "HTTP",
+				"description": "Scheme to use when connecting to the liveness probe (default `HTTP`)."
+			},
+			{
+				"name": "liveness-initial-delay",
+				"type": "int32",
+				"description": "Number of seconds after the container has started before the liveness probe is initiated."
+			},
+			{
+				"name": "liveness-timeout",
+				"type": "int32",
+				"description": "Number of seconds after which the liveness probe times out."
+			},
+			{
+				"name": "liveness-period",
+				"type": "int32",
+				"description": "How often to perform the liveness probe."
+			},
+			{
+				"name": "liveness-success-threshold",
+				"type": "int32",
+				"description": "Minimum consecutive successes for the liveness probe to be considered successful after having failed."
+			},
+			{
+				"name": "liveness-failure-threshold",
+				"type": "int32",
+				"description": "Minimum consecutive failures for the liveness probe to be considered failed after having succeeded."
+			},
+			{
+				"name": "readiness-probe-enabled",
+				"type": "bool",
+				"defaultValue": false,
+				"description": "Configures the readiness probe for the integration container (default `true`)."
+			},
+			{
+				"name": "readiness-scheme",
+				"type": "string",
+				"defaultValue": "HTTP",
+				"description": "Scheme to use when connecting to the readiness probe (default `HTTP`)."
+			},
+			{
+				"name": "readiness-initial-delay",
+				"type": "int32",
+				"description": "Number of seconds after the container has started before the readiness probe is initiated."
+			},
+			{
+				"name": "readiness-timeout",
+				"type": "int32",
+				"description": "Number of seconds after which the readiness probe times out."
+			},
+			{
+				"name": "readiness-period",
+				"type": "int32",
+				"description": "How often to perform the readiness probe."
+			},
+			{
+				"name": "readiness-success-threshold",
+				"type": "int32",
+				"description": "Minimum consecutive successes for the readiness probe to be considered successful after having failed."
+			},
+			{
+				"name": "readiness-failure-threshold",
+				"type": "int32",
+				"description": "Minimum consecutive failures for the readiness probe to be considered failed after having succeeded."
+			}
+		],
+		"description": "The health trait is responsible for configuring the health probes on the integration container. It's disabled by default."
 	},
 	{
 		"name": "pull-secret",
@@ -680,6 +920,12 @@
 				"description": "The pull secret name to set on the Pod. If left empty this is automatically taken from the `IntegrationPlatform` registry configuration."
 			},
 			{
+				"name": "image-puller-delegation",
+				"type": "bool",
+				"defaultValue": false,
+				"description": "When using a global operator with a shared platform, this enables delegation of the `system:image-puller` cluster role on the operator namespace to the integration service account."
+			},
+			{
 				"name": "auto",
 				"type": "bool",
 				"defaultValue": false,
@@ -687,6 +933,29 @@
 			}
 		],
 		"description": "The Pull Secret trait sets a pull secret on the pod, to allow Kubernetes to retrieve the container image from an external registry. The pull secret can be specified manually or, in case you've configured authentication for an external container registry on the `IntegrationPlatform`, the same secret is used to pull images. It's enabled by default whenever you configure authentication for an external container registry, so it assumes that external registries are private. If your registry does not need authentication for pulling images, you can disable this trait."
+	},
+	{
+		"name": "quarkus",
+		"platform": true,
+		"profiles": [
+			"Kubernetes",
+			"Knative",
+			"OpenShift"
+		],
+		"properties": [
+			{
+				"name": "enabled",
+				"type": "bool",
+				"defaultValue": false,
+				"description": "Can be used to enable or disable a trait. All traits share this common property."
+			},
+			{
+				"name": "package-type",
+				"type": "slice:trait.quarkusPackageType",
+				"description": "The Quarkus package types, either `fast-jar` or `native` (default `fast-jar`).In case both `fast-jar` and `native` are specified, two `IntegrationKit` resources are created,with the `native` kit having precedence over the `fast-jar` one once ready.The order influences the resolution of the current kit for the integration.The kit corresponding to the first package type will be assigned to theintegration in case no existing kit that matches the integration exists."
+			}
+		],
+		"description": "The Quarkus trait configures the Quarkus runtime. It's enabled by default. NOTE: Compiling to a native executable, i.e. when using `package-type=native`, is only supported for kamelets, as well as YAML and XML integrations. It also requires at least 4GiB of memory, so the Pod running the native build, that is either the operator Pod, or the build Pod (depending on the build strategy configured for the platform), must have enough memory available."
 	},
 	{
 		"name": "jolokia",
@@ -763,7 +1032,25 @@
 				"description": "A list of additional Jolokia options as definedin https://jolokia.org/reference/html/agents.html#agent-jvm-config[JVM agent configuration options]"
 			}
 		],
-		"description": "The Jolokia trait activates and configures the Jolokia Java agent. See https://jolokia.org/reference/html/agents.html"
+		"description": "The Jolokia trait activates and configures the Jolokia Java agent. See https://jolokia.org/reference/html/agents.html nolint: tagliatelle"
+	},
+	{
+		"name": "pod",
+		"platform": false,
+		"profiles": [
+			"Kubernetes",
+			"Knative",
+			"OpenShift"
+		],
+		"properties": [
+			{
+				"name": "enabled",
+				"type": "bool",
+				"defaultValue": false,
+				"description": ""
+			}
+		],
+		"description": "The pod trait allows the customization of the Integration pods. It applies the `PodSpecTemplate` struct contained in the Integration `.spec.podTemplate` field, into the Integration deployment Pods template, using strategic merge patch. This can be used to customize the container where Camel routes execute, by using the `integration` container name."
 	},
 	{
 		"name": "prometheus",
@@ -781,28 +1068,18 @@
 				"description": "Can be used to enable or disable a trait. All traits share this common property."
 			},
 			{
-				"name": "port",
-				"type": "int",
-				"description": "The Prometheus endpoint port (default `9779`, or `8080` with Quarkus)."
-			},
-			{
-				"name": "service-monitor",
+				"name": "pod-monitor",
 				"type": "bool",
 				"defaultValue": true,
-				"description": "Whether a `ServiceMonitor` resource is created (default `true`)."
+				"description": "Whether a `PodMonitor` resource is created (default `true`)."
 			},
 			{
-				"name": "service-monitor-labels",
+				"name": "pod-monitor-labels",
 				"type": "slice:string",
-				"description": "The `ServiceMonitor` resource labels, applicable when `service-monitor` is `true`."
-			},
-			{
-				"name": "configmap",
-				"type": "string",
-				"description": "To use a custom ConfigMap containing the Prometheus JMX exporter configuration (under the `content` ConfigMap key).When this property is left empty (default), Camel K generates a standard Prometheus configuration for the integration.It is not applicable when using Quarkus."
+				"description": "The `PodMonitor` resource labels, applicable when `pod-monitor` is `true`."
 			}
 		],
-		"description": "The Prometheus trait configures a Prometheus-compatible endpoint. This trait also exposes the integration with `Service` and `ServiceMonitor` resources, so that the endpoint can be scraped automatically, when using the Prometheus Operator. The metrics exposed vary depending on the configured runtime. With the default Quarkus runtime, metrics are exposed using MicroProfile Metrics. While with the Java main runtime, metrics are exposed using the Prometheus JMX exporter. WARNING: The creation of the `ServiceMonitor` resource requires the https://github.com/coreos/prometheus-operator[Prometheus Operator] custom resource definition to be installed. You can set `service-monitor` to `false` for the Prometheus trait to work without the Prometheus Operator. The Prometheus trait is disabled by default."
+		"description": "The Prometheus trait configures a Prometheus-compatible endpoint. It also creates a `PodMonitor` resource, so that the endpoint can be scraped automatically, when using the Prometheus operator. The metrics are exposed using MicroProfile Metrics. WARNING: The creation of the `PodMonitor` resource requires the https://github.com/coreos/prometheus-operator[Prometheus Operator] custom resource definition to be installed. You can set `pod-monitor` to `false` for the Prometheus trait to work without the Prometheus Operator. The Prometheus trait is disabled by default."
 	},
 	{
 		"name": "jvm",
@@ -847,6 +1124,11 @@
 				"name": "options",
 				"type": "slice:string",
 				"description": "A list of JVM options"
+			},
+			{
+				"name": "classpath",
+				"type": "string",
+				"description": "Additional JVM classpath (use `Linux` classpath separator)"
 			}
 		],
 		"description": "The JVM trait is used to configure the JVM that runs the integration."
@@ -879,7 +1161,7 @@
 				"description": "Forces the value for labels `sidecar.istio.io/inject`. By default the label is set to `true` on deployment and not set on Knative Service."
 			}
 		],
-		"description": "The Istio trait allows to configure properties related to the Istio service mesh, such as sidecar injection and outbound IP ranges."
+		"description": "The Istio trait allows configuring properties related to the Istio service mesh, such as sidecar injection and outbound IP ranges."
 	},
 	{
 		"name": "ingress",
@@ -1032,13 +1314,7 @@
 				"name": "filter-source-channels",
 				"type": "bool",
 				"defaultValue": false,
-				"description": "Enables filtering on events based on the header \"ce-knativehistory\". Since this is an experimental headerthat can be removed in a future version of Knative, filtering is enabled only when the integration islistening from more than 1 channel."
-			},
-			{
-				"name": "camel-source-compat",
-				"type": "bool",
-				"defaultValue": false,
-				"description": "Enables Knative CamelSource pre 0.15 compatibility fixes (will be removed in future versions)."
+				"description": "Enables filtering on events based on the header \"ce-knativehistory\". Since this header has been removed in newer versions ofKnative, filtering is disabled by default."
 			},
 			{
 				"name": "sink-binding",
@@ -1094,13 +1370,18 @@
 				"description": "An upper bound for the number of Pods that can be running in parallel for the integration.Knative has its own cap value that depends on the installation.Refer to the Knative documentation for more information."
 			},
 			{
+				"name": "rollout-duration",
+				"type": "string",
+				"description": "Enables to gradually shift traffic to the latest Revision and sets the rollout duration.It's disabled by default and must be expressed as a Golang `time.Duration` string representation,rounded to a second precision."
+			},
+			{
 				"name": "auto",
 				"type": "bool",
 				"defaultValue": false,
 				"description": "Automatically deploy the integration as Knative service when all conditions hold:* Integration is using the Knative profile* All routes are either starting from a HTTP based consumer or a passive consumer (e.g. `direct` is a passive consumer)"
 			}
 		],
-		"description": "The Knative Service trait allows to configure options when running the integration as Knative service instead of a standard Kubernetes Deployment. Running integrations as Knative Services adds auto-scaling (and scaling-to-zero) features, but those features are only meaningful when the routes use a HTTP endpoint consumer."
+		"description": "The Knative Service trait allows configuring options when running the Integration as a Knative service, instead of a standard Kubernetes Deployment. Running an Integration as a Knative Service enables auto-scaling (and scaling-to-zero), but those features are only relevant when the Camel route(s) use(s) an HTTP endpoint consumer."
 	},
 	{
 		"name": "route",
@@ -1123,34 +1404,54 @@
 			{
 				"name": "tls-termination",
 				"type": "string",
-				"description": "The TLS termination type, like `edge`, `passthrough` or `reencrypt`.Refer to the OpenShift documentation for additional information."
+				"description": "The TLS termination type, like `edge`, `passthrough` or `reencrypt`.Refer to the OpenShift route documentation for additional information."
 			},
 			{
 				"name": "tls-certificate",
 				"type": "string",
-				"description": "The TLS certificate contents.Refer to the OpenShift documentation for additional information."
+				"description": "The TLS certificate contents.Refer to the OpenShift route documentation for additional information."
+			},
+			{
+				"name": "tls-certificate-secret",
+				"type": "string",
+				"description": "The secret name and key reference to the TLS certificate. The format is \"secret-name[/key-name]\", the value represents the secret name, if there is only one key in the secret it will be read, otherwise you can set a key name separated with a \"/\".Refer to the OpenShift route documentation for additional information."
 			},
 			{
 				"name": "tls-key",
 				"type": "string",
-				"description": "The TLS certificate key contents.Refer to the OpenShift documentation for additional information."
+				"description": "The TLS certificate key contents.Refer to the OpenShift route documentation for additional information."
+			},
+			{
+				"name": "tls-key-secret",
+				"type": "string",
+				"description": "The secret name and key reference to the TLS certificate key. The format is \"secret-name[/key-name]\", the value represents the secret name, if there is only one key in the secret it will be read, otherwise you can set a key name separated with a \"/\".Refer to the OpenShift route documentation for additional information."
 			},
 			{
 				"name": "tls-ca-certificate",
 				"type": "string",
-				"description": "The TLS cert authority certificate contents.Refer to the OpenShift documentation for additional information."
+				"description": "The TLS CA certificate contents.Refer to the OpenShift route documentation for additional information."
+			},
+			{
+				"name": "tls-ca-certificate-secret",
+				"type": "string",
+				"description": "The secret name and key reference to the TLS CA certificate. The format is \"secret-name[/key-name]\", the value represents the secret name, if there is only one key in the secret it will be read, otherwise you can set a key name separated with a \"/\".Refer to the OpenShift route documentation for additional information."
 			},
 			{
 				"name": "tls-destination-ca-certificate",
 				"type": "string",
-				"description": "The destination CA certificate provides the contents of the ca certificate of the final destination.  When using reencrypttermination this file should be provided in order to have routers use it for health checks on the secure connection.If this field is not specified, the router may provide its own destination CA and perform hostname validation usingthe short service name (service.namespace.svc), which allows infrastructure generated certificates to automaticallyverify.Refer to the OpenShift documentation for additional information."
+				"description": "The destination CA certificate provides the contents of the ca certificate of the final destination.  When using reencrypttermination this file should be provided in order to have routers use it for health checks on the secure connection.If this field is not specified, the router may provide its own destination CA and perform hostname validation usingthe short service name (service.namespace.svc), which allows infrastructure generated certificates to automaticallyverify.Refer to the OpenShift route documentation for additional information."
+			},
+			{
+				"name": "tls-destination-ca-certificate-secret",
+				"type": "string",
+				"description": "The secret name and key reference to the destination CA certificate. The format is \"secret-name[/key-name]\", the value represents the secret name, if there is only one key in the secret it will be read, otherwise you can set a key name separated with a \"/\".Refer to the OpenShift route documentation for additional information."
 			},
 			{
 				"name": "tls-insecure-edge-termination-policy",
 				"type": "string",
-				"description": "To configure how to deal with insecure traffic, e.g. `Allow`, `Disable` or `Redirect` traffic.Refer to the OpenShift documentation for additional information."
+				"description": "To configure how to deal with insecure traffic, e.g. `Allow`, `Disable` or `Redirect` traffic.Refer to the OpenShift route documentation for additional information."
 			}
 		],
-		"description": "The Route trait can be used to configure the creation of OpenShift routes for the integration."
+		"description": "The Route trait can be used to configure the creation of OpenShift routes for the integration. The certificate and key contents may be sourced either from the local filesystem or in a Openshift `secret` object. The user may use the parameters ending in `-secret` (example: `tls-certificate-secret`) to reference a certificate stored in a `secret`. Parameters ending in `-secret` have higher priorities and in case the same route parameter is set, for example: `tls-key-secret` and `tls-key`, then `tls-key-secret` is used. The recommended approach to set the key and certificates is to use `secrets` to store their contents and use the following parameters to reference them: `tls-certificate-secret`, `tls-key-secret`, `tls-ca-certificate-secret`, `tls-destination-ca-certificate-secret`"
 	}
 ]

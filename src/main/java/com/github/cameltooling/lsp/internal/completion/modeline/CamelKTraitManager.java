@@ -43,7 +43,7 @@ public class CamelKTraitManager {
 
 	public static List<TraitDefinition> getTraits() {
 		if(traits == null) {
-			InputStream inputStream = CamelKTraitManager.class.getResourceAsStream("/trait-catalog-camel_k-1.3.2.json");
+			InputStream inputStream = CamelKTraitManager.class.getResourceAsStream("/trait-catalog-camel_k-1.7.0.json");
 			String text = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8)).lines().collect(Collectors.joining("\n"));
 			traits = Arrays.asList(new Gson().fromJson(text, TraitDefinition[].class));
 		}
