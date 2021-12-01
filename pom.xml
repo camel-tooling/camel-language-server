@@ -48,7 +48,7 @@
 		<slf4j.version>1.7.32</slf4j.version>
 		<junit.version>5.8.1</junit.version>
 		<assertj.version>3.21.0</assertj.version>
-		<jgit.version>5.13.0.202109080827-r</jgit.version>
+		<jgit.version>6.0.0.202111291000-r</jgit.version>
 		<camel.version>3.13.0</camel.version>
 		<camel.kafka.connector.version>0.11.0</camel.kafka.connector.version>
 		<camel.kamelet.catalog.version>0.5.0</camel.kamelet.catalog.version>
