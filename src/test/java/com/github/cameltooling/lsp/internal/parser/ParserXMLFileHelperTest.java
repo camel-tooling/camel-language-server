@@ -18,23 +18,21 @@ package com.github.cameltooling.lsp.internal.parser;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import org.apache.log4j.Logger;
 import org.eclipse.lsp4j.TextDocumentItem;
 import org.junit.jupiter.api.Test;
 
 import com.github.cameltooling.lsp.internal.CamelLanguageServer;
 import com.github.cameltooling.lsp.internal.DummyConstants;
-import com.github.cameltooling.lsp.internal.TestLogAppender;
+import com.github.cameltooling.lsp.internal.util.TestLogAppender;
+import com.github.cameltooling.lsp.internal.util.TestLoggerUtil;
 
 class ParserXMLFileHelperTest {
 
 	@Test
 	void testGetCamelComponentUri() throws Exception {
-		final TestLogAppender appender = new TestLogAppender();
-		final Logger logger = Logger.getRootLogger();
-		logger.addAppender(appender);
+		final TestLogAppender appender = new TestLoggerUtil().setupLogAppender(ParserXMLFileHelperTest.class.getName());
 		new ParserXMLFileHelper().getCamelComponentUri("uri=!!", 2);
-		assertThat(appender.getLog().get(0).getMessage()).isEqualTo("Encountered an unsupported URI closure char !");
+		assertThat(appender.getLog().get(0).getMessage().getFormattedMessage()).isEqualTo("Encountered an unsupported URI closure char !");
 	}
 	
 	void testGetRouteNodesWithNamespacePrefix() throws Exception {

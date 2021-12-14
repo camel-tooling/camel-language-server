@@ -24,8 +24,7 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 import org.apache.camel.tooling.model.MainModel;
-import org.apache.log4j.Logger;
-import org.apache.log4j.spi.LoggingEvent;
+import org.apache.logging.log4j.core.LogEvent;
 import org.eclipse.lsp4j.CompletionItem;
 import org.eclipse.lsp4j.CompletionItemKind;
 import org.eclipse.lsp4j.CompletionList;
@@ -39,6 +38,8 @@ import org.junit.jupiter.api.Test;
 
 import com.github.cameltooling.lsp.internal.completion.CamelEndpointCompletionProcessor;
 import com.github.cameltooling.lsp.internal.util.RouteTextBuilder;
+import com.github.cameltooling.lsp.internal.util.TestLogAppender;
+import com.github.cameltooling.lsp.internal.util.TestLoggerUtil;
 import com.google.gson.Gson;
 
 
@@ -455,22 +456,21 @@ class CamelLanguageServerTest extends AbstractCamelLanguageServerTest {
 	
 	@Test
 	void testDONTProvideCompletionWhenNotAfterURIEqualQuote() throws Exception {
-		final TestLogAppender appender = new TestLogAppender();
-		final Logger logger = Logger.getRootLogger();
-		logger.addAppender(appender);
+		final TestLogAppender appender = new TestLoggerUtil().setupLogAppender(CamelLanguageServerTest.class.getName());
+		
 		CamelLanguageServer camelLanguageServer = initializeLanguageServer("<from uri=\"\" xmlns=\"http://camel.apache.org/schema/spring\"></from>\n");
 		
 		CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = getCompletionFor(camelLanguageServer, new Position(0, 6));
 		
 		assertThat(completions.get().getLeft()).isEmpty();
 		assertThat(completions.get().getRight()).isNull();
-		for (LoggingEvent loggingEvent : appender.getLog()) {
+		for (LogEvent loggingEvent : appender.getLog()) {
 			if (loggingEvent.getMessage() != null) {
-				assertThat((String)loggingEvent.getMessage()).doesNotContain(CamelEndpointCompletionProcessor.ERROR_SEARCHING_FOR_CORRESPONDING_NODE_ELEMENTS);
+				assertThat((String)loggingEvent.getMessage().getFormattedMessage()).doesNotContain(CamelEndpointCompletionProcessor.ERROR_SEARCHING_FOR_CORRESPONDING_NODE_ELEMENTS);
 			}
 		}
 	}
-	
+
 	@Test
 	void testLoadCamelContextFromFile() throws Exception {
 		File f = new File("src/test/resources/workspace/cbr-blueprint.xml");

@@ -46,6 +46,7 @@
 		<jacoco.version>0.8.7</jacoco.version>
 		<lsp4j.version>0.12.0</lsp4j.version>
 		<slf4j.version>1.7.32</slf4j.version>
+		<log4j-slf4j.version>2.16.0</log4j-slf4j.version>
 		<junit.version>5.8.2</junit.version>
 		<assertj.version>3.21.0</assertj.version>
 		<jgit.version>6.0.0.202111291000-r</jgit.version>
@@ -240,9 +241,9 @@
 			<version>${slf4j.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-log4j12</artifactId>
-			<version>${slf4j.version}</version>
+			<groupId>org.apache.logging.log4j</groupId>
+			<artifactId>log4j-slf4j-impl</artifactId>
+			<version>${log4j-slf4j.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.camel</groupId>
