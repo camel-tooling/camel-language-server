@@ -16,11 +16,6 @@
  */
 package com.github.cameltooling.lsp.internal.diagnostic;
 
-import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.StringReader;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -32,17 +27,12 @@ import java.util.concurrent.ExecutionException;
 
 import org.apache.camel.catalog.CamelCatalog;
 import org.apache.camel.catalog.EndpointValidationResult;
-import org.apache.camel.parser.RouteBuilderParser;
-import org.apache.camel.parser.XmlRouteParser;
 import org.apache.camel.parser.model.CamelEndpointDetails;
 import org.eclipse.lsp4j.Diagnostic;
 import org.eclipse.lsp4j.DiagnosticSeverity;
 import org.eclipse.lsp4j.Position;
 import org.eclipse.lsp4j.Range;
 import org.eclipse.lsp4j.TextDocumentItem;
-import org.jboss.forge.roaster.Roaster;
-import org.jboss.forge.roaster.model.JavaType;
-import org.jboss.forge.roaster.model.source.JavaClassSource;
 
 import com.github.cameltooling.lsp.internal.catalog.diagnostic.BooleanErrorMsg;
 import com.github.cameltooling.lsp.internal.catalog.diagnostic.EnumErrorMsg;
@@ -88,28 +78,6 @@ public class EndpointDiagnosticService extends DiagnosticService {
 		return validateEndpointProperties.getIncapable() == null;
 	}
 
-	private List<CamelEndpointDetails> retrieveEndpoints(String uri, String camelText) {
-		List<CamelEndpointDetails> endpoints = new ArrayList<>();
-		if (uri.endsWith(".xml")) {
-			try {
-				XmlRouteParser.parseXmlRouteEndpoints(new ByteArrayInputStream(camelText.getBytes(StandardCharsets.UTF_8)), "", "/"+uri, endpoints);
-			} catch (Exception e) {
-				logExceptionValidatingDocument(uri, e);
-			}
-		} else if(uri.endsWith(".java")) {
-			try {
-				JavaType<?> parsedJavaFile = Roaster.parse(camelText);
-				if (parsedJavaFile instanceof JavaClassSource) {
-					JavaClassSource clazz = (JavaClassSource) parsedJavaFile;
-					RouteBuilderParser.parseRouteBuilderEndpoints(clazz, "", "/"+uri, endpoints);
-				}
-			} catch(Exception e) {
-				logExceptionValidatingDocument(uri, e);
-			}
-		}
-		return endpoints;
-	}
-	
 	public List<Diagnostic> converToLSPDiagnostics(String fullCamelText, Map<CamelEndpointDetails, EndpointValidationResult> endpointErrors, TextDocumentItem textDocumentItem) {
 		List<Diagnostic> lspDiagnostics = new ArrayList<>();
 		for (Map.Entry<CamelEndpointDetails, EndpointValidationResult> endpointError : endpointErrors.entrySet()) {
@@ -194,51 +162,6 @@ public class EndpointDiagnosticService extends DiagnosticService {
 		return computeRange(fullCamelText, textDocumentItem, camelEndpointDetails);
 	}
 
-	private Range computeRange(String fullCamelText, TextDocumentItem textDocumentItem, CamelEndpointDetails camelEndpointDetails) {
-		int endLine = camelEndpointDetails.getLineNumberEnd() != null ? Integer.valueOf(camelEndpointDetails.getLineNumberEnd()) - 1 : findLine(fullCamelText, camelEndpointDetails);
-		String lineContainingTheCamelURI = new ParserFileHelperUtil().getLine(textDocumentItem, endLine);
-		String endpointUri = camelEndpointDetails.getEndpointUri();
-		if(textDocumentItem.getUri().endsWith(".xml")) {
-			endpointUri = endpointUri.replace("&", "&amp;");
-		}
-		int startOfUri = lineContainingTheCamelURI.indexOf(endpointUri);
-		int startLinePosition;
-		int endLinePosition;
-		if (startOfUri != -1) {
-			startLinePosition = startOfUri;
-			endLinePosition = startOfUri + endpointUri.length();
-		} else {
-			startLinePosition = 0;
-			endLinePosition = lineContainingTheCamelURI.length();
-		}
-		int startLine = camelEndpointDetails.getLineNumber() != null ? Integer.valueOf(camelEndpointDetails.getLineNumber()) - 1 : findLine(fullCamelText, camelEndpointDetails);
-		return new Range(new Position(startLine, startLinePosition), new Position(endLine, endLinePosition));
-	}
-
-	/**
-	 * Computing by hand for Camel versions earlier than the version which will contain https://issues.apache.org/jira/browse/CAMEL-12639
-	 * 
-	 * @param fullCamelText
-	 * @param camelEndpointDetails
-	 * @return
-	 */
-	private int findLine(String fullCamelText, CamelEndpointDetails camelEndpointDetails) {
-		int currentSearchedLine = 0;
-		String str;
-		BufferedReader reader = new BufferedReader(new StringReader(fullCamelText));
-		try {
-			while ((str = reader.readLine()) != null) {
-				if (str.contains(camelEndpointDetails.getEndpointUri())) {
-					return currentSearchedLine;
-				}
-				currentSearchedLine++;
-			}
-		} catch(IOException e) {
-			LOGGER.error("Error while computing range of error", e);
-		}
-		return 0;
-	}
-	
 	private String computeErrorMessage(EndpointValidationResult validationResult) {
 		StringBuilder sb = new StringBuilder();
 		computeErrorMessage(sb, validationResult.getInvalidInteger(), new IntegerErrorMsg());
@@ -250,7 +173,5 @@ public class EndpointDiagnosticService extends DiagnosticService {
 		computeErrorMessage(sb, validationResult.getSyntaxError());
 		return sb.toString();
 	}
-
-
 
 }
