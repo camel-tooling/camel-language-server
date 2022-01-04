@@ -38,6 +38,7 @@ public class DiagnosticRunner {
 	private ConfigurationPropertiesDiagnosticService configurationPropertiesDiagnosticService;
 	private CamelKModelineDiagnosticService camelKModelineDiagnosticService;
 	private CamelKafkaConnectorDiagnosticService camelKafkaConnectorDiagnosticService;
+	private ConnectedModeDiagnosticService connectedModeDiagnosticService;
 
 	public DiagnosticRunner(CompletableFuture<CamelCatalog> camelCatalog, CamelLanguageServer camelLanguageServer) {
 		this.camelLanguageServer = camelLanguageServer;
@@ -45,6 +46,7 @@ public class DiagnosticRunner {
 		configurationPropertiesDiagnosticService = new ConfigurationPropertiesDiagnosticService(camelCatalog);
 		camelKModelineDiagnosticService = new CamelKModelineDiagnosticService();
 		camelKafkaConnectorDiagnosticService = new CamelKafkaConnectorDiagnosticService(camelLanguageServer.getTextDocumentService().getCamelKafkaConnectorManager());
+		connectedModeDiagnosticService = new ConnectedModeDiagnosticService();
 	}
 
 	public void compute(DidSaveTextDocumentParams params) {
@@ -73,6 +75,7 @@ public class DiagnosticRunner {
 			diagnostics.addAll(configurationPropertiesDiagnosticService.converToLSPDiagnostics(configurationPropertiesErrors));
 			diagnostics.addAll(camelKModelineDiagnosticService.compute(camelText, documentItem));
 			diagnostics.addAll(camelKafkaConnectorDiagnosticService.compute(camelText, documentItem));
+			diagnostics.addAll(connectedModeDiagnosticService.compute(camelText, documentItem));
 			camelLanguageServer.getClient().publishDiagnostics(new PublishDiagnosticsParams(uri, diagnostics));
 		});
 	}
