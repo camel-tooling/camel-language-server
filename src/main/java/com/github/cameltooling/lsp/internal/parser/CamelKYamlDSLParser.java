@@ -19,6 +19,7 @@ package com.github.cameltooling.lsp.internal.parser;
 import org.eclipse.lsp4j.Position;
 import org.eclipse.lsp4j.TextDocumentItem;
 import org.yaml.snakeyaml.Yaml;
+import org.yaml.snakeyaml.constructor.SafeConstructor;
 
 import java.util.List;
 import java.util.Map;
@@ -192,13 +193,13 @@ public class CamelKYamlDSLParser extends ParserFileHelper {
 	}
 
 	private Map<?, ?> parseYaml(String line) {
-		Yaml yaml = new Yaml();
+		Yaml yaml = new Yaml(new SafeConstructor());
 		Object obj = yaml.load(line);
 		return extractMapFromYaml(obj);
 	}
 
 	private String extractUriFromYamlData(String line) {
-		Yaml yaml = new Yaml();
+		Yaml yaml = new Yaml(new SafeConstructor());
 		Object obj = yaml.load(line);
 		Map<?, ?> m = extractMapFromYaml(obj);
 		if (m != null && !m.values().isEmpty()) {
