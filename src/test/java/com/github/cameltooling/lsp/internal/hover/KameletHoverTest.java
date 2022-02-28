@@ -52,7 +52,11 @@ class KameletHoverTest extends AbstractCamelLanguageServerTest {
 	static Stream<Arguments> testHoverDocumentation() {
 	    return Stream.of(
 	      Arguments.of("Provide Kamelet documentation on kamelet template id",
-	    		  "kamelet:aws-ddb-streams-source", 15, "Receive events from AWS DynamoDB Streams."),
+	    		  "kamelet:aws-ddb-streams-source", 15, "Receive events from AWS DynamoDB Streams.\n"
+	    		  		+ "\n"
+	    		  		+ "Access Key/Secret Key are the basic method for authenticating to the AWS DynamoDB Streams Service. These parameters are optional, because the Kamelet provide also the 'useDefaultCredentialsProvider'.\n"
+	    		  		+ "\n"
+	    		  		+ "When using a default Credentials Provider the AWS DynamoDB Streams client will load the credentials through this provider and won't use the static credential. This is reason for not having the access key and secret key as mandatory parameter for this Kamelet."),
 	      Arguments.of("Provide generic documentation on hover on unknown kamelet",
 	    		  "kamelet:unknown", 8, "kamelet:templateId/routeId"),
 	      Arguments.of("Provide documentation on hover on known kamelet property name",

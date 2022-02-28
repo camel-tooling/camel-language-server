@@ -41,6 +41,9 @@ class KameletCompletionTest extends AbstractCamelLanguageServerTest {
 		
 		List<CompletionItem> completions = getCompletionFor(languageServer, new Position(0, 19)).get().getLeft();
 		
+		CompletionItem completionItem = completions.stream().filter(completion -> completion.getLabel().equals("aws-ddb-streams-source")).findAny().get();
+		System.out.println("$$"+completionItem.getDocumentation().getLeft()+"$$");
+		
 		assertThat(completions)
 			.hasSizeGreaterThan(10)
 			.contains(createAwsddbSourceCompletionItem())
@@ -128,7 +131,11 @@ class KameletCompletionTest extends AbstractCamelLanguageServerTest {
 						new TextEdit(
 								new Range(new Position(0, 19), new Position(0, 19)),
 								"aws-ddb-streams-source")));
-		completionItem.setDocumentation("Receive events from AWS DynamoDB Streams.");
+		completionItem.setDocumentation("Receive events from AWS DynamoDB Streams.\n"
+				+ "\n"
+				+ "Access Key/Secret Key are the basic method for authenticating to the AWS DynamoDB Streams Service. These parameters are optional, because the Kamelet provide also the 'useDefaultCredentialsProvider'.\n"
+				+ "\n"
+				+ "When using a default Credentials Provider the AWS DynamoDB Streams client will load the credentials through this provider and won't use the static credential. This is reason for not having the access key and secret key as mandatory parameter for this Kamelet.");
 		return completionItem;
 	}
 	
@@ -139,12 +146,22 @@ class KameletCompletionTest extends AbstractCamelLanguageServerTest {
 						new TextEdit(
 								new Range(new Position(0, 19), new Position(0, 19)),
 								"aws-kinesis-sink")));
-		completionItem.setDocumentation("Send data to AWS Kinesis.\n\n"
-				+ "The Kamelet expects the following header:\n\n"
-				+ "- `partition` / `ce-partition`: to set the Kinesis partition key\n\n"
-				+ "If the header won't be set the exchange ID will be used.\n\n"
-				+ "The Kamelet is also able to recognize the following header:\n\n"
-				+ "- `sequence-number` / `ce-sequencenumber`: to set the Sequence number\n\n"
+		completionItem.setDocumentation("Send data to AWS Kinesis.\n"
+				+ "\n"
+				+ "Access Key/Secret Key are the basic method for authenticating to the AWS Kinesis Service. These parameters are optional, because the Kamelet provide also the 'useDefaultCredentialsProvider'.\n"
+				+ "\n"
+				+ "When using a default Credentials Provider the Kinesis client will load the credentials through this provider and won't use the static credential. This is reason for not having the access key and secret key as mandatory parameter for this Kamelet.\n"
+				+ "\n"
+				+ "The Kamelet expects the following header:\n"
+				+ "\n"
+				+ "- `partition` / `ce-partition`: to set the Kinesis partition key\n"
+				+ "\n"
+				+ "If the header won't be set the exchange ID will be used.\n"
+				+ "\n"
+				+ "The Kamelet is also able to recognize the following header:\n"
+				+ "\n"
+				+ "- `sequence-number` / `ce-sequencenumber`: to set the Sequence number\n"
+				+ "\n"
 				+ "This header is optional.");
 		return completionItem;
 	}
