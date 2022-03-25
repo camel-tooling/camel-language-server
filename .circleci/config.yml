@@ -17,8 +17,7 @@ jobs:
       - checkout
       - run: mvn verify -V
       - store_test_results:
-          path: target/surefire-reports   
-
+          path: target/surefire-reports
   sonar:
     docker:
       - image: cimg/openjdk:11.0
