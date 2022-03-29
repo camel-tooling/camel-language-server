@@ -36,6 +36,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
 import org.eclipse.lsp4j.CompletionItem;
+import org.eclipse.lsp4j.CompletionItemTag;
 import org.eclipse.lsp4j.CompletionList;
 import org.eclipse.lsp4j.CompletionParams;
 import org.eclipse.lsp4j.DefinitionParams;
@@ -96,7 +97,8 @@ public abstract class AbstractCamelLanguageServerTest {
 	protected CompletionItem createExpectedAhcCompletionItem(int lineStart, int characterStart, int lineEnd, int characterEnd) {
 		CompletionItem expectedAhcCompletioncompletionItem = new CompletionItem("ahc:httpUri");
 		expectedAhcCompletioncompletionItem.setDocumentation(AHC_DOCUMENTATION);
-		expectedAhcCompletioncompletionItem.setDeprecated(false);
+		expectedAhcCompletioncompletionItem.setDeprecated(true);
+		expectedAhcCompletioncompletionItem.setTags(Collections.singletonList(CompletionItemTag.Deprecated));
 		expectedAhcCompletioncompletionItem.setTextEdit(Either.forLeft(new TextEdit(new Range(new Position(lineStart, characterStart), new Position(lineEnd, characterEnd)), "ahc:httpUri")));
 		return expectedAhcCompletioncompletionItem;
 	}
@@ -104,6 +106,8 @@ public abstract class AbstractCamelLanguageServerTest {
 	protected CompletionItem createExpectedAhcCompletionItemForVersionPriorTo33(int lineStart, int characterStart, int lineEnd, int characterEnd) {
 		CompletionItem expectedAhcCompletioncompletionItem = createExpectedAhcCompletionItem(lineStart, characterStart, lineEnd, characterEnd);
 		expectedAhcCompletioncompletionItem.setDocumentation(AHC_DOCUMENTATION_BEFORE_3_3);
+		expectedAhcCompletioncompletionItem.setDeprecated(false);
+		expectedAhcCompletioncompletionItem.setTags(null);
 		return expectedAhcCompletioncompletionItem;
 	}
 	
