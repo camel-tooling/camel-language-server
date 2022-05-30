@@ -24,7 +24,9 @@ import org.eclipse.lsp4j.DidChangeConfigurationParams;
 import org.eclipse.lsp4j.DidChangeWatchedFilesParams;
 import org.eclipse.lsp4j.FileEvent;
 import org.eclipse.lsp4j.SymbolInformation;
+import org.eclipse.lsp4j.WorkspaceSymbol;
 import org.eclipse.lsp4j.WorkspaceSymbolParams;
+import org.eclipse.lsp4j.jsonrpc.messages.Either;
 import org.eclipse.lsp4j.services.WorkspaceService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,9 +46,9 @@ public class CamelWorkspaceService implements WorkspaceService {
 	}
 
 	@Override
-	public CompletableFuture<List<? extends SymbolInformation>> symbol(WorkspaceSymbolParams params) {
+	public CompletableFuture<Either<List<? extends SymbolInformation>, List<? extends WorkspaceSymbol>>> symbol(WorkspaceSymbolParams params) {
 		LOGGER.info("SERVER: symbolQuery: {}", params.getQuery());
-		return CompletableFuture.completedFuture(Collections.emptyList());
+		return CompletableFuture.completedFuture(Either.forRight(Collections.emptyList()));
 	}
 
 	@Override
