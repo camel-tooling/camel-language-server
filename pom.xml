@@ -53,7 +53,7 @@
 		<camel.version>3.17.0</camel.version>
 		<camel.kafka.connector.version>0.11.0</camel.kafka.connector.version>
 		<camel.kamelet.catalog.version>0.8.1</camel.kamelet.catalog.version>
-		<camel.quarkus.version>2.9.0</camel.quarkus.version>
+		<camel.quarkus.version>2.10.0</camel.quarkus.version>
 		<roaster.version>2.25.0.Final</roaster.version>
 		<awaitility.version>4.2.0</awaitility.version>
 		<tyrus.version>2.0.2</tyrus.version>
