@@ -104,7 +104,7 @@ public class CamelKModelineInsertionTest extends AbstractCamelLanguageServerTest
     }
 
     @Test
-    void testDontProvideInsertionIfExtraText() throws Exception {
+    void testDontProvideInsertionIfExtraTextXML() throws Exception {
         FileType type = FileType.XML;
         String contents = "<!-- One comment --><!-- Moar comments -->\n<tag></tag>";
 
@@ -113,7 +113,46 @@ public class CamelKModelineInsertionTest extends AbstractCamelLanguageServerTest
         assertNoCompletionsAvailable(completionItems);
     }
 
+    /* YAML */
+    @Test
+    void testProvideInsertionOnCommentedYAMLFile() throws Exception {
+        FileType type = FileType.YAML;
+        String contents = "# Example\n";
 
+        List<CompletionItem> completionItems = getCompletionsFor(type, contents);
+
+        assertCompletionItemsHasExpectedCompletionForType(type, completionItems);
+    }
+
+//    @Test
+//    void testProvideInsertionOnMultipleCommentsXMLFile() throws Exception {
+//        FileType type = FileType.XML;
+//        String contents = "<!-- One comment --><!-- Moar comments -->\n";
+//
+//        List<CompletionItem> completionItems = getCompletionsFor(type, contents);
+//
+//        assertCompletionItemsHasExpectedCompletionForType(type, completionItems);
+//    }
+//
+//    @Test
+//    void testProvideInsertionOnMultipleCommentsOnMultipleLinesXMLFile() throws Exception {
+//        FileType type = FileType.XML;
+//        String contents = "<!-- One comment -->\n \n <!-- Moar comments -->\n";
+//
+//        List<CompletionItem> completionItems = getCompletionsFor(type, contents);
+//
+//        assertCompletionItemsHasExpectedCompletionForType(type, completionItems);
+//    }
+//
+//    @Test
+//    void testDontProvideInsertionIfExtraTextYAML() throws Exception {
+//        FileType type = FileType.XML;
+//        String contents = "<!-- One comment --><!-- Moar comments -->\n<tag></tag>";
+//
+//        List<CompletionItem> completionItems = getCompletionsFor(type, contents);
+//
+//        assertNoCompletionsAvailable(completionItems);
+//    }
 
 
 
