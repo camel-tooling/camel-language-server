@@ -50,6 +50,17 @@ public class CamelKModelineInsertionTest extends AbstractCamelLanguageServerTest
 
         assertCompletionItemsHasExpectedCompletionForType(type, completionItems);
     }
+
+    @Test
+    void testInsertionOnLineWithSpacesOrTabs() throws Exception {
+        FileType type = FileType.Java;
+        String contents = "\t   \t \t";
+
+        List<CompletionItem> completionItems = getCompletionsFor(type, contents);
+
+        assertNoCompletionsAvailable(completionItems);
+    }
+    
     @Test
     void testNoInsertionOnLineWithContents() throws Exception {
         FileType type = FileType.Java;
