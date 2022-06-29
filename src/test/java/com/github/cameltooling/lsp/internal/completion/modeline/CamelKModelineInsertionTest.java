@@ -54,6 +54,20 @@ public class CamelKModelineInsertionTest extends AbstractCamelLanguageServerTest
     }
 
     @Test
+    void testProvideInsertionOnEmptyYMLFile() throws Exception {
+        String extension = ".camelk.yml";
+        String contents = "";
+        Position position = beginningOfLastLine(contents);
+
+        CamelLanguageServer camelLanguageServer = initializeLanguageServer(contents, extension);
+        CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = getCompletionFor(camelLanguageServer, position);
+        List<CompletionItem> completionItems =  completions.get().getLeft();
+
+        assertThat(completionItems).hasSize(1);
+        assertThat(completionItems).contains(FileType.YAML.completion);
+    }
+
+    @Test
     void testInsertionOnLineWithSpacesOrTabs() throws Exception {
         FileType type = FileType.Java;
         String contents = "\t   \t \t";
