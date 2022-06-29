@@ -16,12 +16,10 @@
  */
 package com.github.cameltooling.lsp.internal.parser;
 
-import org.eclipse.lsp4j.Position;
 import org.eclipse.lsp4j.TextDocumentItem;
 
 public class CamelKModelineParser {
 
-	//Unify this and Insertion definitions?
 	public static final String MODELINE_LIKE_CAMEL_K = "// camel-k:";
 	public static final String MODELINE_LIKE_CAMEL_K_YAML = "# camel-k:";
 	public static final String MODELINE_LIKE_CAMEL_K_XML = "<!-- camel-k:";
