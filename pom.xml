@@ -56,7 +56,7 @@
 		<camel.quarkus.version>2.10.0</camel.quarkus.version>
 		<roaster.version>2.25.0.Final</roaster.version>
 		<awaitility.version>4.2.0</awaitility.version>
-		<tyrus.version>2.0.2</tyrus.version>
+		<tyrus.version>2.0.3</tyrus.version>
 		<commons-text.version>1.9</commons-text.version>
 		<citrus.kafka.version>3.2.1</citrus.kafka.version>
 		<kafka.clients.version>2.8.0</kafka.clients.version>
