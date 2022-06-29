@@ -25,8 +25,9 @@ public class CamelKModelineInsertionTest extends AbstractCamelLanguageServerTest
     void testProvideInsertionOnEmptyXMLFile() throws Exception {
         FileType type = FileType.XML;
         String contents = "";
+        Position position = beginningOfLastLine(contents);
 
-        List<CompletionItem> completionItems = getCompletionsFor(type, contents);
+        List<CompletionItem> completionItems = getCompletionsFor(type, contents, position);
 
         assertCompletionItemsHasExpectedCompletionForType(type, completionItems);
     }
@@ -35,8 +36,9 @@ public class CamelKModelineInsertionTest extends AbstractCamelLanguageServerTest
     void testProvideInsertionOnEmptyJavaFile() throws Exception {
         FileType type = FileType.Java;
         String contents = "";
+        Position position = beginningOfLastLine(contents);
 
-        List<CompletionItem> completionItems = getCompletionsFor(type, contents);
+        List<CompletionItem> completionItems = getCompletionsFor(type, contents, position);
 
         assertCompletionItemsHasExpectedCompletionForType(type, completionItems);
     }
@@ -45,8 +47,9 @@ public class CamelKModelineInsertionTest extends AbstractCamelLanguageServerTest
     void testProvideInsertionOnEmptyYAMLFile() throws Exception {
         FileType type = FileType.YAML;
         String contents = "";
+        Position position = beginningOfLastLine(contents);
 
-        List<CompletionItem> completionItems = getCompletionsFor(type, contents);
+        List<CompletionItem> completionItems = getCompletionsFor(type, contents, position);
 
         assertCompletionItemsHasExpectedCompletionForType(type, completionItems);
     }
@@ -55,8 +58,9 @@ public class CamelKModelineInsertionTest extends AbstractCamelLanguageServerTest
     void testInsertionOnLineWithSpacesOrTabs() throws Exception {
         FileType type = FileType.Java;
         String contents = "\t   \t \t";
+        Position position = beginningOfLastLine(contents);
 
-        List<CompletionItem> completionItems = getCompletionsFor(type, contents);
+        List<CompletionItem> completionItems = getCompletionsFor(type, contents, position);
 
         assertNoCompletionsAvailable(completionItems);
     }
@@ -65,8 +69,9 @@ public class CamelKModelineInsertionTest extends AbstractCamelLanguageServerTest
     void testNoInsertionOnLineWithContents() throws Exception {
         FileType type = FileType.Java;
         String contents = "//example";
+        Position position = beginningOfLastLine(contents);
 
-        List<CompletionItem> completionItems = getCompletionsFor(type, contents);
+        List<CompletionItem> completionItems = getCompletionsFor(type, contents, position);
 
         assertNoCompletionsAvailable(completionItems);
     }
@@ -77,8 +82,9 @@ public class CamelKModelineInsertionTest extends AbstractCamelLanguageServerTest
     void testProvideInsertionOnCommentedXMLFile() throws Exception {
         FileType type = FileType.XML;
         String contents = "<!-- One comment -->\n";
+        Position position = beginningOfLastLine(contents);
 
-        List<CompletionItem> completionItems = getCompletionsFor(type, contents);
+        List<CompletionItem> completionItems = getCompletionsFor(type, contents, position);
 
         assertCompletionItemsHasExpectedCompletionForType(type, completionItems);
     }
@@ -87,8 +93,9 @@ public class CamelKModelineInsertionTest extends AbstractCamelLanguageServerTest
     void testProvideInsertionOnMultipleCommentsXMLFile() throws Exception {
         FileType type = FileType.XML;
         String contents = "<!-- One comment --><!-- Moar comments -->\n";
+        Position position = beginningOfLastLine(contents);
 
-        List<CompletionItem> completionItems = getCompletionsFor(type, contents);
+        List<CompletionItem> completionItems = getCompletionsFor(type, contents, position);
 
         assertCompletionItemsHasExpectedCompletionForType(type, completionItems);
     }
@@ -97,8 +104,9 @@ public class CamelKModelineInsertionTest extends AbstractCamelLanguageServerTest
     void testProvideInsertionOnMultipleCommentsOnMultipleLinesXMLFile() throws Exception {
         FileType type = FileType.XML;
         String contents = "<!-- One comment -->\n \n <!-- Moar comments -->\n";
+        Position position = beginningOfLastLine(contents);
 
-        List<CompletionItem> completionItems = getCompletionsFor(type, contents);
+        List<CompletionItem> completionItems = getCompletionsFor(type, contents, position);
 
         assertCompletionItemsHasExpectedCompletionForType(type, completionItems);
     }
@@ -106,7 +114,7 @@ public class CamelKModelineInsertionTest extends AbstractCamelLanguageServerTest
     @Test
     void testDontProvideInsertionIfExtraTextXML() throws Exception {
         FileType type = FileType.XML;
-        String contents = "<!-- One comment --><!-- Moar comments -->\n<tag></tag>";
+        String contents = "<!-- One comment --><!-- Moar comments -->\n<tag></tag>\n";
 
         List<CompletionItem> completionItems = getCompletionsFor(type, contents);
 
@@ -118,45 +126,43 @@ public class CamelKModelineInsertionTest extends AbstractCamelLanguageServerTest
     void testProvideInsertionOnCommentedYAMLFile() throws Exception {
         FileType type = FileType.YAML;
         String contents = "# Example\n";
+        Position position = beginningOfLastLine(contents);
 
-        List<CompletionItem> completionItems = getCompletionsFor(type, contents);
+        List<CompletionItem> completionItems = getCompletionsFor(type, contents, position);
 
         assertCompletionItemsHasExpectedCompletionForType(type, completionItems);
     }
 
-//    @Test
-//    void testProvideInsertionOnMultipleCommentsXMLFile() throws Exception {
-//        FileType type = FileType.XML;
-//        String contents = "<!-- One comment --><!-- Moar comments -->\n";
-//
-//        List<CompletionItem> completionItems = getCompletionsFor(type, contents);
-//
-//        assertCompletionItemsHasExpectedCompletionForType(type, completionItems);
-//    }
-//
-//    @Test
-//    void testProvideInsertionOnMultipleCommentsOnMultipleLinesXMLFile() throws Exception {
-//        FileType type = FileType.XML;
-//        String contents = "<!-- One comment -->\n \n <!-- Moar comments -->\n";
-//
-//        List<CompletionItem> completionItems = getCompletionsFor(type, contents);
-//
-//        assertCompletionItemsHasExpectedCompletionForType(type, completionItems);
-//    }
-//
-//    @Test
-//    void testDontProvideInsertionIfExtraTextYAML() throws Exception {
-//        FileType type = FileType.XML;
-//        String contents = "<!-- One comment --><!-- Moar comments -->\n<tag></tag>";
-//
-//        List<CompletionItem> completionItems = getCompletionsFor(type, contents);
-//
-//        assertNoCompletionsAvailable(completionItems);
-//    }
+    @Test
+    void testProvideInsertionOnMultipleCommentsOnMultipleLinesYAMLFile() throws Exception {
+        FileType type = FileType.XML;
+        String contents = "# Example\n \n #Example2 ####\n ";
+        Position position = beginningOfLastLine(contents);
 
+        List<CompletionItem> completionItems = getCompletionsFor(type, contents, position);
+
+        assertCompletionItemsHasExpectedCompletionForType(type, completionItems);
+    }
+
+    @Test
+    void testDontProvideInsertionIfExtraTextYAML() throws Exception {
+        FileType type = FileType.XML;
+        String contents = "# Example\nexample:\n";
+        Position position = beginningOfLastLine(contents);
+
+        List<CompletionItem> completionItems = getCompletionsFor(type, contents, position);
+
+        assertNoCompletionsAvailable(completionItems);
+    }
 
 
     /** UTILS **/
+
+    private Position beginningOfLastLine(String text) {
+        int lastLine = (int)text.chars().filter(ch -> ch == '\n').count();
+
+        return new Position(lastLine, 0);
+    }
 
     private void assertNoCompletionsAvailable(List<CompletionItem> completionItems) {
         assertThat(completionItems).hasSize(0);
@@ -165,15 +171,6 @@ public class CamelKModelineInsertionTest extends AbstractCamelLanguageServerTest
     private void assertCompletionItemsHasExpectedCompletionForType(FileType type, List<CompletionItem> completionItems) {
         assertThat(completionItems).hasSize(1);
         checkInsertionCompletionAvailableForType(completionItems, type);
-    }
-
-    //Why no default args
-    List<CompletionItem> getCompletionsFor(FileType type, String contents) throws Exception{
-
-        final Function<String,Integer> getLastLine = text -> (int)text.chars().filter(ch -> ch == '\n').count();
-
-        // By default it will put cursor at last position
-        return getCompletionsFor(type, contents, new Position(getLastLine.apply(contents), 0));
     }
 
     List<CompletionItem>  getCompletionsFor(FileType type, String contents, Position position) throws Exception {
