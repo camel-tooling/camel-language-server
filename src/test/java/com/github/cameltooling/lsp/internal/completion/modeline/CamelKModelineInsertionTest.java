@@ -211,16 +211,16 @@ public class CamelKModelineInsertionTest extends AbstractCamelLanguageServerTest
         assertCompletionItemsHasExpectedCompletionForType(type, completionItems);
     }
 
-//    @Test
-//    void testDontProvideInsertionIfExtraTextYAML() throws Exception {
-//        FileType type = FileType.YAML;
-//        String contents = "# Example\nexample:\n";
-//        Position position = beginningOfLastLine(contents);
-//
-//        List<CompletionItem> completionItems = getCompletionsFor(type, contents, position);
-//
-//        assertNoCompletionsAvailable(completionItems);
-//    }
+    @Test
+    void testDontProvideInsertionIfExtraTextJava() throws Exception {
+        FileType type = FileType.Java;
+        String contents = "// Example\npublic class CamelExample {\n";
+        Position position = beginningOfLastLine(contents);
+
+        List<CompletionItem> completionItems = getCompletionsFor(type, contents, position);
+
+        assertNoCompletionsAvailable(completionItems);
+    }
 
     /** UTILS **/
 
