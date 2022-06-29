@@ -77,7 +77,19 @@ public class CamelKModelineInsertionParser {
         private static boolean textIsFullyCommentedXML(String text){
             //Remove all segments between <!-- and -->. Check if it's empty.
             Pattern commentRegex = Pattern.compile("<!--.*-->");
-            String textWithoutComments = text.replaceAll(commentRegex.pattern(), "");
+
+            return textIsFullOfRegex(text, commentRegex);
+        }
+
+        private static boolean textIsFullyCommentedYAML(String text){
+            //Remove all segments between # and \n
+            Pattern commentRegex = Pattern.compile("#.*\\n");
+
+            return textIsFullOfRegex(text, commentRegex);
+        }
+
+        private static boolean textIsFullOfRegex(String text, Pattern regex) {
+            String textWithoutComments = text.replaceAll(regex.pattern(), "");
 
             return textWithoutComments.isEmpty();
         }
