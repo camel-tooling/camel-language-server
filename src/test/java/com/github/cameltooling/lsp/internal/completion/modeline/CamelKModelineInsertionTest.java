@@ -30,6 +30,28 @@ public class CamelKModelineInsertionTest extends AbstractCamelLanguageServerTest
         checkInsertionCompletionAvailableForType(completionItems, type);
     }
 
+    @Test
+    void testProvideInsertionOnEmptyJavaFile() throws Exception {
+        FileType type = FileType.Java;
+        String contents = "";
+
+        List<CompletionItem> completionItems = getCompletionsFor(type, contents);
+
+        assertThat(completionItems).hasSize(1);
+        checkInsertionCompletionAvailableForType(completionItems, type);
+    }
+
+    @Test
+    void testProvideInsertionOnEmptyYAMLFile() throws Exception {
+        FileType type = FileType.YAML;
+        String contents = "";
+
+        List<CompletionItem> completionItems = getCompletionsFor(type, contents);
+
+        assertThat(completionItems).hasSize(1);
+        checkInsertionCompletionAvailableForType(completionItems, type);
+    }
+
     //Why no default args
     List<CompletionItem> getCompletionsFor(FileType type, String contents) throws Exception{
         return getCompletionsFor(type, contents, new Position(0, 0));
