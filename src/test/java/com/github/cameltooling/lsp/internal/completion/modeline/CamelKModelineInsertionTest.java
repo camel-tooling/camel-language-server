@@ -232,6 +232,40 @@ class CamelKModelineInsertionTest extends AbstractCamelLanguageServerTest {
         assertNoCompletionsAvailable(completionItems);
     }
 
+    /** FILE WITH MODELINE ALREADY INSERTED **/
+    @Test
+    void testDontProvideInsertionOnXMLFileWithModeline() throws Exception {
+        FileType type = FileType.XML;
+        String contents = "<!-- camel-k: -->\n";
+        Position position = beginningOfLastLine(contents);
+
+        List<CompletionItem> completionItems = getCompletionsFor(type, contents, position);
+
+        assertNoCompletionsAvailable(completionItems);
+    }
+
+    @Test
+    void testDontProvideInsertionOnYAMLFileWithModeline() throws Exception {
+        FileType type = FileType.YAML;
+        String contents = "# camel-k:\n";
+        Position position = beginningOfLastLine(contents);
+
+        List<CompletionItem> completionItems = getCompletionsFor(type, contents, position);
+
+        assertNoCompletionsAvailable(completionItems);
+    }
+
+    @Test
+    void testDontProvideInsertionOnJavaFileWithModeline() throws Exception {
+        FileType type = FileType.Java;
+        String contents = "// camel-k:\n";
+        Position position = beginningOfLastLine(contents);
+
+        List<CompletionItem> completionItems = getCompletionsFor(type, contents, position);
+
+        assertNoCompletionsAvailable(completionItems);
+    }
+
     /** MID FILE **/
     @Test
     void testProvideInsertionIfCursorBetweenCommentsAndStartOfCode() throws Exception {
@@ -261,7 +295,7 @@ class CamelKModelineInsertionTest extends AbstractCamelLanguageServerTest {
         checkInsertionCompletionAvailableForType(completionItems, type);
     }
 
-    List<CompletionItem>  getCompletionsFor(FileType type, String contents, Position position) throws Exception {
+    private List<CompletionItem>  getCompletionsFor(FileType type, String contents, Position position) throws Exception {
         CamelLanguageServer camelLanguageServer = initializeLanguageServer(contents, type.extension);
 
         CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = getCompletionFor(camelLanguageServer, position);
