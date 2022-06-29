@@ -28,18 +28,18 @@ public enum CamelKModelineFileType {
             "Read more: https://camel.apache.org/camel-k/1.9.x/cli/modeline.html");
 
     public final List<String> correspondingExtensions;
-    public final String modelineLabel;
+    public final String modeline;
     public final Function<String, Boolean> checkTextIsCommentsDelegate;
 
     public final CompletionItem completion;
 
     CamelKModelineFileType(List<String> correspondingExtensions,
-                           String modelineLabel,
+                           String modeline,
                            Function<String, Boolean> checkTextIsCommentsDelegate,
                            String completionLabel,
                            String completionDocumentation) {
         this.correspondingExtensions = correspondingExtensions;
-        this.modelineLabel = modelineLabel;
+        this.modeline = modeline;
         this.checkTextIsCommentsDelegate = checkTextIsCommentsDelegate;
         this.completion = getCompletionItem(completionLabel, completionDocumentation);
     }

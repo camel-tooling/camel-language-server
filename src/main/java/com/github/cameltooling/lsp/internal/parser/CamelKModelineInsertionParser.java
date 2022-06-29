@@ -4,6 +4,7 @@ import com.github.cameltooling.lsp.internal.completion.modeline.CamelKModelineFi
 import org.eclipse.lsp4j.Position;
 import org.eclipse.lsp4j.TextDocumentItem;
 
+import java.util.Arrays;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -33,7 +34,10 @@ public class CamelKModelineInsertionParser {
     }
 
     private boolean noModelineInsertedAlready() {
-        return true;
+        String modeline = CamelKModelineFileType.getFileTypeCorrespondingToUri(document.getUri()).orElseThrow()
+                .modeline;
+
+        return !Arrays.stream(document.getText().split("\n")).anyMatch(line -> line.startsWith(modeline));
     }
 
     private boolean previousLinesAreCommentsOrEmpty(int line) {
