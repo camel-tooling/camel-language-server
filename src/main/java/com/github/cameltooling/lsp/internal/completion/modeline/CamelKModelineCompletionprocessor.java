@@ -43,10 +43,4 @@ public class CamelKModelineCompletionprocessor {
 		String modelineString = new ParserFileHelperUtil().getLine(textDocumentItem, position.getLine());
 		return new CamelKModeline(modelineString, textDocumentItem, position.getLine()).getCompletions(position.getCharacter(), camelCatalog);
 	}
-
-	public CompletableFuture<List<CompletionItem>> getInsertion() {
-		//Add documentation with link to camel-k instance
-		//Add switch for every file type
-		return CompletableFuture.completedFuture(Arrays.asList(new CompletionItem("// camel-k: ")));
-	}
 }
