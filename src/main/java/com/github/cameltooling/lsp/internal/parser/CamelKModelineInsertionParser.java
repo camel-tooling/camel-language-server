@@ -34,7 +34,7 @@ public class CamelKModelineInsertionParser {
     }
 
     private boolean lineIsEmpty(int line) {
-        return new ParserFileHelperUtil().getLine(document, line).isEmpty();
+        return new ParserFileHelperUtil().getLine(document, line).isBlank();
     }
 
     private boolean noModelineInsertedAlready() {
@@ -45,7 +45,7 @@ public class CamelKModelineInsertionParser {
     private boolean previousLinesAreCommentsOrEmpty(int line) {
         String textBeforeLine = IntStream.range(0, line).boxed()
                 .map(currLine -> new ParserFileHelperUtil().getLine(document,currLine))
-                .collect(Collectors.joining());
+                .collect(Collectors.joining("\n"));
 
         return FileType.getFileTypeCorrespondingToUri(document.getUri()).orElseThrow()
                 .checkTextIsCommentsDelegate.apply(textBeforeLine);
@@ -55,7 +55,7 @@ public class CamelKModelineInsertionParser {
     private enum FileType {
         XML(".camelk.xml", "<!-- camel-k:", FileType::textIsFullyCommentedXML),
         Java(".java", "// camel-k:", text -> true),
-        YAML(".camelk.yaml", "# camel-k", text -> true);
+        YAML(".camelk.yaml", "# camel-k", FileType::textIsFullyCommentedYAML);
         //YAML has the special condition `# yaml-language-server: $schema=<urlToCamelKyaml>`
 
         public final String extension;
@@ -89,9 +89,10 @@ public class CamelKModelineInsertionParser {
         }
 
         private static boolean textIsFullOfRegex(String text, Pattern regex) {
-            String textWithoutComments = text.replaceAll(regex.pattern(), "");
+            String textWithExtraCarriageReturn = text + "\n";
+            String textWithoutComments = textWithExtraCarriageReturn.replaceAll(regex.pattern(), "");
 
-            return textWithoutComments.isEmpty();
+            return textWithoutComments.isBlank();
         }
     }
 }
