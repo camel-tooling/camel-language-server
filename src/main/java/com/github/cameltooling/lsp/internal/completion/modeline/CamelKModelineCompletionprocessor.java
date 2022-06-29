@@ -16,8 +16,10 @@
  */
 package com.github.cameltooling.lsp.internal.completion.modeline;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
 
 import org.apache.camel.catalog.CamelCatalog;
 import org.eclipse.lsp4j.CompletionItem;
@@ -42,4 +44,9 @@ public class CamelKModelineCompletionprocessor {
 		return new CamelKModeline(modelineString, textDocumentItem, position.getLine()).getCompletions(position.getCharacter(), camelCatalog);
 	}
 
+	public CompletableFuture<List<CompletionItem>> getInsertion() {
+		//Add documentation with link to camel-k instance
+		//Add switch for every file type
+		return CompletableFuture.completedFuture(Arrays.asList(new CompletionItem("// camel-k: ")));
+	}
 }
