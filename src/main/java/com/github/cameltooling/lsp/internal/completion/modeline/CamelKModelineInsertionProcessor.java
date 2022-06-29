@@ -3,7 +3,6 @@ package com.github.cameltooling.lsp.internal.completion.modeline;
 import org.eclipse.lsp4j.CompletionItem;
 import org.eclipse.lsp4j.TextDocumentItem;
 
-import java.io.File;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -17,7 +16,7 @@ public class CamelKModelineInsertionProcessor {
         this.textDocumentItem = textDocumentItem;
     }
 
-    public CompletableFuture<List<CompletionItem>> getInsertion() {
+    public CompletableFuture<List<CompletionItem>> getCompletions() {
         return CompletableFuture.completedFuture(
                 Arrays.asList(
                         getCompletionCorrespondingToDocument()
@@ -25,13 +24,10 @@ public class CamelKModelineInsertionProcessor {
     }
 
     private CompletionItem getCompletionCorrespondingToDocument() {
-        //What to throw here?
         return FileType.getFileTypeCorrespondingToUri(textDocumentItem.getUri()).orElseThrow().completion;
     }
 
-    //Unify all this file type information eventually
     private enum FileType {
-        //Documentation as
         XML(".camelk.xml", "<!-- camel-k: -->", "Read more: https://camel.apache.org/camel-k/1.9.x/cli/modeline.html"),
         Java(".java","// camel-k:", "Read more: https://camel.apache.org/camel-k/1.9.x/cli/modeline.html"),
         YAML(".camelk.yaml","# camel-k", "Read more: https://camel.apache.org/camel-k/1.9.x/cli/modeline.html");

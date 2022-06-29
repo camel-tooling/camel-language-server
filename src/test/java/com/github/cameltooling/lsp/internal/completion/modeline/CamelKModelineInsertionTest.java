@@ -189,7 +189,6 @@ public class CamelKModelineInsertionTest extends AbstractCamelLanguageServerTest
         XML(".camelk.xml", "<!-- camel-k: -->", "Read more: https://camel.apache.org/camel-k/1.9.x/cli/modeline.html"),
         Java(".java", "// camel-k:", "Read more: https://camel.apache.org/camel-k/1.9.x/cli/modeline.html"),
         YAML(".camelk.yaml", "# camel-k", "Read more: https://camel.apache.org/camel-k/1.9.x/cli/modeline.html");
-        //YAML has the special condition `# yaml-language-server: $schema=<urlToCamelKyaml>`
 
         public final String extension;
         public final CompletionItem completion;

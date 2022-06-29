@@ -22,7 +22,6 @@ public class CamelKModelineInsertionParser {
     public boolean canPutCamelKModeline(Position position) {
         int currentLine = position.getLine();
 
-        //Save the lines to not have to access multiple times to file?
         return isCamelKFile()
                 && lineIsEmpty(currentLine)
                 && noModelineInsertedAlready()
@@ -38,7 +37,6 @@ public class CamelKModelineInsertionParser {
     }
 
     private boolean noModelineInsertedAlready() {
-        // Edge case - Modeline inserted inside block comment in java
         return true;
     }
 
@@ -51,12 +49,10 @@ public class CamelKModelineInsertionParser {
                 .checkTextIsCommentsDelegate.apply(textBeforeLine);
     }
 
-    //Unify this somewhere for modeline parsing/completion?
     private enum FileType {
         XML(".camelk.xml", "<!-- camel-k:", FileType::textIsFullyCommentedXML),
         Java(".java", "// camel-k:", text -> true),
         YAML(".camelk.yaml", "# camel-k", FileType::textIsFullyCommentedYAML);
-        //YAML has the special condition `# yaml-language-server: $schema=<urlToCamelKyaml>`
 
         public final String extension;
         public final String modelineLabel;
@@ -89,6 +85,7 @@ public class CamelKModelineInsertionParser {
         }
 
         private static boolean textIsFullOfRegex(String text, Pattern regex) {
+            //Add an extra carriage return at the end for correct matching with line comments
             String textWithExtraCarriageReturn = text + "\n";
             String textWithoutComments = textWithExtraCarriageReturn.replaceAll(regex.pattern(), "");
 
