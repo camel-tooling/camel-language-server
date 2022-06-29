@@ -61,7 +61,7 @@ public class CamelKModelineInsertionTest extends AbstractCamelLanguageServerTest
 
         List<CompletionItem> completionItems = getCompletionsFor(type, contents, position);
 
-        assertNoCompletionsAvailable(completionItems);
+        assertCompletionItemsHasExpectedCompletionForType(type, completionItems);
     }
     
     @Test
@@ -133,20 +133,20 @@ public class CamelKModelineInsertionTest extends AbstractCamelLanguageServerTest
         assertCompletionItemsHasExpectedCompletionForType(type, completionItems);
     }
 
-//    @Test
-//    void testProvideInsertionOnMultipleCommentsOnMultipleLinesYAMLFile() throws Exception {
-//        FileType type = FileType.XML;
-//        String contents = "# Example\n \n #Example2 ####\n ";
-//        Position position = beginningOfLastLine(contents);
-//
-//        List<CompletionItem> completionItems = getCompletionsFor(type, contents, position);
-//
-//        assertCompletionItemsHasExpectedCompletionForType(type, completionItems);
-//    }
+    @Test
+    void testProvideInsertionOnMultipleCommentsOnMultipleLinesYAMLFile() throws Exception {
+        FileType type = FileType.YAML;
+        String contents = "# Example\n \n #Example2 ####\n ";
+        Position position = beginningOfLastLine(contents);
+
+        List<CompletionItem> completionItems = getCompletionsFor(type, contents, position);
+
+        assertCompletionItemsHasExpectedCompletionForType(type, completionItems);
+    }
 
     @Test
     void testDontProvideInsertionIfExtraTextYAML() throws Exception {
-        FileType type = FileType.XML;
+        FileType type = FileType.YAML;
         String contents = "# Example\nexample:\n";
         Position position = beginningOfLastLine(contents);
 
