@@ -13,12 +13,14 @@ import org.junit.runners.Parameterized;
 import javax.annotation.processing.Completion;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.function.Function;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class CamelKModelineInsertionTest extends AbstractCamelLanguageServerTest {
 
     //Use parameterized tests on future
+    /* EMPTY FILE TESTS */
     @Test
     void testProvideInsertionOnEmptyXMLFile() throws Exception {
         FileType type = FileType.XML;
@@ -26,8 +28,7 @@ public class CamelKModelineInsertionTest extends AbstractCamelLanguageServerTest
 
         List<CompletionItem> completionItems = getCompletionsFor(type, contents);
 
-        assertThat(completionItems).hasSize(1);
-        checkInsertionCompletionAvailableForType(completionItems, type);
+        assertCompletionItemsHasExpectedCompletionForType(type, completionItems);
     }
 
     @Test
@@ -37,8 +38,7 @@ public class CamelKModelineInsertionTest extends AbstractCamelLanguageServerTest
 
         List<CompletionItem> completionItems = getCompletionsFor(type, contents);
 
-        assertThat(completionItems).hasSize(1);
-        checkInsertionCompletionAvailableForType(completionItems, type);
+        assertCompletionItemsHasExpectedCompletionForType(type, completionItems);
     }
 
     @Test
@@ -48,14 +48,84 @@ public class CamelKModelineInsertionTest extends AbstractCamelLanguageServerTest
 
         List<CompletionItem> completionItems = getCompletionsFor(type, contents);
 
+        assertCompletionItemsHasExpectedCompletionForType(type, completionItems);
+    }
+    @Test
+    void testNoInsertionOnLineWithContents() throws Exception {
+        FileType type = FileType.Java;
+        String contents = "//example";
+
+        List<CompletionItem> completionItems = getCompletionsFor(type, contents);
+
+        assertNoCompletionsAvailable(completionItems);
+    }
+
+    /* FILE WITH COMMENTS ABOVE LINE TEST */
+    /* XML */
+    @Test
+    void testProvideInsertionOnCommentedXMLFile() throws Exception {
+        FileType type = FileType.XML;
+        String contents = "<!-- One comment -->\n";
+
+        List<CompletionItem> completionItems = getCompletionsFor(type, contents);
+
+        assertCompletionItemsHasExpectedCompletionForType(type, completionItems);
+    }
+
+    @Test
+    void testProvideInsertionOnMultipleCommentsXMLFile() throws Exception {
+        FileType type = FileType.XML;
+        String contents = "<!-- One comment --><!-- Moar comments -->\n";
+
+        List<CompletionItem> completionItems = getCompletionsFor(type, contents);
+
+        assertCompletionItemsHasExpectedCompletionForType(type, completionItems);
+    }
+
+    @Test
+    void testProvideInsertionOnMultipleCommentsOnMultipleLinesXMLFile() throws Exception {
+        FileType type = FileType.XML;
+        String contents = "<!-- One comment -->\n \n <!-- Moar comments -->\n";
+
+        List<CompletionItem> completionItems = getCompletionsFor(type, contents);
+
+        assertCompletionItemsHasExpectedCompletionForType(type, completionItems);
+    }
+
+    @Test
+    void testDontProvideInsertionIfExtraText() throws Exception {
+        FileType type = FileType.XML;
+        String contents = "<!-- One comment --><!-- Moar comments -->\n<tag></tag>";
+
+        List<CompletionItem> completionItems = getCompletionsFor(type, contents);
+
+        assertNoCompletionsAvailable(completionItems);
+    }
+
+
+
+
+
+    /** UTILS **/
+
+    private void assertNoCompletionsAvailable(List<CompletionItem> completionItems) {
+        assertThat(completionItems).hasSize(0);
+    }
+
+    private void assertCompletionItemsHasExpectedCompletionForType(FileType type, List<CompletionItem> completionItems) {
         assertThat(completionItems).hasSize(1);
         checkInsertionCompletionAvailableForType(completionItems, type);
     }
 
     //Why no default args
     List<CompletionItem> getCompletionsFor(FileType type, String contents) throws Exception{
-        return getCompletionsFor(type, contents, new Position(0, 0));
+
+        final Function<String,Integer> getLastLine = text -> (int)text.chars().filter(ch -> ch == '\n').count();
+
+        // By default it will put cursor at last position
+        return getCompletionsFor(type, contents, new Position(getLastLine.apply(contents), 0));
     }
+
     List<CompletionItem>  getCompletionsFor(FileType type, String contents, Position position) throws Exception {
         CamelLanguageServer camelLanguageServer = initializeLanguageServer(contents, type.extension);
 
