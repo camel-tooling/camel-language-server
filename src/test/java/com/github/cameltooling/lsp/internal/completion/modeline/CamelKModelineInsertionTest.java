@@ -19,7 +19,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class CamelKModelineInsertionTest extends AbstractCamelLanguageServerTest {
 
-    //Use parameterized tests on future
     /* EMPTY FILE TESTS */
     @Test
     void testProvideInsertionOnEmptyXMLFile() throws Exception {
@@ -115,8 +114,9 @@ public class CamelKModelineInsertionTest extends AbstractCamelLanguageServerTest
     void testDontProvideInsertionIfExtraTextXML() throws Exception {
         FileType type = FileType.XML;
         String contents = "<!-- One comment --><!-- Moar comments -->\n<tag></tag>\n";
+        Position position = beginningOfLastLine(contents);
 
-        List<CompletionItem> completionItems = getCompletionsFor(type, contents);
+        List<CompletionItem> completionItems = getCompletionsFor(type, contents, position);
 
         assertNoCompletionsAvailable(completionItems);
     }
@@ -133,16 +133,16 @@ public class CamelKModelineInsertionTest extends AbstractCamelLanguageServerTest
         assertCompletionItemsHasExpectedCompletionForType(type, completionItems);
     }
 
-    @Test
-    void testProvideInsertionOnMultipleCommentsOnMultipleLinesYAMLFile() throws Exception {
-        FileType type = FileType.XML;
-        String contents = "# Example\n \n #Example2 ####\n ";
-        Position position = beginningOfLastLine(contents);
-
-        List<CompletionItem> completionItems = getCompletionsFor(type, contents, position);
-
-        assertCompletionItemsHasExpectedCompletionForType(type, completionItems);
-    }
+//    @Test
+//    void testProvideInsertionOnMultipleCommentsOnMultipleLinesYAMLFile() throws Exception {
+//        FileType type = FileType.XML;
+//        String contents = "# Example\n \n #Example2 ####\n ";
+//        Position position = beginningOfLastLine(contents);
+//
+//        List<CompletionItem> completionItems = getCompletionsFor(type, contents, position);
+//
+//        assertCompletionItemsHasExpectedCompletionForType(type, completionItems);
+//    }
 
     @Test
     void testDontProvideInsertionIfExtraTextYAML() throws Exception {
