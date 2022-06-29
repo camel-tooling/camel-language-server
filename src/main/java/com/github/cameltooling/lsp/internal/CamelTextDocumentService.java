@@ -152,10 +152,13 @@ public class CamelTextDocumentService implements TextDocumentService {
 		String uri = completionParams.getTextDocument().getUri();
 		LOGGER.info("completion: {}", uri);
 		TextDocumentItem textDocumentItem = openedDocuments.get(uri);
+		CamelKModelineParser parser = new CamelKModelineParser();
 		if (textDocumentItem != null) {
 			if (uri.endsWith(".properties")){
 				return new CamelPropertiesCompletionProcessor(textDocumentItem, getCamelCatalog(), getCamelKafkaConnectorManager()).getCompletions(completionParams.getPosition(), getSettingsManager(), getKameletsCatalogManager()).thenApply(Either::forLeft);
-			} else if(new CamelKModelineParser().isOnCamelKModeline(completionParams.getPosition().getLine(), textDocumentItem)){
+			} else if (isCamelKFile(uri) && parser.canPutCamelKModeline(completionParams.getPosition(), textDocumentItem)){
+				return new CamelKModelineCompletionprocessor(textDocumentItem, getCamelCatalog()).getInsertion().thenApply(Either::forLeft);
+			} else if (parser.isOnCamelKModeline(completionParams.getPosition().getLine(), textDocumentItem)){
 				return new CamelKModelineCompletionprocessor(textDocumentItem, getCamelCatalog()).getCompletions(completionParams.getPosition()).thenApply(Either::forLeft);
 			} else {
 				return new CamelEndpointCompletionProcessor(textDocumentItem, getCamelCatalog(), getKameletsCatalogManager()).getCompletions(completionParams.getPosition(), getSettingsManager()).thenApply(Either::forLeft);
@@ -164,6 +167,11 @@ public class CamelTextDocumentService implements TextDocumentService {
 			LOGGER.warn("The document with uri {} has not been found in opened documents. Cannot provide completion.", uri);
 			return CompletableFuture.completedFuture(Either.forLeft(Collections.emptyList()));
 		}
+	}
+
+	private boolean isCamelKFile(String uri) {
+		//For now not checking that the file is a CamelK File
+		return true;
 	}
 
 	@Override

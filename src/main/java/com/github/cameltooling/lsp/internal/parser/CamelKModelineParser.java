@@ -16,6 +16,7 @@
  */
 package com.github.cameltooling.lsp.internal.parser;
 
+import org.eclipse.lsp4j.Position;
 import org.eclipse.lsp4j.TextDocumentItem;
 
 public class CamelKModelineParser {
@@ -38,5 +39,20 @@ public class CamelKModelineParser {
 	public boolean isOnCamelKModeline(int line, TextDocumentItem textDocumentItem) {
 		return retrieveModelineCamelKStart(new ParserFileHelperUtil().getLine(textDocumentItem, line)) != null;
 	}
-	
+
+	public boolean canPutCamelKModeline(Position position, TextDocumentItem textDocumentItem) {
+		int currentLine = position.getLine();
+
+		//Save the lines to not have to access multiple times to file?
+		return lineIsEmpty(currentLine, textDocumentItem) && previousLinesAreCommentsOrEmpty(currentLine,textDocumentItem);
+	}
+
+	private boolean previousLinesAreCommentsOrEmpty(int line, TextDocumentItem textDocumentItem) {
+		//Harder than it looks. We have to take into account multi and single comment lines. Will be done when I get to that test
+		return true;
+	}
+
+	private boolean lineIsEmpty(int line, TextDocumentItem textDocumentItem) {
+		return new ParserFileHelperUtil().getLine(textDocumentItem, line).isEmpty();
+	}
 }
