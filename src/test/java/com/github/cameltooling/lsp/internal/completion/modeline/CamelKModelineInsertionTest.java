@@ -19,7 +19,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class CamelKModelineInsertionTest extends AbstractCamelLanguageServerTest {
 
-    /* EMPTY FILE TESTS */
+    /** EMPTY FILE TESTS **/
     @Test
     void testProvideInsertionOnEmptyXMLFile() throws Exception {
         FileType type = FileType.XML;
@@ -75,8 +75,8 @@ public class CamelKModelineInsertionTest extends AbstractCamelLanguageServerTest
         assertNoCompletionsAvailable(completionItems);
     }
 
-    /* FILE WITH COMMENTS ABOVE LINE TEST */
-    /* XML */
+    /** FILE WITH COMMENTS ABOVE LINE TESTS **/
+    /** XML **/
     @Test
     void testProvideInsertionOnCommentedXMLFile() throws Exception {
         FileType type = FileType.XML;
@@ -121,7 +121,7 @@ public class CamelKModelineInsertionTest extends AbstractCamelLanguageServerTest
         assertNoCompletionsAvailable(completionItems);
     }
 
-    /* YAML */
+    /** YAML **/
     @Test
     void testProvideInsertionOnCommentedYAMLFile() throws Exception {
         FileType type = FileType.YAML;
@@ -155,7 +155,7 @@ public class CamelKModelineInsertionTest extends AbstractCamelLanguageServerTest
         assertNoCompletionsAvailable(completionItems);
     }
 
-    /* JAVA */
+    /** JAVA **/
     @Test
     void testProvideInsertionOnLineCommentedJavaFile() throws Exception {
         FileType type = FileType.Java;
@@ -220,6 +220,18 @@ public class CamelKModelineInsertionTest extends AbstractCamelLanguageServerTest
         List<CompletionItem> completionItems = getCompletionsFor(type, contents, position);
 
         assertNoCompletionsAvailable(completionItems);
+    }
+
+    /** MID FILE **/
+    @Test
+    void testProvideInsertionIfCursorBetweenCommentsAndStartOfCode() throws Exception {
+        FileType type = FileType.Java;
+        String contents = "// Example\n\npublic class CamelExample {\n";
+        Position position = new Position(1,0);
+
+        List<CompletionItem> completionItems = getCompletionsFor(type, contents, position);
+
+        assertCompletionItemsHasExpectedCompletionForType(type, completionItems);
     }
 
     /** UTILS **/
