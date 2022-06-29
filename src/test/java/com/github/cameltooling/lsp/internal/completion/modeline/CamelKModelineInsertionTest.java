@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
+import javax.annotation.processing.Completion;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
@@ -21,13 +22,24 @@ public class CamelKModelineInsertionTest extends AbstractCamelLanguageServerTest
     @Test
     void testProvideInsertionOnEmptyXMLFile() throws Exception {
         FileType type = FileType.XML;
-        CamelLanguageServer camelLanguageServer = initializeLanguageServer("", type.extension);
+        String contents = "";
 
-        CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = getCompletionFor(camelLanguageServer, new Position(0, 0));
+        List<CompletionItem> completionItems = getCompletionsFor(type, contents);
 
-        List<CompletionItem> completionItems = completions.get().getLeft();
         assertThat(completionItems).hasSize(1);
         checkInsertionCompletionAvailableForType(completionItems, type);
+    }
+
+    //Why no default args
+    List<CompletionItem> getCompletionsFor(FileType type, String contents) throws Exception{
+        return getCompletionsFor(type, contents, new Position(0, 0));
+    }
+    List<CompletionItem>  getCompletionsFor(FileType type, String contents, Position position) throws Exception {
+        CamelLanguageServer camelLanguageServer = initializeLanguageServer(contents, type.extension);
+
+        CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = getCompletionFor(camelLanguageServer, position);
+
+        return completions.get().getLeft();
     }
 
     private void checkInsertionCompletionAvailableForType(List<CompletionItem> completionItems, FileType toAssert) {
