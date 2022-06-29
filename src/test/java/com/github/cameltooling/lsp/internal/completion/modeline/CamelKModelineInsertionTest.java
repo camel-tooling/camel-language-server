@@ -155,6 +155,39 @@ public class CamelKModelineInsertionTest extends AbstractCamelLanguageServerTest
         assertNoCompletionsAvailable(completionItems);
     }
 
+    /* JAVA */
+    @Test
+    void testProvideInsertionOnLineCommentedJavaFile() throws Exception {
+        FileType type = FileType.Java;
+        String contents = "// Example\n";
+        Position position = beginningOfLastLine(contents);
+
+        List<CompletionItem> completionItems = getCompletionsFor(type, contents, position);
+
+        assertCompletionItemsHasExpectedCompletionForType(type, completionItems);
+    }
+
+//    @Test
+//    void testProvideInsertionOnMultipleCommentsOnMultipleLinesYAMLFile() throws Exception {
+//        FileType type = FileType.YAML;
+//        String contents = "# Example\n \n #Example2 ####\n ";
+//        Position position = beginningOfLastLine(contents);
+//
+//        List<CompletionItem> completionItems = getCompletionsFor(type, contents, position);
+//
+//        assertCompletionItemsHasExpectedCompletionForType(type, completionItems);
+//    }
+//
+//    @Test
+//    void testDontProvideInsertionIfExtraTextYAML() throws Exception {
+//        FileType type = FileType.YAML;
+//        String contents = "# Example\nexample:\n";
+//        Position position = beginningOfLastLine(contents);
+//
+//        List<CompletionItem> completionItems = getCompletionsFor(type, contents, position);
+//
+//        assertNoCompletionsAvailable(completionItems);
+//    }
 
     /** UTILS **/
 

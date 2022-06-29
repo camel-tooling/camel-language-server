@@ -51,7 +51,7 @@ public class CamelKModelineInsertionParser {
 
     private enum FileType {
         XML(".camelk.xml", "<!-- camel-k:", FileType::textIsFullyCommentedXML),
-        Java(".java", "// camel-k:", text -> true),
+        Java(".java", "// camel-k:", FileType::textIsFullyCommentedJava),
         YAML(".camelk.yaml", "# camel-k", FileType::textIsFullyCommentedYAML);
 
         public final String extension;
@@ -80,6 +80,16 @@ public class CamelKModelineInsertionParser {
         private static boolean textIsFullyCommentedYAML(String text){
             //Remove all segments between # and \n
             Pattern commentRegex = Pattern.compile("#.*\\n");
+
+            return textIsFullOfRegex(text, commentRegex);
+        }
+
+        private static boolean textIsFullyCommentedJava(String text){
+            //Line Comments: Remove from // to \n
+            //Block Comments: Remove from /* to */. Newlines have to be explicitly added
+            Pattern lineComment = Pattern.compile("\\/\\/.*\\n");
+            Pattern blockComment = Pattern.compile("\\/\\*(.|\\n)*\\*\\/");
+            Pattern commentRegex = Pattern.compile(String.format("(%s|%s)",lineComment.pattern(), blockComment.pattern()));
 
             return textIsFullOfRegex(text, commentRegex);
         }
