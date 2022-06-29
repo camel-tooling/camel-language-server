@@ -1,5 +1,6 @@
 package com.github.cameltooling.lsp.internal.completion.modeline;
 
+import com.github.cameltooling.lsp.internal.parser.CamelKModelineInsertionParser;
 import org.eclipse.lsp4j.CompletionItem;
 import org.eclipse.lsp4j.TextDocumentItem;
 
@@ -28,15 +29,15 @@ public class CamelKModelineInsertionProcessor {
     }
 
     private enum FileType {
-        XML(".camelk.xml", "<!-- camel-k: -->", "Read more: https://camel.apache.org/camel-k/1.9.x/cli/modeline.html"),
-        Java(".java","// camel-k:", "Read more: https://camel.apache.org/camel-k/1.9.x/cli/modeline.html"),
-        YAML(".camelk.yaml","# camel-k", "Read more: https://camel.apache.org/camel-k/1.9.x/cli/modeline.html");
+        XML(List.of(".camelk.xml"), "<!-- camel-k: -->", "Read more: https://camel.apache.org/camel-k/1.9.x/cli/modeline.html"),
+        Java(List.of(".java"),"// camel-k:", "Read more: https://camel.apache.org/camel-k/1.9.x/cli/modeline.html"),
+        YAML(List.of(".camelk.yaml",".camelk.yml"),"# camel-k", "Read more: https://camel.apache.org/camel-k/1.9.x/cli/modeline.html");
 
-        public final String correspondingExtension;
+        public final List<String> correspondingExtensions;
         public final CompletionItem completion;
 
-        private FileType(String correspondingExtension, String completionLabel, String completionDocumentation) {
-            this.correspondingExtension = correspondingExtension;
+        private FileType(List<String> correspondingExtensions, String completionLabel, String completionDocumentation) {
+            this.correspondingExtensions = correspondingExtensions;
             this.completion = getCompletionItem(completionLabel, completionDocumentation);
         }
 
@@ -49,7 +50,9 @@ public class CamelKModelineInsertionProcessor {
 
         private static Optional<FileType> getFileTypeCorrespondingToUri(String uri) {
             return Arrays.asList(FileType.values()).stream()
-                    .filter(type -> uri.endsWith(type.correspondingExtension))
+                    .filter(type ->
+                            type.correspondingExtensions.stream().anyMatch(uri::endsWith)
+                    )
                     .findFirst();
         }
     }

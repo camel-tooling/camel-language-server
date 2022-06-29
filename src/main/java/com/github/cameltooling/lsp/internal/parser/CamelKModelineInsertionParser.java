@@ -5,6 +5,7 @@ import org.eclipse.lsp4j.TextDocumentItem;
 
 import java.io.File;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.regex.Pattern;
@@ -50,23 +51,25 @@ public class CamelKModelineInsertionParser {
     }
 
     private enum FileType {
-        XML(".camelk.xml", "<!-- camel-k:", FileType::textIsFullyCommentedXML),
-        Java(".java", "// camel-k:", FileType::textIsFullyCommentedJava),
-        YAML(".camelk.yaml", "# camel-k", FileType::textIsFullyCommentedYAML);
+        XML(List.of(".camelk.xml"), "<!-- camel-k:", FileType::textIsFullyCommentedXML),
+        Java(List.of(".java"), "// camel-k:", FileType::textIsFullyCommentedJava),
+        YAML(List.of(".camelk.yaml", ".camelk.yml"), "# camel-k", FileType::textIsFullyCommentedYAML);
 
-        public final String extension;
+        public final List<String> extensions;
         public final String modelineLabel;
         public final Function<String, Boolean> checkTextIsCommentsDelegate;
 
-        private FileType(String extension, String modelineLabel, Function<String, Boolean> checkTextIsCommentsDelegate) {
-            this.extension = extension;
+        private FileType(List<String> extensions, String modelineLabel, Function<String, Boolean> checkTextIsCommentsDelegate) {
+            this.extensions = extensions;
             this.modelineLabel = modelineLabel;
             this.checkTextIsCommentsDelegate = checkTextIsCommentsDelegate;
         }
 
         private static Optional<FileType> getFileTypeCorrespondingToUri(String uri) {
             return Arrays.asList(FileType.values()).stream()
-                    .filter(type -> uri.endsWith(type.extension))
+                    .filter(type ->
+                        type.extensions.stream().anyMatch(uri::endsWith)
+                    )
                     .findFirst();
         }
 
