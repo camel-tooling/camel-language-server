@@ -7,17 +7,13 @@ import org.eclipse.lsp4j.CompletionList;
 import org.eclipse.lsp4j.Position;
 import org.eclipse.lsp4j.jsonrpc.messages.Either;
 import org.junit.jupiter.api.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
 
-import javax.annotation.processing.Completion;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
-import java.util.function.Function;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class CamelKModelineInsertionTest extends AbstractCamelLanguageServerTest {
+class CamelKModelineInsertionTest extends AbstractCamelLanguageServerTest {
 
     /** EMPTY FILE TESTS **/
     @Test
