@@ -248,6 +248,17 @@ class CamelKModelineInsertionTest extends AbstractCamelLanguageServerTest {
     }
 
     @Test
+    void testDontProvideInsertionOnXMLFileWithModelineAfterCursorPosition() throws Exception {
+        FileType type = FileType.XML;
+        String contents = "\n<!-- camel-k: -->\n";
+        Position position = new Position(0,0);
+
+        List<CompletionItem> completionItems = getCompletionsFor(type, contents, position);
+
+        assertNoCompletionsAvailable(completionItems);
+    }
+
+    @Test
     void testDontProvideInsertionOnYAMLFileWithModeline() throws Exception {
         FileType type = FileType.YAML;
         String contents = "# camel-k:\n";
@@ -259,10 +270,32 @@ class CamelKModelineInsertionTest extends AbstractCamelLanguageServerTest {
     }
 
     @Test
+    void testDontProvideInsertionOnYAMLFileWithModelineAfterCursorPosition() throws Exception {
+        FileType type = FileType.YAML;
+        String contents = "\n# camel-k:\n";
+        Position position = new Position(0,0);
+
+        List<CompletionItem> completionItems = getCompletionsFor(type, contents, position);
+
+        assertNoCompletionsAvailable(completionItems);
+    }
+
+    @Test
     void testDontProvideInsertionOnJavaFileWithModeline() throws Exception {
         FileType type = FileType.Java;
         String contents = "// camel-k:\n";
         Position position = beginningOfLastLine(contents);
+
+        List<CompletionItem> completionItems = getCompletionsFor(type, contents, position);
+
+        assertNoCompletionsAvailable(completionItems);
+    }
+
+    @Test
+    void testDontProvideInsertionOnJavaFileWithModelineAfterCursorPosition() throws Exception {
+        FileType type = FileType.Java;
+        String contents = "\n// camel-k:\n";
+        Position position = new Position(0,0);
 
         List<CompletionItem> completionItems = getCompletionsFor(type, contents, position);
 
