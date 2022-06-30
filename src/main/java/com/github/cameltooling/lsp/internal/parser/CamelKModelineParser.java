@@ -39,5 +39,4 @@ public class CamelKModelineParser {
 		return retrieveModelineCamelKStart(new ParserFileHelperUtil().getLine(textDocumentItem, line)) != null;
 	}
 
-
 }
