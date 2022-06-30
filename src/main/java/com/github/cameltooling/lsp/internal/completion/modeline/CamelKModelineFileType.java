@@ -44,9 +44,9 @@ public enum CamelKModelineFileType {
             "Read more: https://camel.apache.org/camel-k/1.9.x/cli/modeline.html"),
     YAML(
             List.of(".camelk.yaml",".camelk.yml"),
-            "# camel-k",
+            "# camel-k:",
             CamelKModelineFileType::textIsFullyCommentedYAML,
-            "# camel-k",
+            "# camel-k:",
             "Read more: https://camel.apache.org/camel-k/1.9.x/cli/modeline.html");
 
     public final List<String> correspondingExtensions;
