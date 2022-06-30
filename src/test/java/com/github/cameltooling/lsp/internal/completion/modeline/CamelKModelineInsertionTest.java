@@ -13,6 +13,9 @@ import java.util.concurrent.CompletableFuture;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+/**
+ @author joshiraez
+ */
 class CamelKModelineInsertionTest extends AbstractCamelLanguageServerTest {
 
     /** EMPTY FILE TESTS **/
