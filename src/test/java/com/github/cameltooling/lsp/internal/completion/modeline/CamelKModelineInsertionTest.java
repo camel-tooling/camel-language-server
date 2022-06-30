@@ -345,8 +345,8 @@ class CamelKModelineInsertionTest extends AbstractCamelLanguageServerTest {
 
     private enum FileType {
         XML(".camelk.xml", "<!-- camel-k: -->", "Read more: https://camel.apache.org/camel-k/1.9.x/cli/modeline.html"),
-        Java(".java", "// camel-k:", "Read more: https://camel.apache.org/camel-k/1.9.x/cli/modeline.html"),
-        YAML(".camelk.yaml", "# camel-k", "Read more: https://camel.apache.org/camel-k/1.9.x/cli/modeline.html");
+        Java(".java", "// camel-k: ", "Read more: https://camel.apache.org/camel-k/1.9.x/cli/modeline.html"),
+        YAML(".camelk.yaml", "# camel-k: ", "Read more: https://camel.apache.org/camel-k/1.9.x/cli/modeline.html");
 
         public final String extension;
         public final CompletionItem completion;
