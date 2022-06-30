@@ -25,7 +25,7 @@ import java.util.function.Function;
 import java.util.regex.Pattern;
 
 /**
- * Provided configuration utils associated to File Types when handling modeline
+ * Provides configuration utils associated to File Types while handling camel-k modeline
  *
  * @author joshiraez
  */
