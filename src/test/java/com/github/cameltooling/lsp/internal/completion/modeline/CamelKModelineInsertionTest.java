@@ -339,7 +339,7 @@ class CamelKModelineInsertionTest extends AbstractCamelLanguageServerTest {
     }
 
     private void assertNoCompletionsAvailable(List<CompletionItem> completionItems) {
-        assertThat(completionItems).hasSize(0);
+        assertThat(completionItems).isEmpty();
     }
 
     private void assertCompletionItemsHasExpectedCompletionForType(FileType type, List<CompletionItem> completionItems) {
