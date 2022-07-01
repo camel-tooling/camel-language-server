@@ -32,50 +32,50 @@ import java.util.stream.IntStream;
  */
 public class CamelKModelineInsertionParser {
 
-    private final TextDocumentItem document;
+	private final TextDocumentItem document;
 
-    public CamelKModelineInsertionParser(TextDocumentItem document) {
-        this.document = document;
-    }
+	public CamelKModelineInsertionParser(TextDocumentItem document) {
+		this.document = document;
+	}
 
-    public boolean canPutCamelKModeline(Position position) {
-        int currentLine = position.getLine();
+	public boolean canPutCamelKModeline(Position position) {
+		int currentLine = position.getLine();
 
-        return isCamelKFile()
-                && lineIsEmpty(currentLine)
-                && noModelineInsertedAlready()
-                && previousLinesAreCommentsOrEmpty(currentLine);
-    }
+		return isCamelKFile()
+				&& lineIsEmpty(currentLine)
+				&& noModelineInsertedAlready()
+				&& previousLinesAreCommentsOrEmpty(currentLine);
+	}
 
-    private boolean isCamelKFile() {
-        return CamelKModelineFileType.getFileTypeCorrespondingToUri(document.getUri()).isPresent();
-    }
+	private boolean isCamelKFile() {
+		return CamelKModelineFileType.getFileTypeCorrespondingToUri(document.getUri()).isPresent();
+	}
 
-    private boolean lineIsEmpty(int line) {
-        return new ParserFileHelperUtil().getLine(document, line).isBlank();
-    }
+	private boolean lineIsEmpty(int line) {
+		return new ParserFileHelperUtil().getLine(document, line).isBlank();
+	}
 
-    private boolean noModelineInsertedAlready() {
-        String modeline = CamelKModelineFileType.getFileTypeCorrespondingToUri(document.getUri()).orElseThrow()
-                .getModeline();
+	private boolean noModelineInsertedAlready() {
+		String modeline = CamelKModelineFileType.getFileTypeCorrespondingToUri(document.getUri()).orElseThrow()
+				.getModeline();
 
-        return !Arrays.stream(document.getText().split("\n")).anyMatch(line -> line.startsWith(modeline));
-    }
+		return !Arrays.stream(document.getText().split("\n")).anyMatch(line -> line.startsWith(modeline));
+	}
 
-    private boolean previousLinesAreCommentsOrEmpty(int line) {
-        String textBeforeLine = IntStream.range(0, line).boxed()
-                .map(currLine -> new ParserFileHelperUtil().getLine(document,currLine))
-                .collect(Collectors.joining("\n"));
+	private boolean previousLinesAreCommentsOrEmpty(int line) {
+		String textBeforeLine = IntStream.range(0, line).boxed()
+				.map(currLine -> new ParserFileHelperUtil().getLine(document,currLine))
+				.collect(Collectors.joining("\n"));
 
-        return textIsFullOfRegex(textBeforeLine,
-                CamelKModelineFileType.getFileTypeCorrespondingToUri(document.getUri()).orElseThrow()
-                        .getCommentRegexSupplier().get());
-    }
-    private boolean textIsFullOfRegex(String text, Pattern regex) {
-        //Add an extra carriage return at the end for correct matching with line comments
-        String textWithExtraCarriageReturn = text + "\n";
-        String textWithoutComments = textWithExtraCarriageReturn.replaceAll(regex.pattern(), "");
+		return textIsFullOfRegex(textBeforeLine,
+				CamelKModelineFileType.getFileTypeCorrespondingToUri(document.getUri()).orElseThrow()
+						.getCommentRegexSupplier().get());
+	}
+	private boolean textIsFullOfRegex(String text, Pattern regex) {
+		//Add an extra carriage return at the end for correct matching with line comments
+		String textWithExtraCarriageReturn = text + "\n";
+		String textWithoutComments = textWithExtraCarriageReturn.replaceAll(regex.pattern(), "");
 
-        return textWithoutComments.isBlank();
-    }
+		return textWithoutComments.isBlank();
+	}
 }
