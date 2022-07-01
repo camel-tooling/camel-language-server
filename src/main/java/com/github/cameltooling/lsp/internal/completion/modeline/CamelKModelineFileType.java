@@ -36,7 +36,7 @@ public enum CamelKModelineFileType {
             CamelKModelineFileType::xmlCommentPattern,
             "<!-- camel-k: -->",
             "Read more: https://camel.apache.org/camel-k/1.9.x/cli/modeline.html"),
-    JAVA(
+    Java(
             List.of(".java"),
             "// camel-k:",
             CamelKModelineFileType::javaCommentPattern,
@@ -95,7 +95,7 @@ public enum CamelKModelineFileType {
         //Line Comments: Remove from // to \n
         //Block Comments: Remove from /* to */. Newlines have to be explicitly added
         Pattern lineComment = Pattern.compile("\\/\\/.*\\n");
-        Pattern blockComment = Pattern.compile("\\/\\*(.|\\n)*\\*\\/");
+        Pattern blockComment = Pattern.compile("\\/\\*(?s).*\\*\\/");
         return Pattern.compile(String.format("(%s|%s)",lineComment.pattern(), blockComment.pattern()));
     }
 }
