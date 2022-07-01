@@ -20,6 +20,7 @@ import org.eclipse.lsp4j.CompletionItem;
 import org.eclipse.lsp4j.TextDocumentItem;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 /**
@@ -37,12 +38,14 @@ public class CamelKModelineInsertionProcessor {
 
 	public CompletableFuture<List<CompletionItem>> getCompletions() {
 		return CompletableFuture.completedFuture(
-				List.of(
-						getCompletionCorrespondingToDocument()
-				));
+				getCompletionCorrespondingToDocument().map(
+						List::of
+				).orElse(List.of())
+		);
 	}
 
-	private CompletionItem getCompletionCorrespondingToDocument() {
-		return CamelKModelineFileType.getFileTypeCorrespondingToUri(textDocumentItem.getUri()).orElseThrow().getCompletion();
+	private Optional<CompletionItem> getCompletionCorrespondingToDocument() {
+		return CamelKModelineFileType.getFileTypeCorrespondingToUri(textDocumentItem.getUri())
+				.map(CamelKModelineFileType::getCompletion);
 	}
 }
