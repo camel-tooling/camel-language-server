@@ -43,6 +43,6 @@ public class CamelKModelineInsertionProcessor {
     }
 
     private CompletionItem getCompletionCorrespondingToDocument() {
-        return CamelKModelineFileType.getFileTypeCorrespondingToUri(textDocumentItem.getUri()).orElseThrow().completion;
+        return CamelKModelineFileType.getFileTypeCorrespondingToUri(textDocumentItem.getUri()).orElseThrow().getCompletion();
     }
 }
