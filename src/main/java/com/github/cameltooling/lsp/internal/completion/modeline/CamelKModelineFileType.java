@@ -49,11 +49,10 @@ public enum CamelKModelineFileType {
             "# camel-k: ",
             "Read more: https://camel.apache.org/camel-k/1.9.x/cli/modeline.html");
 
-    public final List<String> correspondingExtensions;
-    public final String modeline;
-    public final Supplier<Pattern> commentRegexSupplier;
-
-    public final CompletionItem completion;
+    private final List<String> correspondingExtensions;
+    private final String modeline;
+    private final Supplier<Pattern> commentRegexSupplier;
+    private final CompletionItem completion;
 
     CamelKModelineFileType(List<String> correspondingExtensions,
                            String modeline,
@@ -66,6 +65,22 @@ public enum CamelKModelineFileType {
         this.completion = getCompletionItem(completionLabel, completionDocumentation);
     }
 
+    public List<String> getCorrespondingExtensions() {
+        return correspondingExtensions;
+    }
+
+    public String getModeline() {
+        return modeline;
+    }
+
+    public Supplier<Pattern> getCommentRegexSupplier() {
+        return commentRegexSupplier;
+    }
+
+    public CompletionItem getCompletion() {
+        return completion;
+    }
+
     public static CompletionItem getCompletionItem(String label, String documentation) {
         CompletionItem completion = new CompletionItem(label);
         completion.setDocumentation(documentation);
@@ -76,7 +91,7 @@ public enum CamelKModelineFileType {
     public static Optional<CamelKModelineFileType> getFileTypeCorrespondingToUri(String uri) {
         return List.of(CamelKModelineFileType.values()).stream()
                 .filter(type ->
-                        type.correspondingExtensions.stream().anyMatch(uri::endsWith)
+                        type.getCorrespondingExtensions().stream().anyMatch(uri::endsWith)
                 )
                 .findFirst();
     }

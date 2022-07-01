@@ -57,7 +57,7 @@ public class CamelKModelineInsertionParser {
 
     private boolean noModelineInsertedAlready() {
         String modeline = CamelKModelineFileType.getFileTypeCorrespondingToUri(document.getUri()).orElseThrow()
-                .modeline;
+                .getModeline();
 
         return !Arrays.stream(document.getText().split("\n")).anyMatch(line -> line.startsWith(modeline));
     }
@@ -69,7 +69,7 @@ public class CamelKModelineInsertionParser {
 
         return textIsFullOfRegex(textBeforeLine,
                 CamelKModelineFileType.getFileTypeCorrespondingToUri(document.getUri()).orElseThrow()
-                .commentRegexSupplier.get());
+                        .getCommentRegexSupplier().get());
     }
     private boolean textIsFullOfRegex(String text, Pattern regex) {
         //Add an extra carriage return at the end for correct matching with line comments
