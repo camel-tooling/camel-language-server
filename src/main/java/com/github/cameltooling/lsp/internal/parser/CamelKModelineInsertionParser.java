@@ -59,7 +59,7 @@ public class CamelKModelineInsertionParser {
 		String modeline = CamelKModelineFileType.getFileTypeCorrespondingToUri(document.getUri()).orElseThrow()
 				.getModeline();
 
-		return !Arrays.stream(document.getText().split("\n")).anyMatch(line -> line.startsWith(modeline));
+		return Arrays.stream(document.getText().split("\n")).noneMatch(line -> line.startsWith(modeline));
 	}
 
 	private boolean previousLinesAreCommentsOrEmpty(int line) {
