@@ -21,6 +21,7 @@ import org.eclipse.lsp4j.Position;
 import org.eclipse.lsp4j.TextDocumentItem;
 
 import java.util.Arrays;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -66,7 +67,15 @@ public class CamelKModelineInsertionParser {
                 .map(currLine -> new ParserFileHelperUtil().getLine(document,currLine))
                 .collect(Collectors.joining("\n"));
 
-        return CamelKModelineFileType.getFileTypeCorrespondingToUri(document.getUri()).orElseThrow()
-                .checkTextIsCommentsDelegate.apply(textBeforeLine);
+        return textIsFullOfRegex(textBeforeLine,
+                CamelKModelineFileType.getFileTypeCorrespondingToUri(document.getUri()).orElseThrow()
+                .commentRegexSupplier.get());
+    }
+    private boolean textIsFullOfRegex(String text, Pattern regex) {
+        //Add an extra carriage return at the end for correct matching with line comments
+        String textWithExtraCarriageReturn = text + "\n";
+        String textWithoutComments = textWithExtraCarriageReturn.replaceAll(regex.pattern(), "");
+
+        return textWithoutComments.isBlank();
     }
 }
