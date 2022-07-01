@@ -29,20 +29,20 @@ import java.util.concurrent.CompletableFuture;
  */
 public class CamelKModelineInsertionProcessor {
 
-    private final TextDocumentItem textDocumentItem;
+	private final TextDocumentItem textDocumentItem;
 
-    public CamelKModelineInsertionProcessor(TextDocumentItem textDocumentItem) {
-        this.textDocumentItem = textDocumentItem;
-    }
+	public CamelKModelineInsertionProcessor(TextDocumentItem textDocumentItem) {
+		this.textDocumentItem = textDocumentItem;
+	}
 
-    public CompletableFuture<List<CompletionItem>> getCompletions() {
-        return CompletableFuture.completedFuture(
-                List.of(
-                        getCompletionCorrespondingToDocument()
-                ));
-    }
+	public CompletableFuture<List<CompletionItem>> getCompletions() {
+		return CompletableFuture.completedFuture(
+				List.of(
+						getCompletionCorrespondingToDocument()
+				));
+	}
 
-    private CompletionItem getCompletionCorrespondingToDocument() {
-        return CamelKModelineFileType.getFileTypeCorrespondingToUri(textDocumentItem.getUri()).orElseThrow().getCompletion();
-    }
+	private CompletionItem getCompletionCorrespondingToDocument() {
+		return CamelKModelineFileType.getFileTypeCorrespondingToUri(textDocumentItem.getUri()).orElseThrow().getCompletion();
+	}
 }
