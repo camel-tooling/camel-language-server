@@ -64,8 +64,9 @@ class CamelKModelineInsertionTest extends AbstractCamelLanguageServerTest {
             CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = getCompletionFor(camelLanguageServer, position);
             List<CompletionItem> completionItems =  completions.get().getLeft();
 
-            assertThat(completionItems).hasSize(1);
-            assertThat(completionItems).contains(FileType.YAML.completion);
+            assertThat(completionItems)
+                    .hasSize(1)
+                    .contains(FileType.YAML.completion);
         }
 
         @Test
@@ -342,8 +343,9 @@ class CamelKModelineInsertionTest extends AbstractCamelLanguageServerTest {
     }
 
     private void assertCompletionItemsHasExpectedCompletionForType(FileType type, List<CompletionItem> completionItems) {
-        assertThat(completionItems).hasSize(1);
-        checkInsertionCompletionAvailableForType(completionItems, type);
+        assertThat(completionItems)
+                .hasSize(1)
+                .contains(type.completion);
     }
 
     private List<CompletionItem>  getCompletionsFor(FileType type, String contents, Position position) throws Exception {
@@ -352,10 +354,6 @@ class CamelKModelineInsertionTest extends AbstractCamelLanguageServerTest {
         CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = getCompletionFor(camelLanguageServer, position);
 
         return completions.get().getLeft();
-    }
-
-    private void checkInsertionCompletionAvailableForType(List<CompletionItem> completionItems, FileType toAssert) {
-        assertThat(completionItems).contains(toAssert.completion);
     }
 
     private enum FileType {
