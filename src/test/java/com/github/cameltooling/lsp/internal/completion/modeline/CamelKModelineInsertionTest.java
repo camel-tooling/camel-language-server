@@ -349,7 +349,7 @@ class CamelKModelineInsertionTest extends AbstractCamelLanguageServerTest {
     }
 
     private List<CompletionItem>  getCompletionsFor(FileType type, String contents, Position position) throws Exception {
-        CamelLanguageServer camelLanguageServer = initializeLanguageServer(contents, type.extension);
+        CamelLanguageServer camelLanguageServer = initializeLanguageServer(contents, type.getExtension());
 
         CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = getCompletionFor(camelLanguageServer, position);
 
@@ -361,11 +361,11 @@ class CamelKModelineInsertionTest extends AbstractCamelLanguageServerTest {
         Java(".java", "// camel-k: ", "Read more: https://camel.apache.org/camel-k/1.9.x/cli/modeline.html"),
         YAML(".camelk.yaml", "# camel-k: ", "Read more: https://camel.apache.org/camel-k/1.9.x/cli/modeline.html");
 
-        public final String extension;
-        public final CompletionItem completion;
+        private final String extension;
+        private final CompletionItem completion;
 
 
-        private FileType(String fileExtension, String expectedLabel, String expectedDocumentation) {
+        FileType(String fileExtension, String expectedLabel, String expectedDocumentation) {
             this.extension = fileExtension;
             this.completion = getCompletion(expectedLabel, expectedDocumentation);
         }
@@ -377,5 +377,12 @@ class CamelKModelineInsertionTest extends AbstractCamelLanguageServerTest {
             return completion;
         }
 
+        public String getExtension() {
+            return extension;
+        }
+
+        public CompletionItem getCompletion() {
+            return completion;
+        }
     }
 }
