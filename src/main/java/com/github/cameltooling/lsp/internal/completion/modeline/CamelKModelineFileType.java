@@ -36,7 +36,7 @@ public enum CamelKModelineFileType {
             CamelKModelineFileType::xmlCommentPattern,
             "<!-- camel-k: -->",
             "Read more: https://camel.apache.org/camel-k/1.9.x/cli/modeline.html"),
-    Java(
+    JAVA(
             List.of(".java"),
             "// camel-k:",
             CamelKModelineFileType::javaCommentPattern,
