@@ -50,7 +50,7 @@
 		<junit.version>5.8.2</junit.version>
 		<assertj.version>3.23.1</assertj.version>
 		<jgit.version>6.2.0.202206071550-r</jgit.version>
-		<camel.version>3.17.0</camel.version>
+		<camel.version>3.18.0</camel.version>
 		<camel.kafka.connector.version>0.11.0</camel.kafka.connector.version>
 		<camel.kamelet.catalog.version>0.8.1</camel.kamelet.catalog.version>
 		<camel.quarkus.version>2.10.0</camel.quarkus.version>
