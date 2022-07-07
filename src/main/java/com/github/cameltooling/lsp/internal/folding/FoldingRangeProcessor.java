@@ -51,7 +51,7 @@ public class FoldingRangeProcessor {
 				if (parsedJavaFile instanceof JavaClassSource) {
 					JavaClassSource clazz = (JavaClassSource) parsedJavaFile;
 					String absolutePathOfCamelFile = new File(URI.create(textDocumentItem.getUri())).getAbsolutePath();
-					List<CamelNodeDetails> camelNodes = RouteBuilderParser.parseRouteBuilderTree(clazz, "", absolutePathOfCamelFile, true);
+					List<CamelNodeDetails> camelNodes = RouteBuilderParser.parseRouteBuilderTree(clazz, absolutePathOfCamelFile, true);
 					List<FoldingRange> foldingRanges = computeRouteFoldingRanges(textDocumentItem, camelNodes);
 					foldingRanges.addAll(computeChoiceFoldingRanges(textDocumentItem, camelNodes));
 					return CompletableFuture.completedFuture(foldingRanges);

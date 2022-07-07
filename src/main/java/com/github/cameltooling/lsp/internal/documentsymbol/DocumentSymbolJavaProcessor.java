@@ -49,7 +49,7 @@ public class DocumentSymbolJavaProcessor extends AbstractDocumentSymbolProcessor
 			if (parsedJavaFile instanceof JavaClassSource) {
 				JavaClassSource clazz = (JavaClassSource) parsedJavaFile;
 				String absolutePathOfCamelFile = new File(URI.create(textDocumentItem.getUri())).getAbsolutePath();
-				List<CamelNodeDetails> camelNodes = RouteBuilderParser.parseRouteBuilderTree(clazz, "", absolutePathOfCamelFile, true);
+				List<CamelNodeDetails> camelNodes = RouteBuilderParser.parseRouteBuilderTree(clazz, absolutePathOfCamelFile, true);
 				List<CamelEndpointDetails> endpoints = new ArrayList<>();
 				RouteBuilderParser.parseRouteBuilderEndpoints(clazz, "", absolutePathOfCamelFile, endpoints);
 				return createSymbolInformations(camelNodes, endpoints);
