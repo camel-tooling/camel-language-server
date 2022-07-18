@@ -131,7 +131,7 @@ class CamelEndpointUriCompletionTest extends AbstractCamelLanguageServerTest {
 		CamelLanguageServer camelLanguageServer = initializeLanguageServer(textToTest, extension);
 		CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = getCompletionFor(camelLanguageServer, new Position(line, character));
 		List<CompletionItem> items = completions.get().getLeft();
-		assertThat(items.size()).isGreaterThanOrEqualTo(expectedMinResultSetSize);
+		assertThat(items).hasSizeGreaterThanOrEqualTo(expectedMinResultSetSize);
 		if (filterString != null) {
 			for (CompletionItem item : items) {
 				assertThat(item.getLabel()).startsWith(filterString);

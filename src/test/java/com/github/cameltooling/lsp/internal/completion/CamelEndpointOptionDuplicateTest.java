@@ -56,7 +56,7 @@ class CamelEndpointOptionDuplicateTest extends AbstractCamelLanguageServerTest {
 		
 		CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = getCompletionFor(camelLanguageServer, new Position(line, character));
 		List<CompletionItem> items = completions.get().getLeft();
-		assertThat(items.size()).isPositive();
+		assertThat(items).isNotEmpty();
 		if (excludedString != null) {
 			for (CompletionItem item : items) {
 				assertThat(item.getLabel()).doesNotStartWith(excludedString);
