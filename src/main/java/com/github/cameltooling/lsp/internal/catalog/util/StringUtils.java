@@ -57,7 +57,7 @@ public final class StringUtils {
 	/**
 	 * Workaround to https://issues.apache.org/jira/browse/CAMEL-16250
 	 * 
-	 * @param dashedName
+	 * @param dashedName The name of the component in the dashed format.
 	 * @return the camel case named, keeping last dash at end of the name.
 	 * 			It allows to detect when an invalid value is provided with just the dash that it is too much
 	 */

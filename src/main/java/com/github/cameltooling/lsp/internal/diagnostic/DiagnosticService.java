@@ -130,9 +130,9 @@ public abstract class DiagnosticService {
 	/**
 	 * Computing by hand for Camel versions earlier than the version which will contain https://issues.apache.org/jira/browse/CAMEL-12639
 	 * 
-	 * @param fullCamelText
-	 * @param camelEndpointDetails
-	 * @return
+	 * @param fullCamelText The whole file to search in
+	 * @param camelEndpointDetails The Camel URI searched for
+	 * @return the line number of camelEndpointDetails inside fullCamelText
 	 */
 	protected int findLine(String fullCamelText, CamelEndpointDetails camelEndpointDetails) {
 		int currentSearchedLine = 0;
