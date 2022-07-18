@@ -16,8 +16,8 @@
  */
 package com.github.cameltooling.lsp.internal.kubernetes;
 
-import io.fabric8.kubernetes.client.DefaultKubernetesClient;
 import io.fabric8.kubernetes.client.KubernetesClient;
+import io.fabric8.kubernetes.client.KubernetesClientBuilder;
 
 public class KubernetesConfigManager {
 
@@ -37,7 +37,7 @@ public class KubernetesConfigManager {
 	
 	public KubernetesClient getClient() {
 		if(client == null) {
-			client = new DefaultKubernetesClient();
+			client = new KubernetesClientBuilder().build();
 		}
 		return client;
 	}
