@@ -40,7 +40,7 @@ class CamelDeprecationIndicatorInCompletionTest extends AbstractCamelLanguageSer
 		CamelLanguageServer camelLanguageServer = initializeLanguageServer(RouteTextBuilder.createXMLBlueprintRoute("acomponent:deprecated"));
 		CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = getCompletionFor(camelLanguageServer, new Position(0, 15));
 		List<CompletionItem> items = completions.get().getLeft();
-		assertThat(items.size()).isEqualTo(1);
+		assertThat(items).hasSize(1);
 		assertThat(items.get(0).getDeprecated()).isTrue();
 		assertThat(items.get(0).getTags()).contains(CompletionItemTag.Deprecated);
 	}
@@ -50,7 +50,7 @@ class CamelDeprecationIndicatorInCompletionTest extends AbstractCamelLanguageSer
 		CamelLanguageServer camelLanguageServer = initializeLanguageServer(RouteTextBuilder.createXMLBlueprintRoute("acomponent:withsyntax?aparam"));
 		CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = getCompletionFor(camelLanguageServer, new Position(0, 39));
 		List<CompletionItem> items = completions.get().getLeft();
-		assertThat(items.size()).isEqualTo(1);
+		assertThat(items).hasSize(1);
 		assertThat(items.get(0).getDeprecated()).isTrue();
 		assertThat(items.get(0).getTags()).contains(CompletionItemTag.Deprecated);
 	}

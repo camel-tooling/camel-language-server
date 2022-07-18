@@ -441,7 +441,7 @@ class CamelLanguageServerTest extends AbstractCamelLanguageServerTest {
 				"</camelContext>");
 		
 		CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = getCompletionFor(camelLanguageServer, new Position(1, 23));
-		assertThat(completions.get().getLeft().size()).isGreaterThan(10);
+		assertThat(completions.get().getLeft()).hasSizeGreaterThan(10);
 	}
 	
 	@Test
