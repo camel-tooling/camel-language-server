@@ -35,24 +35,25 @@ public enum CamelKModelineFileType {
             "<!-- camel-k:",
             CamelKModelineFileType::xmlCommentPattern,
             "<!-- camel-k: -->",
-            "Read more: https://camel.apache.org/camel-k/1.9.x/cli/modeline.html"),
+            CamelKModelineFileType.DOCUMENTATION),
     Java(
             List.of(".java"),
             "// camel-k:",
             CamelKModelineFileType::javaCommentPattern,
             "// camel-k: ",
-            "Read more: https://camel.apache.org/camel-k/1.9.x/cli/modeline.html"),
+            CamelKModelineFileType.DOCUMENTATION),
     YAML(
             List.of(".camelk.yaml",".camelk.yml"),
             "# camel-k:",
             CamelKModelineFileType::yamlCommentPattern,
             "# camel-k: ",
-            "Read more: https://camel.apache.org/camel-k/1.9.x/cli/modeline.html");
+            CamelKModelineFileType.DOCUMENTATION);
 
     private final List<String> correspondingExtensions;
     private final String modeline;
     private final Supplier<Pattern> commentRegexSupplier;
     private final CompletionItem completion;
+    private static final String DOCUMENTATION = "Read more: https://camel.apache.org/camel-k/1.9.x/cli/modeline.html";
 
     CamelKModelineFileType(List<String> correspondingExtensions,
                            String modeline,
