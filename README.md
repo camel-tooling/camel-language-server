@@ -81,9 +81,13 @@ It is possible to specify a specific version of the Camel catalog. This can be p
 }
 ```
 
-To use Red Hat Integration productized version, the Red Hat Maven GA repository needs to be configured on the host running the Camel Language Server. To configure it, follow these steps:
+Please note that the first time a version is used, it can take several seconds/minutes to have it available depending on the time to download the dependencies in the background.
+
+When using a Red Hat productized version which contains `redhat` in the version, the Maven Red Hat repository is automatically added.
+
+To use other versions not available on Maven Central, additional repositories need to be configured on the host running the Camel Language Server. To configure it, follow these steps:
 * Copy the [default grape config file corresponding to the version used by Camel](https://github.com/apache/groovy/blob/GROOVY_2_5_8/src/resources/groovy/grape/defaultGrapeConfig.xml) into _~/.groovy_ folder and call it _grapeConfig.xml_
-* Add `<ibiblio name="fuse" m2compatible="true" root="https://maven.repository.redhat.com/ga/"/>` inside the chain node
+* Add `<ibiblio name="fuse" m2compatible="true" root="<https://<urlofYourMavenRepository>"/>` inside the chain node
 
 For more information, check the [Grape official documentation](http://docs.groovy-lang.org/latest/html/documentation/grape.html#Grape-CustomizeIvysettings).
 

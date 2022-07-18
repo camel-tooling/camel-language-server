@@ -84,6 +84,28 @@ class CamelCatalogVersionTest extends AbstractCamelLanguageServerTest {
 		basicCompletionCheck();
 	}
 	
+	@Test
+	void testProductizedCatalog2x() throws Exception {
+		camelCatalogVersion = "2.23.2.fuse-7_11_0-00037-redhat-00001";
+		
+		CamelLanguageServer camelLanguageServer = basicCompletionCheckBefore3_3();
+		
+		checkLoadedCamelCatalogVersion(camelLanguageServer, camelCatalogVersion);
+	}
+	
+	@Test
+	void testProductizedCatalog3x() throws Exception {
+		camelCatalogVersion = "3.11.5.fuse-800012-redhat-00004";
+		
+		CamelLanguageServer camelLanguageServer = basicCompletionCheckFor3_11_5();
+		
+		checkLoadedCamelCatalogVersion(camelLanguageServer, camelCatalogVersion);
+	}
+
+	private CamelLanguageServer basicCompletionCheckFor3_11_5() throws URISyntaxException, InterruptedException, ExecutionException {
+		return basicCompletionCheck(createExpectedAhcCompletionItemForVersion3_11_5(0, 11, 0, 11));
+	}
+
 	private CamelLanguageServer basicCompletionCheck() throws URISyntaxException, InterruptedException, ExecutionException {
 		return basicCompletionCheck(createExpectedAhcCompletionItem(0, 11, 0, 11));
 	}
