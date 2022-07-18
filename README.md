@@ -16,6 +16,8 @@ and can be used with any editor that supports the protocol. The server utilizes 
 These clients are available:
 * [Eclipse IDE](https://github.com/camel-tooling/camel-lsp-client-eclipse)
 * [VS Code](https://github.com/camel-tooling/camel-lsp-client-vscode)
+* [Emacs](https://github.com/camel-tooling/camel-lsp-client-emacs)
+* [Vim/NeoClide](https://github.com/camel-tooling/coc-camel)
 * [Eclipse Che](https://github.com/eclipse/che/pull/8648)
 * [Atom Editor](https://github.com/camel-tooling/camel-lsp-client-atom)
 
@@ -23,23 +25,21 @@ Manual configuration is possible with:
 * [Sublime Text](https://github.com/camel-tooling/camel-lsp-client-sublime)
 * [CodeMirror](https://github.com/camel-tooling/camel-lsp-client-codemirror)
 
-Help is welcome to provide more client implementations, especially for:
-* [Emacs](https://github.com/camel-tooling/camel-lsp-client-emacs)
-* [Eclipse Theia](https://github.com/camel-tooling/camel-lsp-client-theia)
+Help is welcome to provide more client implementations. You can pick from [this list](https://microsoft.github.io/language-server-protocol/implementors/tools/).
 
 ## Features
 
-### Code completion for Camel URI with XML DSL
+### Code completion for Camel URI
 * Completion for Camel components ![Completion for Camel components](./images/completionComponent.png "Completion for Camel components")
 * Completion for Camel attributes ![Completion for Camel attributes](./images/completionAttribute.png "Completion for Camel attributes")
 * Completion for Camel attributes value ![Completion for Camel attributes value](./images/completionAttributeValueForChoice.png "Completion for Camel attributes value")
 
-### Hover on Camel URI with XML DSL
+### Hover on Camel URI
 
 On hover, the documentation of the Camel component is available.
 ![Hover on Camel components](./images/hoverComponent.png "Hover on Camel components")
 
-### Diagnostics (a.k.a. Validation) on Camel URI with XML DSL
+### Diagnostics (a.k.a. Validation) on Camel URI
 
 On save, diagnostics on Camel URIs are updated:
 ![Diagnostic on Camel URI](./images/diagnostic.png "Diagnostic on Camel URI")
