@@ -103,6 +103,14 @@ public abstract class AbstractCamelLanguageServerTest {
 		return expectedAhcCompletioncompletionItem;
 	}
 	
+	protected CompletionItem createExpectedAhcCompletionItemForVersion3_11_5(int lineStart, int characterStart, int lineEnd, int characterEnd) {
+		CompletionItem expectedAhcCompletioncompletionItem = new CompletionItem("ahc:httpUri");
+		expectedAhcCompletioncompletionItem.setDocumentation(AHC_DOCUMENTATION);
+		expectedAhcCompletioncompletionItem.setDeprecated(false);
+		expectedAhcCompletioncompletionItem.setTextEdit(Either.forLeft(new TextEdit(new Range(new Position(lineStart, characterStart), new Position(lineEnd, characterEnd)), "ahc:httpUri")));
+		return expectedAhcCompletioncompletionItem;
+	}
+	
 	protected CompletionItem createExpectedAhcCompletionItemForVersionPriorTo33(int lineStart, int characterStart, int lineEnd, int characterEnd) {
 		CompletionItem expectedAhcCompletioncompletionItem = createExpectedAhcCompletionItem(lineStart, characterStart, lineEnd, characterEnd);
 		expectedAhcCompletioncompletionItem.setDocumentation(AHC_DOCUMENTATION_BEFORE_3_3);

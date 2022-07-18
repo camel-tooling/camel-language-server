@@ -142,7 +142,12 @@ public class CamelTextDocumentService implements TextDocumentService {
 
 	private void updateCatalogVersion(String camelVersion, DefaultCamelCatalog catalog) {
 		if (camelVersion != null && !camelVersion.isEmpty()) {
-			catalog.setVersionManager(new MavenVersionManager());
+			MavenVersionManager versionManager = new MavenVersionManager();
+			if (camelVersion.contains("redhat")) {
+				versionManager.addMavenRepository("central", "https://repo1.maven.org/maven2/");
+				versionManager.addMavenRepository("maven.redhat.ga", "https://maven.repository.redhat.com/ga/");
+			}
+			catalog.setVersionManager(versionManager);
 			if (!catalog.loadVersion(camelVersion)) {
 				LOGGER.warn("Cannot load Camel catalog with version {}", camelVersion);
 			}
