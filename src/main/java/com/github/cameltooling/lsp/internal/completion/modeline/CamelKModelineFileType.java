@@ -36,7 +36,7 @@ public enum CamelKModelineFileType {
             CamelKModelineFileType::xmlCommentPattern,
             "<!-- camel-k: -->",
             CamelKModelineFileType.DOCUMENTATION),
-    Java(
+    JAVA(
             List.of(".java"),
             "// camel-k:",
             CamelKModelineFileType::javaCommentPattern,
