@@ -34,7 +34,7 @@ class CamelKModelineInsertionTest extends AbstractCamelLanguageServerTest {
 
 		@Test
 		void testProvideInsertionOnEmptyJavaFile() throws Exception {
-			FileType type = FileType.Java;
+			FileType type = FileType.JAVA;
 			String contents = "";
 			Position position = beginningOfLastLine(contents);
 
@@ -70,7 +70,7 @@ class CamelKModelineInsertionTest extends AbstractCamelLanguageServerTest {
 
 		@Test
 		void testInsertionOnLineWithSpacesOrTabs() throws Exception {
-			FileType type = FileType.Java;
+			FileType type = FileType.JAVA;
 			String contents = "\t   \t \t";
 			Position position = beginningOfLastLine(contents);
 
@@ -81,7 +81,7 @@ class CamelKModelineInsertionTest extends AbstractCamelLanguageServerTest {
 
 		@Test
 		void testNoInsertionOnLineWithContents() throws Exception {
-			FileType type = FileType.Java;
+			FileType type = FileType.JAVA;
 			String contents = "//example";
 			Position position = beginningOfLastLine(contents);
 
@@ -181,7 +181,7 @@ class CamelKModelineInsertionTest extends AbstractCamelLanguageServerTest {
 		class JavaTest {
 			@Test
 			void testProvideInsertionOnLineCommentedJavaFile() throws Exception {
-				FileType type = FileType.Java;
+				FileType type = FileType.JAVA;
 				String contents = "// Example\n";
 				Position position = beginningOfLastLine(contents);
 
@@ -192,7 +192,7 @@ class CamelKModelineInsertionTest extends AbstractCamelLanguageServerTest {
 
 			@Test
 			void testProvideInsertionOnMultipleLineCommentedJavaFile() throws Exception {
-				FileType type = FileType.Java;
+				FileType type = FileType.JAVA;
 				String contents = "// Example\n \n //Example //Example \n //EEExample \n";
 				Position position = beginningOfLastLine(contents);
 
@@ -203,7 +203,7 @@ class CamelKModelineInsertionTest extends AbstractCamelLanguageServerTest {
 
 			@Test
 			void testProvideInsertionOnBlockCommentedJavaFile() throws Exception {
-				FileType type = FileType.Java;
+				FileType type = FileType.JAVA;
 				String contents = "/* Example */\n";
 				Position position = beginningOfLastLine(contents);
 
@@ -214,7 +214,7 @@ class CamelKModelineInsertionTest extends AbstractCamelLanguageServerTest {
 
 			@Test
 			void testProvideInsertionOnMultipleBlockCommentedJavaFile() throws Exception {
-				FileType type = FileType.Java;
+				FileType type = FileType.JAVA;
 				String contents = "/* Example\n \n Example */ /*Example \n EEExample */ \n";
 				Position position = beginningOfLastLine(contents);
 
@@ -225,7 +225,7 @@ class CamelKModelineInsertionTest extends AbstractCamelLanguageServerTest {
 
 			@Test
 			void testProvideInsertionOnMixCommentedJavaFile() throws Exception {
-				FileType type = FileType.Java;
+				FileType type = FileType.JAVA;
 				String contents = "/* Example\n \n Example */ /*Example \n //EEExample */ \n";
 				Position position = beginningOfLastLine(contents);
 
@@ -236,7 +236,7 @@ class CamelKModelineInsertionTest extends AbstractCamelLanguageServerTest {
 
 			@Test
 			void testDontProvideInsertionIfExtraTextJava() throws Exception {
-				FileType type = FileType.Java;
+				FileType type = FileType.JAVA;
 				String contents = "// Example\npublic class CamelExample {\n";
 				Position position = beginningOfLastLine(contents);
 
@@ -295,7 +295,7 @@ class CamelKModelineInsertionTest extends AbstractCamelLanguageServerTest {
 
 		@Test
 		void testDontProvideInsertionOnJavaFileWithModeline() throws Exception {
-			FileType type = FileType.Java;
+			FileType type = FileType.JAVA;
 			String contents = "// camel-k:\n";
 			Position position = beginningOfLastLine(contents);
 
@@ -306,7 +306,7 @@ class CamelKModelineInsertionTest extends AbstractCamelLanguageServerTest {
 
 		@Test
 		void testDontProvideInsertionOnJavaFileWithModelineAfterCursorPosition() throws Exception {
-			FileType type = FileType.Java;
+			FileType type = FileType.JAVA;
 			String contents = "\n// camel-k:\n";
 			Position position = new Position(0, 0);
 
@@ -320,7 +320,7 @@ class CamelKModelineInsertionTest extends AbstractCamelLanguageServerTest {
 	class MidFilePositionTest {
 		@Test
 		void testProvideInsertionIfCursorBetweenCommentsAndStartOfCode() throws Exception {
-			FileType type = FileType.Java;
+			FileType type = FileType.JAVA;
 			String contents = "// Example\n\npublic class CamelExample {\n";
 			Position position = new Position(1, 0);
 
@@ -356,7 +356,7 @@ class CamelKModelineInsertionTest extends AbstractCamelLanguageServerTest {
 
 	private enum FileType {
 		XML(".camelk.xml", "<!-- camel-k: -->", "Read more: https://camel.apache.org/camel-k/1.9.x/cli/modeline.html"),
-		Java(".java", "// camel-k: ", "Read more: https://camel.apache.org/camel-k/1.9.x/cli/modeline.html"),
+		JAVA(".java", "// camel-k: ", "Read more: https://camel.apache.org/camel-k/1.9.x/cli/modeline.html"),
 		YAML(".camelk.yaml", "# camel-k: ", "Read more: https://camel.apache.org/camel-k/1.9.x/cli/modeline.html");
 
 		private final String extension;
