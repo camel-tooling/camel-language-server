@@ -65,7 +65,7 @@ class CamelKModelineInsertionTest extends AbstractCamelLanguageServerTest {
 					camelLanguageServer, position);
 			List<CompletionItem> completionItems = completions.get().getLeft();
 
-			assertThat(completionItems).hasSize(1).contains(FileType.YAML.completion);
+			assertThat(completionItems).hasSize(1).contains(FileType.YAML.getCompletion());
 		}
 
 		@Test
@@ -342,7 +342,7 @@ class CamelKModelineInsertionTest extends AbstractCamelLanguageServerTest {
 
 	private void assertCompletionItemsHasExpectedCompletionForType(FileType type,
 			List<CompletionItem> completionItems) {
-		assertThat(completionItems).hasSize(1).contains(type.completion);
+		assertThat(completionItems).hasSize(1).contains(type.getCompletion());
 	}
 
 	private List<CompletionItem> getCompletionsFor(FileType type, String contents, Position position) throws Exception {
