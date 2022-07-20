@@ -8,6 +8,8 @@ import org.eclipse.lsp4j.Position;
 import org.eclipse.lsp4j.jsonrpc.messages.Either;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -96,32 +98,14 @@ class CamelKModelineInsertionTest extends AbstractCamelLanguageServerTest {
 
 		@Nested
 		class XMLTest {
-			@Test
-			void testProvideInsertionOnCommentedXMLFile() throws Exception {
+			@ParameterizedTest
+			@ValueSource(strings = {
+					"<!-- One comment -->\n",
+					"<!-- One comment --><!-- Moar comments -->\n",
+					"<!-- One comment -->\n \n <!-- Moar comments -->\n"
+			})
+			void testProvideInsertionOnCommentedXMLFile(String contents) throws Exception {
 				FileType type = FileType.XML;
-				String contents = "<!-- One comment -->\n";
-				Position position = beginningOfLastLine(contents);
-
-				List<CompletionItem> completionItems = getCompletionsFor(type, contents, position);
-
-				assertCompletionItemsHasExpectedCompletionForType(type, completionItems);
-			}
-
-			@Test
-			void testProvideInsertionOnMultipleCommentsXMLFile() throws Exception {
-				FileType type = FileType.XML;
-				String contents = "<!-- One comment --><!-- Moar comments -->\n";
-				Position position = beginningOfLastLine(contents);
-
-				List<CompletionItem> completionItems = getCompletionsFor(type, contents, position);
-
-				assertCompletionItemsHasExpectedCompletionForType(type, completionItems);
-			}
-
-			@Test
-			void testProvideInsertionOnMultipleCommentsOnMultipleLinesXMLFile() throws Exception {
-				FileType type = FileType.XML;
-				String contents = "<!-- One comment -->\n \n <!-- Moar comments -->\n";
 				Position position = beginningOfLastLine(contents);
 
 				List<CompletionItem> completionItems = getCompletionsFor(type, contents, position);
@@ -179,54 +163,15 @@ class CamelKModelineInsertionTest extends AbstractCamelLanguageServerTest {
 
 		@Nested
 		class JavaTest {
-			@Test
-			void testProvideInsertionOnLineCommentedJavaFile() throws Exception {
+			@ParameterizedTest
+			@ValueSource(strings = {
+					"// Example\n",
+					"// Example\n \n //Example //Example \n //EEExample \n",
+					"/* Example */\n",
+					"/* Example\n \n Example */ /*Example \n EEExample */ \n",
+					"/* Example\n \n Example */ /*Example \n //EEExample */ \n"})
+			void testProvideInsertionOnCommentedFile(String contents) throws Exception {
 				FileType type = FileType.Java;
-				String contents = "// Example\n";
-				Position position = beginningOfLastLine(contents);
-
-				List<CompletionItem> completionItems = getCompletionsFor(type, contents, position);
-
-				assertCompletionItemsHasExpectedCompletionForType(type, completionItems);
-			}
-
-			@Test
-			void testProvideInsertionOnMultipleLineCommentedJavaFile() throws Exception {
-				FileType type = FileType.Java;
-				String contents = "// Example\n \n //Example //Example \n //EEExample \n";
-				Position position = beginningOfLastLine(contents);
-
-				List<CompletionItem> completionItems = getCompletionsFor(type, contents, position);
-
-				assertCompletionItemsHasExpectedCompletionForType(type, completionItems);
-			}
-
-			@Test
-			void testProvideInsertionOnBlockCommentedJavaFile() throws Exception {
-				FileType type = FileType.Java;
-				String contents = "/* Example */\n";
-				Position position = beginningOfLastLine(contents);
-
-				List<CompletionItem> completionItems = getCompletionsFor(type, contents, position);
-
-				assertCompletionItemsHasExpectedCompletionForType(type, completionItems);
-			}
-
-			@Test
-			void testProvideInsertionOnMultipleBlockCommentedJavaFile() throws Exception {
-				FileType type = FileType.Java;
-				String contents = "/* Example\n \n Example */ /*Example \n EEExample */ \n";
-				Position position = beginningOfLastLine(contents);
-
-				List<CompletionItem> completionItems = getCompletionsFor(type, contents, position);
-
-				assertCompletionItemsHasExpectedCompletionForType(type, completionItems);
-			}
-
-			@Test
-			void testProvideInsertionOnMixCommentedJavaFile() throws Exception {
-				FileType type = FileType.Java;
-				String contents = "/* Example\n \n Example */ /*Example \n //EEExample */ \n";
 				Position position = beginningOfLastLine(contents);
 
 				List<CompletionItem> completionItems = getCompletionsFor(type, contents, position);
