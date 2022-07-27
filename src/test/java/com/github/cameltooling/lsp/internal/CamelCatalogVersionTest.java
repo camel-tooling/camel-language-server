@@ -31,6 +31,8 @@ import org.eclipse.lsp4j.DidChangeConfigurationParams;
 import org.eclipse.lsp4j.Position;
 import org.eclipse.lsp4j.jsonrpc.messages.Either;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import com.github.cameltooling.lsp.internal.util.RouteTextBuilder;
 
@@ -38,24 +40,16 @@ class CamelCatalogVersionTest extends AbstractCamelLanguageServerTest {
 
 	private String camelCatalogVersion;
 
-	@Test
-	void testCompletionWithAnotherCatalog2xVersionLoaded() throws Exception {
-		camelCatalogVersion = "2.23.4";
+	@ParameterizedTest
+	@ValueSource(strings = {"2.23.4", "3.0.0-RC3", "2.23.2.fuse-7_11_0-00037-redhat-00001"})
+	void testCompletionWithAnotherOldCatalog(String camelVersion) throws Exception {
+		camelCatalogVersion = camelVersion;
 		
 		CamelLanguageServer camelLanguageServer = basicCompletionCheckBefore3_3();
 		
 		checkLoadedCamelCatalogVersion(camelLanguageServer, camelCatalogVersion);
 	}
-	
-	@Test
-	void testCompletionWithCatalog3xVersionLoaded() throws Exception {
-		camelCatalogVersion = "3.0.0-RC3";
-		
-		CamelLanguageServer camelLanguageServer = basicCompletionCheckBefore3_3();
-		
-		checkLoadedCamelCatalogVersion(camelLanguageServer, camelCatalogVersion);
-	}
-	
+
 	@Test
 	void testUpdateOfConfig() throws Exception {
 		camelCatalogVersion = "3.0.0-RC3";
@@ -83,16 +77,7 @@ class CamelCatalogVersionTest extends AbstractCamelLanguageServerTest {
 		
 		basicCompletionCheck();
 	}
-	
-	@Test
-	void testProductizedCatalog2x() throws Exception {
-		camelCatalogVersion = "2.23.2.fuse-7_11_0-00037-redhat-00001";
-		
-		CamelLanguageServer camelLanguageServer = basicCompletionCheckBefore3_3();
-		
-		checkLoadedCamelCatalogVersion(camelLanguageServer, camelCatalogVersion);
-	}
-	
+
 	@Test
 	void testProductizedCatalog3x() throws Exception {
 		camelCatalogVersion = "3.11.5.fuse-800012-redhat-00004";
