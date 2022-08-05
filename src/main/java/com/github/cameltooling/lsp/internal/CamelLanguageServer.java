@@ -32,6 +32,7 @@ import org.eclipse.lsp4j.TextDocumentSyncKind;
 import org.eclipse.lsp4j.services.LanguageClient;
 import org.eclipse.lsp4j.services.LanguageClientAware;
 import org.eclipse.lsp4j.services.LanguageServer;
+import org.eclipse.lsp4j.services.NotebookDocumentService;
 import org.eclipse.lsp4j.services.WorkspaceService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -144,6 +145,11 @@ public class CamelLanguageServer extends AbstractLanguageServer implements Langu
 
 	public TelemetryManager getTelemetryManager() {
 		return telemetryManager;
+	}
+	
+	@Override
+	public NotebookDocumentService getNotebookDocumentService() {
+		return null;
 	}
 	
 }
