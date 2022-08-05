@@ -44,7 +44,7 @@
 		<maven.compiler.source>11</maven.compiler.source>
 		<maven.compiler.target>11</maven.compiler.target>
 		<jacoco.version>0.8.8</jacoco.version>
-		<lsp4j.version>0.14.0</lsp4j.version>
+		<lsp4j.version>0.15.0</lsp4j.version>
 		<slf4j.version>1.7.36</slf4j.version>
 		<log4j-slf4j.version>2.18.0</log4j-slf4j.version>
 		<junit.version>5.9.0</junit.version>
