@@ -45,7 +45,7 @@ import com.github.cameltooling.lsp.internal.completion.KafkaTopicCompletionProvi
 import com.github.cameltooling.lsp.internal.completion.KameletTemplateIdCompletionProvider;
 import com.github.cameltooling.lsp.internal.settings.SettingsManager;
 
-import io.fabric8.kubernetes.api.model.apiextensions.v1.JSONSchemaProps;
+import io.fabric8.camelk.v1alpha1.JSONSchemaProps;
 
 /**
  * For a Camel URI "timer:timerName?delay=10s", it represents "timerName"

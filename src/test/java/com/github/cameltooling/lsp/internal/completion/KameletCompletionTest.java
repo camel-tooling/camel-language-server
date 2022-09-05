@@ -16,8 +16,8 @@
  */
 package com.github.cameltooling.lsp.internal.completion;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static com.github.cameltooling.lsp.internal.util.RouteTextBuilder.createXMLBlueprintRoute;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.net.URISyntaxException;
 import java.util.List;
@@ -94,7 +94,7 @@ class KameletCompletionTest extends AbstractCamelLanguageServerTest {
 						new TextEdit(
 								new Range(new Position(0, 42), new Position(0, 51)),
 								"secretKey=")));
-		completionItem.setDocumentation("The secret key obtained from AWS");
+		completionItem.setDocumentation("The secret key obtained from AWS.");
 		return completionItem;
 	}
 	
@@ -107,20 +107,20 @@ class KameletCompletionTest extends AbstractCamelLanguageServerTest {
 						new TextEdit(
 								new Range(new Position(0, 42), new Position(0, 42)),
 								"table=")));
-		completionItem.setDocumentation("Name of the DynamoDB table to look at");
+		completionItem.setDocumentation("The name of the DynamoDB table.");
 		return completionItem;
 	}
 	
 	private CompletionItem createPropertyCompletionItemWithDefaultValue() {
-		CompletionItem completionItem = new CompletionItem("iteratorType");
-		completionItem.setInsertText("iteratorType=LATEST");
+		CompletionItem completionItem = new CompletionItem("streamIteratorType");
+		completionItem.setInsertText("streamIteratorType=FROM_LATEST");
 		completionItem.setDetail("string");
 		completionItem.setTextEdit(
 				Either.forLeft(
 						new TextEdit(
 								new Range(new Position(0, 42), new Position(0, 42)),
-								"iteratorType=LATEST")));
-		completionItem.setDocumentation("Defines where in the DynaboDB stream to start getting records. Note that using TRIM_HORIZON can cause a significant delay before the stream has caught up to real-time. if {AT,AFTER}_SEQUENCE_NUMBER are used, then a sequenceNumberProvider MUST be supplied. There are 4 enums and the value can be one of TRIM_HORIZON, LATEST, AT_SEQUENCE_NUMBER, AFTER_SEQUENCE_NUMBER");
+								"streamIteratorType=FROM_LATEST")));
+		completionItem.setDocumentation("Defines where in the DynamoDB stream to start getting records. There are two enums and the value can be one of FROM_LATEST and FROM_START. Note that using FROM_START can cause a significant delay before the stream has caught up to real-time.");
 		return completionItem;
 	}
 
@@ -131,11 +131,11 @@ class KameletCompletionTest extends AbstractCamelLanguageServerTest {
 						new TextEdit(
 								new Range(new Position(0, 19), new Position(0, 19)),
 								"aws-ddb-streams-source")));
-		completionItem.setDocumentation("Receive events from AWS DynamoDB Streams.\n"
+		completionItem.setDocumentation("Receive events from Amazon DynamoDB Streams.\n"
 				+ "\n"
-				+ "Access Key/Secret Key are the basic method for authenticating to the AWS DynamoDB Streams Service. These parameters are optional, because the Kamelet provide also the 'useDefaultCredentialsProvider'.\n"
+				+ "The basic authentication method for the AWS DynamoDB Streams service is to specify an access key and a secret key. These parameters are optional because the Kamelet provides a default credentials provider.\n"
 				+ "\n"
-				+ "When using a default Credentials Provider the AWS DynamoDB Streams client will load the credentials through this provider and won't use the static credential. This is reason for not having the access key and secret key as mandatory parameter for this Kamelet.");
+				+ "If you use the default credentials provider, the DynamoDB Streams client loads the credentials through this provider and doesn't use the basic authentication method.");
 		return completionItem;
 	}
 	
@@ -148,21 +148,15 @@ class KameletCompletionTest extends AbstractCamelLanguageServerTest {
 								"aws-kinesis-sink")));
 		completionItem.setDocumentation("Send data to AWS Kinesis.\n"
 				+ "\n"
-				+ "Access Key/Secret Key are the basic method for authenticating to the AWS Kinesis Service. These parameters are optional, because the Kamelet provide also the 'useDefaultCredentialsProvider'.\n"
+				+ "The basic authentication method for the Kinesis service is to specify an access key and a secret key. These parameters are optional because the Kamelet provides a default credentials provider.\n"
 				+ "\n"
-				+ "When using a default Credentials Provider the Kinesis client will load the credentials through this provider and won't use the static credential. This is reason for not having the access key and secret key as mandatory parameter for this Kamelet.\n"
+				+ "If you use the default credentials provider, the Kinesis client loads the credentials through this provider and doesn't use the basic authentication method.\n"
 				+ "\n"
-				+ "The Kamelet expects the following header:\n"
+				+ "In the header, you can optionally set the `file` / `ce-partition` property to set the Kinesis partition key.\n"
 				+ "\n"
-				+ "- `partition` / `ce-partition`: to set the Kinesis partition key\n"
+				+ "If you do not set the property in the header, the Kamelet uses the exchange ID for the partition key.\n"
 				+ "\n"
-				+ "If the header won't be set the exchange ID will be used.\n"
-				+ "\n"
-				+ "The Kamelet is also able to recognize the following header:\n"
-				+ "\n"
-				+ "- `sequence-number` / `ce-sequencenumber`: to set the Sequence number\n"
-				+ "\n"
-				+ "This header is optional.");
+				+ "You can also set the `sequence-number` / `ce-sequencenumber` property in the header to specify the Sequence number.");
 		return completionItem;
 	}
 		
