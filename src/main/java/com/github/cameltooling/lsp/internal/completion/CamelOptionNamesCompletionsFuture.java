@@ -40,7 +40,8 @@ import com.github.cameltooling.lsp.internal.instancemodel.OptionParamKeyURIInsta
 import com.github.cameltooling.lsp.internal.instancemodel.OptionParamURIInstance;
 import com.github.cameltooling.lsp.internal.instancemodel.PathParamURIInstance;
 
-import io.fabric8.kubernetes.api.model.apiextensions.v1.JSONSchemaProps;
+import io.fabric8.camelk.v1alpha1.JSONSchemaProp;
+import io.fabric8.camelk.v1alpha1.JSONSchemaProps;
 
 public class CamelOptionNamesCompletionsFuture implements Function<CamelCatalog, List<CompletionItem>>  {
 
@@ -101,10 +102,10 @@ public class CamelOptionNamesCompletionsFuture implements Function<CamelCatalog,
 		return kameletProperties;
 	}
 
-	private CompletionItem createCompletionItem(Entry<String, JSONSchemaProps> property) {
+	private CompletionItem createCompletionItem(Entry<String, JSONSchemaProp> property) {
 		String propertyName = property.getKey();
 		CompletionItem completionItem = new CompletionItem(propertyName);
-		JSONSchemaProps schema = property.getValue();
+		JSONSchemaProp schema = property.getValue();
 		String insertText = computeInsertText(propertyName, schema);
 		completionItem.setInsertText(insertText);
 		completionItem.setDocumentation(schema.getDescription());
@@ -116,7 +117,7 @@ public class CamelOptionNamesCompletionsFuture implements Function<CamelCatalog,
 		return completionItem;
 	}
 
-	private String computeInsertText(String propertyName, JSONSchemaProps schema) {
+	private String computeInsertText(String propertyName, JSONSchemaProp schema) {
 		JsonNode defaultValue = schema.getDefault();
 		String insertText = propertyName + "=";
 		if(defaultValue != null && defaultValue.isValueNode()) {

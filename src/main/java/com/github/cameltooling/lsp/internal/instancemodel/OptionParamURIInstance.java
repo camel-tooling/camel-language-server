@@ -30,8 +30,8 @@ import com.github.cameltooling.lsp.internal.catalog.model.EndpointOptionModel;
 import com.github.cameltooling.lsp.internal.catalog.util.KameletsCatalogManager;
 import com.github.cameltooling.lsp.internal.settings.SettingsManager;
 
+import io.fabric8.camelk.v1alpha1.JSONSchemaProp;
 import io.fabric8.camelk.v1alpha1.Kamelet;
-import io.fabric8.kubernetes.api.model.apiextensions.v1.JSONSchemaProps;
 
 /**
  * For a Camel URI "timer:timerName?delay=10s", it represents "delay=10s"
@@ -94,7 +94,7 @@ public class OptionParamURIInstance extends CamelUriElementInstance {
 		if(model != null) {
 			return model.getDescription();
 		} else if (ComponentNameConstants.COMPONENT_NAME_KAMELET.equalsIgnoreCase(componentModel.getScheme())) {
-			JSONSchemaProps prop = getKameletPropertyByKeyName(kameletCatalogManager, keyName);
+			JSONSchemaProp prop = getKameletPropertyByKeyName(kameletCatalogManager, keyName);
 			if (prop != null) {
 				return prop.getDescription();
 			}
@@ -112,7 +112,7 @@ public class OptionParamURIInstance extends CamelUriElementInstance {
 		return camelURIInstance;
 	}
 	
-	private JSONSchemaProps getKameletPropertyByKeyName(KameletsCatalogManager kameletCatalogManager, String keyName) {
+	private JSONSchemaProp getKameletPropertyByKeyName(KameletsCatalogManager kameletCatalogManager, String keyName) {
 		Optional<String> kameletTemplateId = this.getCamelUriInstance().getComponentAndPathUriElementInstance().getPathParams()
 				.stream()
 				.filter(pathParam -> pathParam.getPathParamIndex() == 0)
