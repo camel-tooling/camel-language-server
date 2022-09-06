@@ -37,10 +37,10 @@ import io.fabric8.knative.client.KnativeClient;
 import io.fabric8.knative.eventing.v1beta1.EventTypeBuilder;
 import io.fabric8.knative.messaging.v1.ChannelBuilder;
 import io.fabric8.knative.messaging.v1.InMemoryChannelBuilder;
-import io.fabric8.knative.mock.EnableKnativeMockClient;
 import io.fabric8.knative.serving.v1.ServiceBuilder;
+import io.fabric8.kubernetes.client.server.mock.EnableKubernetesMockClient;
 
-@EnableKnativeMockClient(crud = true)
+@EnableKubernetesMockClient(crud = true)
 class KNativeConnectedCompletionTest extends AbstractCamelLanguageServerTest {
 	
 	private KnativeClient client;
@@ -58,7 +58,7 @@ class KNativeConnectedCompletionTest extends AbstractCamelLanguageServerTest {
 	@Test
 	void testCompletionForChannel() throws Exception {
 		String channelName = "myChannel";
-		client.channels().create(new ChannelBuilder().withNewMetadata().withName(channelName).endMetadata().build());
+		client.channels().resource(new ChannelBuilder().withNewMetadata().withName(channelName).endMetadata().build()).create();
 		String camelUri = "knative:channel/";
 		List<CompletionItem> completions = retrieveCompletions(camelUri);
 		assertThat(completions).hasSize(1);
@@ -68,7 +68,7 @@ class KNativeConnectedCompletionTest extends AbstractCamelLanguageServerTest {
 	@Test
 	void testCompletionForInMemoryChannel() throws Exception {
 		String channelName = "myInMemoryChannel";
-		client.inMemoryChannels().create(new InMemoryChannelBuilder().withNewMetadata().withName(channelName).endMetadata().build());
+		client.inMemoryChannels().resource(new InMemoryChannelBuilder().withNewMetadata().withName(channelName).endMetadata().build()).create();
 		String camelUri = "knative:channel/";
 		List<CompletionItem> completions = retrieveCompletions(camelUri);
 		assertThat(completions).hasSize(1);
@@ -79,7 +79,7 @@ class KNativeConnectedCompletionTest extends AbstractCamelLanguageServerTest {
 	void testCompletionForEvent() throws Exception {
 		String camelUri = "knative:event/";
 		String eventTypeName = "myEventType";
-		client.eventTypes().create(new EventTypeBuilder().withNewMetadata().withName(eventTypeName).endMetadata().build());
+		client.eventTypes().resource(new EventTypeBuilder().withNewMetadata().withName(eventTypeName).endMetadata().build()).create();
 		List<CompletionItem> completions = retrieveCompletions(camelUri);
 		assertThat(completions).hasSize(1);
 		assertThat(completions.get(0).getLabel()).isEqualTo(eventTypeName);
@@ -88,7 +88,7 @@ class KNativeConnectedCompletionTest extends AbstractCamelLanguageServerTest {
 	@Test
 	void testCompletionForEndpoint() throws Exception {
 		String serviceName = "myService";
-		client.services().create(new ServiceBuilder().withNewMetadata().withName(serviceName).endMetadata().build());
+		client.services().resource(new ServiceBuilder().withNewMetadata().withName(serviceName).endMetadata().build()).create();
 		String camelUri = "knative:endpoint/";
 		List<CompletionItem> completions = retrieveCompletions(camelUri);
 		assertThat(completions).hasSize(1);

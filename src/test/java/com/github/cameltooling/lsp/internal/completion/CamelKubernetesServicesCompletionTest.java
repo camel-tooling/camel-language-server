@@ -72,7 +72,7 @@ class CamelKubernetesServicesCompletionTest extends AbstractCamelLanguageServerT
 	}
 
 	private void createNamespace(String name) {
-		client.namespaces().create(new NamespaceBuilder().withNewMetadata().withName(name).endMetadata().build());
+		client.namespaces().resource(new NamespaceBuilder().withNewMetadata().withName(name).endMetadata().build()).create();
 	}
 	
 	private List<CompletionItem> getCompletionForNamespace()
