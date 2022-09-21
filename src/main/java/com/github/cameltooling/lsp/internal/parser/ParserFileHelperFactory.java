@@ -25,6 +25,7 @@ import org.xml.sax.SAXException;
 
 public class ParserFileHelperFactory {
 	
+	private static final String KUBERNETES_CRD_API_VERSION_CAMEL = "apiVersion: camel.apache.org/";
 	private static final String CAMELK_XML_FILENAME_SUFFIX = "camelk.xml";
 	private static final String CAMELK_GROOVY_FILENAME_SUFFIX = ".camelk.groovy";
 	private static final String CAMELK_KOTLIN_FILENAME_SUFFIX = ".camelk.kts";
@@ -145,15 +146,25 @@ public class ParserFileHelperFactory {
 		//improve this method to provide better heuristic to detect if it is a Camel file or not
 		return uri.endsWith(CAMELK_YAML_FILENAME_SUFFIX)
 				|| isYamlFileWithCamelKShebang(textDocumentItem, uri)
-				|| isYamlFileWithCamelKModelineLike(textDocumentItem, uri);
+				|| isYamlFileWithCamelKModelineLike(textDocumentItem, uri)
+				|| isYamlFileOfCRDType(textDocumentItem, uri);
+	}
+
+	private boolean isYamlFileOfCRDType(TextDocumentItem textDocumentItem, String uri) {
+		return hasYamlExtension(uri)
+				&& textDocumentItem.getText().startsWith(KUBERNETES_CRD_API_VERSION_CAMEL);
+	}
+
+	private boolean hasYamlExtension(String uri) {
+		return uri.endsWith(".yaml") || uri.endsWith(".yml");
 	}
 
 	private boolean isYamlFileWithCamelKModelineLike(TextDocumentItem textDocumentItem, String uri) {
-		return uri.endsWith(".yaml") && textDocumentItem.getText().startsWith(CamelKModelineParser.MODELINE_LIKE_CAMEL_K_YAML);
+		return hasYamlExtension(uri) && textDocumentItem.getText().startsWith(CamelKModelineParser.MODELINE_LIKE_CAMEL_K_YAML);
 	}
 
 	protected boolean isYamlFileWithCamelKShebang(TextDocumentItem textDocumentItem, String uri) {
-		return uri.endsWith(".yaml") && textDocumentItem.getText().startsWith(SHEBANG_CAMEL_K);
+		return hasYamlExtension(uri) && textDocumentItem.getText().startsWith(SHEBANG_CAMEL_K);
 	}
 
 	private boolean isPotentiallyCamelJavaDSL(TextDocumentItem textDocumentItem, String uri) {
