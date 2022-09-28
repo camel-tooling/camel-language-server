@@ -25,27 +25,27 @@ class CamelKYamlDSLParserTest {
 
 	@Test
 	void testRepairEscapeCharacterWithNullLine() throws Exception {
-		assertThat(new CamelKYamlDSLParser().repairLostEscapeChars("\"", null)).isEmpty();
+		assertThat(new CamelYamlDSLParser().repairLostEscapeChars("\"", null)).isEmpty();
 	}
 	
 	@Test
 	void testRepairEscapeCharacterWithNoStringEncloser() throws Exception {
-		assertThat(new CamelKYamlDSLParser().repairLostEscapeChars(null, "myLine")).isEqualTo("myLine");
+		assertThat(new CamelYamlDSLParser().repairLostEscapeChars(null, "myLine")).isEqualTo("myLine");
 	}
 	
 	@Test
 	void testRepairEscapeCharacterWithQuote() throws Exception {
-		assertThat(new CamelKYamlDSLParser().repairLostEscapeChars("'", "a value with ' quote inside")).isEqualTo("a value with '' quote inside");
+		assertThat(new CamelYamlDSLParser().repairLostEscapeChars("'", "a value with ' quote inside")).isEqualTo("a value with '' quote inside");
 	}
 	
 	@Test
 	void testRepairEscapeCharacterWithDoubleQuote() throws Exception {
-		assertThat(new CamelKYamlDSLParser().repairLostEscapeChars("\"", "a value with double-quote \" inside")).isEqualTo("a value with double-quote \\\" inside");
+		assertThat(new CamelYamlDSLParser().repairLostEscapeChars("\"", "a value with double-quote \" inside")).isEqualTo("a value with double-quote \\\" inside");
 	}
 	
 	@Test
 	@Disabled("see https://github.com/camel-tooling/camel-language-server/issues/301")
 	void testRepairEscapeCharacterWithDoubleQuoteAndSlash() throws Exception {
-		assertThat(new CamelKYamlDSLParser().repairLostEscapeChars("\"", "a value with backslash \\ inside")).isEqualTo("a value with double-quote \\\\ inside");
+		assertThat(new CamelYamlDSLParser().repairLostEscapeChars("\"", "a value with backslash \\ inside")).isEqualTo("a value with double-quote \\\\ inside");
 	}
 }

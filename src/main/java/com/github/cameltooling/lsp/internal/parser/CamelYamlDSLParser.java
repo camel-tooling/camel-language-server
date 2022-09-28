@@ -31,7 +31,7 @@ import com.github.cameltooling.lsp.internal.instancemodel.YamlDSLModelHelper;
 /**
  * @author Lars Heinemann
  */
-public class CamelKYamlDSLParser extends ParserFileHelper {
+public class CamelYamlDSLParser extends ParserFileHelper {
 	
 	public static final String URI_KEY = "uri";
 	public static final String REST_KEY = "rest";
