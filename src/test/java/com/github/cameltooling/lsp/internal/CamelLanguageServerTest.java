@@ -365,8 +365,21 @@ class CamelLanguageServerTest extends AbstractCamelLanguageServerTest {
 			assertThat(f).exists();
 			try (FileInputStream fis = new FileInputStream(f)) {
 				CamelLanguageServer cls = initializeLanguageServer(fis, ".yaml");
-				CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = getCompletionFor(cls, new Position(8, 15));
+				Position positionAtBeginningOfFromValue = new Position(8, 15);
+				CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = getCompletionFor(cls, positionAtBeginningOfFromValue);
 				assertThat(completions.get().getLeft()).contains(createExpectedAhcCompletionItem(8, 15, 8, 25));
+			}
+		}
+		
+		@Test
+		void testProvideCompletionForPlainYaml() throws Exception {
+			File f = new File("src/test/resources/workspace/plain.camel.yaml");
+			assertThat(f).exists();
+			try (FileInputStream fis = new FileInputStream(f)) {
+				CamelLanguageServer cls = initializeLanguageServer(fis, ".camel.yaml");
+				Position positionAtBeginningOfFromValue = new Position(1, 10);
+				CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = getCompletionFor(cls, positionAtBeginningOfFromValue);
+				assertThat(completions.get().getLeft()).contains(createExpectedAhcCompletionItem(1, 10, 1, 22));
 			}
 		}
 	}
