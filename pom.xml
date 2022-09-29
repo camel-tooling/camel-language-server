@@ -57,7 +57,7 @@
 		<roaster.version>2.26.0.Final</roaster.version>
 		<awaitility.version>4.2.0</awaitility.version>
 		<tyrus.version>2.1.0</tyrus.version>
-		<commons-text.version>1.9</commons-text.version>
+		<commons-text.version>1.10.0</commons-text.version>
 		<citrus.kafka.version>3.3.0</citrus.kafka.version>
 		<kafka.clients.version>3.2.3</kafka.clients.version>
 		<kubernetes.client.version>6.1.1</kubernetes.client.version>
