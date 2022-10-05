@@ -28,6 +28,8 @@ import org.assertj.core.api.Condition;
 import org.eclipse.lsp4j.CompletionItem;
 import org.eclipse.lsp4j.CompletionList;
 import org.eclipse.lsp4j.Position;
+import org.eclipse.lsp4j.Range;
+import org.eclipse.lsp4j.TextEdit;
 import org.eclipse.lsp4j.jsonrpc.messages.Either;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -57,23 +59,24 @@ class CamelLanguageServerCompletionPositionTest extends AbstractCamelLanguageSer
     			arguments(createXMLBlueprintRoute(""), 0, 14, -1, -1, false, "Empty URI" ),
     			arguments(createXMLBlueprintRoute(""), 0, 15, -1, -1, false, "Empty URI" ),
 
-    			arguments(createXMLBlueprintRoute("ahc"), 0, 10, -1, -1, false, "Uri with some value" ),
-    			arguments(createXMLBlueprintRoute("ahc"), 0, 11, 11, 14, true, "Uri with some value" ),
-    			arguments(createXMLBlueprintRoute("ahc"), 0, 12, 11, 14, true, "Uri with some value" ),
-    			arguments(createXMLBlueprintRoute("ahc"), 0, 13, 11, 14, true, "Uri with some value" ),
-    			arguments(createXMLBlueprintRoute("ahc"), 0, 14, 11, 14, true, "Uri with some value" ),
-    			arguments(createXMLBlueprintRoute("ahc"), 0, 15, -1, -1, false, "Uri with some value" ),
+    			arguments(createXMLBlueprintRoute("bean"), 0, 10, -1, -1, false, "Uri with some value" ),
+    			arguments(createXMLBlueprintRoute("bean"), 0, 11, 11, 15, true, "Uri with some value" ),
+    			arguments(createXMLBlueprintRoute("bean"), 0, 12, 11, 15, true, "Uri with some value" ),
+    			arguments(createXMLBlueprintRoute("bean"), 0, 13, 11, 15, true, "Uri with some value" ),
+    			arguments(createXMLBlueprintRoute("bean"), 0, 14, 11, 15, true, "Uri with some value" ),
+    			arguments(createXMLBlueprintRoute("bean"), 0, 15, 11, 15, true, "Uri with some value" ),
+    			arguments(createXMLBlueprintRoute("bean"), 0, 16, -1, -1, false, "Uri with some value" ),
 
-    			arguments(createXMLBlueprintRoute("ahc:httpUri?anOption=aValue"), 0, 14, 11, 22, true, "Uri with a syntax provided" ),
-    			arguments(createXMLBlueprintRoute("ahc:httpUri?anOption=aValue"), 0, 16, 11, 22, true, "Uri with a syntax provided" ),
-    			arguments(createXMLBlueprintRoute("ahc:httpUri?anOption=aValue"), 0, 17, 11, 22, true, "Uri with a syntax provided" ),
-    			arguments(createXMLBlueprintRoute("ahc:httpUri?anOption=aValue"), 0, 18, 11, 22, true, "Uri with a syntax provided" ),
-    			arguments(createXMLBlueprintRoute("ahc:httpUri?anOption=aValue"), 0, 19, 11, 22, true, "Uri with a syntax provided" ),
-    			arguments(createXMLBlueprintRoute("ahc:httpUri?anOption=aValue"), 0, 20, 11, 22, true, "Uri with a syntax provided" ),
-    			arguments(createXMLBlueprintRoute("ahc:httpUri?anOption=aValue"), 0, 21, 11, 22, true, "Uri with a syntax provided" ),
-    			arguments(createXMLBlueprintRoute("ahc:httpUri?anOption=aValue"), 0, 22, 11, 22, true, "Uri with a syntax provided" ),
-    			arguments(createXMLBlueprintRoute("ahc:httpUri?anOption=aValue"), 0, 23, -1, -1, false, "Uri with a syntax provided" ),
-    			arguments(createXMLBlueprintRoute("ahc:httpUri?anOption=aValue"), 0, 24, -1, -1, false, "Uri with a syntax provided" )
+    			arguments(createXMLBlueprintRoute("bean:aname1?anOption=aValue"), 0, 14, 11, 22, true, "Uri with a syntax provided" ),
+    			arguments(createXMLBlueprintRoute("bean:aname1?anOption=aValue"), 0, 16, 11, 22, true, "Uri with a syntax provided" ),
+    			arguments(createXMLBlueprintRoute("bean:aname1?anOption=aValue"), 0, 17, 11, 22, true, "Uri with a syntax provided" ),
+    			arguments(createXMLBlueprintRoute("bean:aname1?anOption=aValue"), 0, 18, 11, 22, true, "Uri with a syntax provided" ),
+    			arguments(createXMLBlueprintRoute("bean:aname1?anOption=aValue"), 0, 19, 11, 22, true, "Uri with a syntax provided" ),
+    			arguments(createXMLBlueprintRoute("bean:aname1?anOption=aValue"), 0, 20, 11, 22, true, "Uri with a syntax provided" ),
+    			arguments(createXMLBlueprintRoute("bean:aname1?anOption=aValue"), 0, 21, 11, 22, true, "Uri with a syntax provided" ),
+    			arguments(createXMLBlueprintRoute("bean:aname1?anOption=aValue"), 0, 22, 11, 22, true, "Uri with a syntax provided" ),
+    			arguments(createXMLBlueprintRoute("bean:aname1?anOption=aValue"), 0, 23, -1, -1, false, "Uri with a syntax provided" ),
+    			arguments(createXMLBlueprintRoute("bean:aname1?anOption=aValue"), 0, 24, -1, -1, false, "Uri with a syntax provided" )
     			);
     }
 	
@@ -92,11 +95,19 @@ class CamelLanguageServerCompletionPositionTest extends AbstractCamelLanguageSer
 		CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = getCompletionFor(camelLanguageServer, new Position(line, characterCallingCompletion));
 		
 		if(shouldHaveCompletion) {
-			assertThat(completions.get().getLeft()).contains(createExpectedAhcCompletionItem(line, characterStartCompletion, line, characterEndCompletion));
+			assertThat(completions.get().getLeft()).contains(createExpectedBeanCompletionItem(line, characterStartCompletion, line, characterEndCompletion));
 		} else {
-			Condition<CompletionItem> ahc = new Condition<>(completionItem -> completionItem.getLabel().contains("ahc"), "Found an ahc component");
-			assertThat(completions.get().getLeft().stream()).areNot(ahc);
+			Condition<CompletionItem> timer = new Condition<>(completionItem -> completionItem.getLabel().contains("bean"), "Found a bean component");
+			assertThat(completions.get().getLeft().stream()).areNot(timer);
 			assertThat(completions.get().getRight()).isNull();
 		}
+	}
+
+	private CompletionItem createExpectedBeanCompletionItem(int lineStart, int characterStart, int lineEnd, int characterEnd) {
+		CompletionItem expectedTimerCompletioncompletionItem = new CompletionItem("bean:beanName");
+		expectedTimerCompletioncompletionItem.setDeprecated(false);
+		expectedTimerCompletioncompletionItem.setDocumentation("Invoke methods of Java beans stored in Camel registry.");
+		expectedTimerCompletioncompletionItem.setTextEdit(Either.forLeft(new TextEdit(new Range(new Position(lineStart, characterStart), new Position(lineEnd, characterEnd)), "bean:beanName")));
+		return expectedTimerCompletioncompletionItem;
 	}
 }

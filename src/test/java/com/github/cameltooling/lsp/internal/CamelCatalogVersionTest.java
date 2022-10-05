@@ -49,7 +49,7 @@ class CamelCatalogVersionTest extends AbstractCamelLanguageServerTest {
 	
 	@Test
 	void testCompletionWithCatalog3xVersionLoaded() throws Exception {
-		camelCatalogVersion = "3.0.0-RC3";
+		camelCatalogVersion = "3.0.0";
 		
 		CamelLanguageServer camelLanguageServer = basicCompletionCheckBefore3_3();
 		
@@ -58,7 +58,7 @@ class CamelCatalogVersionTest extends AbstractCamelLanguageServerTest {
 	
 	@Test
 	void testUpdateOfConfig() throws Exception {
-		camelCatalogVersion = "3.0.0-RC3";
+		camelCatalogVersion = "3.0.0";
 		
 		CamelLanguageServer camelLanguageServer = basicCompletionCheckBefore3_3();
 		
@@ -107,7 +107,7 @@ class CamelCatalogVersionTest extends AbstractCamelLanguageServerTest {
 	}
 
 	private CamelLanguageServer basicCompletionCheck() throws URISyntaxException, InterruptedException, ExecutionException {
-		return basicCompletionCheck(createExpectedAhcCompletionItem(0, 11, 0, 11));
+		return basicCompletionCheck(createExpectedTimerCompletionItem(0, 11, 0, 11));
 	}
 
 	private CamelLanguageServer basicCompletionCheckBefore3_3() throws URISyntaxException, InterruptedException, ExecutionException {
@@ -129,7 +129,7 @@ class CamelCatalogVersionTest extends AbstractCamelLanguageServerTest {
 	private Map<Object, Object> createMapSettingsWithVersion(String camelCatalogVersion) {
 		Map<Object, Object> camelIntializationOptions = new HashMap<>();
 		camelIntializationOptions.put("Camel catalog version", camelCatalogVersion);
-		HashMap<Object, Object> initializationOptions = new HashMap<>();
+		Map<Object, Object> initializationOptions = new HashMap<>();
 		initializationOptions.put("camel", camelIntializationOptions);
 		return initializationOptions;
 	}
