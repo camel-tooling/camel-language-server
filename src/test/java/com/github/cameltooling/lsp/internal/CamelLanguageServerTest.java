@@ -51,7 +51,7 @@ class CamelLanguageServerTest extends AbstractCamelLanguageServerTest {
 		
 		CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = getCompletionFor(camelLanguageServer, new Position(0, 11));
 		
-		assertThat(completions.get().getLeft()).contains(createExpectedAhcCompletionItem(0, 11, 0, 11));
+		assertThat(completions.get().getLeft()).contains(createExpectedTimerCompletionItem(0, 11, 0, 11));
 	}
 
 	@Test
@@ -60,7 +60,7 @@ class CamelLanguageServerTest extends AbstractCamelLanguageServerTest {
 		
 		CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = getCompletionFor(camelLanguageServer, new Position(0, 9));
 		
-		assertThat(completions.get().getLeft()).contains(createExpectedAhcCompletionItem(0, 9, 0, 9));
+		assertThat(completions.get().getLeft()).contains(createExpectedTimerCompletionItem(0, 9, 0, 9));
 	}
 	
 	@Test
@@ -69,7 +69,7 @@ class CamelLanguageServerTest extends AbstractCamelLanguageServerTest {
 		
 		CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = getCompletionFor(camelLanguageServer, new Position(0, 11));
 		
-		assertThat(completions.get().getLeft()).contains(createExpectedAhcCompletionItem(0, 11, 0, 11));
+		assertThat(completions.get().getLeft()).contains(createExpectedTimerCompletionItem(0, 11, 0, 11));
 	}
 	
 	@Test
@@ -81,7 +81,7 @@ class CamelLanguageServerTest extends AbstractCamelLanguageServerTest {
 		
 		CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = getCompletionFor(camelLanguageServer, new Position(1, 6));
 		
-		assertThat(completions.get().getLeft()).contains(createExpectedAhcCompletionItem(1, 6, 1, 6));
+		assertThat(completions.get().getLeft()).contains(createExpectedTimerCompletionItem(1, 6, 1, 6));
 	}
 	
 	@Test
@@ -91,7 +91,7 @@ class CamelLanguageServerTest extends AbstractCamelLanguageServerTest {
 		try (FileInputStream fis = new FileInputStream(f)) {
 			CamelLanguageServer cls = initializeLanguageServer(fis, ".java");
 			CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = getCompletionFor(cls, new Position(15, 14));
-			assertThat(completions.get().getLeft()).contains(createExpectedAhcCompletionItem(15, 14, 15, 27));
+			assertThat(completions.get().getLeft()).contains(createExpectedTimerCompletionItem(15, 14, 15, 27));
 		}
 	}
 	
@@ -102,7 +102,7 @@ class CamelLanguageServerTest extends AbstractCamelLanguageServerTest {
 		try (FileInputStream fis = new FileInputStream(f)) {
 			CamelLanguageServer cls = initializeLanguageServer(fis, ".camelk.groovy");
 			CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = getCompletionFor(cls, new Position(0, 6));
-			assertThat(completions.get().getLeft()).contains(createExpectedAhcCompletionItem(0, 6, 0, 25));
+			assertThat(completions.get().getLeft()).contains(createExpectedTimerCompletionItem(0, 6, 0, 25));
 		}
 	}
 	
@@ -113,7 +113,7 @@ class CamelLanguageServerTest extends AbstractCamelLanguageServerTest {
 		try (FileInputStream fis = new FileInputStream(f)) {
 			CamelLanguageServer cls = initializeLanguageServer(fis, ".groovy");
 			CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = getCompletionFor(cls, new Position(2, 6));
-			assertThat(completions.get().getLeft()).contains(createExpectedAhcCompletionItem(2, 6, 2, 25));
+			assertThat(completions.get().getLeft()).contains(createExpectedTimerCompletionItem(2, 6, 2, 25));
 		}
 	}
 	
@@ -124,7 +124,7 @@ class CamelLanguageServerTest extends AbstractCamelLanguageServerTest {
 		try (FileInputStream fis = new FileInputStream(f)) {
 			CamelLanguageServer cls = initializeLanguageServer(fis, ".camelk.kts");
 			CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = getCompletionFor(cls, new Position(0, 6));
-			assertThat(completions.get().getLeft()).contains(createExpectedAhcCompletionItem(0, 6, 0, 18));
+			assertThat(completions.get().getLeft()).contains(createExpectedTimerCompletionItem(0, 6, 0, 18));
 		}
 	}
 	
@@ -135,7 +135,7 @@ class CamelLanguageServerTest extends AbstractCamelLanguageServerTest {
 		try (FileInputStream fis = new FileInputStream(f)) {
 			CamelLanguageServer cls = initializeLanguageServer(fis, ".camelk.js");
 			CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = getCompletionFor(cls, new Position(0, 6));
-			assertThat(completions.get().getLeft()).contains(createExpectedAhcCompletionItem(0, 6, 0, 14));
+			assertThat(completions.get().getLeft()).contains(createExpectedTimerCompletionItem(0, 6, 0, 14));
 		}
 	}
 	
@@ -146,7 +146,7 @@ class CamelLanguageServerTest extends AbstractCamelLanguageServerTest {
 		try (FileInputStream fis = new FileInputStream(f)) {
 			CamelLanguageServer cls = initializeLanguageServer(fis, ".groovy");
 			CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = getCompletionFor(cls, new Position(2, 6));
-			assertThat(completions.get().getLeft()).contains(createExpectedAhcCompletionItem(2, 6, 2, 25));
+			assertThat(completions.get().getLeft()).contains(createExpectedTimerCompletionItem(2, 6, 2, 25));
 		}
 	}
 	
@@ -159,7 +159,7 @@ class CamelLanguageServerTest extends AbstractCamelLanguageServerTest {
 			try (FileInputStream fis = new FileInputStream(f)) {
 				CamelLanguageServer cls = initializeLanguageServer(fis, ".yaml");
 				CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = getCompletionFor(cls, new Position(12, 16));
-				assertThat(completions.get().getLeft()).contains(createExpectedAhcCompletionItem(12, 16, 12, 22));
+				assertThat(completions.get().getLeft()).contains(createExpectedTimerCompletionItem(12, 16, 12, 22));
 			}
 		}
 		
@@ -170,7 +170,7 @@ class CamelLanguageServerTest extends AbstractCamelLanguageServerTest {
 			try (FileInputStream fis = new FileInputStream(f)) {
 				CamelLanguageServer cls = initializeLanguageServer(fis, ".yaml");
 				CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = getCompletionFor(cls, new Position(12, 16));
-				assertThat(completions.get().getLeft()).contains(createExpectedAhcCompletionItem(12, 16, 12, 16));
+				assertThat(completions.get().getLeft()).contains(createExpectedTimerCompletionItem(12, 16, 12, 16));
 			}
 		}
 		
@@ -181,7 +181,7 @@ class CamelLanguageServerTest extends AbstractCamelLanguageServerTest {
 			try (FileInputStream fis = new FileInputStream(f)) {
 				CamelLanguageServer cls = initializeLanguageServer(fis, ".yaml");
 				CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = getCompletionFor(cls, new Position(12, 16));
-				assertThat(completions.get().getLeft()).contains(createExpectedAhcCompletionItem(12, 16, 12, 16));
+				assertThat(completions.get().getLeft()).contains(createExpectedTimerCompletionItem(12, 16, 12, 16));
 			}
 		}
 
@@ -192,7 +192,7 @@ class CamelLanguageServerTest extends AbstractCamelLanguageServerTest {
 			try (FileInputStream fis = new FileInputStream(f)) {
 				CamelLanguageServer cls = initializeLanguageServer(fis, ".yaml");
 				CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = getCompletionFor(cls, new Position(12, 16));
-				assertThat(completions.get().getLeft()).contains(createExpectedAhcCompletionItem(12, 16, 12, 33));
+				assertThat(completions.get().getLeft()).contains(createExpectedTimerCompletionItem(12, 16, 12, 33));
 			}
 		}
 
@@ -203,7 +203,7 @@ class CamelLanguageServerTest extends AbstractCamelLanguageServerTest {
 			try (FileInputStream fis = new FileInputStream(f)) {
 				CamelLanguageServer cls = initializeLanguageServer(fis, ".yaml");
 				CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = getCompletionFor(cls, new Position(12, 15));
-				assertThat(completions.get().getLeft()).contains(createExpectedAhcCompletionItem(12, 15, 12, 15));
+				assertThat(completions.get().getLeft()).contains(createExpectedTimerCompletionItem(12, 15, 12, 15));
 			}
 		}
 
@@ -333,7 +333,7 @@ class CamelLanguageServerTest extends AbstractCamelLanguageServerTest {
 			try (FileInputStream fis = new FileInputStream(f)) {
 				CamelLanguageServer cls = initializeLanguageServer(fis, ".yaml");
 				CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = getCompletionFor(cls, new Position(11, 13));
-				assertThat(completions.get().getLeft()).contains(createExpectedAhcCompletionItem(11, 13, 11, 19));
+				assertThat(completions.get().getLeft()).contains(createExpectedTimerCompletionItem(11, 13, 11, 19));
 			}
 		}
 
@@ -344,7 +344,7 @@ class CamelLanguageServerTest extends AbstractCamelLanguageServerTest {
 			try (FileInputStream fis = new FileInputStream(f)) {
 				CamelLanguageServer cls = initializeLanguageServer(fis, ".yaml");
 				CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = getCompletionFor(cls, new Position(4, 14));
-				assertThat(completions.get().getLeft()).contains(createExpectedAhcCompletionItem(4, 14, 4, 24));
+				assertThat(completions.get().getLeft()).contains(createExpectedTimerCompletionItem(4, 14, 4, 24));
 			}
 		}
 		
@@ -355,7 +355,7 @@ class CamelLanguageServerTest extends AbstractCamelLanguageServerTest {
 			try (FileInputStream fis = new FileInputStream(f)) {
 				CamelLanguageServer cls = initializeLanguageServer(fis, ".yaml");
 				CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = getCompletionFor(cls, new Position(9, 13));
-				assertThat(completions.get().getLeft()).contains(createExpectedAhcCompletionItem(9, 13, 9, 23));
+				assertThat(completions.get().getLeft()).contains(createExpectedTimerCompletionItem(9, 13, 9, 23));
 			}
 		}
 		
@@ -367,7 +367,7 @@ class CamelLanguageServerTest extends AbstractCamelLanguageServerTest {
 				CamelLanguageServer cls = initializeLanguageServer(fis, ".yaml");
 				Position positionAtBeginningOfFromValue = new Position(8, 15);
 				CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = getCompletionFor(cls, positionAtBeginningOfFromValue);
-				assertThat(completions.get().getLeft()).contains(createExpectedAhcCompletionItem(8, 15, 8, 25));
+				assertThat(completions.get().getLeft()).contains(createExpectedTimerCompletionItem(8, 15, 8, 25));
 			}
 		}
 		
@@ -379,7 +379,7 @@ class CamelLanguageServerTest extends AbstractCamelLanguageServerTest {
 				CamelLanguageServer cls = initializeLanguageServer(fis, ".camel.yaml");
 				Position positionAtBeginningOfFromValue = new Position(1, 10);
 				CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = getCompletionFor(cls, positionAtBeginningOfFromValue);
-				assertThat(completions.get().getLeft()).contains(createExpectedAhcCompletionItem(1, 10, 1, 22));
+				assertThat(completions.get().getLeft()).contains(createExpectedTimerCompletionItem(1, 10, 1, 22));
 			}
 		}
 	}
@@ -391,7 +391,7 @@ class CamelLanguageServerTest extends AbstractCamelLanguageServerTest {
 		try (FileInputStream fis = new FileInputStream(f)) {
 			CamelLanguageServer cls = initializeLanguageServer(fis, ".properties");
 			CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = getCompletionFor(cls, new Position(7, 15));
-			assertThat(completions.get().getLeft()).contains(createExpectedAhcCompletionItem(7, 15, 7, 25));
+			assertThat(completions.get().getLeft()).contains(createExpectedTimerCompletionItem(7, 15, 7, 25));
 		}
 	}
 	
@@ -402,7 +402,7 @@ class CamelLanguageServerTest extends AbstractCamelLanguageServerTest {
 		try (FileInputStream fis = new FileInputStream(f)) {
 			CamelLanguageServer cls = initializeLanguageServer(fis, ".properties");
 			CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = getCompletionFor(cls, new Position(8, 17));
-			assertThat(completions.get().getLeft()).contains(createExpectedAhcCompletionItem(8, 17, 8, 32));
+			assertThat(completions.get().getLeft()).contains(createExpectedTimerCompletionItem(8, 17, 8, 32));
 		}
 	}
 	
@@ -413,7 +413,7 @@ class CamelLanguageServerTest extends AbstractCamelLanguageServerTest {
 		try (FileInputStream fis = new FileInputStream(f)) {
 			CamelLanguageServer cls = initializeLanguageServer(fis, ".kts");
 			CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = getCompletionFor(cls, new Position(2, 6));
-			assertThat(completions.get().getLeft()).contains(createExpectedAhcCompletionItem(2, 6, 2, 18));
+			assertThat(completions.get().getLeft()).contains(createExpectedTimerCompletionItem(2, 6, 2, 18));
 		}
 	}
 	
@@ -437,7 +437,7 @@ class CamelLanguageServerTest extends AbstractCamelLanguageServerTest {
 		try (FileInputStream fis = new FileInputStream(f)) {
 			CamelLanguageServer cls = initializeLanguageServer(fis, ".js");
 			CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = getCompletionFor(cls, new Position(2, 6));
-			assertThat(completions.get().getLeft()).contains(createExpectedAhcCompletionItem(2, 6, 2, 14));
+			assertThat(completions.get().getLeft()).contains(createExpectedTimerCompletionItem(2, 6, 2, 14));
 		}
 	}
 	
@@ -450,7 +450,7 @@ class CamelLanguageServerTest extends AbstractCamelLanguageServerTest {
 		
 		CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = getCompletionFor(camelLanguageServer, new Position(1, 9));
 		
-		assertThat(completions.get().getLeft()).contains(createExpectedAhcCompletionItem(1, 9, 1, 9));
+		assertThat(completions.get().getLeft()).contains(createExpectedTimerCompletionItem(1, 9, 1, 9));
 	}
 
 	@Test

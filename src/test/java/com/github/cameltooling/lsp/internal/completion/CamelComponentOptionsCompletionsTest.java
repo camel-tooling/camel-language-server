@@ -20,6 +20,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.net.URISyntaxException;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
@@ -40,48 +41,48 @@ class CamelComponentOptionsCompletionsTest extends AbstractCamelLanguageServerTe
 	
     @Test
 	void testProvideCamelOptions() throws Exception {
-		testProvideCamelOptions("<to uri=\"ahc:httpUri?\" xmlns=\"http://camel.apache.org/schema/blueprint\"></to>\n", 0, 21, getBridgeEndpointExpectedCompletionItem(21,21));
+		testProvideCamelOptions("<to uri=\"acomponent:withsyntax?\" xmlns=\"http://camel.apache.org/schema/blueprint\"></to>\n", 0, 31, getParamConsumerAndProducerCompletionItem(31,31));
 	}
     
     @Test
 	void testProvideCamelOptionsForConsumerOnly() throws Exception {
-    	CompletionItem completionItem = new CompletionItem("bridgeErrorHandler");
-    	completionItem.setInsertText("bridgeErrorHandler=false");
-    	completionItem.setTextEdit(Either.forLeft(new TextEdit(new Range(new Position(0, 27), new Position(0, 27)), "bridgeErrorHandler=false")));
-    	completionItem.setDocumentation("Allows for bridging the consumer to the Camel routing Error Handler, which mean any exceptions occurred while the consumer is trying to pickup incoming messages, or the likes, will now be processed as a message and handled by the routing Error Handler. By default the consumer will use the org.apache.camel.spi.ExceptionHandler to deal with exceptions, that will be logged at WARN or ERROR level and ignored.");
-    	completionItem.setDetail("boolean");
+    	CompletionItem completionItem = new CompletionItem("paramConsumerOnly");
+    	completionItem.setInsertText("paramConsumerOnly=1000");
+    	completionItem.setTextEdit(Either.forLeft(new TextEdit(new Range(new Position(0, 33), new Position(0, 33)), "paramConsumerOnly=1000")));
+    	completionItem.setDocumentation("Description of parameter consumer only");
+    	completionItem.setDetail("long");
     	completionItem.setDeprecated(false);
     	completionItem.setKind(CompletionItemKind.Property);
-		testProvideCamelOptions(RouteTextBuilder.createXMLBlueprintRoute("timer:timerName?"), 0, 27, completionItem);
+		testProvideCamelOptions(RouteTextBuilder.createXMLBlueprintRoute("acomponent:withsyntax?"), 0, 33, completionItem);
 	}
     
     @Test
 	void testProvideCamelOptionsForConsumerOnlyForJava() throws Exception {
-    	CompletionItem completionItem = new CompletionItem("bridgeErrorHandler");
-    	completionItem.setInsertText("bridgeErrorHandler=false");
-    	completionItem.setTextEdit(Either.forLeft(new TextEdit(new Range(new Position(0, 22), new Position(0, 22)), "bridgeErrorHandler=false")));
-    	completionItem.setDocumentation("Allows for bridging the consumer to the Camel routing Error Handler, which mean any exceptions occurred while the consumer is trying to pickup incoming messages, or the likes, will now be processed as a message and handled by the routing Error Handler. By default the consumer will use the org.apache.camel.spi.ExceptionHandler to deal with exceptions, that will be logged at WARN or ERROR level and ignored.");
-    	completionItem.setDetail("boolean");
+    	CompletionItem completionItem = new CompletionItem("paramConsumerOnly");
+    	completionItem.setInsertText("paramConsumerOnly=1000");
+    	completionItem.setTextEdit(Either.forLeft(new TextEdit(new Range(new Position(0, 28), new Position(0, 28)), "paramConsumerOnly=1000")));
+    	completionItem.setDocumentation("Description of parameter consumer only");
+    	completionItem.setDetail("long");
     	completionItem.setDeprecated(false);
     	completionItem.setKind(CompletionItemKind.Property);
-		testProvideCamelOptions("from(\"timer:timerName?\")//camel", 0, 22, completionItem, ".java");
+		testProvideCamelOptions("from(\"acomponent:withsyntax?\")//camel", 0, 28, completionItem, ".java");
 	}
 
 	@Test
 	void testProvideCamelOptionsForConsumerOrProducer() throws Exception {
-    	CompletionItem completionItem = new CompletionItem("clientConfigOptions");
-    	completionItem.setInsertText("clientConfigOptions=");
-    	completionItem.setTextEdit(Either.forLeft(new TextEdit(new Range(new Position(0, 23), new Position(0, 23)), "clientConfigOptions=")));
-    	completionItem.setDocumentation("To configure the AsyncHttpClientConfig using the key/values from the Map.");
-    	completionItem.setDetail("java.util.Map<java.lang.String, java.lang.Object>");
+    	CompletionItem completionItem = new CompletionItem("paramConsumerAndProducer");
+    	completionItem.setInsertText("paramConsumerAndProducer=1000");
+    	completionItem.setTextEdit(Either.forLeft(new TextEdit(new Range(new Position(0, 33), new Position(0, 33)), "paramConsumerAndProducer=1000")));
+    	completionItem.setDocumentation("Description of parameter both consumer and producer");
+    	completionItem.setDetail("long");
     	completionItem.setDeprecated(false);
     	completionItem.setKind(CompletionItemKind.Property);
-		testProvideCamelOptions(RouteTextBuilder.createXMLBlueprintRoute("ahc:httpUri?"), 0, 23, completionItem);
+		testProvideCamelOptions(RouteTextBuilder.createXMLBlueprintRoute("acomponent:withsyntax?"), 0, 33, completionItem);
 	}
     
     @Test
    	void testProvideCamelOptionsWhenAlreadyContainOptions() throws Exception {
-    	testProvideCamelOptions("<to uri=\"ahc:httpUri?anOption=aValue&amp;\" xmlns=\"http://camel.apache.org/schema/blueprint\"></to>\n", 0, 41, getBridgeEndpointExpectedCompletionItem(41,41));
+    	testProvideCamelOptions("<to uri=\"acomponent:withsyntax?anOption=aValue&amp;\" xmlns=\"http://camel.apache.org/schema/blueprint\"></to>\n", 0, 51, getParamConsumerAndProducerCompletionItem(51,51));
    	}
     
     private void testProvideCamelOptions(String textTotest, int line, int character, CompletionItem completionItemExpected) throws URISyntaxException, InterruptedException, ExecutionException {
@@ -96,15 +97,86 @@ class CamelComponentOptionsCompletionsTest extends AbstractCamelLanguageServerTe
     	assertThat(completions.get().getLeft()).contains(completionItemExpected);
     }
 
-	private CompletionItem getBridgeEndpointExpectedCompletionItem(int startCharacter, int endCharacter) {
-		CompletionItem completionItem = new CompletionItem("bridgeEndpoint");
-		completionItem.setInsertText("bridgeEndpoint=false");
-    	completionItem.setTextEdit(Either.forLeft(new TextEdit(new Range(new Position(0, startCharacter), new Position(0, endCharacter)), "bridgeEndpoint=false")));
-    	completionItem.setDocumentation("If the option is true, then the Exchange.HTTP_URI header is ignored, and use the endpoint's URI for request. You may also set the throwExceptionOnFailure to be false to let the AhcProducer send all the fault response back.");
-    	completionItem.setDetail("boolean");
+	private CompletionItem getParamConsumerAndProducerCompletionItem(int startCharacter, int endCharacter) {
+		CompletionItem completionItem = new CompletionItem("paramConsumerAndProducer");
+		completionItem.setInsertText("paramConsumerAndProducer=1000");
+    	completionItem.setTextEdit(Either.forLeft(new TextEdit(new Range(new Position(0, startCharacter), new Position(0, endCharacter)), "paramConsumerAndProducer=1000")));
+    	completionItem.setDocumentation("Description of parameter both consumer and producer");
+    	completionItem.setDetail("long");
     	completionItem.setKind(CompletionItemKind.Property);
     	completionItem.setDeprecated(false);
 		return completionItem;
 	}
     
+	@Override
+	protected Map<Object, Object> getInitializationOptions() {
+		String component = "{\n"
+				+ "	\"component\": {\n"
+				+ "		\"kind\": \"component\",\n"
+				+ "		\"scheme\": \"acomponent\",\n"
+				+ "		\"syntax\": \"acomponent:withsyntax\",\n"
+				+ "		\"title\": \"A Component\",\n"
+				+ "		\"description\": \"Description of my component.\",\n"
+				+ "		\"label\": \"\",\n"
+				+ "		\"deprecated\": false,\n"
+				+ "		\"deprecationNote\": \"\",\n"
+				+ "		\"async\": false,\n"
+				+ "		\"consumerOnly\": false,\n"
+				+ "		\"producerOnly\": false,\n"
+				+ "		\"lenientProperties\": false,\n"
+				+ "		\"javaType\": \"org.test.AComponent\",\n"
+				+ "		\"firstVersion\": \"1.0.0\",\n"
+				+ "		\"groupId\": \"org.test\",\n"
+				+ "		\"artifactId\": \"camel-acomponent\",\n"
+				+ "		\"version\": \"3.0.0\"\n"
+				+ "	},\n"
+				+ "	\"componentProperties\": {},\n"
+				+ "	\"properties\": {\n"
+				+ "		\"paramConsumerOnly\": {\n"
+				+ "			\"kind\": \"parameter\",\n"
+				+ "			\"displayName\": \"paramConsumerOnly\",\n"
+				+ "			\"group\": \"consumer\",\n"
+				+ "			\"label\": \"\",\n"
+				+ "			\"required\": false,\n"
+				+ "			\"type\": \"duration\",\n"
+				+ "			\"javaType\": \"long\",\n"
+				+ "			\"deprecated\": false,\n"
+				+ "			\"autowired\": false,\n"
+				+ "			\"secret\": false,\n"
+				+ "			\"defaultValue\": \"1000\",\n"
+				+ "			\"description\": \"Description of parameter consumer only\"\n"
+				+ "		},\n"
+				+ "		\"paramConsumerAndProducer\": {\n"
+				+ "			\"kind\": \"parameter\",\n"
+				+ "			\"displayName\": \"paramConsumerAndProducer\",\n"
+				+ "			\"group\": \"\",\n"
+				+ "			\"label\": \"\",\n"
+				+ "			\"required\": false,\n"
+				+ "			\"type\": \"duration\",\n"
+				+ "			\"javaType\": \"long\",\n"
+				+ "			\"deprecated\": false,\n"
+				+ "			\"autowired\": false,\n"
+				+ "			\"secret\": false,\n"
+				+ "			\"defaultValue\": \"1000\",\n"
+				+ "			\"description\": \"Description of parameter both consumer and producer\"\n"
+				+ "		},\n"
+				+ "		\"paramProducerOnly\": {\n"
+				+ "			\"kind\": \"parameter\",\n"
+				+ "			\"displayName\": \"paramProducerOnly\",\n"
+				+ "			\"group\": \"producer\",\n"
+				+ "			\"label\": \"\",\n"
+				+ "			\"required\": false,\n"
+				+ "			\"type\": \"duration\",\n"
+				+ "			\"javaType\": \"long\",\n"
+				+ "			\"deprecated\": false,\n"
+				+ "			\"autowired\": false,\n"
+				+ "			\"secret\": false,\n"
+				+ "			\"defaultValue\": \"1000\",\n"
+				+ "			\"description\": \"Description of parameter producer only\"\n"
+				+ "		}\n"
+				+ "	}\n"
+				+ "}";
+		return createMapSettingsWithComponent(component);
+	}
+	
 }

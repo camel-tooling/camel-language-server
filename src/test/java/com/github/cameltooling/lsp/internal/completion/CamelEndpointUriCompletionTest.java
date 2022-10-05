@@ -52,14 +52,14 @@ class CamelEndpointUriCompletionTest extends AbstractCamelLanguageServerTest {
     		arguments("from(\"file\")//camel", 								0, 7, "URI with component scheme file for Java", "f",   8, ".java"),
     		
     		// test the path params - FROM
-    		arguments(createXMLBlueprintRoute("ahc"), 			0, 14, "Empty path param without separator",	"ahc",   3, ".xml"),
-    		arguments(createXMLBlueprintRoute("ahc:"), 			0, 15, "Empty path param", 			"ahc:",     1, ".xml"),
-    		arguments("<from uri='ahc:h' xmlns=\"http://camel.apache.org/schema/blueprint\"></from>\n", 0, 16, "URI with path param h", 	"ahc:h",	1, ".xml"),
-    		arguments(createXMLBlueprintRoute("ahc:ht"), 		0, 17, "URI with path param ht",	"ahc:ht",	1, ".xml"),
-    		arguments(createXMLBlueprintRoute("ahc:htt"), 		0, 18, "URI with path param htt", 	"ahc:htt",	1, ".xml"),
-    		arguments(createXMLBlueprintRoute("ahc:http"), 		0, 19, "URI with path param http", 	"ahc:http",	1, ".xml"),
-    		arguments(createXMLBlueprintRoute("ahc:httpUri"), 	0, 15, "URI with path param http", 	null,		1, ".xml"),
-    		arguments("from(\"ahc:httpUri\")//camel", 0, 10, "URI with path param http for java", 	null,		1, ".java"),
+    		arguments(createXMLBlueprintRoute("timer"), 			0, 16, "Empty path param without separator",	"timer",   1, ".xml"),
+    		arguments(createXMLBlueprintRoute("timer:"), 			0, 17, "Empty path param", 			"timer:",     1, ".xml"),
+    		arguments("<from uri='timer:t' xmlns=\"http://camel.apache.org/schema/blueprint\"></from>\n", 0, 16, "URI with path param h", 	"timer:t",	1, ".xml"),
+    		arguments(createXMLBlueprintRoute("timer:ti"), 		0, 18, "URI with path param ht",	"timer:ti",	1, ".xml"),
+    		arguments(createXMLBlueprintRoute("timer:tim"), 		0, 19, "URI with path param htt", 	"timer:tim",	1, ".xml"),
+    		arguments(createXMLBlueprintRoute("timer:time"), 		0, 20, "URI with path param http", 	"timer:time",	1, ".xml"),
+    		arguments(createXMLBlueprintRoute("timer:timerName"), 	0, 17, "URI with path param http", 	null,		1, ".xml"),
+    		arguments("from(\"timer:timerName\")//camel", 0, 12, "URI with path param timerName for java", 	null,		1, ".java"),
     		
     		// test the uri options - FROM
     		arguments("from(\"file:bla?\")//camel", 						0, 15, "Empty option for Java",	null,		70, ".java"),
@@ -88,13 +88,13 @@ class CamelEndpointUriCompletionTest extends AbstractCamelLanguageServerTest {
     		arguments("to(\"file\")//camel", 																0, 5, "URI with component scheme file for Java", "f",   8, ".java"),
     		
     		// test the path params - TO
-    		arguments("<to uri=\"ahc:\" xmlns=\"http://camel.apache.org/schema/blueprint\"></to>\n", 		0, 13, "Empty path param", 			"ahc:",     1, ".xml"),
-    		arguments("<to uri=\"ahc:h\" xmlns=\"http://camel.apache.org/schema/blueprint\"></to>\n", 		0, 14, "URI with path param h", 	"ahc:h",	1, ".xml"),
-    		arguments("<to uri='ahc:ht' xmlns=\"http://camel.apache.org/schema/blueprint\"></to>\n", 		0, 15, "URI with path param ht",	"ahc:ht",	1, ".xml"),
-    		arguments("<to uri=\"ahc:htt\" xmlns=\"http://camel.apache.org/schema/blueprint\"></to>\n", 	0, 16, "URI with path param htt", 	"ahc:htt",	1, ".xml"),
-    		arguments("<to uri=\"ahc:http\" xmlns=\"http://camel.apache.org/schema/blueprint\"></to>\n", 	0, 17, "URI with path param http", 	"ahc:http",	1, ".xml"),
-    		arguments("<to uri=\"ahc:httpUri\" xmlns=\"http://camel.apache.org/schema/blueprint\"></to>\n", 0, 13, "URI with path param http", 	null,		1, ".xml"),
-    		arguments("to(\"ahc:httpUri\")//camel", 0, 10, "URI with path param http for java", 	null,		1, ".java"),
+    		arguments("<to uri=\"timer:\" xmlns=\"http://camel.apache.org/schema/blueprint\"></to>\n", 		0, 15, "Empty path param", 			"timer:",     1, ".xml"),
+    		arguments("<to uri=\"timer:t\" xmlns=\"http://camel.apache.org/schema/blueprint\"></to>\n", 		0, 16, "URI with path param t", 	"timer:t",	1, ".xml"),
+    		arguments("<to uri='timer:ti' xmlns=\"http://camel.apache.org/schema/blueprint\"></to>\n", 		0, 17, "URI with path param ti",	"timer:ti",	1, ".xml"),
+    		arguments("<to uri=\"timer:tim\" xmlns=\"http://camel.apache.org/schema/blueprint\"></to>\n", 	0, 18, "URI with path param tim", 	"timer:tim",	1, ".xml"),
+    		arguments("<to uri=\"timer:time\" xmlns=\"http://camel.apache.org/schema/blueprint\"></to>\n", 	0, 19, "URI with path param time", 	"timer:time",	1, ".xml"),
+    		arguments("<to uri=\"timer:timerName\" xmlns=\"http://camel.apache.org/schema/blueprint\"></to>\n", 0, 15, "URI with path param timerName", 	null,		1, ".xml"),
+    		arguments("to(\"timer:timerName\")//camel", 0, 12, "URI with path param http for java", 	null,		1, ".java"),
     		
     		// test endpoint
     		arguments("<endpoint uri=\"\" xmlns=\"http://camel.apache.org/schema/blueprint\"></endpoint>\n", 		0, 15, "Empty component scheme",			null,	300, ".xml"),
@@ -105,12 +105,12 @@ class CamelEndpointUriCompletionTest extends AbstractCamelLanguageServerTest {
     		arguments("<endpoint uri=\"file\" xmlns=\"http://camel.apache.org/schema/blueprint\"></endpoint>\n", 	0, 15, "URI with component scheme file", 	null,   300, ".xml"),
     		arguments("<endpoint uri=\"file\" xmlns=\"http://camel.apache.org/schema/blueprint\"></endpoint>\n", 	0, 16, "URI with component scheme file", 	"f",    8, ".xml"),
     		// test the endpoint path params
-    		arguments("<endpoint uri=\"ahc:\" xmlns=\"http://camel.apache.org/schema/blueprint\"></endpoint>\n", 		0, 19, "Empty path param", 			"ahc:",     1, ".xml"),
-    		arguments("<endpoint uri=\"ahc:h\" xmlns=\"http://camel.apache.org/schema/blueprint\"></endpoint>\n", 		0, 20, "URI with path param h", 	"ahc:h",	1, ".xml"),
-    		arguments("<endpoint uri=\"ahc:ht\" xmlns=\"http://camel.apache.org/schema/blueprint\"></endpoint>\n", 		0, 21, "URI with path param ht",	"ahc:ht",	1, ".xml"),
-    		arguments("<endpoint uri=\"ahc:htt\" xmlns=\"http://camel.apache.org/schema/blueprint\"></endpoint>\n", 	0, 22, "URI with path param htt", 	"ahc:htt",	1, ".xml"),
-    		arguments("<endpoint uri='ahc:http' xmlns=\"http://camel.apache.org/schema/blueprint\"></endpoint>\n", 	0, 23, "URI with path param http", 	"ahc:http",	1, ".xml"),
-    		arguments("<endpoint uri=\"ahc:httpUri\" xmlns=\"http://camel.apache.org/schema/blueprint\"></endpoint>\n", 0, 19, "URI with path param http", 	null,		1, ".xml"),
+    		arguments("<endpoint uri=\"timer:\" xmlns=\"http://camel.apache.org/schema/blueprint\"></endpoint>\n", 		0, 21, "Empty path param", 			"timer:",     1, ".xml"),
+    		arguments("<endpoint uri=\"timer:t\" xmlns=\"http://camel.apache.org/schema/blueprint\"></endpoint>\n", 		0, 22, "URI with path param t", 	"timer:t",	1, ".xml"),
+    		arguments("<endpoint uri=\"timer:ti\" xmlns=\"http://camel.apache.org/schema/blueprint\"></endpoint>\n", 		0, 23, "URI with path param ti",	"timer:ti",	1, ".xml"),
+    		arguments("<endpoint uri=\"timer:tim\" xmlns=\"http://camel.apache.org/schema/blueprint\"></endpoint>\n", 	0, 24, "URI with path param tim", 	"timer:tim",	1, ".xml"),
+    		arguments("<endpoint uri='timer:time' xmlns=\"http://camel.apache.org/schema/blueprint\"></endpoint>\n", 	0, 25, "URI with path param time", 	"timer:time",	1, ".xml"),
+    		arguments("<endpoint uri=\"timer:timerName\" xmlns=\"http://camel.apache.org/schema/blueprint\"></endpoint>\n", 0, 19, "URI with path param timerName", 	null,		1, ".xml"),
     		// endpoint uri options
     		arguments("<endpoint uri=\"file:bla?\" xmlns=\"http://camel.apache.org/schema/blueprint\"></endpoint>\n", 		0, 24, "Empty option",			null,		70, ".xml"),
     		arguments("<endpoint uri=\"file:bla?n\" xmlns=\"http://camel.apache.org/schema/blueprint\"></endpoint>\n", 		0, 25, "URI with option n", 	"n",		1, ".xml"),

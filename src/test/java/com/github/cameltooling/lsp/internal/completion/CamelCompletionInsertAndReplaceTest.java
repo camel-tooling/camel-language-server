@@ -37,35 +37,34 @@ class CamelCompletionInsertAndReplaceTest extends AbstractCamelLanguageServerTes
 
 	@Test
 	void testComponent() throws Exception {
-		CamelLanguageServer camelLanguageServer = initializeLanguageServer(RouteTextBuilder.createXMLBlueprintRoute("ahc-wss:httpUri?binding=#true&amp;bufferSize=10&amp;synchronous=true"), ".xml");
+		CamelLanguageServer camelLanguageServer = initializeLanguageServer(RouteTextBuilder.createXMLBlueprintRoute("timer:timerName?daemon=true&amp;synchronous=false&amp;bridgeErrorHandler=false"), ".xml");
 		Position positionInMiddleOfcomponentPart = new Position(0, 15);
 		CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = getCompletionFor(camelLanguageServer, positionInMiddleOfcomponentPart);
 		List<CompletionItem> items = completions.get().getLeft();
-		assertThat(items).hasSize(2);
-		for (CompletionItem completionItem : items) {
-			TextEdit textEdit = completionItem.getTextEdit().getLeft();
-			Range range = textEdit.getRange();
-			assertThat(range.getStart().getLine()).isZero();
-			assertThat(range.getStart().getCharacter()).isEqualTo(11 /*start of URI */);
-			assertThat(range.getEnd().getLine()).isZero();
-			assertThat(range.getEnd().getCharacter()).isEqualTo(26 /* just before the '?' */);
-		}
+		assertThat(items).hasSize(1);
+		CompletionItem completionItem = items.get(0);
+		TextEdit textEdit = completionItem.getTextEdit().getLeft();
+		Range range = textEdit.getRange();
+		assertThat(range.getStart().getLine()).isZero();
+		assertThat(range.getStart().getCharacter()).isEqualTo(11 /*start of URI */);
+		assertThat(range.getEnd().getLine()).isZero();
+		assertThat(range.getEnd().getCharacter()).isEqualTo(26 /* just before the '?' */);
 	}
 	
 	@Test
 	void testAttribute() throws Exception {
-		CamelLanguageServer camelLanguageServer = initializeLanguageServer(RouteTextBuilder.createXMLBlueprintRoute("ahc-wss:httpUri?binding=#true&amp;bufferSize=10&amp;synchronous=true"), ".xml");
-		Position positionBeforeBufferSizeAttribute = new Position(0, 45);
+		CamelLanguageServer camelLanguageServer = initializeLanguageServer(RouteTextBuilder.createXMLBlueprintRoute("timer:timerName?daemon=true&amp;synchronous=false&amp;bridgeErrorHandler=false"), ".xml");
+		Position positionBeforeBufferSizeAttribute = new Position(0, 43);
 		CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = getCompletionFor(camelLanguageServer, positionBeforeBufferSizeAttribute);
 		List<CompletionItem> items = completions.get().getLeft();
-		assertThat(items).hasSize(14);
+		assertThat(items).hasSize(11);
 		for (CompletionItem completionItem : items) {
 			TextEdit textEdit = completionItem.getTextEdit().getLeft();
 			Range range = textEdit.getRange();
 			assertThat(range.getStart().getLine()).isZero();
-			assertThat(range.getStart().getCharacter()).isEqualTo(45 /* just before 'bufferSize' */);
+			assertThat(range.getStart().getCharacter()).isEqualTo(43 /* just before 'synchronous' */);
 			assertThat(range.getEnd().getLine()).isZero();
-			assertThat(range.getEnd().getCharacter()).isEqualTo(55 /* end of 'bufferSize' */);
+			assertThat(range.getEnd().getCharacter()).isEqualTo(54 /* end of 'synchronous' */);
 		}
 	}
 }
