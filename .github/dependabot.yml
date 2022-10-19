@@ -8,3 +8,11 @@ updates:
   reviewers:
   - apupier
   - joshiraez
+- package-ecosystem: github-actions
+  directory: "/"
+  schedule:
+    interval: weekly
+  open-pull-requests-limit: 10
+  reviewers:
+  - apupier
+  - joshiraez
