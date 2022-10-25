@@ -11,6 +11,7 @@
 package com.github.cameltooling.lsp.internal.diagnostic;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
@@ -39,6 +40,7 @@ public class DiagnosticRunner {
 	private CamelKModelineDiagnosticService camelKModelineDiagnosticService;
 	private CamelKafkaConnectorDiagnosticService camelKafkaConnectorDiagnosticService;
 	private ConnectedModeDiagnosticService connectedModeDiagnosticService;
+	private Map<String, CompletableFuture<Void>> lastTriggeredDiagnostic = new HashMap<String, CompletableFuture<Void>>();
 
 	public DiagnosticRunner(CompletableFuture<CamelCatalog> camelCatalog, CamelLanguageServer camelLanguageServer) {
 		this.camelLanguageServer = camelLanguageServer;
@@ -67,7 +69,11 @@ public class DiagnosticRunner {
 
 	public void computeDiagnostics(String camelText, TextDocumentItem documentItem) {
 		String uri = documentItem.getUri();
-		CompletableFuture.runAsync(() -> {
+		CompletableFuture<Void> previousComputation = lastTriggeredDiagnostic.get(uri);
+		if (previousComputation != null) {
+			previousComputation.cancel(true);
+		}
+		CompletableFuture<Void> lastTriggeredComputation = CompletableFuture.runAsync(() -> {
 			Map<CamelEndpointDetails, EndpointValidationResult> endpointErrors = endpointDiagnosticService.computeCamelEndpointErrors(camelText, uri);
 			TextDocumentItem openedDocument = camelLanguageServer.getTextDocumentService().getOpenedDocument(uri);
 			List<Diagnostic> diagnostics = endpointDiagnosticService.converToLSPDiagnostics(camelText, endpointErrors, openedDocument);
@@ -77,7 +83,9 @@ public class DiagnosticRunner {
 			diagnostics.addAll(camelKafkaConnectorDiagnosticService.compute(camelText, documentItem));
 			diagnostics.addAll(connectedModeDiagnosticService.compute(camelText, documentItem));
 			camelLanguageServer.getClient().publishDiagnostics(new PublishDiagnosticsParams(uri, diagnostics));
+			lastTriggeredDiagnostic.remove(uri);
 		});
+		lastTriggeredDiagnostic.put(uri, lastTriggeredComputation);
 	}
 
 	private String retrieveFullText(DidSaveTextDocumentParams params) {
@@ -89,6 +97,10 @@ public class DiagnosticRunner {
 	}
 
 	public void clear(String uri) {
+		CompletableFuture<Void> previousComputation = lastTriggeredDiagnostic.get(uri);
+		if (previousComputation != null) {
+			previousComputation.cancel(true);
+		}
 		camelLanguageServer.getClient().publishDiagnostics(new PublishDiagnosticsParams(uri, Collections.emptyList()));
 	}
 }
