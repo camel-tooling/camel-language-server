@@ -52,7 +52,7 @@
 		<jgit.version>6.3.0.202209071007-r</jgit.version>
 		<camel.version>3.19.0</camel.version>
 		<camel.kafka.connector.version>0.11.0</camel.kafka.connector.version>
-		<camel.kamelet.catalog.version>0.9.1</camel.kamelet.catalog.version>
+		<camel.kamelet.catalog.version>0.9.2</camel.kamelet.catalog.version>
 		<camel.quarkus.version>2.13.0</camel.quarkus.version>
 		<roaster.version>2.26.0.Final</roaster.version>
 		<awaitility.version>4.2.0</awaitility.version>
