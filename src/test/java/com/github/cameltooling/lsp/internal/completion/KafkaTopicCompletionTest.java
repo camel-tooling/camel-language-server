@@ -24,6 +24,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import org.eclipse.lsp4j.CompletionItem;
 import org.eclipse.lsp4j.DidChangeConfigurationParams;
@@ -63,7 +65,7 @@ class KafkaTopicCompletionTest extends AbstractCamelLanguageServerTest {
 	}
 
 	@Test
-	@Timeout(3)
+	@Timeout(30)
 	void testInvalidConnectionUrl() throws Exception {
 		String connectionURL = "localhost:9091";
 		System.setProperty(KafkaTopicCompletionProvider.CAMEL_LANGUAGE_SERVER_KAFKA_CONNECTION_URL, connectionURL);
@@ -139,9 +141,9 @@ class KafkaTopicCompletionTest extends AbstractCamelLanguageServerTest {
 		System.setProperty(KafkaTopicCompletionProvider.CAMEL_LANGUAGE_SERVER_KAFKA_CONNECTION_URL, connectionURL);
 	}
 
-	private List<CompletionItem> retrieveCompletionForKafkaTopicPosition() throws URISyntaxException, InterruptedException, ExecutionException {
+	private List<CompletionItem> retrieveCompletionForKafkaTopicPosition() throws URISyntaxException, InterruptedException, ExecutionException, TimeoutException {
 		CamelLanguageServer languageServer = initLanguageServer();
-		return getCompletionFor(languageServer, new Position(0, 17)).get().getLeft();
+		return getCompletionFor(languageServer, new Position(0, 17)).get(1, TimeUnit.SECONDS).getLeft();
 	}
 
 	private CamelLanguageServer initLanguageServer() throws URISyntaxException, InterruptedException, ExecutionException {
