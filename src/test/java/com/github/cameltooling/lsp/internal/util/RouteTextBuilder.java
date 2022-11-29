@@ -16,11 +16,23 @@
  */
 package com.github.cameltooling.lsp.internal.util;
 
+import org.eclipse.lsp4j.Position;
+
 public class RouteTextBuilder {
 	
 	public static final String XML_PREFIX_FROM = "<from uri=\"";
 	private static final String XML_SUFFIX_FROM_SPRING = "\" xmlns=\"http://camel.apache.org/schema/spring\"/>\n";
 	private static final String XML_SUFFIX_FROM_BLUEPRINT = "\" xmlns=\"http://camel.apache.org/schema/blueprint\"/>\n";
+
+	private static final String JAVA_CLASS_BLUEPRINT_CAMEL_ROUTEBUILDER_IMPORT
+			= "import org.apache.camel.builder.RouteBuilder;";
+
+	private static final String JAVA_CLASS_BLUEPRINT_CLASS_DECLARATION = "public class TestRoute";
+
+	private static final String JAVA_CLASS_BLUEPRINT_CAMEL_ROUTEBUILDER_EXTEMD = "extends RouteBuilder";
+
+	private static final String JAVA_CLASS_BLUEPRINT_CONFIGURE_METHOD_DECLARATION = "public void configure()";
+
 	
 	/**
 	 * @param camelUri
@@ -38,4 +50,76 @@ public class RouteTextBuilder {
 		return XML_PREFIX_FROM + camelUri + XML_SUFFIX_FROM_BLUEPRINT;
 	}
 
+	/**
+	 * @param javaClassContent
+	 * @return builds an empty Java class with the specified content and the cursor position inside and after
+	 *          contents
+	 */
+	public static BlueprintContentWithPosition createJavaBlueprintClass(String javaClassContent) {
+		String newLine = System.getProperty("line.separator");
+		String[] contentSplit = javaClassContent.split(newLine);
+		int lineOffset = contentSplit.length;
+		int characterOffset = contentSplit[contentSplit.length-1].length();
+
+		if (javaClassContent.startsWith(newLine)) {
+			lineOffset += 1;
+		}
+
+		if (javaClassContent.endsWith(newLine)) {
+			lineOffset +=1;
+			characterOffset = 0;
+		}
+
+		return new BlueprintContentWithPosition(
+				JAVA_CLASS_BLUEPRINT_CLASS_DECLARATION + newLine +
+				"{" + newLine
+				+ javaClassContent + newLine
+				+ "}" + newLine
+				, 2+lineOffset, characterOffset);
+	}
+
+	/**
+	 * @param camelRoute
+	 * @return builds an empty Java class with the specified content and the cursor position placed inside configure
+	 *          method and after content.
+	 */
+	public static BlueprintContentWithPosition createJavaBlueprintCamelRoute(String camelRoute) {
+		String newLine = System.getProperty("line.separator");
+		String[] contentSplit = camelRoute.split(newLine);
+		int lineOffset = contentSplit.length - 1;
+		int characterOffset = contentSplit[contentSplit.length-1].length();
+
+		if (camelRoute.startsWith(newLine)) {
+			lineOffset += 1;
+		}
+
+		if (camelRoute.endsWith(newLine)) {
+			lineOffset +=1;
+			characterOffset = 0;
+		}
+
+		return new BlueprintContentWithPosition(
+				JAVA_CLASS_BLUEPRINT_CAMEL_ROUTEBUILDER_IMPORT + newLine +
+				JAVA_CLASS_BLUEPRINT_CLASS_DECLARATION + newLine +
+						JAVA_CLASS_BLUEPRINT_CAMEL_ROUTEBUILDER_EXTEMD + newLine +
+						"{" + newLine +
+						camelRoute + newLine +
+						"}" + newLine
+				, 4 + lineOffset,characterOffset);
+	}
+
+	public static class BlueprintContentWithPosition {
+		public String content;
+		public Position position;
+
+		public BlueprintContentWithPosition(String content, Position position) {
+			this.content = content;
+			this.position = position;
+		}
+
+		public BlueprintContentWithPosition(String content, int line, int character) {
+			this.content = content;
+			this.position = new Position(line, character);
+		}
+	}
 }

@@ -36,5 +36,27 @@ public class ParserFileHelperUtil {
 		}
 		return null;
 	}
+
+	public String getTextUntilPosition(TextDocumentItem document, Position position) {
+		String newLine = System.getProperty("line.separator");
+		String[] lines = document.getText().split(newLine);
+		String textUntilPosition = "";
+
+		if(document.getText().startsWith(newLine)) {
+			textUntilPosition += newLine;
+		}
+
+		for(int i = 0; i<position.getLine(); i++) {
+			textUntilPosition += lines[i] + newLine;
+		}
+
+		if(position.getLine() != lines.length) {
+			//Edge case: end of file with a character return
+			textUntilPosition += lines[position.getLine()].substring(0, position.getCharacter());
+		}
+
+		return textUntilPosition;
+
+	}
 	
 }
