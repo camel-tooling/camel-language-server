@@ -22,7 +22,10 @@ public class EIPChoiceCompletionTest extends AbstractCamelLanguageServerTest {
 
 	private static final String FROM_ROUTE = "from(\"timer:foo?period={{timer.period}}\")";
 	private static final String FROM_ROUTE_WITH_LINE_BREAKS_AND_TABS
-			= "from(\"timer:foo?period={{timer.period}}\")\n\t.bean()\n.d";
+			= "from(\"timer:foo?period={{timer.period}}\")\n\t.bean()\n";
+
+	private static final String FROM_ROUTE_WITH_CHOICE_EIP_MID_WRITTEN
+			= "from(\"timer:foo?period={{timer.period}}\")\n\t.ch\n";
 
 
 	@Test
@@ -83,6 +86,20 @@ public class EIPChoiceCompletionTest extends AbstractCamelLanguageServerTest {
 	void testProvideInsertionAfterFromOnCamelRouteWithLineBreaks() throws Exception {
 		RouteTextBuilder.BlueprintContentWithPosition blueprint =
 				RouteTextBuilder.createJavaBlueprintCamelRoute(FROM_ROUTE_WITH_LINE_BREAKS_AND_TABS);
+
+		List<CompletionItem> completionItems = getCompletionsFor(blueprint.content, blueprint.position);
+		completionItems = completionItems.stream().filter(
+				completionItem -> completionItem.getLabel().startsWith("Content Based Router")
+		).collect(Collectors.toList());
+
+
+		assertThat(completionItems).hasSize(1);
+	}
+
+	@Test
+	void testProvideInsertionMidWritingChoice() throws Exception {
+		RouteTextBuilder.BlueprintContentWithPosition blueprint =
+				RouteTextBuilder.createJavaBlueprintCamelRoute(FROM_ROUTE_WITH_CHOICE_EIP_MID_WRITTEN);
 
 		List<CompletionItem> completionItems = getCompletionsFor(blueprint.content, blueprint.position);
 		completionItems = completionItems.stream().filter(
