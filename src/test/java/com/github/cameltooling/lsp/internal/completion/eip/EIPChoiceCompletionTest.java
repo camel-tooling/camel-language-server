@@ -21,6 +21,9 @@ public class EIPChoiceCompletionTest extends AbstractCamelLanguageServerTest {
 	private static final Position BEGINNING_OF_FILE = new Position(0,0);
 
 	private static final String FROM_ROUTE = "from(\"timer:foo?period={{timer.period}}\")";
+	private static final String FROM_ROUTE_WITH_LINE_BREAKS_AND_TABS
+			= "from(\"timer:foo?period={{timer.period}}\")\n\t.bean()\n.d";
+
 
 	@Test
 	void testProvideInsertionOnEmptyJavaFile() throws Exception {
@@ -66,6 +69,20 @@ public class EIPChoiceCompletionTest extends AbstractCamelLanguageServerTest {
 	void testProvideInsertionAfterFromOnCamelRoute() throws Exception {
 		RouteTextBuilder.BlueprintContentWithPosition blueprint =
 				RouteTextBuilder.createJavaBlueprintCamelRoute(FROM_ROUTE);
+
+		List<CompletionItem> completionItems = getCompletionsFor(blueprint.content, blueprint.position);
+		completionItems = completionItems.stream().filter(
+				completionItem -> completionItem.getLabel().startsWith("Content Based Router")
+		).collect(Collectors.toList());
+
+
+		assertThat(completionItems).hasSize(1);
+	}
+
+	@Test
+	void testProvideInsertionAfterFromOnCamelRouteWithLineBreaks() throws Exception {
+		RouteTextBuilder.BlueprintContentWithPosition blueprint =
+				RouteTextBuilder.createJavaBlueprintCamelRoute(FROM_ROUTE_WITH_LINE_BREAKS_AND_TABS);
 
 		List<CompletionItem> completionItems = getCompletionsFor(blueprint.content, blueprint.position);
 		completionItems = completionItems.stream().filter(

@@ -100,7 +100,7 @@ public class RouteTextBuilder {
 
 		return new BlueprintContentWithPosition(
 				JAVA_CLASS_BLUEPRINT_CAMEL_ROUTEBUILDER_IMPORT + newLine +
-				JAVA_CLASS_BLUEPRINT_CLASS_DECLARATION + newLine +
+						JAVA_CLASS_BLUEPRINT_CLASS_DECLARATION + newLine +
 						JAVA_CLASS_BLUEPRINT_CAMEL_ROUTEBUILDER_EXTEMD + newLine +
 						"{" + newLine +
 						camelRoute + newLine +
