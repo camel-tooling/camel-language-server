@@ -17,7 +17,7 @@ public class CamelEIPParser {
 	}
 
 	public boolean canPutEIP(Position position) {
-		Pattern CHOICE_EIP_PATTERN = Pattern.compile("\\)\\s*.[c[h[o[i[c[e]?]?]?]?]?]?\\(?$", Pattern.MULTILINE);
+		Pattern CHOICE_EIP_PATTERN = Pattern.compile("\\)\\s*[.[c[h[o[i[c[e]?]?]?]?]?]?]?\\(?$", Pattern.MULTILINE);
 		ParserFileHelperUtil util = new ParserFileHelperUtil();
 		String textUntilPosition = util.getTextUntilPosition(document, position);
 
