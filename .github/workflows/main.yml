@@ -2,7 +2,7 @@ name: Main branch - Sonar analysis, signing and deploying
 
 on:
   push:
-    branches: [ main ]
+    branches: [ main, 1912-signAndDeploy-totest ]
 
 jobs:
   build:
