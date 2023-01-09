@@ -24,14 +24,14 @@ public class RouteTextBuilder {
 	private static final String XML_SUFFIX_FROM_SPRING = "\" xmlns=\"http://camel.apache.org/schema/spring\"/>\n";
 	private static final String XML_SUFFIX_FROM_BLUEPRINT = "\" xmlns=\"http://camel.apache.org/schema/blueprint\"/>\n";
 
-	private static final String JAVA_CLASS_BLUEPRINT_CAMEL_ROUTEBUILDER_IMPORT
+	private static final String CAMEL_ROUTEBUILDER_IMPORT
 			= "import org.apache.camel.builder.RouteBuilder;";
 
-	private static final String JAVA_CLASS_BLUEPRINT_CLASS_DECLARATION = "public class TestRoute";
+	private static final String CLASS_DECLARATION = "public class TestRoute";
 
-	private static final String JAVA_CLASS_BLUEPRINT_CAMEL_ROUTEBUILDER_EXTEMD = "extends RouteBuilder";
+	private static final String CAMEL_ROUTEBUILDER_EXTEMD = "extends RouteBuilder";
 
-	private static final String JAVA_CLASS_BLUEPRINT_CONFIGURE_METHOD_DECLARATION = "public void configure()";
+	private static final String CONFIGURE_METHOD_DECLARATION = "public void configure()";
 
 	
 	/**
@@ -71,7 +71,7 @@ public class RouteTextBuilder {
 		}
 
 		return new BlueprintContentWithPosition(
-				JAVA_CLASS_BLUEPRINT_CLASS_DECLARATION + newLine +
+				CLASS_DECLARATION + newLine +
 				"{" + newLine
 				+ javaClassContent + newLine
 				+ "}" + newLine
@@ -99,13 +99,15 @@ public class RouteTextBuilder {
 		}
 
 		return new BlueprintContentWithPosition(
-				JAVA_CLASS_BLUEPRINT_CAMEL_ROUTEBUILDER_IMPORT + newLine +
-						JAVA_CLASS_BLUEPRINT_CLASS_DECLARATION + newLine +
-						JAVA_CLASS_BLUEPRINT_CAMEL_ROUTEBUILDER_EXTEMD + newLine +
+				CAMEL_ROUTEBUILDER_IMPORT + newLine +
+						CLASS_DECLARATION + newLine +
+						CAMEL_ROUTEBUILDER_EXTEMD + newLine +
 						"{" + newLine +
+						CONFIGURE_METHOD_DECLARATION + "{" + newLine +
 						camelRoute + newLine +
+						"}" + newLine +
 						"}" + newLine
-				, 4 + lineOffset,characterOffset);
+				, 5 + lineOffset,characterOffset);
 	}
 
 	public static class BlueprintContentWithPosition {

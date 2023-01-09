@@ -18,8 +18,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class EIPChoiceCompletionTest extends AbstractCamelLanguageServerTest {
 
-	private static final Position BEGINNING_OF_FILE = new Position(0,0);
-
 	private static final String FROM_ROUTE = "from(\"timer:foo?period={{timer.period}}\")";
 	private static final String FROM_ROUTE_WITH_LINE_BREAKS_AND_TABS
 			= "from(\"timer:foo?period={{timer.period}}\")\n\t.bean()\n";
