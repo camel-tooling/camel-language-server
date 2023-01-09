@@ -10,14 +10,6 @@ jobs:
       - store_test_results:
           path: target/surefire-reports
 
-  jdk17:
-    docker:
-      - image: cimg/openjdk:17.0
-    steps:
-      - checkout
-      - run: mvn verify -V
-      - store_test_results:
-          path: target/surefire-reports
   sonar:
     docker:
       - image: cimg/openjdk:11.0
@@ -51,11 +43,9 @@ workflows:
   build:
     jobs:
       - jdk11
-      - jdk17
       - sonar:
           requires:
             - jdk11
-            - jdk17
           filters:
             branches:
               only:
@@ -64,7 +54,6 @@ workflows:
       - deploy:
           requires:
              - jdk11
-             - jdk17
           filters:
             branches:
               only: main
