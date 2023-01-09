@@ -2,7 +2,7 @@ name: Main branch - Sonar analysis
 
 on:
   push:
-    branches: [ main ]
+    branches: [ main, 1911-SonarAnalysis-totest ]
 
 jobs:
   build:
