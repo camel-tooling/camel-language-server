@@ -1,6 +1,6 @@
 [![Central](https://img.shields.io/maven-central/v/com.github.camel-tooling/camel-lsp-server.svg?style=plastic)]()
 [![GitHub tag](https://img.shields.io/github/tag/camel-tooling/camel-language-server.svg?style=plastic)]()
-[![CircleCI](https://circleci.com/gh/camel-tooling/camel-language-server.svg?style=shield)](https://circleci.com/gh/camel-tooling/camel-language-server)
+[![Main branch CI](https://github.com/camel-tooling/camel-language-server/actions/workflows/main.yml/badge.svg)](https://github.com/camel-tooling/camel-language-server/actions/workflows/main.yml)
 [![Sonar](https://sonarcloud.io/api/project_badges/measure?project=camel-lsp-server&metric=alert_status)](https://sonarcloud.io/dashboard?id=camel-lsp-server)
 [![License](https://img.shields.io/badge/license-Apache%202-blue.svg)](https://www.apache.org/licenses/LICENSE-2.0)
 [![Chat on Zulip](https://img.shields.io/zulip-join_chat-brightgreen.svg)](https://camel.zulipchat.com/#narrow/stream/258729-camel-tooling)
