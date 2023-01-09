@@ -10,23 +10,6 @@ jobs:
       - store_test_results:
           path: target/surefire-reports
 
-  sonar:
-    docker:
-      - image: cimg/openjdk:11.0
-    steps:
-      - checkout
-      - run: > 
-          mvn verify
-          -P !build-extras
-          -Dtest="*,!RunnerStandardIOTest,!RunnerWebSocketTest"
-          -B
-          sonar:sonar
-          -Dsonar.login=${SONAR_TOKEN}
-          -Dsonar.organization="camel-tooling"
-          -Dsonar.projectKey="camel-lsp-server"
-          -Dsonar.projectName="Camel LSP Server"
-          -Dsonar.host.url=https://sonarcloud.io
-
   deploy:
     docker:
       - image: cimg/openjdk:11.0
@@ -43,14 +26,6 @@ workflows:
   build:
     jobs:
       - jdk11
-      - sonar:
-          requires:
-            - jdk11
-          filters:
-            branches:
-              only:
-                main
-          context: sonarcloud
       - deploy:
           requires:
              - jdk11
