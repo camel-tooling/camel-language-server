@@ -55,7 +55,7 @@ public class RouteTextBuilder {
 	 * @return builds an empty Java class with the specified content and the cursor position inside and after
 	 *          contents
 	 */
-	public static BlueprintContentWithPosition createJavaBlueprintClass(String javaClassContent) {
+	public static DocumentContentWithPosition createJavaDocumentClass(String javaClassContent) {
 		String newLine = System.getProperty("line.separator");
 		String[] contentSplit = javaClassContent.split(newLine);
 		int lineOffset = contentSplit.length;
@@ -70,7 +70,7 @@ public class RouteTextBuilder {
 			characterOffset = 0;
 		}
 
-		return new BlueprintContentWithPosition(
+		return new DocumentContentWithPosition(
 				CLASS_DECLARATION + newLine +
 				"{" + newLine
 				+ javaClassContent + newLine
@@ -83,7 +83,7 @@ public class RouteTextBuilder {
 	 * @return builds an empty Java class with the specified content and the cursor position placed inside configure
 	 *          method and after content.
 	 */
-	public static BlueprintContentWithPosition createJavaBlueprintCamelRoute(String camelRoute) {
+	public static DocumentContentWithPosition createJavaDocumentCamelRoute(String camelRoute) {
 		String newLine = "\n";
 		String[] contentSplit = camelRoute.split(newLine);
 		int lineOffset = contentSplit.length - 1;
@@ -98,7 +98,7 @@ public class RouteTextBuilder {
 			characterOffset = 0;
 		}
 
-		return new BlueprintContentWithPosition(
+		return new DocumentContentWithPosition(
 				CAMEL_ROUTEBUILDER_IMPORT + newLine +
 						CLASS_DECLARATION + newLine +
 						CAMEL_ROUTEBUILDER_EXTEMD + newLine +
@@ -110,16 +110,16 @@ public class RouteTextBuilder {
 				, 5 + lineOffset,characterOffset);
 	}
 
-	public static class BlueprintContentWithPosition {
+	public static class DocumentContentWithPosition {
 		public String content;
 		public Position position;
 
-		public BlueprintContentWithPosition(String content, Position position) {
+		public DocumentContentWithPosition(String content, Position position) {
 			this.content = content;
 			this.position = position;
 		}
 
-		public BlueprintContentWithPosition(String content, int line, int character) {
+		public DocumentContentWithPosition(String content, int line, int character) {
 			this.content = content;
 			this.position = new Position(line, character);
 		}

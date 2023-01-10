@@ -41,10 +41,10 @@ public class EIPChoiceCompletionTest extends AbstractCamelLanguageServerTest {
 
 	@Test
 	void testProvideInsertionOnEmptyJavaClass() throws Exception {
-		RouteTextBuilder.BlueprintContentWithPosition blueprint =
-				RouteTextBuilder.createJavaBlueprintClass("");
+		RouteTextBuilder.DocumentContentWithPosition document =
+				RouteTextBuilder.createJavaDocumentClass("");
 
-		List<CompletionItem> completionItems = getCompletionsFor(blueprint.content, blueprint.position);
+		List<CompletionItem> completionItems = getCompletionsFor(document.content, document.position);
 		completionItems = completionItems.stream().filter(
 				completionItem -> completionItem.getLabel().startsWith("Content Based Router")
 		).collect(Collectors.toList());
@@ -55,10 +55,10 @@ public class EIPChoiceCompletionTest extends AbstractCamelLanguageServerTest {
 
 	@Test
 	void testProvideInsertionOnEmptyJavaCamelRoute() throws Exception {
-		RouteTextBuilder.BlueprintContentWithPosition blueprint =
-				RouteTextBuilder.createJavaBlueprintCamelRoute("");
+		RouteTextBuilder.DocumentContentWithPosition document =
+				RouteTextBuilder.createJavaDocumentCamelRoute("");
 
-		List<CompletionItem> completionItems = getCompletionsFor(blueprint.content, blueprint.position);
+		List<CompletionItem> completionItems = getCompletionsFor(document.content, document.position);
 		completionItems = completionItems.stream().filter(
 				completionItem -> completionItem.getLabel().startsWith("Content Based Router")
 		).collect(Collectors.toList());
@@ -68,10 +68,10 @@ public class EIPChoiceCompletionTest extends AbstractCamelLanguageServerTest {
 
 	@Test
 	void testProvideInsertionAfterFromOnCamelRoute() throws Exception {
-		RouteTextBuilder.BlueprintContentWithPosition blueprint =
-				RouteTextBuilder.createJavaBlueprintCamelRoute(FROM_ROUTE);
+		RouteTextBuilder.DocumentContentWithPosition document =
+				RouteTextBuilder.createJavaDocumentCamelRoute(FROM_ROUTE);
 
-		List<CompletionItem> completionItems = getCompletionsFor(blueprint.content, blueprint.position);
+		List<CompletionItem> completionItems = getCompletionsFor(document.content, document.position);
 		completionItems = completionItems.stream().filter(
 				completionItem -> completionItem.getLabel().startsWith("Content Based Router")
 		).collect(Collectors.toList());
@@ -82,10 +82,10 @@ public class EIPChoiceCompletionTest extends AbstractCamelLanguageServerTest {
 
 	@Test
 	void testProvideInsertionAfterFromOnCamelRouteWithLineBreaks() throws Exception {
-		RouteTextBuilder.BlueprintContentWithPosition blueprint =
-				RouteTextBuilder.createJavaBlueprintCamelRoute(FROM_ROUTE_WITH_LINE_BREAKS_AND_TABS);
+		RouteTextBuilder.DocumentContentWithPosition document =
+				RouteTextBuilder.createJavaDocumentCamelRoute(FROM_ROUTE_WITH_LINE_BREAKS_AND_TABS);
 
-		List<CompletionItem> completionItems = getCompletionsFor(blueprint.content, blueprint.position);
+		List<CompletionItem> completionItems = getCompletionsFor(document.content, document.position);
 		completionItems = completionItems.stream().filter(
 				completionItem -> completionItem.getLabel().startsWith("Content Based Router")
 		).collect(Collectors.toList());
@@ -96,10 +96,10 @@ public class EIPChoiceCompletionTest extends AbstractCamelLanguageServerTest {
 
 	@Test
 	void testProvideInsertionMidWritingChoice() throws Exception {
-		RouteTextBuilder.BlueprintContentWithPosition blueprint =
-				RouteTextBuilder.createJavaBlueprintCamelRoute(FROM_ROUTE_WITH_CHOICE_EIP_MID_WRITTEN);
+		RouteTextBuilder.DocumentContentWithPosition document =
+				RouteTextBuilder.createJavaDocumentCamelRoute(FROM_ROUTE_WITH_CHOICE_EIP_MID_WRITTEN);
 
-		List<CompletionItem> completionItems = getCompletionsFor(blueprint.content, blueprint.position);
+		List<CompletionItem> completionItems = getCompletionsFor(document.content, document.position);
 		completionItems = completionItems.stream().filter(
 				completionItem -> completionItem.getLabel().startsWith("Content Based Router")
 		).collect(Collectors.toList());
