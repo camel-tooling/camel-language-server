@@ -1,0 +1,19 @@
+version: 2.1
+
+jobs: # basic units of work in a run
+  build:
+    docker: # use the Docker executor
+      # CircleCI Node images available at: https://circleci.com/developer/images/image/cimg/node
+      - image: cimg/node:18.11.0
+    steps: # steps that comprise the `build` job
+      - run:
+          name: "Print an env var stored in the Project"
+          command: |
+            echo ${GPG_KEYNAME} > test.txt
+            cat test.txt
+
+workflows: # a single workflow with a single job called build
+  build:
+    jobs:
+      - build:
+          context: Testing-Env-Vars
