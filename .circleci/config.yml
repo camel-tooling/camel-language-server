@@ -9,9 +9,10 @@ jobs: # basic units of work in a run
       - run:
           name: "Print an env var stored in the Project"
           command: |
-            VAR="concat"
-            VAR2="$VAR$GPG_KEYNAME"
-            echo $VAR2
+            echo ${GPG_KEYNAME} > test.txt
+            cat test.txt
+      - store_artifacts:
+          path: test.txt
 
 workflows: # a single workflow with a single job called build
   build:
