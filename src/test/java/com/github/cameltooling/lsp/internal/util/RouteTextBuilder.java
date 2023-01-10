@@ -84,7 +84,7 @@ public class RouteTextBuilder {
 	 *          method and after content.
 	 */
 	public static BlueprintContentWithPosition createJavaBlueprintCamelRoute(String camelRoute) {
-		String newLine = System.getProperty("line.separator");
+		String newLine = "\n";
 		String[] contentSplit = camelRoute.split(newLine);
 		int lineOffset = contentSplit.length - 1;
 		int characterOffset = contentSplit[contentSplit.length-1].length();

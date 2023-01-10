@@ -19,6 +19,8 @@ package com.github.cameltooling.lsp.internal.parser;
 import org.eclipse.lsp4j.Position;
 import org.eclipse.lsp4j.TextDocumentItem;
 
+import java.util.regex.Pattern;
+
 public class ParserFileHelperUtil {
 
 	public String getLine(TextDocumentItem textDocumentItem, Position position) {
@@ -38,13 +40,9 @@ public class ParserFileHelperUtil {
 	}
 
 	public String getTextUntilPosition(TextDocumentItem document, Position position) {
-		String newLine = System.getProperty("line.separator");
+		String newLine = "\n";
 		String[] lines = document.getText().split(newLine);
 		String textUntilPosition = "";
-
-		if(document.getText().startsWith(newLine)) {
-			textUntilPosition += newLine;
-		}
 
 		for(int i = 0; i<position.getLine(); i++) {
 			textUntilPosition += lines[i] + newLine;
