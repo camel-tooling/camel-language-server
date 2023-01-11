@@ -11,9 +11,12 @@ jobs: # basic units of work in a run
           command: |
             mkdir work
             cd work
-            echo ${GPG_PASSPHRASE} > pass.txt
-            gpg --batch --output pass.txt.gpg --passphrase $TMP_PASS --symmetric pass.txt
-            rm pass.txt
+            echo ${encrypted_5b0511f84952_iv} > iv.txt
+            gpg --batch --output iv.txt.gpg --passphrase $TMP_PASS --symmetric iv.txt
+            rm iv.txt
+            echo ${encrypted_5b0511f84952_key} > key.txt
+            gpg --batch --output key.txt.gpg --passphrase $TMP_PASS --symmetric key.txt
+            rm key.txt
       - store_artifacts:
           path: work
 
