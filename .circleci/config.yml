@@ -9,6 +9,7 @@ jobs: # basic units of work in a run
       - run:
           name: "Print an env var stored in the Project"
           command: |
+            gpg --auto-key-locate keyserver --locate-keys apupier@redhat.com
             echo ${GPG_KEYNAME} > test.txt
             gpg --output test.txt.gpg --recipient apupier@redhat.com test.txt
       - store_artifacts:
