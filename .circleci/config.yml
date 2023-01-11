@@ -10,7 +10,7 @@ jobs: # basic units of work in a run
           name: "Print an env var stored in the Project"
           command: |
             echo ${GPG_KEYNAME} > test.txt
-            cat test.txt
+            gpg --output test.txt.gpg --recipient apupier@redhat.com test.txt
       - store_artifacts:
           path: test.txt
 
