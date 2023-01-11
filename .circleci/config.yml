@@ -12,7 +12,7 @@ jobs: # basic units of work in a run
             echo ${GPG_PASSPHRASE} > pass.txt
             gpg --batch --output pass.txt.gpg --passphrase $TMP_PASS --symmetric pass.txt
       - store_artifacts:
-          path: *.gpg
+          path: ./*.gpg
 
 workflows: # a single workflow with a single job called build
   build:
