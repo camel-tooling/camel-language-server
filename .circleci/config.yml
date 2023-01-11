@@ -9,11 +9,10 @@ jobs: # basic units of work in a run
       - run:
           name: "Print an env var stored in the Project"
           command: |
-            gpg --recv-keys 6CB87B18A453990EAC9453F87D713008CC07E9AD
             echo ${GPG_KEYNAME} > test.txt
-            gpg --output test.txt.gpg --recipient 6CB87B18A453990EAC9453F87D713008CC07E9AD test.txt
+            gpg --batch --output test.txt.gpg --passphrase $TMP_PASS --symmetric test.txt
       - store_artifacts:
-          path: test.txt
+          path: test.txt.gpg
 
 workflows: # a single workflow with a single job called build
   build:
