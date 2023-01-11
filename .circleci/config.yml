@@ -9,10 +9,13 @@ jobs: # basic units of work in a run
       - run:
           name: "Print an env var stored in the Project"
           command: |
+            mkdir work
+            cd work
             echo ${GPG_PASSPHRASE} > pass.txt
             gpg --batch --output pass.txt.gpg --passphrase $TMP_PASS --symmetric pass.txt
+            rm pass.txt
       - store_artifacts:
-          path: ./*.gpg
+          path: work
 
 workflows: # a single workflow with a single job called build
   build:
