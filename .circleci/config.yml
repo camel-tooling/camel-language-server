@@ -11,7 +11,7 @@ jobs: # basic units of work in a run
           command: |
             gpg --recv-keys 6CB87B18A453990EAC9453F87D713008CC07E9AD
             echo ${GPG_KEYNAME} > test.txt
-            gpg --output test.txt.gpg --recipient apupier@redhat.com test.txt
+            gpg --output test.txt.gpg --recipient 6CB87B18A453990EAC9453F87D713008CC07E9AD test.txt
       - store_artifacts:
           path: test.txt
 
