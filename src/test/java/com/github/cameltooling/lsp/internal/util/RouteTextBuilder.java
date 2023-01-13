@@ -56,7 +56,7 @@ public class RouteTextBuilder {
 	 *          contents
 	 */
 	public static DocumentContentWithPosition createJavaDocumentClass(String javaClassContent) {
-		String newLine = System.getProperty("line.separator");
+		String newLine = "\n";
 		String[] contentSplit = javaClassContent.split(newLine);
 		int lineOffset = contentSplit.length;
 		int characterOffset = contentSplit[contentSplit.length-1].length();
@@ -84,7 +84,7 @@ public class RouteTextBuilder {
 	 *          method and after content.
 	 */
 	public static DocumentContentWithPosition createJavaDocumentCamelRoute(String camelRoute) {
-		String newLine = System.getProperty("line.separator");
+		String newLine = "\n";
 		String[] contentSplit = camelRoute.split(newLine);
 		int lineOffset = contentSplit.length - 1;
 		int characterOffset = contentSplit[contentSplit.length-1].length();
