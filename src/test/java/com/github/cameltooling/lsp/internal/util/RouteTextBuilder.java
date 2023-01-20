@@ -114,14 +114,17 @@ public class RouteTextBuilder {
 		public String content;
 		public Position position;
 
-		public DocumentContentWithPosition(String content, Position position) {
-			this.content = content;
-			this.position = position;
-		}
-
 		public DocumentContentWithPosition(String content, int line, int character) {
 			this.content = content;
 			this.position = new Position(line, character);
+		}
+
+		public String getContent() {
+			return content;
+		}
+
+		public Position getPosition() {
+			return position;
 		}
 	}
 }

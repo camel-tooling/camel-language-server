@@ -10,6 +10,7 @@ import java.util.regex.Pattern;
 
 public class CamelEIPParser {
 
+	private static final String LATEST_LTS_URL = "https://camel.apache.org/components/3.20.x";
 	private final TextDocumentItem document;
 
 	public CamelEIPParser(TextDocumentItem textDocumentItem) {
@@ -17,11 +18,11 @@ public class CamelEIPParser {
 	}
 
 	public boolean canPutEIP(Position position) {
-		Pattern CHOICE_EIP_PATTERN = Pattern.compile("\\)\\s*[.[c[h[o[i[c[e]?]?]?]?]?]?]?\\(?$", Pattern.MULTILINE);
+		Pattern choiceEipPattern = Pattern.compile("\\)\\s*[.[c[h[o[i[c[e]?]?]?]?]?]?]?\\(?$", Pattern.MULTILINE);
 		ParserFileHelperUtil util = new ParserFileHelperUtil();
 		String textUntilPosition = util.getTextUntilPosition(document, position);
 
-		return CHOICE_EIP_PATTERN.matcher(textUntilPosition).find();
+		return choiceEipPattern.matcher(textUntilPosition).find();
 	}
 
 	public CompletableFuture<List<CompletionItem>> getCompletions() {
@@ -31,10 +32,10 @@ public class CamelEIPParser {
 	}
 
 	private CompletionItem choiceEIPcompletion() {
-		String newLine = System.getProperty("line.separator");
+		String newLine = "\n";
 		CompletionItem completion = new CompletionItem("Content Based Router");
 		completion.setDocumentation(
-				"Read more: https://camel.apache.org/components/3.11.x/eips/content-based-router-eip.html"
+				"Read more: "+LATEST_LTS_URL+"/eips/choice-eip.html"
 		);
 		completion.setInsertText(
 				".choice()" + newLine +

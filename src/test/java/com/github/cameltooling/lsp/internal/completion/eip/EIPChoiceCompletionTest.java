@@ -7,6 +7,7 @@ import org.eclipse.lsp4j.CompletionItem;
 import org.eclipse.lsp4j.CompletionList;
 import org.eclipse.lsp4j.Position;
 import org.eclipse.lsp4j.jsonrpc.messages.Either;
+import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -16,7 +17,7 @@ import java.util.stream.Collectors;
 import static org.assertj.core.api.Assertions.assertThat;
 
 
-public class EIPChoiceCompletionTest extends AbstractCamelLanguageServerTest {
+class EIPChoiceCompletionTest extends AbstractCamelLanguageServerTest {
 
 	private static final String FROM_ROUTE = "from(\"timer:foo?period={{timer.period}}\")";
 	private static final String FROM_ROUTE_WITH_LINE_BREAKS_AND_TABS
@@ -24,19 +25,18 @@ public class EIPChoiceCompletionTest extends AbstractCamelLanguageServerTest {
 
 	private static final String FROM_ROUTE_WITH_CHOICE_EIP_MID_WRITTEN
 			= "from(\"timer:foo?period={{timer.period}}\")\n\t.ch\n";
+	public static final String CONTENT_BASED_ROUTER_LABEL = "Content Based Router";
 
 
 	@Test
-	void testProvideInsertionOnEmptyJavaFile() throws Exception {
+	void testDontProvideInsertionOnEmptyJavaFile() throws Exception {
 		String contents = "";
 		Position position = new Position(0,0);
 
 		List<CompletionItem> completionItems = getCompletionsFor(contents, position);
-		completionItems = completionItems.stream().filter(
-				completionItem -> completionItem.getLabel().startsWith("Content Based Router")
-		).collect(Collectors.toList());
+		completionItems = getContentBasedRouterCompletionItems(completionItems);
 
-		assertThat(completionItems).hasSize(0); //Removing camel-k modeline insertion. Refactor later
+		assertThat(completionItems).isEmpty();
 	}
 
 	@Test
@@ -44,13 +44,11 @@ public class EIPChoiceCompletionTest extends AbstractCamelLanguageServerTest {
 		RouteTextBuilder.DocumentContentWithPosition document =
 				RouteTextBuilder.createJavaDocumentClass("");
 
-		List<CompletionItem> completionItems = getCompletionsFor(document.content, document.position);
-		completionItems = completionItems.stream().filter(
-				completionItem -> completionItem.getLabel().startsWith("Content Based Router")
-		).collect(Collectors.toList());
+		List<CompletionItem> completionItems = getCompletionsFor(document.getContent(), document.getPosition());
+		completionItems = getContentBasedRouterCompletionItems(completionItems);
 
 
-		assertThat(completionItems).hasSize(0);
+		assertThat(completionItems).isEmpty();
 	}
 
 	@Test
@@ -58,10 +56,8 @@ public class EIPChoiceCompletionTest extends AbstractCamelLanguageServerTest {
 		RouteTextBuilder.DocumentContentWithPosition document =
 				RouteTextBuilder.createJavaDocumentCamelRoute("");
 
-		List<CompletionItem> completionItems = getCompletionsFor(document.content, document.position);
-		completionItems = completionItems.stream().filter(
-				completionItem -> completionItem.getLabel().startsWith("Content Based Router")
-		).collect(Collectors.toList());
+		List<CompletionItem> completionItems = getCompletionsFor(document.getContent(), document.getPosition());
+		completionItems = getContentBasedRouterCompletionItems(completionItems);
 
 		assertThat(completionItems).hasSize(0);
 	}
@@ -71,10 +67,8 @@ public class EIPChoiceCompletionTest extends AbstractCamelLanguageServerTest {
 		RouteTextBuilder.DocumentContentWithPosition document =
 				RouteTextBuilder.createJavaDocumentCamelRoute(FROM_ROUTE);
 
-		List<CompletionItem> completionItems = getCompletionsFor(document.content, document.position);
-		completionItems = completionItems.stream().filter(
-				completionItem -> completionItem.getLabel().startsWith("Content Based Router")
-		).collect(Collectors.toList());
+		List<CompletionItem> completionItems = getCompletionsFor(document.getContent(), document.getPosition());
+		completionItems = getContentBasedRouterCompletionItems(completionItems);
 
 
 		assertThat(completionItems).hasSize(1);
@@ -85,10 +79,8 @@ public class EIPChoiceCompletionTest extends AbstractCamelLanguageServerTest {
 		RouteTextBuilder.DocumentContentWithPosition document =
 				RouteTextBuilder.createJavaDocumentCamelRoute(FROM_ROUTE_WITH_LINE_BREAKS_AND_TABS);
 
-		List<CompletionItem> completionItems = getCompletionsFor(document.content, document.position);
-		completionItems = completionItems.stream().filter(
-				completionItem -> completionItem.getLabel().startsWith("Content Based Router")
-		).collect(Collectors.toList());
+		List<CompletionItem> completionItems = getCompletionsFor(document.getContent(), document.getPosition());
+		completionItems = getContentBasedRouterCompletionItems(completionItems);
 
 
 		assertThat(completionItems).hasSize(1);
@@ -99,10 +91,8 @@ public class EIPChoiceCompletionTest extends AbstractCamelLanguageServerTest {
 		RouteTextBuilder.DocumentContentWithPosition document =
 				RouteTextBuilder.createJavaDocumentCamelRoute(FROM_ROUTE_WITH_CHOICE_EIP_MID_WRITTEN);
 
-		List<CompletionItem> completionItems = getCompletionsFor(document.content, document.position);
-		completionItems = completionItems.stream().filter(
-				completionItem -> completionItem.getLabel().startsWith("Content Based Router")
-		).collect(Collectors.toList());
+		List<CompletionItem> completionItems = getCompletionsFor(document.getContent(), document.getPosition());
+		completionItems = getContentBasedRouterCompletionItems(completionItems);
 
 
 		assertThat(completionItems).hasSize(1);
@@ -116,5 +106,13 @@ public class EIPChoiceCompletionTest extends AbstractCamelLanguageServerTest {
 				camelLanguageServer, position);
 
 		return completions.get().getLeft();
+	}
+
+	@NotNull
+	private List<CompletionItem> getContentBasedRouterCompletionItems(List<CompletionItem> completionItems) {
+
+		return completionItems.stream().filter(
+				completionItem -> completionItem.getLabel().startsWith(CONTENT_BASED_ROUTER_LABEL)
+		).collect(Collectors.toList());
 	}
 }

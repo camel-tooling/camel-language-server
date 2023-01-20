@@ -42,18 +42,18 @@ public class ParserFileHelperUtil {
 	public String getTextUntilPosition(TextDocumentItem document, Position position) {
 		String newLine = "\n";
 		String[] lines = document.getText().split(newLine);
-		String textUntilPosition = "";
+		StringBuilder textUntilPosition = new StringBuilder("");
 
 		for(int i = 0; i<position.getLine(); i++) {
-			textUntilPosition += lines[i] + newLine;
+			textUntilPosition.append(lines[i] + newLine);
 		}
 
 		if(position.getLine() != lines.length) {
 			//Edge case: end of file with a character return
-			textUntilPosition += lines[position.getLine()].substring(0, position.getCharacter());
+			textUntilPosition.append(lines[position.getLine()].substring(0, position.getCharacter()));
 		}
 
-		return textUntilPosition;
+		return textUntilPosition.toString();
 
 	}
 	
