@@ -59,7 +59,7 @@
 		<tyrus.version>2.1.2</tyrus.version>
 		<commons-text.version>1.10.0</commons-text.version>
 		<citrus.kafka.version>3.3.1</citrus.kafka.version>
-		<kafka.clients.version>3.2.3</kafka.clients.version>
+		<kafka.clients.version>3.4.0</kafka.clients.version>
 		<kubernetes.client.version>6.1.1</kubernetes.client.version>
 	</properties>
 
