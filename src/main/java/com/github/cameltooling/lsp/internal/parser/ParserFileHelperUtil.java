@@ -19,6 +19,8 @@ package com.github.cameltooling.lsp.internal.parser;
 import org.eclipse.lsp4j.Position;
 import org.eclipse.lsp4j.TextDocumentItem;
 
+import java.util.regex.Pattern;
+
 public class ParserFileHelperUtil {
 
 	public String getLine(TextDocumentItem textDocumentItem, Position position) {
@@ -35,6 +37,24 @@ public class ParserFileHelperUtil {
 			return lines[line];
 		}
 		return null;
+	}
+
+	public String getTextUntilPosition(TextDocumentItem document, Position position) {
+		String newLine = "\n";
+		String[] lines = document.getText().split(newLine);
+		StringBuilder textUntilPosition = new StringBuilder("");
+
+		for(int i = 0; i<position.getLine(); i++) {
+			textUntilPosition.append(lines[i] + newLine);
+		}
+
+		if(position.getLine() != lines.length) {
+			//Edge case: end of file with a character return
+			textUntilPosition.append(lines[position.getLine()].substring(0, position.getCharacter()));
+		}
+
+		return textUntilPosition.toString();
+
 	}
 	
 }

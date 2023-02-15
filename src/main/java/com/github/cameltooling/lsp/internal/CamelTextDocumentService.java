@@ -19,11 +19,14 @@ package com.github.cameltooling.lsp.internal;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
 
 import com.github.cameltooling.lsp.internal.completion.modeline.CamelKModelineInsertionProcessor;
+import com.github.cameltooling.lsp.internal.parser.CamelEIPParser;
 import com.github.cameltooling.lsp.internal.parser.CamelKModelineInsertionParser;
 import org.apache.camel.catalog.CamelCatalog;
 import org.apache.camel.catalog.DefaultCamelCatalog;
@@ -161,15 +164,34 @@ public class CamelTextDocumentService implements TextDocumentService {
 		TextDocumentItem textDocumentItem = openedDocuments.get(uri);
 
 		if (textDocumentItem != null) {
-			if (uri.endsWith(".properties")){
+			if (uri.endsWith(".properties")) {
 				return new CamelPropertiesCompletionProcessor(textDocumentItem, getCamelCatalog(), getCamelKafkaConnectorManager()).getCompletions(completionParams.getPosition(), getSettingsManager(), getKameletsCatalogManager()).thenApply(Either::forLeft);
-			} else if (new CamelKModelineInsertionParser(textDocumentItem).canPutCamelKModeline(completionParams.getPosition())){
-				return new CamelKModelineInsertionProcessor(textDocumentItem).getCompletions().thenApply(Either::forLeft);
-			} else if (new CamelKModelineParser().isOnCamelKModeline(completionParams.getPosition().getLine(), textDocumentItem)){
-				return new CamelKModelineCompletionprocessor(textDocumentItem, getCamelCatalog()).getCompletions(completionParams.getPosition()).thenApply(Either::forLeft);
-			} else {
-				return new CamelEndpointCompletionProcessor(textDocumentItem, getCamelCatalog(), getKameletsCatalogManager()).getCompletions(completionParams.getPosition(), getSettingsManager()).thenApply(Either::forLeft);
 			}
+
+			List<CompletableFuture<List<CompletionItem>>> completions = new LinkedList<>();
+
+			if (new CamelEIPParser(textDocumentItem).canPutEIP(completionParams.getPosition())){
+				completions.add(new CamelEIPParser(textDocumentItem).getCompletions());
+			}
+
+			if (new CamelKModelineInsertionParser(textDocumentItem).canPutCamelKModeline(completionParams.getPosition())){
+				completions.add(new CamelKModelineInsertionProcessor(textDocumentItem).getCompletions());
+			} else if (new CamelKModelineParser().isOnCamelKModeline(completionParams.getPosition().getLine(), textDocumentItem)){
+				completions.add(new CamelKModelineCompletionprocessor(textDocumentItem, getCamelCatalog()).getCompletions(completionParams.getPosition()));
+			} else {
+				completions.add(new CamelEndpointCompletionProcessor(textDocumentItem, getCamelCatalog(), getKameletsCatalogManager()).getCompletions(completionParams.getPosition(), getSettingsManager()));
+			}
+
+			//Combining all completable futures completion lists
+			//Source: https://nurkiewicz.com/2013/05/java-8-completablefuture-in-action.html
+			return CompletableFuture
+					.allOf(completions.toArray(new CompletableFuture[completions.size()]))
+					.thenApply(
+							v -> completions.stream()
+									.map(future -> future.join())
+									.flatMap(x -> x.stream())
+									.collect(Collectors.toList())
+					).thenApply(Either::forLeft);
 		} else {
 			LOGGER.warn("The document with uri {} has not been found in opened documents. Cannot provide completion.", uri);
 			return CompletableFuture.completedFuture(Either.forLeft(Collections.emptyList()));
