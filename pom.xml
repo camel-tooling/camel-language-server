@@ -155,7 +155,7 @@
 			<!-- SureFire -->
 			<plugin>
 				<artifactId>maven-surefire-plugin</artifactId>
-				<version>2.22.2</version>
+				<version>3.0.0</version>
 				<configuration>
 					<systemProperties>
 						<camel.kafka.connector.version>${camel.kafka.connector.version}</camel.kafka.connector.version>
