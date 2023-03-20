@@ -15,7 +15,7 @@ and can be used with any editor that supports the protocol. The server utilizes 
 
 These clients are available:
 * [Eclipse IDE](https://github.com/camel-tooling/camel-lsp-client-eclipse)
-* [VS Code](https://github.com/camel-tooling/camel-lsp-client-vscode)
+* [VS Code](https://github.cosm/camel-tooling/camel-lsp-client-vscode)
 * [Emacs](https://github.com/camel-tooling/camel-lsp-client-emacs)
 * [Vim/NeoClide](https://github.com/camel-tooling/coc-camel)
 * [Eclipse Che](https://github.com/eclipse/che/pull/8648)
