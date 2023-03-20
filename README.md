@@ -13,7 +13,7 @@ and can be used with any editor that supports the protocol. The server utilizes 
 
 # Clients4
 
-These clients are available:
+These clients are avaihlable:
 * [Eclipse IDE](https://github.com/camel-tooling/camel-lsp-client-eclipse)
 * [VS Code](https://github.cosm/camel-tooling/camel-lsp-client-vscode)
 * [Emacs](https://github.com/camel-tooling/camel-lsp-client-emacs)
