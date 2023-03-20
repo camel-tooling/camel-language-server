@@ -12,7 +12,7 @@ The server adheres to the [language server protocol](https://github.com/Microsof
 and can be used with any editor that supports the protocol. The server utilizes [Apache Camel](https://camel.apache.org/).
 
 # Clients43
-jh
+jhg
 These clients are avaihlable:
 * [Eclipse IDE](https://github.com/camel-tooling/camel-lsp-client-eclipse)
 * [VS Code](https://github.cosm/camel-tooling/camel-lsp-client-vscode)
