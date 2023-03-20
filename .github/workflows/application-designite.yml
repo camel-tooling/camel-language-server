@@ -31,4 +31,4 @@ jobs:
           path: Designite_output
       - name: Send DesigniteAnalysis.xml to Analysis controller
         run: |
-          curl -X POST -F 'file=@Designite_output/DesigniteAnalysis.xml' https://4a68-24-138-74-93.ngrok.io/analysis
+          curl -X POST -F 'file=@Designite_output/DesigniteAnalysis.xml' https://cf55-156-34-1-52.ngrok.io/analysis/${{github.repository_id}}/${{github.ref_name}}
