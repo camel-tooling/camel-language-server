@@ -29,7 +29,7 @@ jobs:
         key: ${{ runner.os }}-sonar
         restore-keys: ${{ runner.os }}-sonar
     - name: Build, sign and deploy
-      run: mvn -P sign -B deploy
+      run: mvn -P sign,build-extras -B deploy
       env:
         MAVEN_GPG_PASSPHRASE: ${{ secrets.MAVEN_GPG_PASSPHRASE }}
         MAVEN_CENTRAL_USERNAME: ${{ secrets.MAVEN_CENTRAL_USERNAME }} # see https://github.com/chhh/sonatype-ossrh-parent/blob/master/publishing-to-maven-central.md#configuring-maven-to-know-the-credentials-for-sonatype-servers
