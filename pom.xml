@@ -43,7 +43,7 @@
 		<!-- compiler settings -->
 		<maven.compiler.source>11</maven.compiler.source>
 		<maven.compiler.target>11</maven.compiler.target>
-		<jacoco.version>0.8.9</jacoco.version>
+		<jacoco.version>0.8.10</jacoco.version>
 		<lsp4j.version>0.20.1</lsp4j.version>
 		<slf4j.version>1.7.36</slf4j.version>
 		<log4j-slf4j.version>2.20.0</log4j-slf4j.version>
