@@ -47,7 +47,7 @@
 		<lsp4j.version>0.20.1</lsp4j.version>
 		<slf4j.version>1.7.36</slf4j.version>
 		<log4j-slf4j.version>2.20.0</log4j-slf4j.version>
-		<junit.version>5.9.2</junit.version>
+		<junit.version>5.9.3</junit.version>
 		<assertj.version>3.24.2</assertj.version>
 		<jgit.version>6.5.0.202303070854-r</jgit.version>
 		<camel.version>3.20.3</camel.version>
