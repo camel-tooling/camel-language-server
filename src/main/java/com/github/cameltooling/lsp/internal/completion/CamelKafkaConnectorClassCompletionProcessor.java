@@ -27,6 +27,7 @@ import org.eclipse.lsp4j.CompletionItem;
 import com.github.cameltooling.lsp.internal.catalog.util.CamelKafkaConnectorCatalogManager;
 import com.github.cameltooling.lsp.internal.instancemodel.propertiesfile.CamelPropertyValueInstance;
 
+@Deprecated
 public class CamelKafkaConnectorClassCompletionProcessor {
 
 	private CamelPropertyValueInstance camelPropertyValueInstance;

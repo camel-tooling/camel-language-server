@@ -51,6 +51,7 @@ import com.github.cameltooling.lsp.internal.parser.CamelKafkaUtil;
  * it is used to represents "timer.delay"
  * 
  */
+@Deprecated
 public class CamelSinkOrSourcePropertyKey implements ILineRangeDefineable {
 
 	private String optionKey;

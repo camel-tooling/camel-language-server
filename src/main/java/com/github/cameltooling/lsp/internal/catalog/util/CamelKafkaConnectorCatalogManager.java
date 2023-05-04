@@ -25,6 +25,7 @@ import org.eclipse.lsp4j.TextDocumentItem;
 
 import com.github.cameltooling.lsp.internal.parser.CamelKafkaUtil;
 
+@Deprecated
 public class CamelKafkaConnectorCatalogManager {
 	
 	private static final String CAMEL_KAFKA_CONNECTOR_TYPE_SOURCE = "source";
