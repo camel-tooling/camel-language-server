@@ -16,6 +16,7 @@
  */
 package com.github.cameltooling.lsp.internal.instancemodel.propertiesfile;
 
+@Deprecated
 public class KafkaConnectTransformerTypePropertyKeyDetector {
 	
 	private static final String TRANSFORMER_TYPE_KEY_PATTERN = "transforms\\.[^\\.]*\\.type";

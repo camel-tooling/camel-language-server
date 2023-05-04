@@ -32,6 +32,7 @@ import com.github.cameltooling.lsp.internal.instancemodel.PropertiesDSLModelHelp
  * @author Aurelien Pupier
  * Restriction on notation for properties file, it must be with '=' and without spaces
  */
+@Deprecated
 public class CamelKafkaConnectDSLParser extends ParserFileHelper {
 	
 	private static final Logger LOGGER = LoggerFactory.getLogger(CamelKafkaConnectDSLParser.class);
