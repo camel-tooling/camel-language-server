@@ -20,6 +20,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
@@ -34,7 +35,6 @@ import org.junit.jupiter.api.io.TempDir;
 
 import com.github.cameltooling.lsp.internal.AbstractCamelLanguageServerTest;
 import com.github.cameltooling.lsp.internal.CamelLanguageServer;
-import com.google.common.io.Files;
 
 class CamelKModelineCamelPropertyFileTest extends AbstractCamelLanguageServerTest {
 	
@@ -94,7 +94,7 @@ class CamelKModelineCamelPropertyFileTest extends AbstractCamelLanguageServerTes
 	 */
 	private File createFileStructureForTest(String modelineToTest) throws IOException {
 		File camelKfile = new File(temporaryDir, "test.camelk.yaml");
-		Files.write(modelineToTest.getBytes(), camelKfile);
+		Files.writeString(camelKfile.toPath(), modelineToTest);
 		File aSiblingPropertyFile = new File(temporaryDir, "a.properties");
 		aSiblingPropertyFile.createNewFile();
 		

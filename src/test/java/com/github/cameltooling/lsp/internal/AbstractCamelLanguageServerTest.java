@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URISyntaxException;
+import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -66,7 +67,6 @@ import org.eclipse.lsp4j.services.TextDocumentService;
 import org.junit.jupiter.api.AfterEach;
 
 import com.github.cameltooling.lsp.internal.telemetry.TelemetryEvent;
-import com.google.common.io.Files;
 import com.google.gson.Gson;
 
 public abstract class AbstractCamelLanguageServerTest {
@@ -207,7 +207,7 @@ public abstract class AbstractCamelLanguageServerTest {
 	}
 	
 	protected CamelLanguageServer initializeLanguageServer(File camelFile) throws URISyntaxException, InterruptedException, ExecutionException, IOException {
-		return initializeLanguageServer(getExtensionByStringHandling(camelFile.getName()), new TextDocumentItem(camelFile.toURI().toString(), CamelLanguageServer.LANGUAGE_ID, 0, new String(Files.toByteArray(camelFile))));
+		return initializeLanguageServer(getExtensionByStringHandling(camelFile.getName()), new TextDocumentItem(camelFile.toURI().toString(), CamelLanguageServer.LANGUAGE_ID, 0, Files.readString(camelFile.toPath())));
 	}
 	
 	private String getExtensionByStringHandling(String filename) {
