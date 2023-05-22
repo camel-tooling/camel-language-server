@@ -21,6 +21,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.nio.file.Files;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
@@ -36,7 +37,6 @@ import org.junit.jupiter.api.io.TempDir;
 
 import com.github.cameltooling.lsp.internal.AbstractCamelLanguageServerTest;
 import com.github.cameltooling.lsp.internal.CamelLanguageServer;
-import com.google.common.io.Files;
 
 class DocumentSymbolProcessorTest extends AbstractCamelLanguageServerTest {
 	
@@ -288,7 +288,7 @@ class DocumentSymbolProcessorTest extends AbstractCamelLanguageServerTest {
 	
 	private List<Either<SymbolInformation, DocumentSymbol>> testRetrieveDocumentSymbol(String textTotest, int expectedSize) throws URISyntaxException, InterruptedException, ExecutionException, IOException {
 		File camelFile = new File(tempDir, "DocumentSymbolInformation.xml");
-		Files.write(textTotest.getBytes(), camelFile);
+		Files.writeString(camelFile.toPath(), textTotest);
 		return testRetrieveDocumentSymbol(camelFile, expectedSize);
 	}
 	
