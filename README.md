@@ -14,18 +14,22 @@ and can be used with any editor that supports the protocol. The server utilizes 
 # Clients
 
 These clients are available:
-* [Eclipse IDE](https://github.com/camel-tooling/camel-lsp-client-eclipse)
-* [VS Code](https://github.com/camel-tooling/camel-lsp-client-vscode)
-* [Emacs](https://github.com/camel-tooling/camel-lsp-client-emacs)
-* [Vim/NeoClide](https://github.com/camel-tooling/coc-camel)
-* [Eclipse Che](https://github.com/eclipse/che/pull/8648)
+* [Eclipse IDE](https://github.com/camel-tooling/camel-lsp-client-eclipse) [Marketplace](https://marketplace.eclipse.org/content/language-support-apache-camel)
+* [VS Code & Codium](https://github.com/camel-tooling/camel-lsp-client-vscode)
+  * [Microsoft Marketplace](https://marketplace.visualstudio.com/items?itemName=redhat.vscode-apache-camel)
+  * [Open VSX Marketplace](https://open-vsx.org/extension/redhat/vscode-apache-camel)
+* [Emacs](https://emacs-lsp.github.io/lsp-mode/page/lsp-camel/)
+* [Vim/NeoClide](https://www.npmjs.com/package/coc-camel)
+* [Eclipse Che with Theia](https://github.com/eclipse/che/pull/8648)
 * [Atom Editor](https://github.com/camel-tooling/camel-lsp-client-atom)
 
-Manual configuration is possible with:
+Tutorial with manual configuration is provided for:
+* [Vim/neoClide](https://github.com/camel-tooling/camel-lsp-client-vim)
 * [Sublime Text](https://github.com/camel-tooling/camel-lsp-client-sublime)
 * [CodeMirror](https://github.com/camel-tooling/camel-lsp-client-codemirror)
+* [Emacs](https://github.com/camel-tooling/camel-lsp-client-emacs)
 
-Help is welcome to provide more client implementations. You can pick from [this list](https://microsoft.github.io/language-server-protocol/implementors/tools/).
+Help is welcome to provide more client implementations and tutorials. You can pick from [this list](https://microsoft.github.io/language-server-protocol/implementors/tools/).
 
 ## Features
 
