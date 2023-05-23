@@ -81,7 +81,7 @@ public class DocumentSymbolXMLProcessor extends AbstractDocumentSymbolProcessor 
 			Node routeNode = routeNodes.item(i);
 			Location location = parserFileHelper.retrieveLocation(routeNode, textDocumentItem);
 			String displayNameOfSymbol = computeDisplayNameOfSymbol(routeNode);
-			res.add(Either.forLeft(new SymbolInformation(displayNameOfSymbol, SymbolKind.Field, location)));
+			res.add(Either.forRight(new DocumentSymbol(displayNameOfSymbol, SymbolKind.Field, location.getRange(), location.getRange())));
 		}
 		return res;
 	}
