@@ -23,7 +23,6 @@ import java.util.Optional;
 import org.apache.camel.parser.model.CamelEndpointDetails;
 import org.apache.camel.parser.model.CamelNodeDetails;
 import org.eclipse.lsp4j.DocumentSymbol;
-import org.eclipse.lsp4j.Location;
 import org.eclipse.lsp4j.Range;
 import org.eclipse.lsp4j.SymbolInformation;
 import org.eclipse.lsp4j.SymbolKind;
@@ -59,11 +58,12 @@ public abstract class AbstractDocumentSymbolProcessor {
 
 	private Either<SymbolInformation, DocumentSymbol> createSymbolInformation(CamelNodeDetails camelNodeDetails, Range range, Optional<String> componentPath) {
 		String nodeDetailsName = camelNodeDetails.getName();
-		return Either.forLeft(
-				new SymbolInformation(
+		return Either.forRight(
+				new DocumentSymbol(
 						componentPath.isPresent() ? nodeDetailsName + " " + componentPath.get() : nodeDetailsName,
 						SymbolKind.Field,
-						new Location(textDocumentItem.getUri(), range)));
+						range,
+						range));
 	}
 
 

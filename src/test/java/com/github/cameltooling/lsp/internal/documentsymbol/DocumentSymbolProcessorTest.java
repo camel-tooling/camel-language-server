@@ -64,14 +64,14 @@ class DocumentSymbolProcessorTest extends AbstractCamelLanguageServerTest {
 				"    </route>\n"
 				+ "</camelContext>\n";
 		List<Either<SymbolInformation, DocumentSymbol>> documentSymbols = testRetrieveDocumentSymbol(textTotest, 8);
-		SymbolInformation firstRoute = documentSymbols.stream()
-			.filter(item -> "a route".equals(item.getLeft().getName()))
-			.map(item -> item.getLeft())
+		DocumentSymbol firstRoute = documentSymbols.stream()
+			.filter(item -> "a route".equals(item.getRight().getName()))
+			.map(item -> item.getRight())
 			.findAny()
 			.get();
 		Position expectedStart = new Position(2, 24/* expecting 4 but seems a bug in Camel*/);
 		Position expectedEnd = new Position(8, 12);
-		assertThat(firstRoute.getLocation().getRange()).usingRecursiveComparison().isEqualTo(new Range(expectedStart, expectedEnd));
+		assertThat(firstRoute.getRange()).usingRecursiveComparison().isEqualTo(new Range(expectedStart, expectedEnd));
 	}
 	
 	@Test
@@ -90,14 +90,14 @@ class DocumentSymbolProcessorTest extends AbstractCamelLanguageServerTest {
 
 	private void checkSymbolInformation(List<Either<SymbolInformation, DocumentSymbol>> documentSymbols,
 			Position expectedStart, Position expectedEnd, String expectedText) {
-		SymbolInformation from = documentSymbols.stream()
+		DocumentSymbol from = documentSymbols.stream()
 			.filter(item -> {
-				return expectedText.equals(item.getLeft().getName());
+				return expectedText.equals(item.getRight().getName());
 			})
-			.map(item -> item.getLeft())
+			.map(item -> item.getRight())
 			.findAny()
 			.get();
-		assertThat(from.getLocation().getRange()).usingRecursiveComparison().isEqualTo(new Range(expectedStart, expectedEnd));
+		assertThat(from.getRange()).usingRecursiveComparison().isEqualTo(new Range(expectedStart, expectedEnd));
 	}
 
 	@Test
@@ -228,9 +228,9 @@ class DocumentSymbolProcessorTest extends AbstractCamelLanguageServerTest {
 
 	private void testSingleRoute(File f) throws URISyntaxException, InterruptedException, ExecutionException, IOException {
 		List<Either<SymbolInformation,DocumentSymbol>> documentSymbols = testRetrieveDocumentSymbol(f, 4);
-		SymbolInformation symbolInformation = documentSymbols.get(0).getLeft();
-		assertThat(symbolInformation.getName()).isEqualTo("from file:src/data");
-		Range range = symbolInformation.getLocation().getRange();
+		DocumentSymbol documentSymbol = documentSymbols.get(0).getRight();
+		assertThat(documentSymbol.getName()).isEqualTo("from file:src/data");
+		Range range = documentSymbol.getRange();
 		assertThat(range.getStart().getLine()).isEqualTo(15);
 		assertThat(range.getEnd().getLine()).isEqualTo(20);
 		assertThat(range.getEnd().getCharacter()).isEqualTo(55);
@@ -247,12 +247,12 @@ class DocumentSymbolProcessorTest extends AbstractCamelLanguageServerTest {
 		File f = new File("src/test/resources/workspace/My3RoutesBuilder.java");
 		List<Either<SymbolInformation,DocumentSymbol>> documentSymbols = testRetrieveDocumentSymbol(f, 12);
 		
-		List<SymbolInformation> fromSymbolInformations = documentSymbols.stream()
-				.filter(either -> "from direct:route2".equals(either.getLeft().getName()))
-				.map(Either::getLeft)
+		List<DocumentSymbol> fromSymbolInformations = documentSymbols.stream()
+				.filter(either -> "from direct:route2".equals(either.getRight().getName()))
+				.map(Either::getRight)
 				.collect(Collectors.toList());
-		SymbolInformation secondFrom = fromSymbolInformations.get(0);
-		Range range = secondFrom.getLocation().getRange();
+		DocumentSymbol secondFrom = fromSymbolInformations.get(0);
+		Range range = secondFrom.getRange();
 		assertThat(range.getStart().getLine()).isEqualTo(13);
 		assertThat(range.getEnd().getLine()).isEqualTo(18);
 		assertThat(range.getEnd().getCharacter()).isEqualTo(55);
@@ -263,12 +263,12 @@ class DocumentSymbolProcessorTest extends AbstractCamelLanguageServerTest {
 		File f = new File("src/test/resources/workspace/PartialRoute.java");
 		List<Either<SymbolInformation,DocumentSymbol>> documentSymbols = testRetrieveDocumentSymbol(f, 1);
 		
-		List<SymbolInformation> fromSymbolInformations = documentSymbols.stream()
-				.filter(either -> "from file:src/data".equals(either.getLeft().getName()))
-				.map(Either::getLeft)
+		List<DocumentSymbol> fromSymbolInformations = documentSymbols.stream()
+				.filter(either -> "from file:src/data".equals(either.getRight().getName()))
+				.map(Either::getRight)
 				.collect(Collectors.toList());
-		SymbolInformation secondFrom = fromSymbolInformations.get(0);
-		Range range = secondFrom.getLocation().getRange();
+		DocumentSymbol secondFrom = fromSymbolInformations.get(0);
+		Range range = secondFrom.getRange();
 		assertThat(range.getStart().getLine()).isEqualTo(3);
 		assertThat(range.getEnd().getLine()).isEqualTo(3);
 		assertThat(range.getEnd().getCharacter()).isEqualTo(40);
