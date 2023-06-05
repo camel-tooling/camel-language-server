@@ -14,6 +14,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CancellationException;
 import java.util.concurrent.CompletableFuture;
 
 import org.apache.camel.catalog.CamelCatalog;
@@ -39,7 +40,7 @@ public class DiagnosticRunner {
 	private ConfigurationPropertiesDiagnosticService configurationPropertiesDiagnosticService;
 	private CamelKModelineDiagnosticService camelKModelineDiagnosticService;
 	private ConnectedModeDiagnosticService connectedModeDiagnosticService;
-	private Map<String, CompletableFuture<Void>> lastTriggeredDiagnostic = new HashMap<String, CompletableFuture<Void>>();
+	private Map<String, CompletableFuture<Void>> lastTriggeredDiagnostic = new HashMap<>();
 
 	public DiagnosticRunner(CompletableFuture<CamelCatalog> camelCatalog, CamelLanguageServer camelLanguageServer) {
 		this.camelLanguageServer = camelLanguageServer;
@@ -96,7 +97,11 @@ public class DiagnosticRunner {
 	public void clear(String uri) {
 		CompletableFuture<Void> previousComputation = lastTriggeredDiagnostic.get(uri);
 		if (previousComputation != null) {
-			previousComputation.cancel(true);
+			try {
+				previousComputation.cancel(true);
+			} catch (CancellationException ce) {
+				// Do nothing
+			}
 		}
 		camelLanguageServer.getClient().publishDiagnostics(new PublishDiagnosticsParams(uri, Collections.emptyList()));
 	}
