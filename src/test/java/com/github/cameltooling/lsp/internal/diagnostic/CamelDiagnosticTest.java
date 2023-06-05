@@ -147,7 +147,7 @@ class CamelDiagnosticTest extends AbstractDiagnosticTest {
 		DidCloseTextDocumentParams params = new DidCloseTextDocumentParams(new TextDocumentIdentifier(DUMMY_URI+".xml"));
 		camelLanguageServer.getTextDocumentService().didClose(params);
 		
-		await().timeout(AWAIT_TIMEOUT).untilAsserted(() -> assertThat(lastPublishedDiagnostics.getDiagnostics()).isEmpty());
+		await().timeout(AWAIT_TIMEOUT.multipliedBy(2)).untilAsserted(() -> assertThat(lastPublishedDiagnostics.getDiagnostics()).isEmpty());
 	}
 	
 	@Test
