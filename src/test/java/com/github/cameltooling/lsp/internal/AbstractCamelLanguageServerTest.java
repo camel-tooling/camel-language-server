@@ -136,6 +136,7 @@ public abstract class AbstractCamelLanguageServerTest {
 
 		@Override
 		public void publishDiagnostics(PublishDiagnosticsParams diagnostics) {
+			System.out.println("Published Diagnostics " + diagnostics.getUri() +" "+ diagnostics.getDiagnostics().size());
 			AbstractCamelLanguageServerTest.this.lastPublishedDiagnostics = diagnostics;
 		}
 

@@ -142,16 +142,22 @@ class CamelDiagnosticTest extends AbstractDiagnosticTest {
 	
 	@Test
 	void testValidationErrorClearedOnClose() throws Exception {
+		System.out.println("### Starting testValidationErrorClearedOnClose test ");
 		testDiagnostic("camel-with-endpoint-error", 1, ".xml");
+		
+		System.out.println("### Will close");
 		
 		DidCloseTextDocumentParams params = new DidCloseTextDocumentParams(new TextDocumentIdentifier(DUMMY_URI+".xml"));
 		camelLanguageServer.getTextDocumentService().didClose(params);
+		
+		System.out.println("### didClose sent");
 		
 		await().timeout(AWAIT_TIMEOUT.multipliedBy(2)).untilAsserted(() -> assertThat(lastPublishedDiagnostics.getDiagnostics()).isEmpty());
 	}
 	
 	@Test
 	void testValidationErrorUpdatedOnChange() throws Exception {
+		System.out.println("### Starting testValidationErrorUpdatedOnChange test ");
 		testDiagnostic("camel-with-endpoint-error", 1, ".xml");
 		
 		camelLanguageServer.getTextDocumentService().getOpenedDocument(DUMMY_URI+".xml").getText();
