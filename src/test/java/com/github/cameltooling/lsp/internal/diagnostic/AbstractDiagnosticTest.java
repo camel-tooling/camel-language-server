@@ -53,6 +53,9 @@ public abstract class AbstractDiagnosticTest extends AbstractCamelLanguageServer
 	protected void testDiagnostic(File file, int expectedNumberOfError, String extension) throws FileNotFoundException {
 		camelLanguageServer = initializeLanguageServer(new FileInputStream(file), extension);
 		
+		createAwait().untilAsserted(() -> assertThat(lastPublishedDiagnostics).isNotNull());
+		createAwait().untilAsserted(() -> assertThat(lastPublishedDiagnostics.getDiagnostics()).isEmpty());
+		
 		DidSaveTextDocumentParams params = new DidSaveTextDocumentParams(new TextDocumentIdentifier(DUMMY_URI+extension));
 		camelLanguageServer.getTextDocumentService().didSave(params);
 		
