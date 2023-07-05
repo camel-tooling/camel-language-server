@@ -40,7 +40,6 @@ import org.eclipse.lsp4j.WorkspaceEdit;
 import org.eclipse.lsp4j.jsonrpc.messages.Either;
 
 import com.github.cameltooling.lsp.internal.CamelTextDocumentService;
-import com.github.cameltooling.lsp.internal.catalog.util.CamelKafkaConnectorCatalogManager;
 import com.github.cameltooling.lsp.internal.catalog.util.KameletsCatalogManager;
 import com.github.cameltooling.lsp.internal.parser.ParserFileHelperUtil;
 import com.github.cameltooling.lsp.internal.settings.SettingsManager;
@@ -61,7 +60,7 @@ public abstract class AbstractQuickfix {
 			if(diagnostic.getCode()!= null && getDiagnosticId().equals(diagnostic.getCode().getLeft())) {
 				CharSequence currentValueInError = retrieveCurrentErrorValue(openedDocument, diagnostic);
 				if(currentValueInError != null) {
-					List<String> possibleProperties = retrievePossibleValues(openedDocument, camelTextDocumentService.getCamelCatalog(), camelTextDocumentService.getCamelKafkaConnectorManager(), diagnostic.getRange().getStart(), camelTextDocumentService.getSettingsManager(), camelTextDocumentService.getKameletsCatalogManager());
+					List<String> possibleProperties = retrievePossibleValues(openedDocument, camelTextDocumentService.getCamelCatalog(), diagnostic.getRange().getStart(), camelTextDocumentService.getSettingsManager(), camelTextDocumentService.getKameletsCatalogManager());
 					int distanceThreshold = Math.round(currentValueInError.length() * 0.4f);
 					LevenshteinDistance levenshteinDistance = new LevenshteinDistance(distanceThreshold);
 					List<String> mostProbableProperties = possibleProperties.stream()
@@ -98,7 +97,7 @@ public abstract class AbstractQuickfix {
 		return codeAction;
 	}
 	
-	protected abstract List<String> retrievePossibleValues(TextDocumentItem textDocumentItem, CompletableFuture<CamelCatalog> camelCatalog, CamelKafkaConnectorCatalogManager camelKafkaConnectorManager, Position position, SettingsManager settingsManager, KameletsCatalogManager kameletsCatalogManager);
+	protected abstract List<String> retrievePossibleValues(TextDocumentItem textDocumentItem, CompletableFuture<CamelCatalog> camelCatalog, Position position, SettingsManager settingsManager, KameletsCatalogManager kameletsCatalogManager);
 	protected abstract String getDiagnosticId();
 	
 }

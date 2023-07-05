@@ -31,7 +31,7 @@ import com.github.cameltooling.lsp.internal.instancemodel.ComponentNameConstants
 public class ConnectedModeDiagnosticService extends DiagnosticService {
 
 	protected ConnectedModeDiagnosticService() {
-		super(null, null);
+		super(null);
 	}
 
 	public Collection<? extends Diagnostic> compute(String camelText, TextDocumentItem documentItem) {

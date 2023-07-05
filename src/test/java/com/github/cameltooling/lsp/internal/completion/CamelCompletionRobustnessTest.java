@@ -21,11 +21,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 import org.eclipse.lsp4j.Position;
 import org.junit.jupiter.api.Test;
 
-import com.github.cameltooling.lsp.internal.AbstractCamelKafkaConnectorTest;
+import com.github.cameltooling.lsp.internal.AbstractCamelLanguageServerTest;
 import com.github.cameltooling.lsp.internal.CamelLanguageServer;
 import com.github.cameltooling.lsp.internal.util.RouteTextBuilder;
 
-class CamelCompletionRobustnessTest extends AbstractCamelKafkaConnectorTest {
+class CamelCompletionRobustnessTest extends AbstractCamelLanguageServerTest {
 
 	@Test
 	void testCompletionOnNotOpenedDocument() throws Exception {

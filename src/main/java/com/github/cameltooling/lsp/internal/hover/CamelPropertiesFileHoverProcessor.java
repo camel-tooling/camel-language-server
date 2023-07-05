@@ -23,7 +23,6 @@ import org.eclipse.lsp4j.Hover;
 import org.eclipse.lsp4j.Position;
 import org.eclipse.lsp4j.TextDocumentItem;
 
-import com.github.cameltooling.lsp.internal.catalog.util.CamelKafkaConnectorCatalogManager;
 import com.github.cameltooling.lsp.internal.catalog.util.KameletsCatalogManager;
 import com.github.cameltooling.lsp.internal.instancemodel.propertiesfile.CamelPropertyEntryInstance;
 import com.github.cameltooling.lsp.internal.parser.ParserFileHelperUtil;
@@ -36,10 +35,10 @@ public class CamelPropertiesFileHoverProcessor {
 		this.textDocumentItem = textDocumentItem;
 	}
 
-	public CompletableFuture<Hover> getHover(Position position, CompletableFuture<CamelCatalog> camelCatalog, CamelKafkaConnectorCatalogManager camelKafkaConnectorCatalog, KameletsCatalogManager kameletCatalogManager) {
+	public CompletableFuture<Hover> getHover(Position position, CompletableFuture<CamelCatalog> camelCatalog, KameletsCatalogManager kameletCatalogManager) {
 		int line = position.getLine();
 		String propertyEntryTextLine = new ParserFileHelperUtil().getLine(textDocumentItem, line);
-		return new CamelPropertyEntryInstance(propertyEntryTextLine, new Position(line, 0), textDocumentItem).getHover(position, camelCatalog, camelKafkaConnectorCatalog, kameletCatalogManager);
+		return new CamelPropertyEntryInstance(propertyEntryTextLine, new Position(line, 0), textDocumentItem).getHover(position, camelCatalog, kameletCatalogManager);
 	}
 
 }

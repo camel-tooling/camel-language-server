@@ -46,14 +46,12 @@ public class CodeActionProcessor {
 			List<String> codeActionsType = context.getOnly();
 			if (codeActionsType == null) {
 				codeActions.addAll(computeQuickfixes(params));
-				codeActions.addAll(computeConvertCamelKafkaConnectorUrl(params));
 				codeActions.addAll(computeConvertDeprecatedPropertyFileModeline(params));
 			} else {
 				if(codeActionsType.contains(CodeActionKind.QuickFix)) {
 					codeActions.addAll(computeQuickfixes(params));
 				}
 				if(codeActionsType.contains(CodeActionKind.Refactor)) {
-					codeActions.addAll(computeConvertCamelKafkaConnectorUrl(params));
 					codeActions.addAll(computeConvertDeprecatedPropertyFileModeline(params));
 				}
 			}
@@ -65,10 +63,6 @@ public class CodeActionProcessor {
 	
 	private Collection<Either<Command, CodeAction>> computeConvertDeprecatedPropertyFileModeline(CodeActionParams params) {
 		return new ConvertCamelKPropertyFileModelineRefactorAction(camelTextDocumentService).getCodeActions(params);
-	}
-
-	private Collection<? extends Either<Command, CodeAction>> computeConvertCamelKafkaConnectorUrl(CodeActionParams params) {
-		return new ConvertCamelKafkaConnectorURLToPropertiesRefactorAction(camelTextDocumentService).getCodeActions(params);
 	}
 
 	private List<Either<Command, CodeAction>> computeQuickfixes(CodeActionParams params) {

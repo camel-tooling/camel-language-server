@@ -54,11 +54,6 @@ public class ParserFileHelperFactory {
 			if (camelKYamlDSLParser.getCorrespondingType(textDocumentItem, line) != null) {
 				return camelKYamlDSLParser;
 			}
-		} else if(isCamelKafkaConnectDSL(textDocumentItem, uri)) {
-			CamelKafkaConnectDSLParser camelKafkaConnectDSLParser = new CamelKafkaConnectDSLParser();
-			if (camelKafkaConnectDSLParser.getCorrespondingMethodName(textDocumentItem, line) != null) {
-				return camelKafkaConnectDSLParser;
-			}
 		} else if(isCamelKKotlinDSL(textDocumentItem, uri)) {
 			CamelKKotlinDSLParser camelKKotlinDSLParser = new CamelKKotlinDSLParser();
 			if (camelKKotlinDSLParser.getCorrespondingMethodName(textDocumentItem, line) != null) {
@@ -84,8 +79,7 @@ public class ParserFileHelperFactory {
 				|| isCamelKJSDSL(textDocumentItem, uri)
 				|| isCamelYamlDSL(textDocumentItem, uri)
 				|| isCamelKKotlinDSL(textDocumentItem, uri)
-				|| isCamelKGroovyDSL(textDocumentItem, uri)
-				|| isCamelKafkaConnectDSL(textDocumentItem, uri);
+				|| isCamelKGroovyDSL(textDocumentItem, uri);
 	}
 
 	private boolean isCamelXMLDSL(TextDocumentItem textDocumentItem, String uri) {
@@ -105,17 +99,6 @@ public class ParserFileHelperFactory {
 
 	private boolean isJSFileWithCamelKModelineLike(TextDocumentItem textDocumentItem, String uri) {
 		return uri.endsWith(".js") && textDocumentItem.getText().startsWith(CamelKModelineParser.MODELINE_LIKE_CAMEL_K);
-	}
-
-	private boolean isCamelKafkaConnectDSL(TextDocumentItem textDocumentItem, String uri) {
-		return uri.endsWith(".properties")
-				&& containsCamelKafkaConnectPropertyKey(textDocumentItem);
-	}
-
-	protected boolean containsCamelKafkaConnectPropertyKey(TextDocumentItem textDocumentItem) {
-		String text = textDocumentItem.getText();
-		return text.contains(CamelKafkaUtil.CAMEL_SINK_URL)
-				|| text.contains(CamelKafkaUtil.CAMEL_SOURCE_URL);
 	}
 
 	private boolean isCamelKKotlinDSL(TextDocumentItem textDocumentItem, String uri) {

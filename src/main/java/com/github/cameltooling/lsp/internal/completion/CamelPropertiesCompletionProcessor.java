@@ -25,7 +25,6 @@ import org.eclipse.lsp4j.CompletionItem;
 import org.eclipse.lsp4j.Position;
 import org.eclipse.lsp4j.TextDocumentItem;
 
-import com.github.cameltooling.lsp.internal.catalog.util.CamelKafkaConnectorCatalogManager;
 import com.github.cameltooling.lsp.internal.catalog.util.KameletsCatalogManager;
 import com.github.cameltooling.lsp.internal.instancemodel.propertiesfile.CamelPropertyEntryInstance;
 import com.github.cameltooling.lsp.internal.parser.ParserFileHelperUtil;
@@ -35,18 +34,16 @@ public class CamelPropertiesCompletionProcessor {
 
 	private TextDocumentItem textDocumentItem;
 	private CompletableFuture<CamelCatalog> camelCatalog;
-	private CamelKafkaConnectorCatalogManager camelKafkaConnectorManager;
 
-	public CamelPropertiesCompletionProcessor(TextDocumentItem textDocumentItem, CompletableFuture<CamelCatalog> camelCatalog, CamelKafkaConnectorCatalogManager camelKafkaConnectorManager) {
+	public CamelPropertiesCompletionProcessor(TextDocumentItem textDocumentItem, CompletableFuture<CamelCatalog> camelCatalog) {
 		this.textDocumentItem = textDocumentItem;
 		this.camelCatalog = camelCatalog;
-		this.camelKafkaConnectorManager = camelKafkaConnectorManager;
 	}
 
 	public CompletableFuture<List<CompletionItem>> getCompletions(Position position, SettingsManager settingsManager, KameletsCatalogManager kameletsCatalogManager) {
 		if (textDocumentItem != null) {
 			String line = new ParserFileHelperUtil().getLine(textDocumentItem, position);
-			return new CamelPropertyEntryInstance(line, new Position(position.getLine(), 0), textDocumentItem).getCompletions(position, camelCatalog, camelKafkaConnectorManager, settingsManager, kameletsCatalogManager);
+			return new CamelPropertyEntryInstance(line, new Position(position.getLine(), 0), textDocumentItem).getCompletions(position, camelCatalog, settingsManager, kameletsCatalogManager);
 		}
 		return CompletableFuture.completedFuture(Collections.emptyList());
 	}
