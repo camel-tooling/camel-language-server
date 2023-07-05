@@ -49,10 +49,10 @@ Eclipse desktop allows to debug Language Server projects being written in the sa
 * Modify pom version to use a non-snapshot version
 * Provide a PR
 * Wait that it is reviewed and merged
+* A build will start automatically on [GitHub Actions](https://github.com/camel-tooling/camel-language-server/actions/workflows/main.yml)
+* Ensure build is OK
 * Create a tag
 * Push the tag to camel-tooling organization repository
-** A build will start automatically on [Circle CI](https://app.circleci.com/pipelines/github/camel-tooling/camel-language-server)
-** Ensure build is OK
 * Modify pom version to use an incremented snapshot version to prepare next release iteration
 * Provide a PR
 
