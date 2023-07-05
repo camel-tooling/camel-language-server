@@ -30,7 +30,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.github.cameltooling.lsp.internal.CamelTextDocumentService;
-import com.github.cameltooling.lsp.internal.catalog.util.CamelKafkaConnectorCatalogManager;
 import com.github.cameltooling.lsp.internal.catalog.util.KameletsCatalogManager;
 import com.github.cameltooling.lsp.internal.completion.CamelEndpointCompletionProcessor;
 import com.github.cameltooling.lsp.internal.diagnostic.DiagnosticService;
@@ -45,7 +44,7 @@ public class InvalidEnumQuickfix extends AbstractQuickfix {
 	}
 
 	@Override
-	protected List<String> retrievePossibleValues(TextDocumentItem textDocumentItem, CompletableFuture<CamelCatalog> camelCatalog, CamelKafkaConnectorCatalogManager ckcCatalogmanager, Position position, SettingsManager settingsManager, KameletsCatalogManager kameletsCatalogManager) {
+	protected List<String> retrievePossibleValues(TextDocumentItem textDocumentItem, CompletableFuture<CamelCatalog> camelCatalog, Position position, SettingsManager settingsManager, KameletsCatalogManager kameletsCatalogManager) {
 		try {
 			return new CamelEndpointCompletionProcessor(textDocumentItem, camelCatalog, kameletsCatalogManager)
 					.getCompletions(position, settingsManager)

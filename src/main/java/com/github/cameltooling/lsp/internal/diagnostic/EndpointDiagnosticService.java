@@ -47,7 +47,7 @@ import com.github.cameltooling.lsp.internal.parser.ParserFileHelperUtil;
 public class EndpointDiagnosticService extends DiagnosticService {
 
 	public EndpointDiagnosticService(CompletableFuture<CamelCatalog> camelCatalog) {
-		super(camelCatalog, null);
+		super(camelCatalog);
 	}
 	
 	Map<CamelEndpointDetails, EndpointValidationResult> computeCamelEndpointErrors(String camelText, String uri) {

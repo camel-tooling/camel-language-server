@@ -38,7 +38,6 @@ public class DiagnosticRunner {
 	private EndpointDiagnosticService endpointDiagnosticService;
 	private ConfigurationPropertiesDiagnosticService configurationPropertiesDiagnosticService;
 	private CamelKModelineDiagnosticService camelKModelineDiagnosticService;
-	private CamelKafkaConnectorDiagnosticService camelKafkaConnectorDiagnosticService;
 	private ConnectedModeDiagnosticService connectedModeDiagnosticService;
 	private Map<String, CompletableFuture<Void>> lastTriggeredDiagnostic = new HashMap<String, CompletableFuture<Void>>();
 
@@ -47,7 +46,6 @@ public class DiagnosticRunner {
 		endpointDiagnosticService = new EndpointDiagnosticService(camelCatalog);
 		configurationPropertiesDiagnosticService = new ConfigurationPropertiesDiagnosticService(camelCatalog);
 		camelKModelineDiagnosticService = new CamelKModelineDiagnosticService();
-		camelKafkaConnectorDiagnosticService = new CamelKafkaConnectorDiagnosticService(camelLanguageServer.getTextDocumentService().getCamelKafkaConnectorManager());
 		connectedModeDiagnosticService = new ConnectedModeDiagnosticService();
 	}
 
@@ -80,7 +78,6 @@ public class DiagnosticRunner {
 			Map<String, ConfigurationPropertiesValidationResult> configurationPropertiesErrors = configurationPropertiesDiagnosticService.computeCamelConfigurationPropertiesErrors(camelText, uri);
 			diagnostics.addAll(configurationPropertiesDiagnosticService.converToLSPDiagnostics(configurationPropertiesErrors));
 			diagnostics.addAll(camelKModelineDiagnosticService.compute(camelText, documentItem));
-			diagnostics.addAll(camelKafkaConnectorDiagnosticService.compute(camelText, documentItem));
 			diagnostics.addAll(connectedModeDiagnosticService.compute(camelText, documentItem));
 			camelLanguageServer.getClient().publishDiagnostics(new PublishDiagnosticsParams(uri, diagnostics));
 			lastTriggeredDiagnostic.remove(uri);

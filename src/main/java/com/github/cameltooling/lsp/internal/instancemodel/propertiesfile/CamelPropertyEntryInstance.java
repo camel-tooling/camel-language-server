@@ -29,7 +29,6 @@ import org.eclipse.lsp4j.Hover;
 import org.eclipse.lsp4j.Position;
 import org.eclipse.lsp4j.TextDocumentItem;
 
-import com.github.cameltooling.lsp.internal.catalog.util.CamelKafkaConnectorCatalogManager;
 import com.github.cameltooling.lsp.internal.catalog.util.KameletsCatalogManager;
 import com.github.cameltooling.lsp.internal.instancemodel.ILineRangeDefineable;
 import com.github.cameltooling.lsp.internal.settings.SettingsManager;
@@ -60,15 +59,15 @@ public class CamelPropertyEntryInstance implements ILineRangeDefineable {
 			camelPropertyFileKeyInstanceString = line;
 			camelPropertyFileValueInstanceString = null;
 		}
-		camelPropertyKeyInstance = new CamelPropertyKeyInstance(camelPropertyFileKeyInstanceString, this, textDocumentItem);
+		camelPropertyKeyInstance = new CamelPropertyKeyInstance(camelPropertyFileKeyInstanceString, this);
 		camelPropertyValueInstance = new CamelPropertyValueInstance(camelPropertyFileValueInstanceString, camelPropertyKeyInstance, textDocumentItem);
 	}
 	
-	public CompletableFuture<List<CompletionItem>> getCompletions(Position position, CompletableFuture<CamelCatalog> camelCatalog, CamelKafkaConnectorCatalogManager camelKafkaConnectorManager, SettingsManager settingsManager, KameletsCatalogManager kameletsCatalogManager) {
+	public CompletableFuture<List<CompletionItem>> getCompletions(Position position, CompletableFuture<CamelCatalog> camelCatalog, SettingsManager settingsManager, KameletsCatalogManager kameletsCatalogManager) {
 		if (isOnPropertyKey(position)) {
-			return camelPropertyKeyInstance.getCompletions(position, camelCatalog, camelKafkaConnectorManager);
+			return camelPropertyKeyInstance.getCompletions(position, camelCatalog);
 		} else {
-			return camelPropertyValueInstance.getCompletions(position, camelCatalog, camelKafkaConnectorManager, settingsManager, kameletsCatalogManager);
+			return camelPropertyValueInstance.getCompletions(position, camelCatalog, kameletsCatalogManager);
 		}
 	}
 
@@ -98,11 +97,11 @@ public class CamelPropertyEntryInstance implements ILineRangeDefineable {
 		return getStartPositionInLine() + line.length();
 	}
 
-	public CompletableFuture<Hover> getHover(Position position, CompletableFuture<CamelCatalog> camelCatalog, CamelKafkaConnectorCatalogManager camelKafkaConnectorCatalog, KameletsCatalogManager kameletCatalogManager) {
+	public CompletableFuture<Hover> getHover(Position position, CompletableFuture<CamelCatalog> camelCatalog, KameletsCatalogManager kameletCatalogManager) {
 		if (isOnPropertyKey(position)) {
-			return camelPropertyKeyInstance.getHover(position, camelCatalog, camelKafkaConnectorCatalog);
+			return camelPropertyKeyInstance.getHover(position, camelCatalog);
 		} else {
-			return camelPropertyValueInstance.getHover(position, camelCatalog, camelKafkaConnectorCatalog, kameletCatalogManager);
+			return camelPropertyValueInstance.getHover(position, camelCatalog, kameletCatalogManager);
 		}
 	}
 
@@ -111,9 +110,9 @@ public class CamelPropertyEntryInstance implements ILineRangeDefineable {
 				&& new DashedCaseDetector().hasDashedCaseInCamelPropertyOption(textDocumentItem.getText());
 	}
 
-	public Collection<Diagnostic> validate(CamelKafkaConnectorCatalogManager camelKafkaConnectorManager, Set<CamelPropertyEntryInstance> allCamelPropertyEntriesOfTheFile) {
+	public Collection<Diagnostic> validate(Set<CamelPropertyEntryInstance> allCamelPropertyEntriesOfTheFile) {
 		if (camelPropertyKeyInstance != null) {
-			return camelPropertyKeyInstance.validate(camelKafkaConnectorManager, allCamelPropertyEntriesOfTheFile);
+			return camelPropertyKeyInstance.validate(allCamelPropertyEntriesOfTheFile);
 		}
 		return Collections.emptyList();
 	}

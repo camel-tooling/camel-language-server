@@ -78,7 +78,7 @@ public class CamelKModelinePropertyOption implements ICamelKModelineOptionValue 
 		if(fileValue != null && fileValue.isInRange(positionInLine)) {
 			return fileValue.getCompletions(positionInLine, camelCatalog);
 		} else if(singlePropertyValue != null) {
-			CompletableFuture<List<CompletionItem>> camelComponentPropertyCompletionFuture = singlePropertyValue.getCompletions(new Position(0, positionInLine), camelCatalog, null, null, null);
+			CompletableFuture<List<CompletionItem>> camelComponentPropertyCompletionFuture = singlePropertyValue.getCompletions(new Position(0, positionInLine), camelCatalog, null, null);
 			if(positionInLine == getStartPositionInLine()) {
 				return mergeFutures(camelComponentPropertyCompletionFuture, createFilePrefixCompletion());
 			}
@@ -105,7 +105,7 @@ public class CamelKModelinePropertyOption implements ICamelKModelineOptionValue 
 	@Override
 	public CompletableFuture<Hover> getHover(int characterPosition, CompletableFuture<CamelCatalog> camelCatalog) {
 		if(singlePropertyValue != null) {
-			return singlePropertyValue.getHover(new Position(0, characterPosition), camelCatalog, null, null);
+			return singlePropertyValue.getHover(new Position(0, characterPosition), camelCatalog, null);
 		} else {
 			return CompletableFuture.completedFuture(null);
 		}

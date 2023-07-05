@@ -34,6 +34,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 import com.github.cameltooling.lsp.internal.AbstractCamelLanguageServerTest;
 import com.github.cameltooling.lsp.internal.CamelLanguageServer;
+import com.github.cameltooling.lsp.internal.util.RouteTextBuilder;
 
 
 public class CamelCompletionForApisTest extends AbstractCamelLanguageServerTest {
@@ -153,31 +154,35 @@ public class CamelCompletionForApisTest extends AbstractCamelLanguageServerTest 
 	
 	@Test
 	void testFetcher() throws Exception {
-		String text = "camel.sink.url=aComponentWithApis:account/fetch?";
-		CamelLanguageServer languageServer = initializeLanguageServer(text, ".properties");
-		List<CompletionItem> completions = getCompletionFor(languageServer, new Position(0, text.length())).get().getLeft();
+		String camelUri = "aComponentWithApis:account/fetch?";
+		String text = RouteTextBuilder.createXMLSpringRoute(camelUri);
+		CamelLanguageServer languageServer = initializeLanguageServer(text, ".xml");
+		int endOfCamelUriInText = RouteTextBuilder.XML_PREFIX_FROM.length() + camelUri.length();
+		List<CompletionItem> completions = getCompletionFor(languageServer, new Position(0, endOfCamelUriInText)).get().getLeft();
 		assertThat(completions).hasSize(2);
 		completions.sort(COMPLETIONITEM_COMPARATOR);
 		CompletionItem completionItemForPropertyFetcher = completions.get(0);
 		assertThat(completionItemForPropertyFetcher.getLabel()).isEqualTo("aPropertyFetcher");
 		assertThat(completionItemForPropertyFetcher.getKind()).isEqualTo(CompletionItemKind.Variable);
-		assertThat(completionItemForPropertyFetcher.getTextEdit().getLeft().getRange()).isEqualTo(new Range(new Position(0, text.length()), new Position(0, text.length())));
+		assertThat(completionItemForPropertyFetcher.getTextEdit().getLeft().getRange()).isEqualTo(new Range(new Position(0, endOfCamelUriInText), new Position(0, endOfCamelUriInText)));
 	}
 	
 	@Test
 	void testTwilio() throws Exception {
-		String text = "camel.sink.url=twilio:address/create?cit";
-		CamelLanguageServer languageServer = initializeLanguageServer(text, ".properties");
-		List<CompletionItem> completions = getCompletionFor(languageServer, new Position(0, text.length())).get().getLeft();
+		String camelUri = "twilio:address/create?cit";
+		String text = RouteTextBuilder.createXMLSpringRoute(camelUri);
+		CamelLanguageServer languageServer = initializeLanguageServer(text, ".xml");
+		List<CompletionItem> completions = getCompletionFor(languageServer, new Position(0, RouteTextBuilder.XML_PREFIX_FROM.length() + camelUri.length())).get().getLeft();
 		assertThat(completions).hasSize(1);
 		assertThat(completions.get(0).getLabel()).isEqualTo("city");
 	}
 	
 	@Test
 	void testUpdater() throws Exception {
-		String text = "camel.sink.url=aComponentWithApis:account/update?";
-		CamelLanguageServer languageServer = initializeLanguageServer(text, ".properties");
-		List<CompletionItem> completions = getCompletionFor(languageServer, new Position(0, text.length())).get().getLeft();
+		String camelUri = "aComponentWithApis:account/update?";
+		String text = RouteTextBuilder.createXMLSpringRoute(camelUri);
+		CamelLanguageServer languageServer = initializeLanguageServer(text, ".xml");
+		List<CompletionItem> completions = getCompletionFor(languageServer, new Position(0, RouteTextBuilder.XML_PREFIX_FROM.length() + camelUri.length())).get().getLeft();
 		assertThat(completions).hasSize(2);
 		completions.sort(COMPLETIONITEM_COMPARATOR);
 		assertThat(completions.get(0).getLabel()).isEqualTo("aPropertyUpdater");
@@ -189,60 +194,70 @@ public class CamelCompletionForApisTest extends AbstractCamelLanguageServerTest 
 	
 	@Test
 	void testApiName() throws Exception {
-		String text = "camel.sink.url=aComponentWithApis:a";
-		CamelLanguageServer languageServer = initializeLanguageServer(text, ".properties");
-		List<CompletionItem> completions = getCompletionFor(languageServer, new Position(0, text.length())).get().getLeft();
+		String camelUri = "aComponentWithApis:a";
+		String text = RouteTextBuilder.createXMLSpringRoute(camelUri);
+		CamelLanguageServer languageServer = initializeLanguageServer(text, ".xml");
+		int endOfCamelUriInText = RouteTextBuilder.XML_PREFIX_FROM.length() + camelUri.length();
+		List<CompletionItem> completions = getCompletionFor(languageServer, new Position(0, endOfCamelUriInText)).get().getLeft();
 		assertThat(completions).hasSize(1);
 		CompletionItem accountCompletionItem = completions.get(0);
 		assertThat(accountCompletionItem.getLabel()).isEqualTo("account");
 		assertThat(accountCompletionItem.getInsertText()).isEqualTo("account");
 		assertThat(accountCompletionItem.getTextEdit().getLeft().getNewText()).isEqualTo("account");
-		Range expectedRange = new Range(new Position(0,  text.length() -1), new Position(0, text.length()));
+		Range expectedRange = new Range(new Position(0,  endOfCamelUriInText -1), new Position(0, endOfCamelUriInText));
 		assertThat(accountCompletionItem.getTextEdit().getLeft().getRange()).isEqualTo(expectedRange);
 	}
 	
 	@Test
 	void testWithPartialMethodName() throws Exception {
-		String text = "camel.sink.url=aComponentWithApis:account/f";
-		CamelLanguageServer languageServer = initializeLanguageServer(text, ".properties");
-		List<CompletionItem> completions = getCompletionFor(languageServer, new Position(0, text.length())).get().getLeft();
+		String camelUri = "aComponentWithApis:account/f";
+		String text = RouteTextBuilder.createXMLSpringRoute(camelUri);
+		CamelLanguageServer languageServer = initializeLanguageServer(text, ".xml");
+		int endOfCamelUriInText = RouteTextBuilder.XML_PREFIX_FROM.length() + camelUri.length();
+		List<CompletionItem> completions = getCompletionFor(languageServer, new Position(0, endOfCamelUriInText)).get().getLeft();
 		assertThat(completions).hasSize(1);
 		CompletionItem accountCompletionItem = completions.get(0);
 		assertThat(accountCompletionItem.getLabel()).isEqualTo("fetch");
 		assertThat(accountCompletionItem.getInsertText()).isEqualTo("fetch");
 		assertThat(accountCompletionItem.getTextEdit().getLeft().getNewText()).isEqualTo("fetch");
-		Range expectedRange = new Range(new Position(0,  text.length() -1), new Position(0, text.length()));
+		Range expectedRange = new Range(new Position(0,  endOfCamelUriInText -1), new Position(0, endOfCamelUriInText));
 		assertThat(accountCompletionItem.getTextEdit().getLeft().getRange()).isEqualTo(expectedRange);
 	}
 	
 	@Test
 	void testMethodName() throws Exception {
-		String text = "camel.sink.url=aComponentWithApis:account/";
-		CamelLanguageServer languageServer = initializeLanguageServer(text, ".properties");
-		List<CompletionItem> completions = getCompletionFor(languageServer, new Position(0, text.length())).get().getLeft();
+		String camelUri = "aComponentWithApis:account/";
+		String text = RouteTextBuilder.createXMLSpringRoute(camelUri);
+		CamelLanguageServer languageServer = initializeLanguageServer(text, ".xml");
+		int endOfCamelUriInText = RouteTextBuilder.XML_PREFIX_FROM.length() + camelUri.length();
+		List<CompletionItem> completions = getCompletionFor(languageServer, new Position(0, endOfCamelUriInText)).get().getLeft();
 		assertThat(completions).hasSize(2);
 	}
 
 	@ParameterizedTest(name = "{0}")
 	@MethodSource
-	void testBasicEmpty(String testName, String propertyUrl) throws Exception {
-		CamelLanguageServer languageServer = initializeLanguageServer(propertyUrl, ".properties");
-		List<CompletionItem> completions = getCompletionFor(languageServer, new Position(0, propertyUrl.length())).get().getLeft();
+	void testBasicEmpty(String testName, String camelUri) throws Exception {
+		String text = RouteTextBuilder.createXMLSpringRoute(camelUri);
+		CamelLanguageServer languageServer = initializeLanguageServer(text, ".xml");
+		int endOfCamelUriInText = RouteTextBuilder.XML_PREFIX_FROM.length() + camelUri.length();
+		List<CompletionItem> completions = getCompletionFor(languageServer, new Position(0, endOfCamelUriInText)).get().getLeft();
 		assertThat(filterApiBasedOptions(completions)).isEmpty();
 	}
 
 	private static Stream<Arguments> testBasicEmpty() {
-		return Stream.of(Arguments.of("Empty method", "camel.sink.url=aComponentWithApis:account/create?"),
-				Arguments.of("Empty with missing method name", "camel.sink.url=aComponentWithApis:account?"),
-				Arguments.of("Empty with invalid method name", "camel.sink.url=aComponentWithApis:account/invalid?"),
-				Arguments.of("Empty with missing API name", "camel.sink.url=aComponentWithApis?"));
+		return Stream.of(Arguments.of("Empty method", "aComponentWithApis:account/create?"),
+				Arguments.of("Empty with missing method name", "aComponentWithApis:account?"),
+				Arguments.of("Empty with invalid method name", "aComponentWithApis:account/invalid?"),
+				Arguments.of("Empty with missing API name", "aComponentWithApis?"));
 	}
 		
 	@Test
 	void testNoCompletionWithNonApiBasedComponent() throws Exception {
-		String text = "camel.sink.url=avro:transport:host:port/messageName";
-		CamelLanguageServer languageServer = initializeLanguageServer(text, ".properties");
-		List<CompletionItem> completions = getCompletionFor(languageServer, new Position(0, text.length())).get().getLeft();
+		String camelUri = "avro:transport:host:port/messageName";
+		String text = RouteTextBuilder.createXMLSpringRoute(camelUri);
+		CamelLanguageServer languageServer = initializeLanguageServer(text, ".xml");
+		int endOfCamelUriInText = RouteTextBuilder.XML_PREFIX_FROM.length() + camelUri.length();
+		List<CompletionItem> completions = getCompletionFor(languageServer, new Position(0, endOfCamelUriInText)).get().getLeft();
 		assertThat(completions).isEmpty();
 	}
 	

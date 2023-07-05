@@ -42,7 +42,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.github.cameltooling.lsp.internal.catalog.diagnostic.CamelDiagnosticMessage;
-import com.github.cameltooling.lsp.internal.catalog.util.CamelKafkaConnectorCatalogManager;
 import com.github.cameltooling.lsp.internal.parser.ParserFileHelperUtil;
 
 public abstract class DiagnosticService {
@@ -53,11 +52,9 @@ public abstract class DiagnosticService {
 	public static final String ERROR_CODE_INVALID_ENUM = "camel.diagnostic.invalid.enum";
 	
 	protected CompletableFuture<CamelCatalog> camelCatalog;
-	protected CamelKafkaConnectorCatalogManager camelKafkaConnectorCatalogManager;
 
-	protected DiagnosticService(CompletableFuture<CamelCatalog> camelCatalog, CamelKafkaConnectorCatalogManager camelKafkaConnectorCatalogManager) {
+	protected DiagnosticService(CompletableFuture<CamelCatalog> camelCatalog) {
 		this.camelCatalog = camelCatalog;
-		this.camelKafkaConnectorCatalogManager = camelKafkaConnectorCatalogManager;
 	}
 
 	protected void logExceptionValidatingDocument(String docUri, Exception e) {

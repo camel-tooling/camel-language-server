@@ -71,7 +71,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.github.cameltooling.lsp.internal.catalog.runtimeprovider.CamelRuntimeProvider;
-import com.github.cameltooling.lsp.internal.catalog.util.CamelKafkaConnectorCatalogManager;
 import com.github.cameltooling.lsp.internal.catalog.util.KameletsCatalogManager;
 import com.github.cameltooling.lsp.internal.codeactions.CodeActionProcessor;
 import com.github.cameltooling.lsp.internal.completion.CamelEndpointCompletionProcessor;
@@ -101,7 +100,6 @@ public class CamelTextDocumentService implements TextDocumentService {
 	private Map<String, TextDocumentItem> openedDocuments = new HashMap<>();
 	private CompletableFuture<CamelCatalog> camelCatalog;
 	private CamelLanguageServer camelLanguageServer;
-	private CamelKafkaConnectorCatalogManager camelKafkaConnectorManager = new CamelKafkaConnectorCatalogManager();
 	private KameletsCatalogManager kameletsCatalogManager = new KameletsCatalogManager();
 
 	public CamelTextDocumentService(CamelLanguageServer camelLanguageServer) {
@@ -163,7 +161,7 @@ public class CamelTextDocumentService implements TextDocumentService {
 
 		if (textDocumentItem != null) {
 			if (uri.endsWith(".properties")){
-				return new CamelPropertiesCompletionProcessor(textDocumentItem, getCamelCatalog(), getCamelKafkaConnectorManager()).getCompletions(completionParams.getPosition(), getSettingsManager(), getKameletsCatalogManager()).thenApply(Either::forLeft);
+				return new CamelPropertiesCompletionProcessor(textDocumentItem, getCamelCatalog()).getCompletions(completionParams.getPosition(), getSettingsManager(), getKameletsCatalogManager()).thenApply(Either::forLeft);
 			} else if (new CamelKModelineInsertionParser(textDocumentItem).canPutCamelKModeline(completionParams.getPosition())){
 				return new CamelKModelineInsertionProcessor(textDocumentItem).getCompletions().thenApply(Either::forLeft);
 			} else if (new CamelKModelineParser().isOnCamelKModeline(completionParams.getPosition().getLine(), textDocumentItem)){
@@ -191,7 +189,7 @@ public class CamelTextDocumentService implements TextDocumentService {
 		String uri = hoverParams.getTextDocument().getUri();
 		TextDocumentItem textDocumentItem = openedDocuments.get(uri);
 		if (uri.endsWith(".properties")){
-			return new CamelPropertiesFileHoverProcessor(textDocumentItem).getHover(hoverParams.getPosition(), getCamelCatalog(), getCamelKafkaConnectorManager(), getKameletsCatalogManager());
+			return new CamelPropertiesFileHoverProcessor(textDocumentItem).getHover(hoverParams.getPosition(), getCamelCatalog(), getKameletsCatalogManager());
 		} else if(new CamelKModelineParser().isOnCamelKModeline(hoverParams.getPosition().getLine(), textDocumentItem)) {
 			return new CamelKModelineHoverProcessor(textDocumentItem).getHover(hoverParams.getPosition(), getCamelCatalog());
 		} else {
@@ -333,14 +331,6 @@ public class CamelTextDocumentService implements TextDocumentService {
 	 */
 	public CompletableFuture<CamelCatalog> getCamelCatalog() {
 		return camelCatalog;
-	}
-
-	public CamelKafkaConnectorCatalogManager getCamelKafkaConnectorManager() {
-		return camelKafkaConnectorManager;
-	}
-
-	public void setCamelKafkaConnectorManager(CamelKafkaConnectorCatalogManager camelKafkaConnectorManager) {
-		this.camelKafkaConnectorManager = camelKafkaConnectorManager;
 	}
 
 	public SettingsManager getSettingsManager() {

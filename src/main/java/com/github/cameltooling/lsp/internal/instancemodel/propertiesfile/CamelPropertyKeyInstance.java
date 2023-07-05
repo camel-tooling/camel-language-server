@@ -35,16 +35,13 @@ import org.eclipse.lsp4j.DiagnosticSeverity;
 import org.eclipse.lsp4j.Hover;
 import org.eclipse.lsp4j.Position;
 import org.eclipse.lsp4j.Range;
-import org.eclipse.lsp4j.TextDocumentItem;
 import org.eclipse.lsp4j.TextEdit;
 import org.eclipse.lsp4j.jsonrpc.messages.Either;
 
-import com.github.cameltooling.lsp.internal.catalog.util.CamelKafkaConnectorCatalogManager;
 import com.github.cameltooling.lsp.internal.catalog.util.StringUtils;
 import com.github.cameltooling.lsp.internal.completion.FilterPredicateUtils;
 import com.github.cameltooling.lsp.internal.diagnostic.DiagnosticService;
 import com.github.cameltooling.lsp.internal.instancemodel.ILineRangeDefineable;
-import com.github.cameltooling.lsp.internal.parser.CamelKafkaUtil;
 import com.google.gson.Gson;
 
 /**
@@ -57,29 +54,20 @@ public class CamelPropertyKeyInstance implements ILineRangeDefineable {
 	
 	static final String CAMEL_KEY_PREFIX = "camel.";
 	static final String CAMEL_COMPONENT_KEY_PREFIX = "camel.component.";
-	public static final String CAMEL_SINK_KEY_PREFIX = "camel.sink.";
-	public static final String CAMEL_SOURCE_KEY_PREFIX = "camel.source.";
 	
 	private String camelPropertyKey;
 	private CamelGroupPropertyKey propertyGroup;
 	private CamelComponentPropertyKey camelComponentPropertyKey;
 	private CamelPropertyEntryInstance camelPropertyEntryInstance;
-	private CamelSinkOrSourcePropertyKey camelSinkOrSourcePropertyKey;
-	private TextDocumentItem textDocumentItem;
 
-	public CamelPropertyKeyInstance(String camelPropertyFileKey, CamelPropertyEntryInstance camelPropertyEntryInstance, TextDocumentItem textDocumentItem) {
+	public CamelPropertyKeyInstance(String camelPropertyFileKey, CamelPropertyEntryInstance camelPropertyEntryInstance) {
 		this.camelPropertyKey = camelPropertyFileKey;
 		this.camelPropertyEntryInstance = camelPropertyEntryInstance;
-		this.textDocumentItem = textDocumentItem;
 		if (camelPropertyFileKey.startsWith(CAMEL_COMPONENT_KEY_PREFIX)) {
 			camelComponentPropertyKey = new CamelComponentPropertyKey(camelPropertyFileKey.substring(CAMEL_COMPONENT_KEY_PREFIX.length()), this);
-		} else if(camelPropertyFileKey.startsWith(CAMEL_SINK_KEY_PREFIX)) {
-			camelSinkOrSourcePropertyKey = new CamelSinkOrSourcePropertyKey(camelPropertyFileKey.substring(CAMEL_SINK_KEY_PREFIX.length()), this, textDocumentItem, CAMEL_SINK_KEY_PREFIX);
-		} else if(camelPropertyFileKey.startsWith(CAMEL_SOURCE_KEY_PREFIX)) {
-			camelSinkOrSourcePropertyKey = new CamelSinkOrSourcePropertyKey(camelPropertyFileKey.substring(CAMEL_SOURCE_KEY_PREFIX.length()), this, textDocumentItem, CAMEL_SOURCE_KEY_PREFIX);
 		}
 		if(camelPropertyKey.startsWith(CAMEL_KEY_PREFIX)) {
-			propertyGroup = new CamelGroupPropertyKey(camelPropertyFileKey.substring(CAMEL_KEY_PREFIX.length()), this, textDocumentItem);
+			propertyGroup = new CamelGroupPropertyKey(camelPropertyFileKey.substring(CAMEL_KEY_PREFIX.length()), this);
 		}
 	}
 
@@ -87,7 +75,7 @@ public class CamelPropertyKeyInstance implements ILineRangeDefineable {
 		return camelPropertyEntryInstance.getStartPositionInLine() + camelPropertyKey.length();
 	}
 
-	public CompletableFuture<List<CompletionItem>> getCompletions(Position position, CompletableFuture<CamelCatalog> camelCatalog, CamelKafkaConnectorCatalogManager camelKafkaConnectorManager) {
+	public CompletableFuture<List<CompletionItem>> getCompletions(Position position, CompletableFuture<CamelCatalog> camelCatalog) {
 		int indexOfFirstDot = camelPropertyKey.indexOf('.');
 		int indexOfSecondDot = indexOfFirstDot != -1 ? camelPropertyKey.indexOf('.', indexOfFirstDot + 1) : -1;
 		if(isBeforeFirstDot(position, indexOfFirstDot)) {
@@ -97,13 +85,11 @@ public class CamelPropertyKeyInstance implements ILineRangeDefineable {
 			completionItem.setTextEdit(Either.forLeft(new TextEdit(new Range(new Position(getLine(), getStartPositionInLine()), new Position(getLine(), indexOfFirstDot != -1 ? getStartPositionInLine() + indexOfFirstDot : getEndPositionInLine())), insertText)));
 			return CompletableFuture.completedFuture(Collections.singletonList(completionItem));
 		} else if (isBetweenFirstAndSecondDotOfCamelPropertyKey(position, indexOfSecondDot)) {
-			return getTopLevelCamelCompletion(camelCatalog,camelKafkaConnectorManager, indexOfSecondDot, position.getCharacter());
+			return getTopLevelCamelCompletion(camelCatalog, indexOfSecondDot, position.getCharacter());
 		} else if(camelComponentPropertyKey != null && camelComponentPropertyKey.isInRange(position.getCharacter())) {
 			return camelComponentPropertyKey.getCompletions(position, camelCatalog);
-		} else if(camelSinkOrSourcePropertyKey != null && camelSinkOrSourcePropertyKey.isInRange(position.getCharacter())) {
-			return camelSinkOrSourcePropertyKey.getCompletions(position, camelKafkaConnectorManager);
 		} else if(propertyGroup != null && propertyGroup.isInRange(position.getCharacter())) {
-			return propertyGroup.getCompletions(position, camelCatalog, camelKafkaConnectorManager);
+			return propertyGroup.getCompletions(position, camelCatalog);
 		}
 		return CompletableFuture.completedFuture(Collections.emptyList());
 	}
@@ -118,20 +104,15 @@ public class CamelPropertyKeyInstance implements ILineRangeDefineable {
 		return getStartPositionInLine() <= position.getCharacter() && position.getCharacter() <= getStartPositionInLine() + Math.max(0, indexOfFirstDot);
 	}
 
-	protected CompletableFuture<List<CompletionItem>> getTopLevelCamelCompletion(CompletableFuture<CamelCatalog> camelCatalog, CamelKafkaConnectorCatalogManager camelKafkaConnectorCatalogManager, int indexOfSecondDot, int completionPositionRequest) {
+	protected CompletableFuture<List<CompletionItem>> getTopLevelCamelCompletion(CompletableFuture<CamelCatalog> camelCatalog, int indexOfSecondDot, int completionPositionRequest) {
 		String filterString = camelPropertyKey.substring(CAMEL_KEY_PREFIX.length(), completionPositionRequest - getStartPositionInLine());
 		return camelCatalog.thenApply(catalog -> {
 			MainModel mainModel = new Gson().fromJson(catalog.mainJsonSchema(), MainModel.class);
 			List<CompletionItem> allCompletionItems = new ArrayList<>();
 			allCompletionItems.addAll(createGroupCompletionFromMainModel(mainModel, indexOfSecondDot));
 			allCompletionItems.add(createCompletionItemForCamelComponent(indexOfSecondDot));
-			allCompletionItems.addAll(createCompletionItemForCamelKafkaConnectorBasicProperties(camelKafkaConnectorCatalogManager));
 			return allCompletionItems.stream().filter(FilterPredicateUtils.matchesCompletionFilter(filterString)).collect(Collectors.toList());
 		});
-	}
-
-	private List<CompletionItem> createCompletionItemForCamelKafkaConnectorBasicProperties(CamelKafkaConnectorCatalogManager camelKafkaConnectorCatalogManager) {
-		return new CamelKafkaUtil().getBasicPropertiesCompletion(camelKafkaConnectorCatalogManager, textDocumentItem, shouldUseDashedCase(), "", this);
 	}
 
 	private CompletionItem createCompletionItemForCamelComponent(int indexOfSecondDot) {
@@ -187,11 +168,9 @@ public class CamelPropertyKeyInstance implements ILineRangeDefineable {
 		return getStartPositionInLine() + camelPropertyKey.length();
 	}
 
-	public CompletableFuture<Hover> getHover(Position position, CompletableFuture<CamelCatalog> camelCatalog, CamelKafkaConnectorCatalogManager camelKafkaConnectorManager) {
+	public CompletableFuture<Hover> getHover(Position position, CompletableFuture<CamelCatalog> camelCatalog) {
 		if(camelComponentPropertyKey != null && camelComponentPropertyKey.isInRange(position.getCharacter())) {
 			return camelComponentPropertyKey.getHover(position, camelCatalog);
-		} else if(camelSinkOrSourcePropertyKey != null && camelSinkOrSourcePropertyKey.isInRange(position.getCharacter())) {
-			return camelSinkOrSourcePropertyKey.getHover(camelKafkaConnectorManager);
 		} else if(propertyGroup != null && propertyGroup.isInRange(position.getCharacter())) {
 			return propertyGroup.getHover(position, camelCatalog);
 		}
@@ -202,11 +181,8 @@ public class CamelPropertyKeyInstance implements ILineRangeDefineable {
 		return camelPropertyEntryInstance.shouldUseDashedCase();
 	}
 
-	public Collection<Diagnostic> validate(CamelKafkaConnectorCatalogManager camelKafkaConnectorManager, Set<CamelPropertyEntryInstance> allCamelPropertyEntriesOfTheFile) {
+	public Collection<Diagnostic> validate(Set<CamelPropertyEntryInstance> allCamelPropertyEntriesOfTheFile) {
 		Collection<Diagnostic> diagnostics = new HashSet<>();
-		if(camelSinkOrSourcePropertyKey != null) {
-			diagnostics.addAll(camelSinkOrSourcePropertyKey.validate(camelKafkaConnectorManager, allCamelPropertyEntriesOfTheFile));
-		}
 		if(camelPropertyKey != null && camelPropertyKey.startsWith(CAMEL_KEY_PREFIX)) {
 			Optional<String> duplicateByDashCamelNotationDifference = allCamelPropertyEntriesOfTheFile.stream()
 				.map(CamelPropertyEntryInstance::getCamelPropertyKeyInstance)
