@@ -25,10 +25,11 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.apache.camel.catalog.CamelCatalog;
+import org.apache.camel.v1.kameletspec.Definition;
+import org.apache.camel.v1.kameletspec.definition.Properties;
 import org.eclipse.lsp4j.CompletionItem;
 import org.eclipse.lsp4j.CompletionItemKind;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.github.cameltooling.lsp.internal.catalog.model.BaseOptionModel;
 import com.github.cameltooling.lsp.internal.catalog.model.ComponentModel;
 import com.github.cameltooling.lsp.internal.catalog.model.EndpointOptionModel;
@@ -40,8 +41,7 @@ import com.github.cameltooling.lsp.internal.instancemodel.OptionParamKeyURIInsta
 import com.github.cameltooling.lsp.internal.instancemodel.OptionParamURIInstance;
 import com.github.cameltooling.lsp.internal.instancemodel.PathParamURIInstance;
 
-import io.fabric8.camelk.v1alpha1.JSONSchemaProp;
-import io.fabric8.camelk.v1alpha1.JSONSchemaProps;
+import io.fabric8.kubernetes.api.model.AnyType;
 
 public class CamelOptionNamesCompletionsFuture implements Function<CamelCatalog, List<CompletionItem>>  {
 
@@ -93,7 +93,7 @@ public class CamelOptionNamesCompletionsFuture implements Function<CamelCatalog,
 					.map(PathParamURIInstance::getValue)
 					.findAny();
 			if(kameletTemplateId.isPresent()) {
-				JSONSchemaProps kameletDefinition = kameletsCatalogManager.getCatalog().getKameletDefinition(kameletTemplateId.get());
+				Definition kameletDefinition = kameletsCatalogManager.getCatalog().getKameletDefinition(kameletTemplateId.get());
 				if(kameletDefinition != null) {
 					kameletProperties = kameletDefinition.getProperties().entrySet().stream().map(this::createCompletionItem);
 				}
@@ -102,10 +102,10 @@ public class CamelOptionNamesCompletionsFuture implements Function<CamelCatalog,
 		return kameletProperties;
 	}
 
-	private CompletionItem createCompletionItem(Entry<String, JSONSchemaProp> property) {
+	private CompletionItem createCompletionItem(Entry<String, Properties> property) {
 		String propertyName = property.getKey();
 		CompletionItem completionItem = new CompletionItem(propertyName);
-		JSONSchemaProp schema = property.getValue();
+		Properties schema = property.getValue();
 		String insertText = computeInsertText(propertyName, schema);
 		completionItem.setInsertText(insertText);
 		completionItem.setDocumentation(schema.getDescription());
@@ -117,11 +117,11 @@ public class CamelOptionNamesCompletionsFuture implements Function<CamelCatalog,
 		return completionItem;
 	}
 
-	private String computeInsertText(String propertyName, JSONSchemaProp schema) {
-		JsonNode defaultValue = schema.getDefault();
+	private String computeInsertText(String propertyName, Properties schema) {
+		AnyType defaultValue = schema.get_default();
 		String insertText = propertyName + "=";
-		if(defaultValue != null && defaultValue.isValueNode()) {
-			insertText += defaultValue.asText();
+		if(defaultValue != null && defaultValue.getValue() != null) {
+			insertText += defaultValue.getValue().toString();
 		}
 		return insertText;
 	}
