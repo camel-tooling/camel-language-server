@@ -29,6 +29,7 @@ import org.eclipse.lsp4j.CompletionList;
 import org.eclipse.lsp4j.Position;
 import org.eclipse.lsp4j.TextEdit;
 import org.eclipse.lsp4j.jsonrpc.messages.Either;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -46,12 +47,12 @@ class CamelKModelineTraitPropertyNameTest extends AbstractCamelLanguageServerTes
 		CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = getCompletionFor(camelLanguageServer, new Position(0, 26));
 		
 		List<CompletionItem> completionItems = completions.get().getLeft();
-		assertThat(completionItems).hasSize(2);
-		CompletionItem completionItem = findCompletionItemWithLabel(completions, "package-type");
-		assertThat(completionItem.getDocumentation().getLeft()).isEqualTo("The Quarkus package types, either `fast-jar` or `native` (default `fast-jar`).In case both `fast-jar` and `native` are specified, two `IntegrationKit` resources are created,with the `native` kit having precedence over the `fast-jar` one once ready.The order influences the resolution of the current kit for the integration.The kit corresponding to the first package type will be assigned to theintegration in case no existing kit that matches the integration exists.");
-		assertThat(completionItem.getInsertText()).isEqualTo("package-type=");
+		assertThat(completionItems).hasSize(3);
+		CompletionItem completionItem = findCompletionItemWithLabel(completions, "packageTypes");
+		assertThat(completionItem.getDocumentation().getLeft()).isEqualTo("The Quarkus package types, either `fast-jar` or `native` (default `fast-jar`). In case both `fast-jar` and `native` are specified, two `IntegrationKit` resources are created, with the `native` kit having precedence over the `fast-jar` one once ready. The order influences the resolution of the current kit for the integration. The kit corresponding to the first package type will be assigned to the integration in case no existing kit that matches the integration exists.");
+		assertThat(completionItem.getInsertText()).isEqualTo("packageTypes=");
 		TextEdit textEdit = completionItem.getTextEdit().getLeft();
-		assertThat(textEdit.getNewText()).isEqualTo("package-type=");
+		assertThat(textEdit.getNewText()).isEqualTo("packageTypes=");
 		assertThat(textEdit.getRange().getStart().getCharacter()).isEqualTo(26);
 		assertThat(textEdit.getRange().getEnd().getCharacter()).isEqualTo(26);
 	}
@@ -65,7 +66,7 @@ class CamelKModelineTraitPropertyNameTest extends AbstractCamelLanguageServerTes
 		CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = getCompletionFor(camelLanguageServer, new Position(1, 26));
 		
 		List<CompletionItem> completionItems = completions.get().getLeft();
-		assertThat(completionItems).hasSize(2);
+		assertThat(completionItems).hasSize(3);
 	}
 	
 	@Test
@@ -77,7 +78,7 @@ class CamelKModelineTraitPropertyNameTest extends AbstractCamelLanguageServerTes
 		List<CompletionItem> completionItems = completions.get().getLeft();
 		assertThat(completionItems).hasSize(1);
 		TextEdit textEdit = completionItems.get(0).getTextEdit().getLeft();
-		assertThat(textEdit.getNewText()).isEqualTo("package-type=");
+		assertThat(textEdit.getNewText()).isEqualTo("packageTypes=");
 		assertThat(textEdit.getRange().getStart().getCharacter()).isEqualTo(26);
 		assertThat(textEdit.getRange().getEnd().getCharacter()).isEqualTo(28);
 	}
@@ -94,6 +95,7 @@ class CamelKModelineTraitPropertyNameTest extends AbstractCamelLanguageServerTes
 	
 	@ParameterizedTest(name = "{0}")
 	@MethodSource
+	@Disabled("The default values for traits are not in a specific fields in Camel K CRD - opened https://github.com/apache/camel-k/issues/4726")
 	void testProvideCompletionForDefaultvalues(String testName, String property, String explectedCompletion) throws Exception {
 		CamelLanguageServer camelLanguageServer = initializeLanguageServer("// camel-k: trait=container.");
 		CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = getCompletionFor(camelLanguageServer, new Position(0, 28));
@@ -102,8 +104,8 @@ class CamelKModelineTraitPropertyNameTest extends AbstractCamelLanguageServerTes
 	}
 	
 	private static Stream<Arguments> testProvideCompletionForDefaultvalues() {
-		return Stream.of(Arguments.of("String default value", "service-port-name", "service-port-name=http"),
-				Arguments.of("Without default value", "request-cpu", "request-cpu="),
+		return Stream.of(Arguments.of("String default value", "servicePortName", "servicePortName=http"),
+				Arguments.of("Without default value", "requestCpu", "requestCpu="),
 				Arguments.of("Number default value", "port", "port=8080"));
 	}
 
@@ -134,12 +136,12 @@ class CamelKModelineTraitPropertyNameTest extends AbstractCamelLanguageServerTes
 		CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = getCompletionFor(camelLanguageServer, new Position(0, 26));
 		
 		List<CompletionItem> completionItems = completions.get().getLeft();
-		assertThat(completionItems).hasSize(2);
-		CompletionItem completionItem = findCompletionItemWithLabel(completions, "package-type");
-		assertThat(completionItem.getDocumentation().getLeft()).isEqualTo("The Quarkus package types, either `fast-jar` or `native` (default `fast-jar`).In case both `fast-jar` and `native` are specified, two `IntegrationKit` resources are created,with the `native` kit having precedence over the `fast-jar` one once ready.The order influences the resolution of the current kit for the integration.The kit corresponding to the first package type will be assigned to theintegration in case no existing kit that matches the integration exists.");
-		assertThat(completionItem.getInsertText()).isEqualTo("package-type");
+		assertThat(completionItems).hasSize(3);
+		CompletionItem completionItem = findCompletionItemWithLabel(completions, "packageTypes");
+		assertThat(completionItem.getDocumentation().getLeft()).isEqualTo("The Quarkus package types, either `fast-jar` or `native` (default `fast-jar`). In case both `fast-jar` and `native` are specified, two `IntegrationKit` resources are created, with the `native` kit having precedence over the `fast-jar` one once ready. The order influences the resolution of the current kit for the integration. The kit corresponding to the first package type will be assigned to the integration in case no existing kit that matches the integration exists.");
+		assertThat(completionItem.getInsertText()).isEqualTo("packageTypes");
 		TextEdit textEdit = completionItem.getTextEdit().getLeft();
-		assertThat(textEdit.getNewText()).isEqualTo("package-type");
+		assertThat(textEdit.getNewText()).isEqualTo("packageTypes");
 		assertThat(textEdit.getRange().getStart().getCharacter()).isEqualTo(26);
 		assertThat(textEdit.getRange().getEnd().getCharacter()).isEqualTo(33);
 	}

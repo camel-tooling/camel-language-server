@@ -49,7 +49,7 @@
 		<assertj.version>3.24.2</assertj.version>
 		<jgit.version>6.7.0.202309050840-r</jgit.version>
 		<camel.version>4.0.0</camel.version>
-		<camel.kamelet.catalog.version>3.21.0</camel.kamelet.catalog.version>
+		<camel.kamelet.catalog.version>4.0.0</camel.kamelet.catalog.version>
 		<camel.quarkus.version>3.2.0</camel.quarkus.version>
 		<roaster.version>2.29.0.Final</roaster.version>
 		<awaitility.version>4.2.0</awaitility.version>
@@ -57,7 +57,7 @@
 		<commons-text.version>1.10.0</commons-text.version>
 		<citrus.kafka.version>4.0.0-M2</citrus.kafka.version>
 		<kafka.clients.version>3.5.1</kafka.clients.version>
-		<kubernetes.client.version>6.1.1</kubernetes.client.version>
+		<kubernetes.client.version>6.4.1</kubernetes.client.version>
 	</properties>
 
 	<distributionManagement>
@@ -342,12 +342,6 @@
 			<groupId>io.fabric8</groupId>
 			<artifactId>knative-client</artifactId>
 			<version>${kubernetes.client.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>io.fabric8</groupId>
-			<artifactId>knative-mock</artifactId>
-			<version>${kubernetes.client.version}</version>
-			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>io.fabric8</groupId>

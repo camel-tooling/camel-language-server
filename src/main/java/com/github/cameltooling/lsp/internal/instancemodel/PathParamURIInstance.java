@@ -28,6 +28,7 @@ import java.util.stream.Collectors;
 
 import org.apache.camel.catalog.CamelCatalog;
 import org.apache.camel.tooling.model.ComponentModel.EndpointOptionModel;
+import org.apache.camel.v1.kameletspec.Definition;
 import org.eclipse.lsp4j.CompletionItem;
 import org.eclipse.lsp4j.TextDocumentItem;
 import org.slf4j.Logger;
@@ -44,8 +45,6 @@ import com.github.cameltooling.lsp.internal.completion.FilterPredicateUtils;
 import com.github.cameltooling.lsp.internal.completion.KafkaTopicCompletionProvider;
 import com.github.cameltooling.lsp.internal.completion.KameletTemplateIdCompletionProvider;
 import com.github.cameltooling.lsp.internal.settings.SettingsManager;
-
-import io.fabric8.camelk.v1alpha1.JSONSchemaProps;
 
 /**
  * For a Camel URI "timer:timerName?delay=10s", it represents "timerName"
@@ -195,7 +194,7 @@ public class PathParamURIInstance extends CamelUriElementInstance {
 	@Override
 	public String getDescription(ComponentModel componentModel, KameletsCatalogManager kameletCatalogManager) {
 		if(pathParamIndex == 0 && ComponentNameConstants.COMPONENT_NAME_KAMELET.equals(getComponentName())) {
-			JSONSchemaProps kamelet = kameletCatalogManager.getCatalog().getKameletDefinition(getValue());
+			Definition kamelet = kameletCatalogManager.getCatalog().getKameletDefinition(getValue());
 			if(kamelet != null) {
 				return kamelet.getDescription();
 			}

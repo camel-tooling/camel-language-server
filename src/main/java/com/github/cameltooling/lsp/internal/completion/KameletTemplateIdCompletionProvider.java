@@ -29,7 +29,7 @@ import org.eclipse.lsp4j.CompletionItem;
 import com.github.cameltooling.lsp.internal.catalog.util.KameletsCatalogManager;
 import com.github.cameltooling.lsp.internal.instancemodel.PathParamURIInstance;
 
-import io.fabric8.camelk.v1alpha1.Kamelet;
+import org.apache.camel.v1.Kamelet;
 
 public class KameletTemplateIdCompletionProvider {
 	
@@ -54,7 +54,7 @@ public class KameletTemplateIdCompletionProvider {
 		return CompletableFuture.completedFuture(completionItems);
 	}
 
-	private Collection<Kamelet> retrievePotentialKamelets(PathParamURIInstance pathParamURIInstance) {
+	private List<Kamelet> retrievePotentialKamelets(PathParamURIInstance pathParamURIInstance) {
 		KameletsCatalog kameletsCatalog = kameletsCatalogManager.getCatalog();
 		if(kameletsCatalog != null) {
 			if (pathParamURIInstance.getCamelUriInstance().isProducer()) {

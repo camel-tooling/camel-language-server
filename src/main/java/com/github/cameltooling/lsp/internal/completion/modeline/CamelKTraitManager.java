@@ -16,22 +16,25 @@
  */
 package com.github.cameltooling.lsp.internal.completion.modeline;
 
-import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.eclipse.lsp4j.CompletionItem;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
+import com.github.cameltooling.lsp.internal.completion.CompletionResolverUtils;
 import com.github.cameltooling.lsp.internal.completion.FilterPredicateUtils;
 import com.github.cameltooling.lsp.internal.modelinemodel.CamelKModelineTraitDefinition;
 import com.github.cameltooling.lsp.internal.modelinemodel.CamelKModelineTraitDefinitionProperty;
-import com.google.gson.Gson;
+import com.github.cameltooling.lsp.internal.modelinemodel.CamelKModelineTraitOption;
+
+import io.fabric8.kubernetes.api.model.apiextensions.v1.CustomResourceDefinition;
+import io.fabric8.kubernetes.api.model.apiextensions.v1.JSONSchemaProps;
 
 public class CamelKTraitManager {
 	
@@ -39,60 +42,99 @@ public class CamelKTraitManager {
 		
 	}
 	
-	private static List<TraitDefinition> traits;
+	private static Map<String, JSONSchemaProps> traits;
+	private static ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
 
-	public static List<TraitDefinition> getTraits() {
+	public static Map<String, JSONSchemaProps> getTraits() {
 		if(traits == null) {
-			InputStream inputStream = CamelKTraitManager.class.getResourceAsStream("/trait-catalog-camel_k-1.7.0.json");
-			String text = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8)).lines().collect(Collectors.joining("\n"));
-			traits = Arrays.asList(new Gson().fromJson(text, TraitDefinition[].class));
+			InputStream inputStreamCRD = CamelKTraitManager.class.getResourceAsStream("/camel.apache.org_integrations-2.0.1.yaml");	
+			try {
+				CustomResourceDefinition crd = mapper.readValue(inputStreamCRD, CustomResourceDefinition.class);
+				JSONSchemaProps traitsSchema = retrieveTraitsDefinitionFromCamelKCRD(crd);
+				traits = traitsSchema.getProperties();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				traits = Collections.emptyMap();
+			}
 		}
 		return traits;
 	}
+
+	private static JSONSchemaProps retrieveTraitsDefinitionFromCamelKCRD(CustomResourceDefinition crd) {
+		return crd.getSpec().getVersions().get(0).getSchema().getOpenAPIV3Schema().getProperties().get("spec").getProperties().get("traits");
+	}
 	
 	public static List<CompletionItem> getTraitDefinitionNameCompletionItems(String filter, CamelKModelineTraitDefinition camelKModelineTraitDefinition){
-		return getTraits().stream()
-				.map(traitDefinition -> traitDefinition.createCompletionItem(camelKModelineTraitDefinition))
-				.filter(FilterPredicateUtils.matchesCompletionFilter(filter))
+		return getTraits().entrySet().stream().map(entryTrait -> {
+			CompletionItem completionItem = new CompletionItem(entryTrait.getKey());
+			completionItem.setDocumentation(entryTrait.getValue().getDescription());
+			if(hasAPropertySpecified(camelKModelineTraitDefinition.getTraitOption())) {
+				completionItem.setInsertText(entryTrait.getKey());
+			} else {
+				completionItem.setInsertText(entryTrait.getKey() + ".");
+			}
+			CompletionResolverUtils.applyTextEditToCompletionItem(camelKModelineTraitDefinition, completionItem);
+			return completionItem;
+		}).filter(FilterPredicateUtils.matchesCompletionFilter(filter))
 				.collect(Collectors.toList());
 	}
 
+	private static boolean hasAPropertySpecified(CamelKModelineTraitOption camelKModelineTraitOption) {
+		return camelKModelineTraitOption.getTraitProperty() != null;
+	}
+
 	public static List<CompletionItem> getTraitPropertyNameCompletionItems(String filter, CamelKModelineTraitDefinitionProperty traitDefinitionProperty) {
-		Optional<TraitDefinition> traitDefinition = getTrait(traitDefinitionProperty.getTraitOption().getTraitDefinition().getValueAsString());
-		if(traitDefinition.isPresent()) {
-			return traitDefinition.get().getProperties().stream()
-					.map(traitProperty -> traitProperty.createCompletionItem(traitDefinitionProperty))
+		JSONSchemaProps traitDefinition = getTrait(traitDefinitionProperty.getTraitOption().getTraitDefinition().getValueAsString());
+		if(traitDefinition != null) {
+			return traitDefinition.getProperties().entrySet().stream()
+					.map(traitProperty -> {
+						CompletionItem completionItem = new CompletionItem(traitProperty.getKey());
+						completionItem.setDocumentation(traitProperty.getValue().getDescription());
+						CamelKModelineTraitOption traitOption = traitDefinitionProperty.getTraitOption();
+						if (hasAValueSpecified(traitOption)) {
+							completionItem.setInsertText(traitProperty.getKey());
+						} else {
+							completionItem.setInsertText(traitProperty.getKey() + "=");
+						}
+						CompletionResolverUtils.applyTextEditToCompletionItem(traitDefinitionProperty, completionItem);
+						return completionItem;
+					})
 					.filter(FilterPredicateUtils.matchesCompletionFilter(filter))
 					.collect(Collectors.toList());
 		}
 		return Collections.emptyList();
 	}
 
-	private static Optional<TraitDefinition> getTrait(String traitDefinitionName) {
-		return getTraits().stream().filter(traitdefinition -> traitDefinitionName.equals(traitdefinition.getName())).findFirst();
+	private static boolean hasAValueSpecified(CamelKModelineTraitOption traitOption) {
+		return traitOption.getValueAsString().contains("=");
+	}
+
+	private static JSONSchemaProps getTrait(String traitDefinitionName) {
+		return getTraits().get(traitDefinitionName);
 	}
 
 	public static String getDescription(String traitDefinitionName) {
-		Optional<TraitDefinition> traitDefinition = getTrait(traitDefinitionName);
-		if(traitDefinition.isPresent()) {
-			return traitDefinition.get().getDescription();
+		JSONSchemaProps traitDefinition = getTrait(traitDefinitionName);
+		if(traitDefinition != null) {
+			return traitDefinition.getDescription();
 		}
 		return null;
 	}
 
 	public static String getPropertyDescription(String traitDefinitionName, String traitPropertyName) {
-		Optional<TraitDefinition> traitDefinition = getTrait(traitDefinitionName);
-		if(traitDefinition.isPresent()) {
-			Optional<TraitProperty> traitProperty = getTraitProperty(traitDefinition.get(), traitPropertyName);
-			if(traitProperty.isPresent()) {
-				return traitProperty.get().getDescription();
+		JSONSchemaProps traitDefinition = getTrait(traitDefinitionName);
+		if(traitDefinition != null) {
+			JSONSchemaProps traitProperty = getTraitProperty(traitDefinition, traitPropertyName);
+			if(traitProperty != null) {
+				return traitProperty.getDescription();
 			}
 		}
 		return null;
 	}
 
-	private static Optional<TraitProperty> getTraitProperty(TraitDefinition traitDefinition, String traitPropertyName) {
-		return traitDefinition.getProperties().stream().filter(traitProperty -> traitPropertyName.equals(traitProperty.getName())).findFirst();
+	private static JSONSchemaProps getTraitProperty(JSONSchemaProps traitDefinition, String traitPropertyName) {
+		return traitDefinition.getProperties().get(traitPropertyName);
 	}
 
 }
