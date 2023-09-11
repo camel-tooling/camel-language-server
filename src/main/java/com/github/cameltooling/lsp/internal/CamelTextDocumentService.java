@@ -76,6 +76,7 @@ import com.github.cameltooling.lsp.internal.codeactions.CodeActionProcessor;
 import com.github.cameltooling.lsp.internal.completion.CamelEndpointCompletionProcessor;
 import com.github.cameltooling.lsp.internal.completion.CamelPropertiesCompletionProcessor;
 import com.github.cameltooling.lsp.internal.completion.PomCompletionProcessor;
+import com.github.cameltooling.lsp.internal.completion.VSCodeTasksCompletionProcessor;
 import com.github.cameltooling.lsp.internal.completion.modeline.CamelKModelineCompletionprocessor;
 import com.github.cameltooling.lsp.internal.definition.DefinitionProcessor;
 import com.github.cameltooling.lsp.internal.diagnostic.DiagnosticRunner;
@@ -168,6 +169,8 @@ public class CamelTextDocumentService implements TextDocumentService {
 				return new CamelKModelineCompletionprocessor(textDocumentItem, getCamelCatalog()).getCompletions(completionParams.getPosition()).thenApply(Either::forLeft);
 			} else if(uri.endsWith("pom.xml")) {
 				return new PomCompletionProcessor().getCompletions().thenApply(Either::forLeft);
+			} else if(uri.endsWith("tasks.json")) {
+				return new VSCodeTasksCompletionProcessor(textDocumentItem).getCompletions(completionParams.getPosition()).thenApply(Either::forLeft);
 			} else {
 				return new CamelEndpointCompletionProcessor(textDocumentItem, getCamelCatalog(), getKameletsCatalogManager()).getCompletions(completionParams.getPosition(), getSettingsManager()).thenApply(Either::forLeft);
 			}

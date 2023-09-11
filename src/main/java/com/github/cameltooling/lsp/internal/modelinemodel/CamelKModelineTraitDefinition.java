@@ -23,7 +23,7 @@ import org.apache.camel.catalog.CamelCatalog;
 import org.eclipse.lsp4j.CompletionItem;
 import org.eclipse.lsp4j.Hover;
 
-import com.github.cameltooling.lsp.internal.completion.modeline.CamelKTraitManager;
+import com.github.cameltooling.lsp.internal.completion.traits.CamelKTraitManager;
 
 public class CamelKModelineTraitDefinition implements ICamelKModelineOptionValue {
 
