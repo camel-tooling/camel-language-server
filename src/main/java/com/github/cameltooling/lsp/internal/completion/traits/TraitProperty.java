@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.cameltooling.lsp.internal.completion.modeline;
+package com.github.cameltooling.lsp.internal.completion.traits;
 
 import org.eclipse.lsp4j.CompletionItem;
 
