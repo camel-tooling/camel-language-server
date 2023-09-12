@@ -17,8 +17,10 @@
 package com.github.cameltooling.lsp.internal.completion;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -76,6 +78,16 @@ public class CamelOptionValuesCompletionsFuture implements Function<CamelCatalog
 				} catch (ApiException e) {
 					LOGGER.error("Error while trying to provide completion for Kubernetes connected mode", e);
 				}
+			} else if("lang".equalsIgnoreCase(endpointOptionModel.getName())
+					&& optionParamValueURIInstance.getComponentName().startsWith("twitter-")) {
+				List<CompletionItem> items = new ArrayList<>();
+				//We will just rely on Java to be updated for this
+				for(String lang : Locale.getISOLanguages()) {
+					CompletionItem langItem = new CompletionItem(lang);
+					CompletionResolverUtils.applyTextEditToCompletionItem(optionParamValueURIInstance, langItem);
+					items.add(langItem);
+				}
+				return items;
 			}
 		}
 		return Collections.emptyList();
