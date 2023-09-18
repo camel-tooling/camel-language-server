@@ -31,6 +31,8 @@ public class ParserFileHelperFactory {
 	private static final String CAMELK_KOTLIN_FILENAME_SUFFIX = ".camelk.kts";
 	private static final String CAMELK_YAML_FILENAME_SUFFIX = ".camelk.yaml";
 	private static final String PLAIN_CAMEL_YAML_FILENAME_SUFFIX = ".camel.yaml";
+	private static final String CAMELK_YML_FILENAME_SUFFIX = ".camelk.yml";
+	private static final String PLAIN_CAMEL_YML_FILENAME_SUFFIX = ".camel.yml";
 	private static final String CAMELK_JS_FILENAME_SUFFIX = ".camelk.js";
 	private static final String SHEBANG_CAMEL_K = "#!/usr/bin/env camel-k";
 
@@ -129,7 +131,9 @@ public class ParserFileHelperFactory {
 	private boolean isCamelYamlDSL(TextDocumentItem textDocumentItem, String uri) {
 		//improve this method to provide better heuristic to detect if it is a Camel file or not
 		return uri.endsWith(CAMELK_YAML_FILENAME_SUFFIX)
+				|| uri.endsWith(CAMELK_YML_FILENAME_SUFFIX)
 				|| uri.endsWith(PLAIN_CAMEL_YAML_FILENAME_SUFFIX)
+				|| uri.endsWith(PLAIN_CAMEL_YML_FILENAME_SUFFIX)
 				|| isYamlFileWithCamelKShebang(textDocumentItem, uri)
 				|| isYamlFileWithCamelKModelineLike(textDocumentItem, uri)
 				|| isYamlFileOfCRDType(textDocumentItem, uri);

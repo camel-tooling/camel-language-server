@@ -382,6 +382,18 @@ class CamelLanguageServerTest extends AbstractCamelLanguageServerTest {
 				assertThat(completions.get().getLeft()).contains(createExpectedTimerCompletionItem(1, 10, 1, 22));
 			}
 		}
+		
+		@Test
+		void testProvideCompletionForPlainYml() throws Exception {
+			File f = new File("src/test/resources/workspace/plain.camel.yml");
+			assertThat(f).exists();
+			try (FileInputStream fis = new FileInputStream(f)) {
+				CamelLanguageServer cls = initializeLanguageServer(fis, ".camel.yml");
+				Position positionAtBeginningOfFromValue = new Position(1, 10);
+				CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = getCompletionFor(cls, positionAtBeginningOfFromValue);
+				assertThat(completions.get().getLeft()).contains(createExpectedTimerCompletionItem(1, 10, 1, 22));
+			}
+		}
 	}
 
 	@Test
