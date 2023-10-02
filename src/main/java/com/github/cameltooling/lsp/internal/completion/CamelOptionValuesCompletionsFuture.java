@@ -17,7 +17,6 @@
 package com.github.cameltooling.lsp.internal.completion;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
@@ -26,7 +25,9 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import io.fabric8.kubernetes.client.impl.KubernetesClientImpl;
 import org.apache.camel.catalog.CamelCatalog;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.kafka.common.errors.ApiException;
 import org.eclipse.lsp4j.CompletionItem;
 import org.slf4j.Logger;
@@ -86,6 +87,22 @@ public class CamelOptionValuesCompletionsFuture implements Function<CamelCatalog
 					CompletionItem langItem = new CompletionItem(lang);
 					CompletionResolverUtils.applyTextEditToCompletionItem(optionParamValueURIInstance, langItem);
 					items.add(langItem);
+				}
+				return items;
+			} else if(StringUtils.startsWithIgnoreCase(
+					optionParamValueURIInstance.getOptionParamURIInstance().getValue().getValueName(),
+					"{{secret:")) {
+				List<CompletionItem> items = new ArrayList<>();
+				try (KubernetesClient client = KubernetesConfigManager.getInstance().getClient()) {
+					var secrets = ((KubernetesClientImpl) client).inAnyNamespace().secrets().list().getItems();
+					secrets.forEach(secret-> secret.getData().forEach((k, v) -> {
+						CompletionItem langItem =
+								new CompletionItem("{{secret:" + secret.getMetadata().getName() + "/" + k + "}}");
+						CompletionResolverUtils.applyTextEditToCompletionItem(optionParamValueURIInstance, langItem);
+						items.add(langItem);
+					}));
+				} catch (ApiException e) {
+					LOGGER.error("Error while trying to provide completion for Kubernetes connected mode", e);
 				}
 				return items;
 			}
