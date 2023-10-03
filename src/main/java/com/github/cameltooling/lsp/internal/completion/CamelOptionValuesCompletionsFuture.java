@@ -94,13 +94,16 @@ public class CamelOptionValuesCompletionsFuture implements Function<CamelCatalog
 					"{{secret:")) {
 				List<CompletionItem> items = new ArrayList<>();
 				try (KubernetesClient client = KubernetesConfigManager.getInstance().getClient()) {
-					var secrets = ((KubernetesClientImpl) client).inAnyNamespace().secrets().list().getItems();
-					secrets.forEach(secret-> secret.getData().forEach((k, v) -> {
-						CompletionItem langItem =
-								new CompletionItem("{{secret:" + secret.getMetadata().getName() + "/" + k + "}}");
-						CompletionResolverUtils.applyTextEditToCompletionItem(optionParamValueURIInstance, langItem);
-						items.add(langItem);
-					}));
+					if (client instanceof NamespacedKubernetesClient nsClient) {
+						var secrets = nsClient.inAnyNamespace().secrets().list().getItems();
+						secrets.forEach(secret -> secret.getData().forEach((k, v) -> {
+							CompletionItem langItem = new CompletionItem(
+									"{{secret:" + secret.getMetadata().getName() + "/" + k + "}}");
+							CompletionResolverUtils.applyTextEditToCompletionItem(optionParamValueURIInstance,
+									langItem);
+							items.add(langItem);
+						}));
+					}
 				} catch (ApiException e) {
 					LOGGER.error("Error while trying to provide completion for Kubernetes connected mode", e);
 				}
