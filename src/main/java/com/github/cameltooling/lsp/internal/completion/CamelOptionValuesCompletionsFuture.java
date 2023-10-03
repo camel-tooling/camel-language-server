@@ -25,7 +25,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import io.fabric8.kubernetes.client.impl.KubernetesClientImpl;
+import io.fabric8.kubernetes.client.NamespacedKubernetesClient;
 import org.apache.camel.catalog.CamelCatalog;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.kafka.common.errors.ApiException;
@@ -89,25 +89,33 @@ public class CamelOptionValuesCompletionsFuture implements Function<CamelCatalog
 					items.add(langItem);
 				}
 				return items;
-			} else if(StringUtils.startsWithIgnoreCase(
-					optionParamValueURIInstance.getOptionParamURIInstance().getValue().getValueName(),
-					"{{secret:")) {
-				List<CompletionItem> items = new ArrayList<>();
-				try (KubernetesClient client = KubernetesConfigManager.getInstance().getClient()) {
-					if (client instanceof NamespacedKubernetesClient nsClient) {
-						var secrets = nsClient.inAnyNamespace().secrets().list().getItems();
-						secrets.forEach(secret -> secret.getData().forEach((k, v) -> {
-							CompletionItem langItem = new CompletionItem(
+			}
+
+			//Check based on the value of the parameter
+			//if we get here, all the previous checks are done,
+			// so we can return it directly
+			return getCompletionItemsForParameterValue();
+		}
+		return Collections.emptyList();
+	}
+
+	private List<CompletionItem> getCompletionItemsForParameterValue() {
+
+		final var value = optionParamValueURIInstance.getOptionParamURIInstance().getValue().getValueName();
+
+		if(StringUtils.startsWithIgnoreCase(value, "{{secret:")) {
+			try (KubernetesClient client = KubernetesConfigManager.getInstance().getClient()) {
+				if (client instanceof NamespacedKubernetesClient nsClient) {
+					return nsClient.inAnyNamespace().secrets().list().getItems().stream().flatMap(secret ->
+						secret.getData().keySet().stream().map(k ->{
+							CompletionItem item = new CompletionItem(
 									"{{secret:" + secret.getMetadata().getName() + "/" + k + "}}");
-							CompletionResolverUtils.applyTextEditToCompletionItem(optionParamValueURIInstance,
-									langItem);
-							items.add(langItem);
-						}));
-					}
-				} catch (ApiException e) {
-					LOGGER.error("Error while trying to provide completion for Kubernetes connected mode", e);
+							CompletionResolverUtils.applyTextEditToCompletionItem(optionParamValueURIInstance, item);
+							return item;
+						})).collect(Collectors.toList());
 				}
-				return items;
+			} catch (Exception e) {
+				LOGGER.error("Error while trying to provide completion for Kubernetes connected mode", e);
 			}
 		}
 		return Collections.emptyList();
