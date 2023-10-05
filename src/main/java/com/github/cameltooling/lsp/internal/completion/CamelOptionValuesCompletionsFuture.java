@@ -94,12 +94,12 @@ public class CamelOptionValuesCompletionsFuture implements Function<CamelCatalog
 			//Check based on the value of the parameter
 			//if we get here, all the previous checks are done,
 			// so we can return it directly
-			return getCompletionItemsForParameterValue();
+			return getCompletionForKubernetesSecret();
 		}
 		return Collections.emptyList();
 	}
 
-	private List<CompletionItem> getCompletionItemsForParameterValue() {
+	private List<CompletionItem> getCompletionForKubernetesSecret() {
 
 		final var value = optionParamValueURIInstance.getOptionParamURIInstance().getValue().getValueName();
 

@@ -18,6 +18,7 @@ package com.github.cameltooling.lsp.internal.kubernetes;
 
 import io.fabric8.kubernetes.client.KubernetesClient;
 import io.fabric8.kubernetes.client.KubernetesClientBuilder;
+import io.fabric8.kubernetes.client.KubernetesClientException;
 
 public class KubernetesConfigManager {
 
@@ -36,8 +37,15 @@ public class KubernetesConfigManager {
 	}
 	
 	public KubernetesClient getClient() {
-		if(client == null) {
+		if(client == null ) {
 			client = new KubernetesClientBuilder().build();
+		} else {
+			try {
+				//Let's see if the connection is still valid
+				client.namespaces().list();
+			} catch (KubernetesClientException e) {
+				client = new KubernetesClientBuilder().build();
+			}
 		}
 		return client;
 	}
