@@ -48,4 +48,14 @@ jobs:
         -Dsonar.projectKey="camel-lsp-server"
         -Dsonar.projectName="Camel LSP Server"
         -Dsonar.host.url=https://sonarcloud.io
+    - name: Generate SBOM
+      run: mvn package -P sbom -DskipTests
+    - name: Store SBOM
+      uses: actions/upload-artifact@v3
+      with:
+        name: sboms
+        path: |
+          target/bom.json
+          target/bom.xml
+     
         
