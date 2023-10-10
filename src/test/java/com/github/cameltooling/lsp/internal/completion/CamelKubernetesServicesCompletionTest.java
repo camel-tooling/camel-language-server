@@ -24,8 +24,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
+import io.fabric8.kubernetes.api.model.ConfigMapBuilder;
 import io.fabric8.kubernetes.api.model.SecretBuilder;
-import io.fabric8.kubernetes.client.KubernetesClientBuilder;
 import jakarta.inject.Inject;
 import org.eclipse.lsp4j.CompletionItem;
 import org.eclipse.lsp4j.Position;
@@ -54,6 +54,7 @@ class CamelKubernetesServicesCompletionTest extends AbstractCamelLanguageServerT
 		KubernetesConfigManager.getInstance().setClient(client);
 		client.secrets().delete();
 		client.namespaces().delete();
+		client.configMaps().delete();
 	}
 	@AfterEach
 	void cleanupCluster() {
@@ -112,6 +113,31 @@ class CamelKubernetesServicesCompletionTest extends AbstractCamelLanguageServerT
 		assertThat(completions).hasSize(3);
 	}
 
+	@Test
+	void testConfigMapCompletion() throws Exception {
+		createNamespace("my-secrets-namespace");
+		createConfigMap("myMap", List.of("myKey1", "myKey2"));
+
+		List<CompletionItem> completions = getCompletionForConfigMaps();
+		assertThat(completions).hasSize(2);
+		assertThat(completions.get(0).getLabel()).isEqualTo("{{configmap:myMap/myKey1}}");
+		assertThat(completions.get(1).getLabel()).isEqualTo("{{configmap:myMap/myKey2}}");
+	}
+
+	@Test
+	void testConfigMapAndSecretsCompletion() throws Exception {
+		createNamespace("my-secrets-namespace");
+		createSecret("mySecrets", List.of("key","second"));
+		createConfigMap("myMap", List.of("myKey1", "myKey2"));
+
+		List<CompletionItem> completions = getCompletionForPlaceholders();
+		assertThat(completions).hasSize(4);
+		assertThat(completions.get(0).getLabel()).isEqualTo("{{secret:mySecrets/key}}");
+		assertThat(completions.get(1).getLabel()).isEqualTo("{{secret:mySecrets/second}}");
+		assertThat(completions.get(2).getLabel()).isEqualTo("{{configmap:myMap/myKey1}}");
+		assertThat(completions.get(3).getLabel()).isEqualTo("{{configmap:myMap/myKey2}}");
+	}
+
 	private void createNamespace(String name) {
 		client.namespaces().resource(new NamespaceBuilder().withNewMetadata().withName(name).endMetadata().build()).create();
 	}
@@ -151,4 +177,40 @@ class CamelKubernetesServicesCompletionTest extends AbstractCamelLanguageServerT
 		return completions;
 	}
 
+	private void createConfigMap(String configMapName, List<String> keys) {
+		Map<String, String> data = new HashMap<>();
+		keys.forEach(k -> data.put(k, k + "encrypted"));
+		client.configMaps().resource(
+						new ConfigMapBuilder()
+								.withNewMetadata()
+								.withName(configMapName)
+								.withNamespace("my-secrets-namespace")
+								.withLabels(Map.of())
+								.endMetadata()
+								.withData(data)
+								.build())
+				.create();
+	}
+
+
+	private List<CompletionItem> getCompletionForConfigMaps()
+			throws URISyntaxException, InterruptedException, ExecutionException {
+		String camelUri = "pgevent:host:999/database/channel?user={{configmap:";
+		String text = RouteTextBuilder.createXMLSpringRoute(camelUri);
+		CamelLanguageServer languageServer = initializeLanguageServer(text, ".xml");
+		Position position = new Position(0, RouteTextBuilder.XML_PREFIX_FROM.length() + camelUri.length());
+		List<CompletionItem> completions = getCompletionFor(languageServer, position).get().getLeft();
+		return completions;
+	}
+
+
+	private List<CompletionItem> getCompletionForPlaceholders()
+			throws URISyntaxException, InterruptedException, ExecutionException {
+		String camelUri = "pgevent:host:999/database/channel?user={{";
+		String text = RouteTextBuilder.createXMLSpringRoute(camelUri);
+		CamelLanguageServer languageServer = initializeLanguageServer(text, ".xml");
+		Position position = new Position(0, RouteTextBuilder.XML_PREFIX_FROM.length() + camelUri.length());
+		List<CompletionItem> completions = getCompletionFor(languageServer, position).get().getLeft();
+		return completions;
+	}
 }

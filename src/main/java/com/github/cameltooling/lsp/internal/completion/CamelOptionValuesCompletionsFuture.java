@@ -25,7 +25,11 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import io.fabric8.kubernetes.api.model.ConfigMap;
+import io.fabric8.kubernetes.api.model.ConfigMapList;
 import io.fabric8.kubernetes.client.NamespacedKubernetesClient;
+import io.fabric8.kubernetes.client.dsl.MixedOperation;
+import io.fabric8.kubernetes.client.dsl.Resource;
 import org.apache.camel.catalog.CamelCatalog;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.kafka.common.errors.ApiException;
@@ -94,31 +98,40 @@ public class CamelOptionValuesCompletionsFuture implements Function<CamelCatalog
 			//Check based on the value of the parameter
 			//if we get here, all the previous checks are done,
 			// so we can return it directly
-			return getCompletionForKubernetesSecret();
+			return getCompletionForKubernetes();
 		}
 		return Collections.emptyList();
 	}
 
-	private List<CompletionItem> getCompletionForKubernetesSecret() {
+	private List<CompletionItem> getCompletionForKubernetes() {
 
 		final var value = optionParamValueURIInstance.getOptionParamURIInstance().getValue().getValueName();
-
-		if(StringUtils.startsWithIgnoreCase(value, "{{secret:")) {
+		var kubernetesPlaceholders = new ArrayList<CompletionItem>();
+		
+		if(StringUtils.startsWithIgnoreCase(value, "{{")) {
 			try (KubernetesClient client = KubernetesConfigManager.getInstance().getClient()) {
 				if (client instanceof NamespacedKubernetesClient nsClient) {
-					return nsClient.inAnyNamespace().secrets().list().getItems().stream().flatMap(secret ->
-						secret.getData().keySet().stream().map(k ->{
-							CompletionItem item = new CompletionItem(
-									"{{secret:" + secret.getMetadata().getName() + "/" + k + "}}");
-							CompletionResolverUtils.applyTextEditToCompletionItem(optionParamValueURIInstance, item);
-							return item;
-						})).collect(Collectors.toList());
+					kubernetesPlaceholders.addAll(nsClient.inAnyNamespace().secrets().list().getItems().stream().flatMap(element ->
+							element.getData().keySet().stream().map(k ->{
+								CompletionItem item = new CompletionItem(
+										"{{secret:" + element.getMetadata().getName() + "/" + k + "}}");
+								CompletionResolverUtils.applyTextEditToCompletionItem(optionParamValueURIInstance, item);
+								return item;
+							})).collect(Collectors.toList()));
+					kubernetesPlaceholders.addAll(nsClient.inAnyNamespace().configMaps().list().getItems().stream().flatMap(element ->
+								element.getData().keySet().stream().map(k ->{
+									CompletionItem item = new CompletionItem(
+											"{{configmap:" + element.getMetadata().getName() + "/" + k + "}}");
+									CompletionResolverUtils.applyTextEditToCompletionItem(optionParamValueURIInstance, item);
+									return item;
+								})).collect(Collectors.toList()));
 				}
 			} catch (Exception e) {
 				LOGGER.error("Error while trying to provide completion for Kubernetes connected mode", e);
 			}
 		}
-		return Collections.emptyList();
+
+		return kubernetesPlaceholders;
 	}
 
 	private List<CompletionItem> computeCompletionForEnums(List<String> enums) {
