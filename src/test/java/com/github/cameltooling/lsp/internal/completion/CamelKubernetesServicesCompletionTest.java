@@ -5,9 +5,9 @@
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
- *
- *      https://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * https://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -106,7 +106,7 @@ class CamelKubernetesServicesCompletionTest extends AbstractCamelLanguageServerT
 	@Test
 	void testSecretCompletionWithSeveralSecrets() throws Exception {
 		createNamespace("my-secrets-namespace");
-		createSecret("mySecrets", List.of("key","second"));
+		createSecret("mySecrets", List.of("key", "second"));
 		createSecret("myRealSecrets", List.of("another"));
 
 		List<CompletionItem> completions = getCompletionForSecrets();
@@ -127,7 +127,7 @@ class CamelKubernetesServicesCompletionTest extends AbstractCamelLanguageServerT
 	@Test
 	void testConfigMapAndSecretsCompletion() throws Exception {
 		createNamespace("my-secrets-namespace");
-		createSecret("mySecrets", List.of("key","second"));
+		createSecret("mySecrets", List.of("key", "second"));
 		createConfigMap("myMap", List.of("myKey1", "myKey2"));
 
 		List<CompletionItem> completions = getCompletionForPlaceholders();
@@ -136,6 +136,61 @@ class CamelKubernetesServicesCompletionTest extends AbstractCamelLanguageServerT
 		assertThat(completions.get(1).getLabel()).isEqualTo("{{secret:mySecrets/second}}");
 		assertThat(completions.get(2).getLabel()).isEqualTo("{{configmap:myMap/myKey1}}");
 		assertThat(completions.get(3).getLabel()).isEqualTo("{{configmap:myMap/myKey2}}");
+	}
+
+	@Test
+	void testKubernetesAutoCompletionMidValue() throws Exception {
+		createNamespace("my-secrets-namespace");
+		createConfigMap("myMap", List.of("myKey1", "myKey2"));
+
+		String camelUri = "pgevent:host:999/database/channel?user=something{{a}}afterwards";
+		String text = RouteTextBuilder.createXMLSpringRoute(camelUri);
+		CamelLanguageServer languageServer = initializeLanguageServer(text, ".xml");
+		Position position = new Position(0, RouteTextBuilder.XML_PREFIX_FROM.length() + camelUri.length() - 12);
+		List<CompletionItem> completions = getCompletionFor(languageServer, position).get().getLeft();
+
+		assertThat(completions).hasSize(2);
+		assertThat(completions.get(0).getLabel()).isEqualTo("{{configmap:myMap/myKey1}}");
+		assertThat(completions.get(0).getFilterText()).isEqualTo("something{{configmap:myMap/myKey1}}");
+		assertThat(completions.get(1).getLabel()).isEqualTo("{{configmap:myMap/myKey2}}");
+		assertThat(completions.get(1).getInsertText()).isEqualTo("something{{configmap:myMap/myKey2}}afterwards");
+	}
+
+	@Test
+	void testKubernetesAutoCompletionSeveralPlaceholders() throws Exception {
+		createNamespace("my-secrets-namespace");
+		createConfigMap("myMap", List.of("myKey1", "myKey2"));
+
+		String camelUri = "pgevent:host:999/database/channel?user={{secret:mySec/none}}something{{co}}afterwards" +
+				"{{secret:aa/BB}}";
+		String text = RouteTextBuilder.createXMLSpringRoute(camelUri);
+		CamelLanguageServer languageServer = initializeLanguageServer(text, ".xml");
+		Position position = new Position(0, RouteTextBuilder.XML_PREFIX_FROM.length() + camelUri.length() - 30);
+		List<CompletionItem> completions = getCompletionFor(languageServer, position).get().getLeft();
+
+		assertThat(completions).hasSize(2);
+		assertThat(completions.get(0).getLabel()).isEqualTo("{{configmap:myMap/myKey1}}");
+		assertThat(completions.get(0).getFilterText()).isEqualTo("{{secret:mySec/none}}something{{configmap:myMap/myKey1}}");
+		assertThat(completions.get(1).getLabel()).isEqualTo("{{configmap:myMap/myKey2}}");
+		assertThat(completions.get(1).getInsertText()).isEqualTo("{{secret:mySec/none}}something{{configmap:myMap/myKey2}}afterwards{{secret:aa/BB}}");
+	}
+
+	@Test
+	void testKubernetesAutoCompletionPlaceholdersNotClosed() throws Exception {
+		createNamespace("my-secrets-namespace");
+		createConfigMap("myMap", List.of("myKey1", "myKey2"));
+
+		String camelUri = "pgevent:host:999/database/channel?user=}}something{{a";
+		String text = RouteTextBuilder.createXMLSpringRoute(camelUri);
+		CamelLanguageServer languageServer = initializeLanguageServer(text, ".xml");
+		Position position = new Position(0, RouteTextBuilder.XML_PREFIX_FROM.length() + camelUri.length());
+		List<CompletionItem> completions = getCompletionFor(languageServer, position).get().getLeft();
+
+		assertThat(completions).hasSize(2);
+		assertThat(completions.get(0).getLabel()).isEqualTo("{{configmap:myMap/myKey1}}");
+		assertThat(completions.get(0).getFilterText()).isEqualTo("}}something{{configmap:myMap/myKey1}}");
+		assertThat(completions.get(1).getLabel()).isEqualTo("{{configmap:myMap/myKey2}}");
+		assertThat(completions.get(1).getInsertText()).isEqualTo("}}something{{configmap:myMap/myKey2}}");
 	}
 
 	private void createNamespace(String name) {
