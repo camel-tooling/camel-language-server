@@ -5,9 +5,9 @@
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
- * <p>
- * https://www.apache.org/licenses/LICENSE-2.0
- * <p>
+ *
+ *      https://www.apache.org/licenses/LICENSE-2.0
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -191,6 +191,137 @@ class CamelKubernetesServicesCompletionTest extends AbstractCamelLanguageServerT
 		assertThat(completions.get(0).getFilterText()).isEqualTo("}}something{{configmap:myMap/myKey1}}");
 		assertThat(completions.get(1).getLabel()).isEqualTo("{{configmap:myMap/myKey2}}");
 		assertThat(completions.get(1).getInsertText()).isEqualTo("}}something{{configmap:myMap/myKey2}}");
+	}
+
+	@Test
+	void testSimpleLanguage() throws Exception {
+		String camelUri = "pgevent:host:999/database/channel?user=something${";
+		String text = RouteTextBuilder.createXMLSpringRoute(camelUri);
+		CamelLanguageServer languageServer = initializeLanguageServer(text, ".xml");
+		Position position = new Position(0, RouteTextBuilder.XML_PREFIX_FROM.length() + camelUri.length());
+		List<CompletionItem> completions = getCompletionFor(languageServer, position).get().getLeft();
+
+		assertThat(completions).hasSize(19);
+
+		assertThat(completions).extracting(CompletionItem::getLabel)
+				.containsExactlyInAnyOrder("${camelId}", "${exchange}", "${exchangeId}", "${id}",
+						"${messageTimestamp}", "${body}", "${bodyOneLine}", "${prettyBody}", "${headers}",
+						"${exception}", "${exception.message}", "${exception.stacktrace}", "${routeId}", "${stepId}",
+						"${threadId}", "${threadName}", "${hostname}", "${null}", "${messageHistory}");
+
+		assertThat(completions).extracting(CompletionItem::getInsertText)
+				.containsExactlyInAnyOrder("something${camelId}", "something${exchange}",
+						"something${exchangeId}", "something${id}", "something${messageTimestamp}", "something${body}",
+						"something${bodyOneLine}", "something${prettyBody}", "something${headers}",
+						"something${exception}", "something${exception.message}", "something${exception.stacktrace}",
+						"something${routeId}", "something${stepId}",
+						"something${threadId}", "something${threadName}", "something${hostname}", "something${null}",
+						"something${messageHistory}");
+
+		assertThat(completions).extracting(CompletionItem::getFilterText)
+				.containsExactlyInAnyOrder("something${camelId}", "something${exchange}",
+						"something${exchangeId}", "something${id}", "something${messageTimestamp}", "something${body}",
+						"something${bodyOneLine}", "something${prettyBody}", "something${headers}",
+						"something${exception}", "something${exception.message}", "something${exception.stacktrace}",
+						"something${routeId}", "something${stepId}",
+						"something${threadId}", "something${threadName}", "something${hostname}", "something${null}",
+						"something${messageHistory}");
+	}
+
+	@Test
+	void testSimpleLanguageWithOtherPlaceholders() throws Exception {
+		String camelUri = "pgevent:host:999/database/channel?user={{secret:BB/AA}}something${}{{configmap:AA/BB}}";
+		String text = RouteTextBuilder.createXMLSpringRoute(camelUri);
+		CamelLanguageServer languageServer = initializeLanguageServer(text, ".xml");
+		Position position = new Position(0, RouteTextBuilder.XML_PREFIX_FROM.length() + camelUri.length() - 20);
+		List<CompletionItem> completions = getCompletionFor(languageServer, position).get().getLeft();
+
+		assertThat(completions).extracting(CompletionItem::getInsertText)
+				.containsExactlyInAnyOrder("{{secret:BB/AA}}something${camelId}{{configmap:AA/BB}}",
+						"{{secret:BB/AA}}something${exchange}{{configmap:AA/BB}}",
+						"{{secret:BB/AA}}something${exchangeId}{{configmap:AA/BB}}",
+						"{{secret:BB/AA}}something${id}{{configmap:AA/BB}}",
+						"{{secret:BB/AA}}something${messageTimestamp}{{configmap:AA/BB}}",
+						"{{secret:BB/AA}}something${body}{{configmap:AA/BB}}",
+						"{{secret:BB/AA}}something${bodyOneLine}{{configmap:AA/BB}}",
+						"{{secret:BB/AA}}something${prettyBody}{{configmap:AA/BB}}",
+						"{{secret:BB/AA}}something${headers}{{configmap:AA/BB}}",
+						"{{secret:BB/AA}}something${exception}{{configmap:AA/BB}}",
+						"{{secret:BB/AA}}something${exception.message}{{configmap:AA/BB}}",
+						"{{secret:BB/AA}}something${exception.stacktrace}{{configmap:AA/BB}}",
+						"{{secret:BB/AA}}something${routeId}{{configmap:AA/BB}}",
+						"{{secret:BB/AA}}something${stepId}{{configmap:AA/BB}}",
+						"{{secret:BB/AA}}something${threadId}{{configmap:AA/BB}}",
+						"{{secret:BB/AA}}something${threadName}{{configmap:AA/BB}}",
+						"{{secret:BB/AA}}something${hostname}{{configmap:AA/BB}}",
+						"{{secret:BB/AA}}something${null}{{configmap:AA/BB}}",
+						"{{secret:BB/AA}}something${messageHistory}{{configmap:AA/BB}}");
+
+		assertThat(completions).extracting(CompletionItem::getFilterText)
+				.containsExactlyInAnyOrder("{{secret:BB/AA}}something${camelId}",
+						"{{secret:BB/AA}}something${exchange}", "{{secret:BB/AA}}something${exchangeId}",
+						"{{secret:BB/AA}}something${id}", "{{secret:BB/AA}}something${messageTimestamp}",
+						"{{secret:BB/AA}}something${body}", "{{secret:BB/AA}}something${bodyOneLine}",
+						"{{secret:BB/AA}}something${prettyBody}", "{{secret:BB/AA}}something${headers}",
+						"{{secret:BB/AA}}something${exception}", "{{secret:BB/AA}}something${exception.message}",
+						"{{secret:BB/AA}}something${exception.stacktrace}",
+						"{{secret:BB/AA}}something${routeId}", "{{secret:BB/AA}}something${stepId}",
+						"{{secret:BB/AA}}something${threadId}", "{{secret:BB/AA}}something${threadName}",
+						"{{secret:BB/AA}}something${hostname}", "{{secret:BB/AA}}something${null}",
+						"{{secret:BB/AA}}something${messageHistory}");
+	}
+	@Test
+	void testSimpleLanguageNotClosedWithOtherPlaceholders() throws Exception {
+		String camelUri = "pgevent:host:999/database/channel?user={{secret:BB/AA}}something${{{configmap:AA/BB}}";
+		String text = RouteTextBuilder.createXMLSpringRoute(camelUri);
+		CamelLanguageServer languageServer = initializeLanguageServer(text, ".xml");
+		Position position = new Position(0, RouteTextBuilder.XML_PREFIX_FROM.length() + camelUri.length() - 19);
+		List<CompletionItem> completions = getCompletionFor(languageServer, position).get().getLeft();
+
+		assertThat(completions).extracting(CompletionItem::getInsertText)
+				.containsExactlyInAnyOrder("{{secret:BB/AA}}something${camelId}{{configmap:AA/BB}}",
+						"{{secret:BB/AA}}something${exchange}{{configmap:AA/BB}}",
+						"{{secret:BB/AA}}something${exchangeId}{{configmap:AA/BB}}",
+						"{{secret:BB/AA}}something${id}{{configmap:AA/BB}}",
+						"{{secret:BB/AA}}something${messageTimestamp}{{configmap:AA/BB}}",
+						"{{secret:BB/AA}}something${body}{{configmap:AA/BB}}",
+						"{{secret:BB/AA}}something${bodyOneLine}{{configmap:AA/BB}}",
+						"{{secret:BB/AA}}something${prettyBody}{{configmap:AA/BB}}",
+						"{{secret:BB/AA}}something${headers}{{configmap:AA/BB}}",
+						"{{secret:BB/AA}}something${exception}{{configmap:AA/BB}}",
+						"{{secret:BB/AA}}something${exception.message}{{configmap:AA/BB}}",
+						"{{secret:BB/AA}}something${exception.stacktrace}{{configmap:AA/BB}}",
+						"{{secret:BB/AA}}something${routeId}{{configmap:AA/BB}}",
+						"{{secret:BB/AA}}something${stepId}{{configmap:AA/BB}}",
+						"{{secret:BB/AA}}something${threadId}{{configmap:AA/BB}}",
+						"{{secret:BB/AA}}something${threadName}{{configmap:AA/BB}}",
+						"{{secret:BB/AA}}something${hostname}{{configmap:AA/BB}}",
+						"{{secret:BB/AA}}something${null}{{configmap:AA/BB}}",
+						"{{secret:BB/AA}}something${messageHistory}{{configmap:AA/BB}}");
+
+		assertThat(completions).extracting(CompletionItem::getFilterText)
+				.containsExactlyInAnyOrder("{{secret:BB/AA}}something${camelId}",
+						"{{secret:BB/AA}}something${exchange}", "{{secret:BB/AA}}something${exchangeId}",
+						"{{secret:BB/AA}}something${id}", "{{secret:BB/AA}}something${messageTimestamp}",
+						"{{secret:BB/AA}}something${body}", "{{secret:BB/AA}}something${bodyOneLine}",
+						"{{secret:BB/AA}}something${prettyBody}", "{{secret:BB/AA}}something${headers}",
+						"{{secret:BB/AA}}something${exception}", "{{secret:BB/AA}}something${exception.message}",
+						"{{secret:BB/AA}}something${exception.stacktrace}",
+						"{{secret:BB/AA}}something${routeId}", "{{secret:BB/AA}}something${stepId}",
+						"{{secret:BB/AA}}something${threadId}", "{{secret:BB/AA}}something${threadName}",
+						"{{secret:BB/AA}}something${hostname}", "{{secret:BB/AA}}something${null}",
+						"{{secret:BB/AA}}something${messageHistory}");
+	}
+
+	@Test
+	void testPlaceholdersJoined() throws Exception {
+		String camelUri = "pgevent:host:999/database/channel?user=${body}${";
+		String text = RouteTextBuilder.createXMLSpringRoute(camelUri);
+		CamelLanguageServer languageServer = initializeLanguageServer(text, ".xml");
+		Position position = new Position(0, RouteTextBuilder.XML_PREFIX_FROM.length() + camelUri.length());
+		List<CompletionItem> completions = getCompletionFor(languageServer, position).get().getLeft();
+
+		assertThat(completions).hasSize(19);
 	}
 
 	private void createNamespace(String name) {
