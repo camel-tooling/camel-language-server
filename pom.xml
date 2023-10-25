@@ -44,7 +44,7 @@
 		<jacoco.version>0.8.11</jacoco.version>
 		<lsp4j.version>0.21.1</lsp4j.version>
 		<slf4j.version>1.7.36</slf4j.version>
-		<log4j-slf4j.version>2.21.0</log4j-slf4j.version>
+		<log4j-slf4j.version>2.21.1</log4j-slf4j.version>
 		<junit.version>5.10.0</junit.version>
 		<assertj.version>3.24.2</assertj.version>
 		<jgit.version>6.7.0.202309050840-r</jgit.version>
