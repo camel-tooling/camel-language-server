@@ -4,7 +4,7 @@
 
 	<groupId>com.github.camel-tooling</groupId>
 	<artifactId>camel-lsp-server</artifactId>
-	<version>1.14.0-SNAPSHOT</version>
+	<version>1.14.0</version>
 	
 	<name>Camel Language Server Protocol :: Server Implementation</name>
 	<description>Server Implementation of the Language Server Protocol for Apache Camel</description>
