@@ -49,7 +49,7 @@
 		<assertj.version>3.24.2</assertj.version>
 		<jgit.version>6.7.0.202309050840-r</jgit.version>
 		<camel.version>4.1.0</camel.version>
-		<camel.kamelet.catalog.version>4.0.1</camel.kamelet.catalog.version>
+		<camel.kamelet.catalog.version>4.1.0</camel.kamelet.catalog.version>
 		<camel.quarkus.version>3.5.0</camel.quarkus.version>
 		<roaster.version>2.29.0.Final</roaster.version>
 		<awaitility.version>4.2.0</awaitility.version>
