@@ -57,7 +57,7 @@
 		<commons-text.version>1.11.0</commons-text.version>
 		<citrus.kafka.version>4.0.0</citrus.kafka.version>
 		<kafka.clients.version>3.6.0</kafka.clients.version>
-		<kubernetes.client.version>6.9.1</kubernetes.client.version>
+		<kubernetes.client.version>6.9.2</kubernetes.client.version>
 	</properties>
 
 	<distributionManagement>
