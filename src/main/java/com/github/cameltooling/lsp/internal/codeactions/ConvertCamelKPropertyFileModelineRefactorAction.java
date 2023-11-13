@@ -56,7 +56,7 @@ public class ConvertCamelKPropertyFileModelineRefactorAction {
 		int startLine = params.getRange().getStart().getLine();
 		int endLine = params.getRange().getEnd().getLine();
 		if(startLine == endLine && new CamelKModelineParser().isOnCamelKModeline(startLine, openedDocument)) {
-			CamelKModeline camelKModeline = new CamelKModeline(new ParserFileHelperUtil().getLine(openedDocument, startLine), openedDocument, startLine);
+			CamelKModeline camelKModeline = new CamelKModeline(new ParserFileHelperUtil().getLine(openedDocument, startLine), openedDocument, startLine, endLine);
 			List<Either<Command, CodeAction>> codeActions = new ArrayList<>();
 			Map<String, List<TextEdit>> changes = new HashMap<>();
 			List<TextEdit> textEdits = new ArrayList<>();

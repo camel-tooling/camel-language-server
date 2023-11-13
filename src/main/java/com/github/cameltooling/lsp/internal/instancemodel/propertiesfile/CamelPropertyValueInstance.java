@@ -62,8 +62,12 @@ public class CamelPropertyValueInstance implements ILineRangeDefineable {
 	}
 
 	@Override
-	public int getLine() {
-		return key.getLine();
+	public int getStartLine() {
+		return key.getStartLine();
+	}
+	@Override
+	public int getEndLine() {
+		return key.getEndLine();
 	}
 
 	@Override

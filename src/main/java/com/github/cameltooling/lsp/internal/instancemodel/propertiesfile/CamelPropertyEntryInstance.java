@@ -43,11 +43,14 @@ public class CamelPropertyEntryInstance implements ILineRangeDefineable {
 	private CamelPropertyValueInstance camelPropertyValueInstance;
 	private String line;
 	private Position startPosition;
+	private Position endPosition;
 	private TextDocumentItem textDocumentItem;
 
-	public CamelPropertyEntryInstance(String line, Position startPosition, TextDocumentItem textDocumentItem) {
+	public CamelPropertyEntryInstance(String line, Position startPosition, Position endPosition,
+									  TextDocumentItem textDocumentItem) {
 		this.line = line;
 		this.startPosition = startPosition;
+		this.endPosition = endPosition;
 		this.textDocumentItem = textDocumentItem;
 		int indexOf = line.indexOf('=');
 		String camelPropertyFileKeyInstanceString;
@@ -83,8 +86,13 @@ public class CamelPropertyEntryInstance implements ILineRangeDefineable {
 		return camelPropertyValueInstance;
 	}
 
-	public int getLine() {
+	@Override
+	public int getStartLine() {
 		return startPosition.getLine();
+	}
+	@Override
+	public int getEndLine() {
+		return endPosition.getLine();
 	}
 
 	@Override

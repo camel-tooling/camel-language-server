@@ -47,8 +47,8 @@ public class CamelURIHoverFuture implements Function<CamelCatalog, Hover> {
 			Hover hover = new Hover();
 			ComponentModel componentModel = ModelHelper.generateComponentModel(componentJSonSchema, true);
 			hover.setContents(Collections.singletonList((Either.forLeft(uriElement.getDescription(componentModel, kameletCatalogManager)))));
-			Position start = new Position(uriElement.getLine(), uriElement.getStartPositionInLine());
-			hover.setRange(new Range(start, new Position(uriElement.getLine(), uriElement.getEndPositionInLine())));
+			Position start = new Position(uriElement.getStartLine(), uriElement.getStartPositionInLine());
+			hover.setRange(new Range(start, new Position(uriElement.getEndLine(), uriElement.getEndPositionInLine())));
 			return hover;
 		}
 		return null;

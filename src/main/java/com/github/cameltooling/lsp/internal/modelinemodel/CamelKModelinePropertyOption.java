@@ -45,14 +45,17 @@ public class CamelKModelinePropertyOption implements ICamelKModelineOptionValue 
 	private CamelKModelinePropertyFileOption fileValue;
 	private int startPosition;
 	private String fullStringValue;
-	private int line;
+	private int startLine;
+	private int endLine;
 
-	public CamelKModelinePropertyOption(String value, int startPosition, TextDocumentItem documentItem, int line) {
-		this.line = line;
+	public CamelKModelinePropertyOption(String value, int startPosition, TextDocumentItem documentItem, int startLine, int endLine) {
+		this.startLine = startLine;
+		this.endLine = endLine;
 		if(value.startsWith(FILE_PREFIX)) {
-			this.fileValue = new CamelKModelinePropertyFileOption(value.substring(FILE_PREFIX.length()), startPosition + FILE_PREFIX.length(), documentItem.getUri(), line);
+			this.fileValue = new CamelKModelinePropertyFileOption(value.substring(FILE_PREFIX.length()), startPosition + FILE_PREFIX.length(), documentItem.getUri(), startLine, endLine);
 		} else {
-			this.singlePropertyValue = new CamelPropertyEntryInstance(value, new Position(0, startPosition), documentItem);
+			this.singlePropertyValue = new CamelPropertyEntryInstance(value, new Position(0, startPosition),
+					new Position(endLine, startPosition), documentItem);
 		}
 		this.fullStringValue = value;
 		this.startPosition = startPosition;
@@ -110,9 +113,15 @@ public class CamelKModelinePropertyOption implements ICamelKModelineOptionValue 
 			return CompletableFuture.completedFuture(null);
 		}
 	}
-	
-	public int getLine() {
-		return line;
+
+	@Override
+	public int getStartLine() {
+		return startLine;
+	}
+
+	@Override
+	public int getEndLine() {
+		return endLine;
 	}
 
 }

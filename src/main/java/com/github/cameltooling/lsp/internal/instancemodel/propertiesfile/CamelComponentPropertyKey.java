@@ -88,8 +88,13 @@ public class CamelComponentPropertyKey implements ILineRangeDefineable {
 	}
 
 	@Override
-	public int getLine() {
-		return getCamelPropertyKeyInstance().getLine();
+	public int getEndLine() {
+		return getCamelPropertyKeyInstance().getEndLine();
+	}
+
+	@Override
+	public int getStartLine() {
+		return getCamelPropertyKeyInstance().getStartLine();
 	}
 
 	@Override

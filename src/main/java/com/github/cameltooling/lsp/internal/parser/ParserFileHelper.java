@@ -28,7 +28,7 @@ public abstract class ParserFileHelper {
 	public abstract String getCamelComponentUri(String line, int characterPosition);
 	
 	public String getCamelComponentUri(TextDocumentItem textDocumentItem, Position position) {
-		return getCamelComponentUri(parserFileHelperUtil.getLine(textDocumentItem, position), position.getCharacter());
+		return getCamelComponentUri(parserFileHelperUtil.getLines(textDocumentItem, position), position.getCharacter());
 	}
 	
 	protected boolean isBetween(int position, int start, int end) {

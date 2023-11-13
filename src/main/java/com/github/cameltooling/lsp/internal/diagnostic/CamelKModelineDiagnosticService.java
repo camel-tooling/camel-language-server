@@ -49,7 +49,7 @@ public class CamelKModelineDiagnosticService extends DiagnosticService {
 		try {
 			while((line=bufReader.readLine()) != null){
 				if(camelKModelineParser.retrieveModelineCamelKStart(line) != null) {
-					diagnostics.addAll(computeDiagnosticForLine(documentItem, line, lineNumber));
+					diagnostics.addAll(computeDiagnosticForLine(documentItem, line, lineNumber, lineNumber));
 				}
 				lineNumber++;
 			}
@@ -59,9 +59,9 @@ public class CamelKModelineDiagnosticService extends DiagnosticService {
 		return diagnostics;
 	}
 
-	private Collection<Diagnostic> computeDiagnosticForLine(TextDocumentItem documentItem, String line, int lineNumber) {
+	private Collection<Diagnostic> computeDiagnosticForLine(TextDocumentItem documentItem, String line, int startLine, int endLine) {
 		Collection<Diagnostic> diagnostics = new HashSet<>();
-		CamelKModeline camelKModeline = new CamelKModeline(line, documentItem, lineNumber);
+		CamelKModeline camelKModeline = new CamelKModeline(line, documentItem, startLine, endLine);
 		List<CamelKModelineTraitOption> traitOptions = camelKModeline.getOptions().stream()
 				.map(CamelKModelineOption::getOptionValue)
 				.filter(CamelKModelineTraitOption.class::isInstance)
@@ -76,8 +76,11 @@ public class CamelKModelineDiagnosticService extends DiagnosticService {
 					&& propertyName != null
 					&& definitionName.equals(traitOption2.getTraitDefinition().getValueAsString())
 					&& propertyName.equals(traitOption2.getTraitProperty().getValueAsString())) {
-						Range range = new Range(new Position(traitOption2.getLine(), traitOption2.getStartPositionInLine()), new Position(traitOption2.getLine(), traitOption2.getEndPositionInLine()));
-						diagnostics.add(new Diagnostic(range, "More than one trait defines the same property: " + definitionName + "." + propertyName));
+						Range range = new Range(new Position(traitOption2.getStartLine(),
+								traitOption2.getStartPositionInLine()), new Position(traitOption2.getEndLine(),
+								traitOption2.getEndPositionInLine()));
+						diagnostics.add(new Diagnostic(range,
+								"More than one trait defines the same property: " + definitionName + "." + propertyName));
 					}
 				}
 			}

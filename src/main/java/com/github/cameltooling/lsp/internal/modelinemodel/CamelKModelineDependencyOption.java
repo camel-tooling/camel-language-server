@@ -36,12 +36,14 @@ public class CamelKModelineDependencyOption implements ICamelKModelineOptionValu
 
 	private String value;
 	private int startPosition;
-	private int line;
+	private int startLine;
+	private int endLine;
 
-	public CamelKModelineDependencyOption(String value, int startPosition, int line) {
+	public CamelKModelineDependencyOption(String value, int startPosition, int startLine, int endLine) {
 		this.value = value;
 		this.startPosition = startPosition;
-		this.line = line;
+		this.startLine = startLine;
+		this.endLine = endLine;
 	}
 
 	@Override
@@ -141,8 +143,13 @@ public class CamelKModelineDependencyOption implements ICamelKModelineOptionValu
 	}
 
 	@Override
-	public int getLine() {
-		return line;
+	public int getStartLine() {
+		return startLine;
+	}
+
+	@Override
+	public int getEndLine() {
+		return endLine;
 	}
 
 }

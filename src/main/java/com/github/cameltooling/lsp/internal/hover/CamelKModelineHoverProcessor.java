@@ -36,7 +36,8 @@ public class CamelKModelineHoverProcessor {
 
 	public CompletableFuture<Hover> getHover(Position position, CompletableFuture<CamelCatalog> camelCatalog) {
 		int lineNumber = position.getLine();
-		CamelKModeline camelKModeline = new CamelKModeline(new ParserFileHelperUtil().getLine(textDocumentItem, lineNumber), textDocumentItem, lineNumber);
+		CamelKModeline camelKModeline = new CamelKModeline(new ParserFileHelperUtil().getLines(textDocumentItem,
+				lineNumber, lineNumber + 1), textDocumentItem, lineNumber, lineNumber);
 		return camelKModeline.getHover(position, camelCatalog);
 	}
 

@@ -27,8 +27,8 @@ import com.github.cameltooling.lsp.internal.completion.modeline.CamelKModelineOp
  */
 public class CamelKModelinePropertyDashFileOption extends CamelKModelineLocalResourceRelatedOption {
 	
-	public CamelKModelinePropertyDashFileOption(String value, int startPosition, String documentItemUri, int line) {
-		super(value, startPosition, documentItemUri, line);
+	public CamelKModelinePropertyDashFileOption(String value, int startPosition, String documentItemUri, int startLine, int endLine) {
+		super(value, startPosition, documentItemUri, startLine, endLine);
 	}
 	
 	protected Predicate<Path> getFilter() {

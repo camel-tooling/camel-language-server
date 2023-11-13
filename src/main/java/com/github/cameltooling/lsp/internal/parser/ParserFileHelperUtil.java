@@ -21,20 +21,40 @@ import org.eclipse.lsp4j.TextDocumentItem;
 
 public class ParserFileHelperUtil {
 
+	@Deprecated
 	public String getLine(TextDocumentItem textDocumentItem, Position position) {
-		return getLine(textDocumentItem, position.getLine());
-	}
-	
-	public String getLine(TextDocumentItem textDocumentItem, int line) {
-		return getLine(textDocumentItem.getText(), line);
+		return getLines(textDocumentItem, position.getLine(), position.getLine());
 	}
 
+	@Deprecated
+	public String getLine(TextDocumentItem textDocumentItem, int line) {
+		return getLines(textDocumentItem.getText(), line, line);
+	}
+
+	@Deprecated
 	public String getLine(String text, int line) {
 		String[] lines = text.split("\\r?\\n", line + 2);
 		if (lines.length >= line + 1) {
 			return lines[line];
 		}
 		return null;
+	}
+
+	public String getLines(TextDocumentItem textDocumentItem, Position position) {
+		return getLines(textDocumentItem, position.getLine(), position.getLine());
+	}
+
+	public String getLines(TextDocumentItem textDocumentItem, int startLine, int endLine) {
+		return getLines(textDocumentItem.getText(), startLine, endLine);
+	}
+
+	public String getLines(String text, int startLine, int endLine) {
+		String[] lines = text.split("\\r?\\n", endLine + 2);
+		StringBuilder sb = new StringBuilder();
+		for (int i = startLine; i <= endLine && i < lines.length; i++) {
+			sb.append(lines[i]);
+		}
+		return sb.toString();
 	}
 	
 }

@@ -27,8 +27,9 @@ import com.github.cameltooling.lsp.internal.completion.modeline.CamelKModelineOp
  */
 public class CamelKModelinePropertyFileOption extends CamelKModelineLocalResourceRelatedOption {
 	
-	public CamelKModelinePropertyFileOption(String value, int startPosition, String documentItemUri, int line) {
-		super(value, startPosition, documentItemUri, line);
+	public CamelKModelinePropertyFileOption(String value, int startPosition, String documentItemUri, int startLine,
+											int endLine) {
+		super(value, startPosition, documentItemUri, startLine, endLine);
 	}
 	
 	protected Predicate<Path> getFilter() {

@@ -34,9 +34,10 @@ import com.github.cameltooling.lsp.internal.instancemodel.YamlDSLModelHelper;
 public class CamelYamlDSLParser extends ParserFileHelper {
 	
 	public static final String URI_KEY = "uri";
-	public static final String REST_KEY = "rest";
 	public static final String FROM_KEY = "from";
 	public static final String TO_KEY = "to";
+
+	public static final String[] URI_SEARCH = new String[]{URI_KEY, "- " + TO_KEY};
 
 	@Override
 	public String getCamelComponentUri(String line, int characterPosition) {
@@ -50,13 +51,25 @@ public class CamelYamlDSLParser extends ParserFileHelper {
 		return camelComponentURI;
 	}
 
+
+
+	@Override
+	public String getCamelComponentUri(TextDocumentItem textDocumentItem, Position position) {
+		StringBuilder lines = new StringBuilder();
+		int pos = extractLines(textDocumentItem, position, URI_SEARCH, lines, position.getCharacter(), false);
+		return getCamelComponentUri(lines.toString(),  pos);
+	}
+
+
 	@Override
 	public CamelURIInstance createCamelURIInstance(TextDocumentItem textDocumentItem, Position position,
 			String camelComponentUri) {
-		String line = parserFileHelperUtil.getLine(textDocumentItem, position.getLine());
+		StringBuilder sb = new StringBuilder();
+		extractLines(textDocumentItem, position, URI_SEARCH, sb, position.getCharacter(), false);
+		String line = sb.toString();
 		String stringEncloser = getStringEncloser(line);
 		CamelURIInstance uriInstance = new CamelURIInstance(repairLostEscapeChars(stringEncloser, camelComponentUri), new YamlDSLModelHelper(getCorrespondingType(textDocumentItem, position.getLine())), textDocumentItem);
-		int start = getStartCharacterInDocumentOnLinePosition(textDocumentItem, position);
+		int start = getStartCharacterInDocumentOnLinePosition(line);
 		uriInstance.setStartPositionInDocument(new Position(position.getLine(), start));
 		uriInstance.setEndPositionInDocument(new Position(position.getLine(), start+repairLostEscapeChars(stringEncloser, camelComponentUri).length()));
 		return uriInstance;
@@ -69,8 +82,7 @@ public class CamelYamlDSLParser extends ParserFileHelper {
 		return "";
 	}
 
-	private int getStartCharacterInDocumentOnLinePosition(TextDocumentItem textDocumentItem, Position position) {
-		String line = parserFileHelperUtil.getLine(textDocumentItem, position.getLine());
+	private int getStartCharacterInDocumentOnLinePosition(String line) {
 		String stringEncloser = getStringEncloser(line);
 		String uri = extractUriFromYamlData(line);
 		if (uri == null || uri.isEmpty()) {
@@ -83,8 +95,10 @@ public class CamelYamlDSLParser extends ParserFileHelper {
 
 	@Override
 	public int getPositionInCamelURI(TextDocumentItem textDocumentItem, Position position) {
-		String line = parserFileHelperUtil.getLine(textDocumentItem, position.getLine());
-		return position.getCharacter() - findStartPositionOfURI(line);
+		StringBuilder lines = new StringBuilder();
+		int pos = extractLines(textDocumentItem, position, URI_SEARCH, lines, position.getCharacter(), true);
+		String line = lines.toString();
+		return pos - findStartPositionOfURI(line);
 	}
 
 	private String getStringEncloser(String line) {
@@ -177,20 +191,40 @@ public class CamelYamlDSLParser extends ParserFileHelper {
 	}
 
 	public String getCorrespondingType(TextDocumentItem textDocumentItem, int lineNumber) {
-		for (int lineNo = lineNumber; lineNo >=0; lineNo--) {
-			String tempLine = parserFileHelperUtil.getLine(textDocumentItem, lineNo);
-			Map<?, ?> data = parseYaml(tempLine);
-			if (data != null) {
-				if (data.containsKey(TO_KEY)) {
-					return "to";
-				} else if (data.containsKey(FROM_KEY)) {
-					return "from";
-				} else if (data.containsKey(REST_KEY)) {
-					return null;
+		StringBuilder sb = new StringBuilder();
+		extractLines(textDocumentItem, new Position(lineNumber, 0), "-", sb, 0, false);
+
+		Yaml yaml = new Yaml(new SafeConstructor(new LoaderOptions()));
+		return getCorrespondingTypeFromUnknownElement(yaml.load(sb.toString()));
+	}
+
+	private static String getCorrespondingTypeFromUnknownElement(Object yamlElement) {
+		String type = null;
+
+		//With multi-line, we may be looking at a bigger picture here
+		if(yamlElement instanceof List list) {
+			for(var e : list) {
+				type = getCorrespondingTypeFromUnknownElement(e);
+				if(type != null) {
+					break;
+				}
+			}
+		} else if (yamlElement instanceof Map map) {
+			if (map.containsKey(TO_KEY)) {
+				type = "to";
+			} else if (map.containsKey(FROM_KEY)) {
+				type = "from";
+			} else {
+				for (var entry : map.values()) {
+					type = getCorrespondingTypeFromUnknownElement(entry);
+					if(type != null) {
+						break;
+					}
 				}
 			}
 		}
-		return null;
+
+		return type;
 	}
 
 	private Map<?, ?> parseYaml(String line) {
@@ -219,5 +253,47 @@ public class CamelYamlDSLParser extends ParserFileHelper {
 			return (Map<?, ?>)o;
 		}
 		return null;
+	}
+
+	private int extractLines(TextDocumentItem textDocumentItem, Position position, String whenToStop,
+							 StringBuilder lines, int pos, boolean cleanNewLine) {
+		return extractLines(textDocumentItem, position, new String[]{whenToStop}, lines, pos, cleanNewLine);
+	}
+
+	private int extractLines(TextDocumentItem textDocumentItem, Position position, String[] whenToStopArray,
+							 StringBuilder lines, int pos, boolean cleanNewLine) {
+		// If it is a multi-line, cleanNewLine decides if we convert it to one very long single line
+		for (Integer lineNo = position.getLine(); lineNo >=0; lineNo--) {
+			String tempLine = parserFileHelperUtil.getLine(textDocumentItem, lineNo);
+
+			for (String whenToStop : whenToStopArray) {
+				if (tempLine.stripLeading().startsWith(whenToStop)) {
+					// Remove the potential '>' character of multiline
+					if (tempLine.stripLeading().substring(whenToStop.length() + 1).stripLeading().startsWith(">")) {
+						tempLine = tempLine.substring(0, tempLine.indexOf(">"));
+					}
+					lineNo = -1; // Stop after this iteration, do not continue the loop
+					break;
+				}
+			}
+
+			// Prepend the content
+			if (cleanNewLine) {
+				// If it is multiline, we have to move the position forward
+				if (lines.length() > 0) {
+					final var tempLineStripped = tempLine.stripLeading();
+					pos += tempLineStripped.length();
+					lines.insert(0, tempLineStripped);
+				} else {
+					lines.insert(0, tempLine);
+				}
+			} else {
+				lines.insert(0, tempLine);
+				if (lineNo >=0) {
+					lines.insert(0, "\n");
+				}
+			}
+		}
+		return pos;
 	}
 }

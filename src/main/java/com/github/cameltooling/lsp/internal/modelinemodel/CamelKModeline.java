@@ -36,11 +36,13 @@ public class CamelKModeline implements ILineRangeDefineable {
 	private String fullModeline;
 	private List<CamelKModelineOption> options = new ArrayList<>();
 	private int endOfPrefixPositionInline;
-	private int line;
+	private int startLine;
+	private int endLine;
 
-	public CamelKModeline(String fullModeline, TextDocumentItem documentItem, int line) {
+	public CamelKModeline(String fullModeline, TextDocumentItem documentItem, int startLine, int endLine) {
 		this.fullModeline = fullModeline;
-		this.line = line;
+		this.startLine = startLine;
+		this.endLine = endLine;
 		String modelineCamelkStart = new CamelKModelineParser().retrieveModelineCamelKStart(fullModeline);
 		if(modelineCamelkStart != null) {
 			endOfPrefixPositionInline = modelineCamelkStart.length();
@@ -56,12 +58,12 @@ public class CamelKModeline implements ILineRangeDefineable {
 		while(!remainingModeline.isEmpty()) {
 			int nextSpaceLikeCharacter = getNextSpaceLikeCharacter(remainingModeline);
 			if(nextSpaceLikeCharacter != -1) {
-				options.add(new CamelKModelineOption(remainingModeline.substring(1, nextSpaceLikeCharacter), currentPosition + 1, documentItem, line));
+				options.add(new CamelKModelineOption(remainingModeline.substring(1, nextSpaceLikeCharacter), currentPosition + 1, documentItem, startLine, endLine));
 				remainingModeline = remainingModeline.substring(nextSpaceLikeCharacter);
 				currentPosition += nextSpaceLikeCharacter; 
 			} else {
 				if(!remainingModeline.trim().isEmpty() && !isEnfOfXmlModeline(remainingModeline.trim())) {
-					options.add(new CamelKModelineOption(remainingModeline.substring(1), currentPosition + 1, documentItem, line));
+					options.add(new CamelKModelineOption(remainingModeline.substring(1), currentPosition + 1, documentItem, startLine, endLine));
 				}
 				remainingModeline = "";
 			}
@@ -85,8 +87,13 @@ public class CamelKModeline implements ILineRangeDefineable {
 	}
 
 	@Override
-	public int getLine() {
-		return line;
+	public int getStartLine() {
+		return startLine;
+	}
+
+	@Override
+	public int getEndLine() {
+		return endLine;
 	}
 
 	@Override

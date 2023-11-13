@@ -30,17 +30,27 @@ public class CamelKModelineTraitDefinitionProperty implements ICamelKModelineOpt
 	private String traitDefinitionProperty;
 	private int startPosition;
 	private CamelKModelineTraitOption traitOption;
-	private int line;
+	private int startLine;
+	private int endLine;
 
-	public CamelKModelineTraitDefinitionProperty(CamelKModelineTraitOption camelKModelineTraitOption, String traitDefinitionProperty, int startPosition, int line) {
+	public CamelKModelineTraitDefinitionProperty(CamelKModelineTraitOption camelKModelineTraitOption,
+												 String traitDefinitionProperty, int startPosition, int startLine,
+												 int endLine) {
 		this.traitOption = camelKModelineTraitOption;
 		this.traitDefinitionProperty = traitDefinitionProperty;
 		this.startPosition = startPosition;
-		this.line = line;
+		this.startLine = startLine;
+		this.endLine = endLine;
 	}
-	
-	public int getLine() {
-		return line;
+
+	@Override
+	public int getStartLine() {
+		return startLine;
+	}
+
+	@Override
+	public int getEndLine() {
+		return endLine;
 	}
 
 	@Override

@@ -82,7 +82,9 @@ public class CamelPropertyKeyInstance implements ILineRangeDefineable {
 			CompletionItem completionItem = new CompletionItem("camel");
 			String insertText = indexOfFirstDot != -1 ? "camel" : CAMEL_KEY_PREFIX;
 			completionItem.setInsertText(insertText);
-			completionItem.setTextEdit(Either.forLeft(new TextEdit(new Range(new Position(getLine(), getStartPositionInLine()), new Position(getLine(), indexOfFirstDot != -1 ? getStartPositionInLine() + indexOfFirstDot : getEndPositionInLine())), insertText)));
+			completionItem.setTextEdit(Either.forLeft(new TextEdit(new Range(new Position(getStartLine(),
+					getStartPositionInLine()), new Position(getEndLine(), indexOfFirstDot != -1 ?
+					getStartPositionInLine() + indexOfFirstDot : getEndPositionInLine())), insertText)));
 			return CompletableFuture.completedFuture(Collections.singletonList(completionItem));
 		} else if (isBetweenFirstAndSecondDotOfCamelPropertyKey(position, indexOfSecondDot)) {
 			return getTopLevelCamelCompletion(camelCatalog, indexOfSecondDot, position.getCharacter());
@@ -119,8 +121,9 @@ public class CamelPropertyKeyInstance implements ILineRangeDefineable {
 		CompletionItem completionItem = new CompletionItem("component");
 		String insertText = indexOfSecondDot != -1 ? "component" : "component.";
 		completionItem.setInsertText(insertText);
-		Position start = new Position(getLine(), getStartPositionInLine() + CAMEL_KEY_PREFIX.length());
-		Position end = new Position(getLine(), indexOfSecondDot != -1 ? getStartPositionInLine() + indexOfSecondDot : getEndPositionInLine());
+		Position start = new Position(getStartLine(), getStartPositionInLine() + CAMEL_KEY_PREFIX.length());
+		Position end = new Position(getEndLine(), indexOfSecondDot != -1 ? getStartPositionInLine() + indexOfSecondDot :
+				getEndPositionInLine());
 		Range range = new Range(start, end);
 		TextEdit textEdit = new TextEdit(range, insertText);
 		completionItem.setTextEdit(Either.forLeft(textEdit));
@@ -134,8 +137,9 @@ public class CamelPropertyKeyInstance implements ILineRangeDefineable {
 			completionItem.setDocumentation(group.getDescription());
 			String insertText = indexOfSecondDot != -1 ? realGroupName : realGroupName + ".";
 			completionItem.setInsertText(insertText);
-			Position start = new Position(getLine(), getStartPositionInLine() + CAMEL_KEY_PREFIX.length());
-			Position end = new Position(getLine(), indexOfSecondDot != -1 ? getStartPositionInLine() + indexOfSecondDot : getEndPositionInLine());
+			Position start = new Position(getStartLine(), getStartPositionInLine() + CAMEL_KEY_PREFIX.length());
+			Position end = new Position(getEndLine(), indexOfSecondDot != -1 ? getStartPositionInLine() + indexOfSecondDot :
+					getEndPositionInLine());
 			Range range = new Range(start, end);
 			completionItem.setTextEdit(Either.forLeft(new TextEdit(range, insertText)));
 			return completionItem;
@@ -154,8 +158,13 @@ public class CamelPropertyKeyInstance implements ILineRangeDefineable {
 		return camelPropertyEntryInstance;
 	}
 
-	public int getLine() {
-		return camelPropertyEntryInstance.getLine();
+	@Override
+	public int getStartLine() {
+		return camelPropertyEntryInstance.getStartLine();
+	}
+	@Override
+	public int getEndLine() {
+		return camelPropertyEntryInstance.getEndLine();
 	}
 
 	@Override
@@ -195,7 +204,8 @@ public class CamelPropertyKeyInstance implements ILineRangeDefineable {
 				.findAny();
 			if(duplicateByDashCamelNotationDifference.isPresent()) {
 				diagnostics.add(new Diagnostic(
-						new Range(new Position(getLine(), getStartPositionInLine()), new Position(getLine(), getEndPositionInLine())),
+						new Range(new Position(getStartLine(), getStartPositionInLine()), new Position(getEndLine(),
+								getEndPositionInLine())),
 						"Duplicated properties using different Dash/camel case notation: " + duplicateByDashCamelNotationDifference.get(),
 						DiagnosticSeverity.Error,
 						DiagnosticService.APACHE_CAMEL_VALIDATION));

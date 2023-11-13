@@ -28,21 +28,28 @@ public class CamelKModelineConfigOption implements ICamelKModelineOptionValue {
 	private static final String PREFIX_FILE = "file:";
 	private String value;
 	private int startPosition;
-	private int line;
+	private int startLine;
+	private int endLine;
 	private CamelKModelineConfigFileOption configFileValue;
 
-	public CamelKModelineConfigOption(String value, int startPosition, String documentItemUri, int line) {
+	public CamelKModelineConfigOption(String value, int startPosition, String documentItemUri, int startLine, int endLine) {
 		this.value = value;
 		this.startPosition = startPosition;
-		this.line = line;
+		this.startLine = startLine;
+		this.endLine = endLine;
 		if(value.startsWith(PREFIX_FILE)) {
-			this.configFileValue = new CamelKModelineConfigFileOption(value.substring(PREFIX_FILE.length()), startPosition + PREFIX_FILE.length(), documentItemUri, line);
+			this.configFileValue = new CamelKModelineConfigFileOption(value.substring(PREFIX_FILE.length()), startPosition + PREFIX_FILE.length(), documentItemUri, startLine, endLine);
 		}
 	}
 
 	@Override
-	public int getLine() {
-		return line;
+	public int getStartLine() {
+		return startLine;
+	}
+
+	@Override
+	public int getEndLine() {
+		return endLine;
 	}
 
 	@Override

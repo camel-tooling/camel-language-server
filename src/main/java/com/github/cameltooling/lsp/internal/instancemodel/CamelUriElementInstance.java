@@ -73,9 +73,15 @@ public abstract class CamelUriElementInstance implements ILineRangeDefineable{
 	public int getEndPositionInLine() {
 		return getCamelUriInstance().getStartPositionInDocument().getCharacter() + getEndPositionInUri();
 	}
-	
-	public int getLine() {
+
+	@Override
+	public int getStartLine() {
 		return getCamelUriInstance().getAbsoluteBounds().getStart().getLine();
+	}
+
+	@Override
+	public int getEndLine() {
+		return getCamelUriInstance().getAbsoluteBounds().getEnd().getLine();
 	}
 	
 	public abstract CompletableFuture<List<CompletionItem>> getCompletions(CompletableFuture<CamelCatalog> camelCatalog, int positionInCamelUri, TextDocumentItem docItem, SettingsManager settingsManager, KameletsCatalogManager kameletsCatalogManager);

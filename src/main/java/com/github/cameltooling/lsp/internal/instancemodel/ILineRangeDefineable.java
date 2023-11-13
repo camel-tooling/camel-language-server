@@ -25,20 +25,22 @@ import org.eclipse.lsp4j.jsonrpc.messages.Either;
 
 public interface ILineRangeDefineable {
 	
-	public int getLine();
+	public int getStartLine();
+	public int getEndLine();
 	public int getStartPositionInLine();
 	public int getEndPositionInLine();
 	
 	public default Hover createHover(String description) {
 		Hover hover = new Hover();
 		hover.setContents(Collections.singletonList((Either.forLeft(description))));
-		hover.setRange(new Range(new Position(getLine(), getStartPositionInLine()), new Position(getLine(), getEndPositionInLine())));
+		hover.setRange(new Range(new Position(getStartLine(), getStartPositionInLine()), new Position(getEndLine(),
+				getEndPositionInLine())));
 		return hover;
 	}
 	
 	public default Range getRange() {
 		return new Range(
-				new Position(getLine(), getStartPositionInLine()),
-				new Position(getLine(), getEndPositionInLine())); 
+				new Position(getStartLine(), getStartPositionInLine()),
+				new Position(getEndLine(), getEndPositionInLine()));
 	}
 }

@@ -43,7 +43,9 @@ public class CamelPropertiesCompletionProcessor {
 	public CompletableFuture<List<CompletionItem>> getCompletions(Position position, SettingsManager settingsManager, KameletsCatalogManager kameletsCatalogManager) {
 		if (textDocumentItem != null) {
 			String line = new ParserFileHelperUtil().getLine(textDocumentItem, position);
-			return new CamelPropertyEntryInstance(line, new Position(position.getLine(), 0), textDocumentItem).getCompletions(position, camelCatalog, settingsManager, kameletsCatalogManager);
+			return new CamelPropertyEntryInstance(line, new Position(position.getLine(), 0),
+					position, textDocumentItem).getCompletions(position, camelCatalog, settingsManager,
+					kameletsCatalogManager);
 		}
 		return CompletableFuture.completedFuture(Collections.emptyList());
 	}

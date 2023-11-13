@@ -38,10 +38,13 @@ public class CamelKModelineOption implements ILineRangeDefineable {
 	private String optionName;
 	private ICamelKModelineOptionValue optionValue;
 	private int startCharacter;
-	private int line;
+	private int startLine;
+	private int endLine;
 
-	public CamelKModelineOption(String option, int startCharacter, TextDocumentItem documentItem, int line) {
-		this.line = line;
+	public CamelKModelineOption(String option, int startCharacter, TextDocumentItem documentItem, int startLine,
+								int endLine) {
+		this.startLine = startLine;
+		this.endLine = endLine;
 		int nameValueIndexSeparator = option.indexOf('=');
 		this.startCharacter = startCharacter;
 		this.optionName = option.substring(0, nameValueIndexSeparator != -1 ? nameValueIndexSeparator : option.length());
@@ -56,21 +59,21 @@ public class CamelKModelineOption implements ILineRangeDefineable {
 			}
 			int startPosition = getStartPositionInLine() + optionName.length() + 1;
 			if(CamelKModelineOptionNames.OPTION_NAME_TRAIT.equals(optionName)) {
-				return new CamelKModelineTraitOption(value, startPosition, line);
+				return new CamelKModelineTraitOption(value, startPosition, startLine, endLine);
 			} else if(CamelKModelineOptionNames.OPTION_NAME_DEPENDENCY.equals(optionName)) {
-				return new CamelKModelineDependencyOption(value, startPosition, line);
+				return new CamelKModelineDependencyOption(value, startPosition, startLine, endLine);
 			} else if(CamelKModelineOptionNames.OPTION_NAME_PROPERTY.equals(optionName)) {
-				return new CamelKModelinePropertyOption(value, startPosition, documentItem, line);
+				return new CamelKModelinePropertyOption(value, startPosition, documentItem, startLine, endLine);
 			} else if(CamelKModelineOptionNames.OPTION_NAME_PROPERTY_FILE.equals(optionName)) {
-				return new CamelKModelinePropertyDashFileOption(value, startPosition, documentItem.getUri(), line);
+				return new CamelKModelinePropertyDashFileOption(value, startPosition, documentItem.getUri(), startLine, endLine);
 			} else if(CamelKModelineOptionNames.OPTION_NAME_RESOURCE.equals(optionName)) {
-				return new CamelKModelineResourceOption(value, startPosition, documentItem.getUri(), line);
+				return new CamelKModelineResourceOption(value, startPosition, documentItem.getUri(), startLine, endLine);
 			} else if(CamelKModelineOptionNames.OPTION_NAME_OPEN_API.equals(optionName)) {
-				return new CamelKModelineOpenAPIOption(value, startPosition, documentItem.getUri(), line);
+				return new CamelKModelineOpenAPIOption(value, startPosition, documentItem.getUri(), startLine, endLine);
 			} else if(CamelKModelineOptionNames.OPTION_NAME_CONFIG.equals(optionName)) {
-				return new CamelKModelineConfigOption(value, startPosition, documentItem.getUri(), line);
+				return new CamelKModelineConfigOption(value, startPosition, documentItem.getUri(), startLine, endLine);
 			} else {
-				return new GenericCamelKModelineOptionValue(value, startPosition, line);
+				return new GenericCamelKModelineOptionValue(value, startPosition, startLine, endLine);
 			}
 		} else {
 			return null;
@@ -80,12 +83,18 @@ public class CamelKModelineOption implements ILineRangeDefineable {
 	private boolean isEndOfCommentStuckToEndLine(String option, TextDocumentItem documentItem, String value) {
 		return value.endsWith(END_OF_XML_COMMENT)
 				&& documentItem.getUri().endsWith(".xml")
-				&& startCharacter + option.length() == new ParserFileHelperUtil().getLine(documentItem, getLine()).length();
+				&& startCharacter + option.length() == new ParserFileHelperUtil().getLines(documentItem,
+				getStartLine(), getEndLine()).length();
 	}
 	
 	@Override
-	public int getLine() {
-		return line;
+	public int getStartLine() {
+		return startLine;
+	}
+
+	@Override
+	public int getEndLine() {
+		return endLine;
 	}
 
 	@Override
@@ -129,7 +138,8 @@ public class CamelKModelineOption implements ILineRangeDefineable {
 			if(description != null) {
 				Hover hover = new Hover();
 				hover.setContents(Collections.singletonList((Either.forLeft(description))));
-				hover.setRange(new Range(new Position(getLine(), getStartPositionInLine()), new Position(getLine(), getStartPositionInLine() + optionName.length())));
+				hover.setRange(new Range(new Position(getStartLine(), getStartPositionInLine()), new Position(getEndLine(),
+						getStartPositionInLine() + optionName.length())));
 				return CompletableFuture.completedFuture(hover);
 			}
 		}

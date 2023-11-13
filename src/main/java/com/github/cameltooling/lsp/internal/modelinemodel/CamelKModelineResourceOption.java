@@ -29,26 +29,33 @@ public class CamelKModelineResourceOption implements ICamelKModelineOptionValue 
 
 	private String value;
 	private int startPosition;
-	private int line;
+	private int startLine;
+	private int endLine;
 	private CamelKModelineResourceFileOption resourceFileValue;
 
-	public CamelKModelineResourceOption(String value, int startPosition, String uri, int line) {
+	public CamelKModelineResourceOption(String value, int startPosition, String uri, int startLine, int endLine) {
 		this.value = value;
 		this.startPosition = startPosition;
-		this.line = line;
+		this.startLine = startLine;
+		this.endLine = endLine;
 		if(value.startsWith(PREFIX_FILE)) {
 			int endPosition = value.indexOf('@');
 			if(endPosition != -1) {
-				this.resourceFileValue = new CamelKModelineResourceFileOption(value.substring(PREFIX_FILE.length(), endPosition), startPosition + PREFIX_FILE.length(), uri, line);
+				this.resourceFileValue = new CamelKModelineResourceFileOption(value.substring(PREFIX_FILE.length(), endPosition), startPosition + PREFIX_FILE.length(), uri, startLine, endLine);
 			} else {
-				this.resourceFileValue = new CamelKModelineResourceFileOption(value.substring(PREFIX_FILE.length()), startPosition + PREFIX_FILE.length(), uri, line);
+				this.resourceFileValue = new CamelKModelineResourceFileOption(value.substring(PREFIX_FILE.length()), startPosition + PREFIX_FILE.length(), uri, startLine, endLine);
 			}
 		}
 	}
 
 	@Override
-	public int getLine() {
-		return line;
+	public int getStartLine() {
+		return startLine;
+	}
+
+	@Override
+	public int getEndLine() {
+		return endLine;
 	}
 
 	@Override

@@ -38,7 +38,8 @@ public class CamelPropertiesFileHoverProcessor {
 	public CompletableFuture<Hover> getHover(Position position, CompletableFuture<CamelCatalog> camelCatalog, KameletsCatalogManager kameletCatalogManager) {
 		int line = position.getLine();
 		String propertyEntryTextLine = new ParserFileHelperUtil().getLine(textDocumentItem, line);
-		return new CamelPropertyEntryInstance(propertyEntryTextLine, new Position(line, 0), textDocumentItem).getHover(position, camelCatalog, kameletCatalogManager);
+		return new CamelPropertyEntryInstance(propertyEntryTextLine, new Position(line, 0),
+				position, textDocumentItem).getHover(position, camelCatalog, kameletCatalogManager);
 	}
 
 }

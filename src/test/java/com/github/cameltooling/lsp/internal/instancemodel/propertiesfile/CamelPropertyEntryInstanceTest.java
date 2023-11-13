@@ -53,7 +53,8 @@ class CamelPropertyEntryInstanceTest {
 	}
 
 	private CamelPropertyEntryInstance createModel(String lineToTest) {
-		return new CamelPropertyEntryInstance(lineToTest, new Position(0,0), createTextDocumentItem(lineToTest));
+		return new CamelPropertyEntryInstance(lineToTest, new Position(0,0),
+				new Position(0, 0), createTextDocumentItem(lineToTest));
 	}
 
 	private TextDocumentItem createTextDocumentItem(String value) {

@@ -59,8 +59,13 @@ public class CamelGroupPropertyKey implements ILineRangeDefineable {
 	}
 
 	@Override
-	public int getLine() {
-		return camelPropertyKeyInstance.getLine();
+	public int getStartLine() {
+		return camelPropertyKeyInstance.getStartLine();
+	}
+
+	@Override
+	public int getEndLine() {
+		return camelPropertyKeyInstance.getEndLine();
 	}
 
 	@Override

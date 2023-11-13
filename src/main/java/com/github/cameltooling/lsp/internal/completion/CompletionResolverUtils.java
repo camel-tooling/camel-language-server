@@ -46,9 +46,8 @@ public class CompletionResolverUtils {
 	
 	public static void applyTextEditToCompletionItem(ILineRangeDefineable lineRangeDefineable, CompletionItem item) {
 		if (lineRangeDefineable != null) {
-			int line = lineRangeDefineable.getLine();
-			Position pStart = new Position(line, lineRangeDefineable.getStartPositionInLine());
-			Position pEnd = new Position(line, lineRangeDefineable.getEndPositionInLine());
+			Position pStart = new Position(lineRangeDefineable.getStartLine(), lineRangeDefineable.getStartPositionInLine());
+			Position pEnd = new Position(lineRangeDefineable.getEndLine(), lineRangeDefineable.getEndPositionInLine());
 			
 			Range range = new Range(pStart, pEnd);
 			
