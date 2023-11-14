@@ -55,7 +55,7 @@
 		<awaitility.version>4.2.0</awaitility.version>
 		<tyrus.version>2.1.4</tyrus.version>
 		<commons-text.version>1.11.0</commons-text.version>
-		<citrus.kafka.version>4.0.0</citrus.kafka.version>
+		<citrus.kafka.version>4.0.1</citrus.kafka.version>
 		<kafka.clients.version>3.6.0</kafka.clients.version>
 		<kubernetes.client.version>6.9.2</kubernetes.client.version>
 	</properties>
