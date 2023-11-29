@@ -32,7 +32,7 @@ class MultilineCompletionTest extends AbstractCamelLanguageServerTest {
 
 
 	@Test
-	void testMultilineYaml() throws Exception {
+	void testMultilineYamlEndFile() throws Exception {
 		String text = """
 apiVersion: camel.apache.org/v1
 kind: Integration
@@ -58,6 +58,40 @@ spec:
 		CamelLanguageServer languageServer = initializeLanguageServer(text, ".yaml");
 		List<CompletionItem> completions =
 				getCompletionFor(languageServer, new Position(19, 32))
+						.get(1, TimeUnit.SECONDS).getLeft();
+		assertThat(completions).isNotEmpty();
+	}
+
+
+	@Test
+	void testMultilineYamlInBetweenLines() throws Exception {
+		String text = """
+apiVersion: camel.apache.org/v1
+kind: Integration
+metadata:
+  name: integration
+spec:
+  dependencies:
+  - mvn:something.something
+  flows:
+  - route:
+      id: timer-amq-log
+      from:
+        uri: timer:tick
+        parameters:
+          period: 5000
+      steps:
+      - to:
+          uri: activemq:queue:myQueue
+      - to:
+          uri: >
+            aws2-athena:blabla?label=something
+      - to:
+          uri: log:info
+                """;
+		CamelLanguageServer languageServer = initializeLanguageServer(text, ".yaml");
+		List<CompletionItem> completions =
+				getCompletionFor(languageServer, new Position(19, 17))
 						.get(1, TimeUnit.SECONDS).getLeft();
 		assertThat(completions).isNotEmpty();
 	}
