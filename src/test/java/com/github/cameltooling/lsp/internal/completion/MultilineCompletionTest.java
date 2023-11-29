@@ -96,5 +96,92 @@ spec:
 		assertThat(completions).isNotEmpty();
 	}
 
+	@Test
+	void testMultilineYamlEscalarEscape() throws Exception {
+		String text = """
+apiVersion: camel.apache.org/v1
+kind: Integration
+metadata:
+  name: integration
+spec:
+  dependencies:
+  - mvn:something.something
+  flows:
+  - route:
+      id: timer-amq-log
+      from:
+        uri: timer:tick
+        parameters:
+          period: 5000
+      steps:
+      - to:
+          uri: activemq:queue:myQueue
+      - to:
+          uri: |+
+            aws2-athena:blabla?label=something
+                """;
+		CamelLanguageServer languageServer = initializeLanguageServer(text, ".yaml");
+		List<CompletionItem> completions =
+				getCompletionFor(languageServer, new Position(19, 32))
+						.get(1, TimeUnit.SECONDS).getLeft();
+		assertThat(completions).isNotEmpty();
+
+
+		text = """
+apiVersion: camel.apache.org/v1
+kind: Integration
+metadata:
+  name: integration
+spec:
+  dependencies:
+  - mvn:something.something
+  flows:
+  - route:
+      id: timer-amq-log
+      from:
+        uri: timer:tick
+        parameters:
+          period: 5000
+      steps:
+      - to:
+          uri: activemq:queue:myQueue
+      - to:
+          uri: |-
+            aws2-athena:blabla?label=something
+                """;
+		languageServer = initializeLanguageServer(text, ".yaml");
+		completions =
+				getCompletionFor(languageServer, new Position(19, 32))
+						.get(1, TimeUnit.SECONDS).getLeft();
+		assertThat(completions).isNotEmpty();
+
+		text = """
+apiVersion: camel.apache.org/v1
+kind: Integration
+metadata:
+  name: integration
+spec:
+  dependencies:
+  - mvn:something.something
+  flows:
+  - route:
+      id: timer-amq-log
+      from:
+        uri: timer:tick
+        parameters:
+          period: 5000
+      steps:
+      - to:
+          uri: activemq:queue:myQueue
+      - to:
+          uri: |
+            aws2-athena:blabla?label=something
+                """;
+		languageServer = initializeLanguageServer(text, ".yaml");
+		completions =
+				getCompletionFor(languageServer, new Position(19, 32))
+						.get(1, TimeUnit.SECONDS).getLeft();
+		assertThat(completions).isNotEmpty();
+	}
 
 }

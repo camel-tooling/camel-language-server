@@ -268,9 +268,14 @@ public class CamelYamlDSLParser extends ParserFileHelper {
 
 			for (String whenToStop : whenToStopArray) {
 				if (tempLine.stripLeading().startsWith(whenToStop)) {
-					// Remove the potential '>' character of multiline
-					if (tempLine.stripLeading().substring(whenToStop.length() + 1).stripLeading().startsWith(">")) {
-						tempLine = tempLine.substring(0, tempLine.indexOf(">"));
+					// Remove the potential initial character of multiline
+					String[] multiLineIndicator = new String[] {">+", ">-", ">", "|+", "|-", "|"};
+					//This character should indicate if we want to keep new lines or not. Too late for that...
+					for (String indicator : multiLineIndicator) {
+						if (tempLine.stripLeading().substring(whenToStop.length() + 1)
+								.stripLeading().startsWith(indicator)) {
+							tempLine = tempLine.substring(0, tempLine.indexOf(indicator));
+						}
 					}
 					lineNo = -1; // Stop after this iteration, do not continue the loop
 					break;
