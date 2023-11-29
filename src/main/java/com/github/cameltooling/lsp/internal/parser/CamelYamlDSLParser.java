@@ -264,7 +264,7 @@ public class CamelYamlDSLParser extends ParserFileHelper {
 							 StringBuilder lines, int pos, boolean cleanNewLine) {
 		// If it is a multi-line, cleanNewLine decides if we convert it to one very long single line
 		for (Integer lineNo = position.getLine(); lineNo >=0; lineNo--) {
-			String tempLine = parserFileHelperUtil.getLine(textDocumentItem, lineNo);
+			String tempLine = parserFileHelperUtil.getLines(textDocumentItem, lineNo, lineNo);
 
 			for (String whenToStop : whenToStopArray) {
 				if (tempLine.stripLeading().startsWith(whenToStop)) {
