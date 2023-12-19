@@ -57,7 +57,7 @@ class CamelCompletionInsertAndReplaceTest extends AbstractCamelLanguageServerTes
 		Position positionBeforeBufferSizeAttribute = new Position(0, 43);
 		CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = getCompletionFor(camelLanguageServer, positionBeforeBufferSizeAttribute);
 		List<CompletionItem> items = completions.get().getLeft();
-		assertThat(items).hasSize(11);
+		assertThat(items).hasSize(12);
 		for (CompletionItem completionItem : items) {
 			TextEdit textEdit = completionItem.getTextEdit().getLeft();
 			Range range = textEdit.getRange();
