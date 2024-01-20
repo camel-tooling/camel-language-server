@@ -16,12 +16,12 @@
  */
 package com.github.cameltooling.lsp.internal.parser;
 
-import java.io.IOException;
-
-import javax.xml.parsers.ParserConfigurationException;
-
+import com.github.cameltooling.lsp.internal.parser.fileparserhelper.ParserChainOfResponsibility;
 import org.eclipse.lsp4j.TextDocumentItem;
 import org.xml.sax.SAXException;
+
+import javax.xml.parsers.ParserConfigurationException;
+import java.io.IOException;
 
 public class ParserFileHelperFactory {
 	
@@ -37,37 +37,7 @@ public class ParserFileHelperFactory {
 	private static final String SHEBANG_CAMEL_K = "#!/usr/bin/env camel-k";
 
 	public ParserFileHelper getCorrespondingParserFileHelper(TextDocumentItem textDocumentItem, int line) {
-		ParserXMLFileHelper xmlParser = new ParserXMLFileHelper();
-		String uri = textDocumentItem.getUri();
-		if (uri.endsWith(".xml") && xmlParser.getCorrespondingCamelNodeForCompletion(textDocumentItem, line) != null) {
-			return xmlParser;
-		} else if(isPotentiallyCamelJavaDSL(textDocumentItem, uri)) {
-			ParserJavaFileHelper javaParser = new ParserJavaFileHelper();
-			if (javaParser.getCorrespondingMethodName(textDocumentItem, line) != null) {
-				return javaParser;
-			}
-		} else if(isCamelKGroovyDSL(textDocumentItem, uri)) {
-			CamelKGroovyDSLParser camelKGroovyDSLParser = new CamelKGroovyDSLParser();
-			if (camelKGroovyDSLParser.getCorrespondingMethodName(textDocumentItem, line) != null) {
-				return camelKGroovyDSLParser;
-			}
-		} else if(isCamelYamlDSL(textDocumentItem, uri)) {
-			CamelYamlDSLParser camelKYamlDSLParser = new CamelYamlDSLParser();
-			if (camelKYamlDSLParser.getCorrespondingType(textDocumentItem, line) != null) {
-				return camelKYamlDSLParser;
-			}
-		} else if(isCamelKKotlinDSL(textDocumentItem, uri)) {
-			CamelKKotlinDSLParser camelKKotlinDSLParser = new CamelKKotlinDSLParser();
-			if (camelKKotlinDSLParser.getCorrespondingMethodName(textDocumentItem, line) != null) {
-				return camelKKotlinDSLParser;
-			}
-		} else if(isCamelKJSDSL(textDocumentItem, uri)) {
-			CamelKJSDSLParser camelKJSDSLParser = new CamelKJSDSLParser();
-			if (camelKJSDSLParser.getCorrespondingMethodName(textDocumentItem, line) != null) {
-				return camelKJSDSLParser;
-			}
-		}
-		return null;
+		return ParserChainOfResponsibility.getMatchedParserFileHelper(textDocumentItem, line, this);
 	}
 
 	/**
@@ -93,7 +63,7 @@ public class ParserFileHelperFactory {
 		}
 	}
 
-	private boolean isCamelKJSDSL(TextDocumentItem textDocumentItem, String uri) {
+	public boolean isCamelKJSDSL(TextDocumentItem textDocumentItem, String uri) {
 		//improve this method to provide better heuristic to detect if it is a Camel file or not
 		return uri.endsWith(CAMELK_JS_FILENAME_SUFFIX)
 				|| isJSFileWithCamelKModelineLike(textDocumentItem, uri);
@@ -103,7 +73,7 @@ public class ParserFileHelperFactory {
 		return uri.endsWith(".js") && textDocumentItem.getText().startsWith(CamelKModelineParser.MODELINE_LIKE_CAMEL_K);
 	}
 
-	private boolean isCamelKKotlinDSL(TextDocumentItem textDocumentItem, String uri) {
+	public boolean isCamelKKotlinDSL(TextDocumentItem textDocumentItem, String uri) {
 		//improve this method to provide better heuristic to detect if it is a Camel file or not
 		return uri.endsWith(CAMELK_KOTLIN_FILENAME_SUFFIX)
 				|| isKotlinFileWithCamelKModelineLike(textDocumentItem, uri);
@@ -113,7 +83,7 @@ public class ParserFileHelperFactory {
 		return uri.endsWith(".kts") && textDocumentItem.getText().startsWith(CamelKModelineParser.MODELINE_LIKE_CAMEL_K);
 	}
 
-	private boolean isCamelKGroovyDSL(TextDocumentItem textDocumentItem, String uri) {
+	public boolean isCamelKGroovyDSL(TextDocumentItem textDocumentItem, String uri) {
 		//improve this method to provide better heuristic to detect if it is a Camel file or not
 		return uri.endsWith(CAMELK_GROOVY_FILENAME_SUFFIX)
 				|| isGroovyFileWithCamelKShebang(textDocumentItem, uri)
@@ -128,7 +98,7 @@ public class ParserFileHelperFactory {
 		return uri.endsWith(".groovy") && textDocumentItem.getText().startsWith(SHEBANG_CAMEL_K);
 	}
 
-	private boolean isCamelYamlDSL(TextDocumentItem textDocumentItem, String uri) {
+	public boolean isCamelYamlDSL(TextDocumentItem textDocumentItem, String uri) {
 		//improve this method to provide better heuristic to detect if it is a Camel file or not
 		return uri.endsWith(CAMELK_YAML_FILENAME_SUFFIX)
 				|| uri.endsWith(CAMELK_YML_FILENAME_SUFFIX)
@@ -156,7 +126,7 @@ public class ParserFileHelperFactory {
 		return hasYamlExtension(uri) && textDocumentItem.getText().startsWith(SHEBANG_CAMEL_K);
 	}
 
-	private boolean isPotentiallyCamelJavaDSL(TextDocumentItem textDocumentItem, String uri) {
+	public boolean isPotentiallyCamelJavaDSL(TextDocumentItem textDocumentItem, String uri) {
 		//improve this method to provide better heuristic to detect if it is a Camel file or not
 		return uri.endsWith(".java") && textDocumentItem.getText().contains("camel");
 	}
