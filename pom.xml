@@ -50,7 +50,7 @@
 		<jgit.version>6.8.0.202311291450-r</jgit.version>
 		<camel.version>4.4.0</camel.version>
 		<camel.kamelet.catalog.version>4.3.0</camel.kamelet.catalog.version>
-		<camel.quarkus.version>3.7.0</camel.quarkus.version>
+		<camel.quarkus.version>3.8.0</camel.quarkus.version>
 		<roaster.version>2.29.0.Final</roaster.version>
 		<awaitility.version>4.2.0</awaitility.version>
 		<tyrus.version>2.1.5</tyrus.version>
