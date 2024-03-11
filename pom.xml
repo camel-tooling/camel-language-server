@@ -47,7 +47,7 @@
 		<log4j-slf4j.version>2.22.1</log4j-slf4j.version>
 		<junit.version>5.10.2</junit.version>
 		<assertj.version>3.25.3</assertj.version>
-		<jgit.version>6.8.0.202311291450-r</jgit.version>
+		<jgit.version>6.9.0.202403050737-r</jgit.version>
 		<camel.version>4.4.0</camel.version>
 		<camel.kamelet.catalog.version>4.4.0</camel.kamelet.catalog.version>
 		<camel.quarkus.version>3.8.0</camel.quarkus.version>
