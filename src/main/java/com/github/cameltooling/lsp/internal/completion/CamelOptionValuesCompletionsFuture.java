@@ -25,11 +25,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import io.fabric8.kubernetes.api.model.ConfigMap;
-import io.fabric8.kubernetes.api.model.ConfigMapList;
 import io.fabric8.kubernetes.client.NamespacedKubernetesClient;
-import io.fabric8.kubernetes.client.dsl.MixedOperation;
-import io.fabric8.kubernetes.client.dsl.Resource;
 import org.apache.camel.catalog.CamelCatalog;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.kafka.common.errors.ApiException;
@@ -98,7 +94,9 @@ public class CamelOptionValuesCompletionsFuture implements Function<CamelCatalog
 			//Check based on the value of the parameter
 			//if we get here, all the previous checks are done,
 			// so we can return it directly
-			return getCompletionForKubernetes();
+			var res = getCompletionForKubernetes();
+			res.addAll(getCompletionForSimpleLanguage());
+			return res;
 		}
 		return Collections.emptyList();
 	}
@@ -110,32 +108,14 @@ public class CamelOptionValuesCompletionsFuture implements Function<CamelCatalog
 		final var value = optionParamValueURIInstance.getValueName().substring(0, interestingPosition);
 		var kubernetesPlaceholders = new ArrayList<CompletionItem>();
 
-		// Make sure we have the cursor after a {{
-		if (StringUtils.contains(value, "{{") &&
-				//Either it is not closed by }}
-				(!StringUtils.contains(value, "}}") ||
-						// or }} is after the cursor
-						(value.lastIndexOf("}}") < value.lastIndexOf("{{")))) {
+		final var prefix = "{{";
+		final var suffix = "}}";
 
-			//Get the string before the placeholder (starting with {{)
-			final var pre = value.substring(0, value.lastIndexOf("{{"));
+		if (isOurPlaceholderInTheCursor(value, prefix, suffix)) {
+			//Get the string before the placeholder (starting with $prefix)
+			final var pre = value.substring(0, value.lastIndexOf(prefix));
+			final var post = getPostPlaceholder(interestingPosition, suffix, prefix, null);
 
-			// Now we get the string after the placeholder.
-			// This is tricky because we don't even know if the placeholder is already closed.
-			// interestingPosition is where the cursor is supposed to be
-			var lastPart = optionParamValueURIInstance.getValueName().substring(interestingPosition);
-
-			// The cursor is between {{ and }} because we found a }} after the cursor
-			if (lastPart.indexOf("}}") >= 0 &&
-					// This }} detected is closing the placeholder we are guessing
-					(lastPart.indexOf("}}") < lastPart.indexOf("{{")
-							//Or it is the only placeholder closing here, so it must be ours
-							|| lastPart.indexOf("{{") < 0)) {
-				//Let's get whatever is behind the detected }}
-				lastPart = lastPart.substring(lastPart.indexOf("}}") + 2);
-			}
-
-			final var post = lastPart;
 			try (KubernetesClient client = KubernetesConfigManager.getInstance().getClient()) {
 				if (client instanceof NamespacedKubernetesClient nsClient) {
 					kubernetesPlaceholders.addAll(nsClient.inAnyNamespace().secrets().list().getItems().stream().flatMap(element ->
@@ -146,7 +126,7 @@ public class CamelOptionValuesCompletionsFuture implements Function<CamelCatalog
 								item.setFilterText(pre + item.getLabel());
 								CompletionResolverUtils.applyTextEditToCompletionItem(optionParamValueURIInstance, item);
 								return item;
-							})).collect(Collectors.toList()));
+							})).toList());
 					kubernetesPlaceholders.addAll(nsClient.inAnyNamespace().configMaps().list().getItems().stream().flatMap(element ->
 							element.getData().keySet().stream().map(k -> {
 								CompletionItem item = new CompletionItem(
@@ -155,7 +135,7 @@ public class CamelOptionValuesCompletionsFuture implements Function<CamelCatalog
 								item.setFilterText(pre + item.getLabel());
 								CompletionResolverUtils.applyTextEditToCompletionItem(optionParamValueURIInstance, item);
 								return item;
-							})).collect(Collectors.toList()));
+							})).toList());
 				}
 			} catch (Exception e) {
 				LOGGER.error("Error while trying to provide completion for Kubernetes connected mode", e);
@@ -163,6 +143,74 @@ public class CamelOptionValuesCompletionsFuture implements Function<CamelCatalog
 		}
 
 		return kubernetesPlaceholders;
+	}
+
+	private List<CompletionItem> getCompletionForSimpleLanguage() {
+		final var cursorPosition =
+				optionParamValueURIInstance.getValueName().length() > filterString.length() ?
+						filterString.length() + 1 : filterString.length();
+		final var value = optionParamValueURIInstance.getValueName().substring(0, cursorPosition);
+		var res = new ArrayList<CompletionItem>();
+
+		final var prefix = "${";
+		final var suffix = "}";
+
+		if (isOurPlaceholderInTheCursor(value, prefix, suffix)) {
+			//Get the string before the placeholder (starting with $prefix, after our cursorPosition)
+			final var pre = value.substring(0, value.lastIndexOf(prefix));
+			final var post = getPostPlaceholder(cursorPosition, suffix, prefix, "}}");
+
+			// As in https://camel.apache.org/components/4.0.x/languages/simple-language.html#_variables
+			//Here go the non dynamic ones
+			final var placeholders = new String[]{"camelId", "exchange", "exchangeId", "id",
+					"messageTimestamp", "body", "bodyOneLine", "prettyBody", "headers", "exception",
+					"exception.message", "exception.stacktrace", "routeId", "stepId", "threadId", "threadName",
+					"hostname", "null", "messageHistory"};
+			for (String placeholder : placeholders) {
+				CompletionItem item = new CompletionItem(prefix + placeholder + suffix);
+				item.setInsertText(pre + item.getLabel() + post);
+				item.setFilterText(pre + item.getLabel());
+				CompletionResolverUtils.applyTextEditToCompletionItem(optionParamValueURIInstance, item);
+				res.add(item);
+			}
+		}
+
+		return res;
+	}
+
+	private static boolean isOurPlaceholderInTheCursor(String value, String prefix, String suffix) {
+		// Make sure we have the cursor after a $prefix
+		if (!StringUtils.contains(value, prefix)) {
+			return false;
+		}
+		//Either it is not closed by $suffix
+		if (!StringUtils.contains(value, suffix)) {
+			return true;
+		}
+		//Check if we are in between a prefix and a suffix
+		final var lookAhead = value.substring(prefix.length());
+
+		return lookAhead.indexOf(suffix) < lookAhead.indexOf(prefix);
+	}
+
+	// Now we get the string after the placeholder.
+	// This is tricky because we don't even know if the placeholder is already closed.
+	// interestingPosition is where the cursor is supposed to be
+	private String getPostPlaceholder(int interestingPosition, String suffix, String prefix, String notMySuffix) {
+		var lastPart = optionParamValueURIInstance.getValueName().substring(interestingPosition);
+
+		// The cursor is between $prefix and $suffix because we found a $suffix after the cursor
+		if (lastPart.indexOf(suffix) >= 0 &&
+				//Do not confuse this placeholder ending with some other placeholder ending
+				(notMySuffix == null || lastPart.indexOf(suffix) != lastPart.indexOf(notMySuffix)) &&
+				// This $suffix detected is closing the placeholder we are guessing
+				(lastPart.indexOf(suffix) < lastPart.indexOf(prefix)
+						//Or it is the only placeholder closing here, so it must be ours
+						|| lastPart.indexOf(prefix) < 0)) {
+			//Let's get whatever is behind the detected $suffix
+			lastPart = lastPart.substring(lastPart.indexOf(suffix) + suffix.length());
+		}
+		return lastPart;
 	}
 
 	private List<CompletionItem> computeCompletionForEnums(List<String> enums) {
