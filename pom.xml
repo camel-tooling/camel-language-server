@@ -42,7 +42,7 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<maven.compiler.release>17</maven.compiler.release>
 		<jacoco.version>0.8.12</jacoco.version>
-		<lsp4j.version>0.23.0</lsp4j.version>
+		<lsp4j.version>0.23.1</lsp4j.version>
 		<slf4j.version>1.7.36</slf4j.version>
 		<log4j-slf4j.version>2.22.1</log4j-slf4j.version>
 		<junit.version>5.10.2</junit.version>
