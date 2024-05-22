@@ -21,6 +21,7 @@ public class ComponentNameConstants {
 	public static final String COMPONENT_NAME_KAFKA = "kafka";
 	public static final String COMPONENT_NAME_KAMELET = "kamelet";
 	public static final String COMPONENT_NAME_KNATIVE = "knative";
+	public static final String COMPONENT_NAME_TWITTER_SEARCH = "twitter-search";
 	
 	private ComponentNameConstants() {}
 
