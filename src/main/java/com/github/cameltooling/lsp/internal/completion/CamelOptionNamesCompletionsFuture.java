@@ -29,6 +29,9 @@ import org.apache.camel.v1.kameletspec.Definition;
 import org.apache.camel.v1.kameletspec.definition.Properties;
 import org.eclipse.lsp4j.CompletionItem;
 import org.eclipse.lsp4j.CompletionItemKind;
+import org.eclipse.lsp4j.InsertTextFormat;
+import org.eclipse.lsp4j.MarkupContent;
+import org.eclipse.lsp4j.MarkupKind;
 
 import com.github.cameltooling.lsp.internal.catalog.model.BaseOptionModel;
 import com.github.cameltooling.lsp.internal.catalog.model.ComponentModel;
@@ -42,6 +45,8 @@ import com.github.cameltooling.lsp.internal.instancemodel.OptionParamURIInstance
 import com.github.cameltooling.lsp.internal.instancemodel.PathParamURIInstance;
 
 import io.fabric8.kubernetes.api.model.AnyType;
+
+
 
 public class CamelOptionNamesCompletionsFuture implements Function<CamelCatalog, List<CompletionItem>>  {
 
@@ -74,14 +79,42 @@ public class CamelOptionNamesCompletionsFuture implements Function<CamelCatalog,
 		
 		
 		Stream<CompletionItem> kameletProperties = retrieveKameletProperties();
+		Stream<CompletionItem> twitterGeographySearchProperties = retrieveTwitterGeographySearchProperties();
 		
-		return Stream.concat(Stream.concat(endpointOptionsFiltered, availableApiPropertiesFiltered), kameletProperties)
+		return Stream.concat( Stream.concat(Stream.concat(endpointOptionsFiltered, availableApiPropertiesFiltered), kameletProperties), twitterGeographySearchProperties)
 				// filter duplicated uri options
 				.filter(FilterPredicateUtils.removeDuplicatedOptions(alreadyDefinedOptions, positionInCamelURI))
 				.filter(FilterPredicateUtils.matchesCompletionFilter(filterString))
 				.collect(Collectors.toList());
 	}
+	
+	private Stream<CompletionItem> retrieveTwitterGeographySearchProperties() {
+		Stream<CompletionItem> twitterGeographySearchProperties = Stream.empty();
+		if (ComponentNameConstants.COMPONENT_NAME_TWITTER_SEARCH.equals(camelComponentName)) {
+			return Stream.of(createTwitterGeographySearchCompletionItem());
+		}
+		return twitterGeographySearchProperties;
+	}
 
+	private CompletionItem createTwitterGeographySearchCompletionItem() {
+		CompletionItem completionItem = new CompletionItem("twitter-search:<keywords>?<geography-search>");
+		String documentation = "Perform a Geography Search using the configured metrics.\n\n"
+				+ "`?latitude=<value>&longitude=<value>&radius=<value>&distanceMetric=km|mi`\n\n"
+				+ "You need to configure all the following options: latitude, longitude, radius, and distanceMetric.";
+		completionItem.setDocumentation(new MarkupContent(MarkupKind.MARKDOWN, documentation));
+		completionItem.setInsertTextFormat(InsertTextFormat.Snippet);
+		completionItem.setKind(CompletionItemKind.Snippet);
+		completionItem.setSortText("1");
+		String sep  = this.uriElement.getCamelUriInstance().getDslModelHelper().getParametersSeparator();
+		completionItem.setInsertText(
+			"latitude=${1:latitude}" + sep + 
+			"longitude=${2:longitude}" + sep +
+			"radius=${3:radius}" + sep +
+			"distanceMetric=${4|km,mi|}");
+		CompletionResolverUtils.applyTextEditToCompletionItem(this.uriElement, completionItem);
+		return completionItem;
+	}
+	
 	private Stream<CompletionItem> retrieveKameletProperties() {
 		Stream<CompletionItem> kameletProperties = Stream.empty();
 		if(ComponentNameConstants.COMPONENT_NAME_KAMELET.equals(camelComponentName)) {

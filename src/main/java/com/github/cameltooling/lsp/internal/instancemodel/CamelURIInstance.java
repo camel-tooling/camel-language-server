@@ -189,4 +189,8 @@ public class CamelURIInstance extends CamelUriElementInstance {
 		return new Range(startPositionInDocument, endPositionInDocument);
 	}
 
+	public DSLModelHelper getDslModelHelper() {
+		return dslModelHelper;
+	}
+
 }
