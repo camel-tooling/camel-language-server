@@ -168,7 +168,7 @@ public class CamelTextDocumentService implements TextDocumentService {
 			} else if (new CamelKModelineParser().isOnCamelKModeline(completionParams.getPosition().getLine(), textDocumentItem)){
 				return new CamelKModelineCompletionprocessor(textDocumentItem, getCamelCatalog()).getCompletions(completionParams.getPosition()).thenApply(Either::forLeft);
 			} else if(uri.endsWith("pom.xml")) {
-				return new PomCompletionProcessor().getCompletions().thenApply(Either::forLeft);
+				return new PomCompletionProcessor(textDocumentItem, getCamelCatalog()).getCompletions(completionParams.getPosition()).thenApply(Either::forLeft);
 			} else if(uri.endsWith("tasks.json")) {
 				return new VSCodeTasksCompletionProcessor(textDocumentItem).getCompletions(completionParams.getPosition()).thenApply(Either::forLeft);
 			} else {
