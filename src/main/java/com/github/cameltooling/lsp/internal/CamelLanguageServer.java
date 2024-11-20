@@ -29,6 +29,7 @@ import org.eclipse.lsp4j.InitializedParams;
 import org.eclipse.lsp4j.MessageParams;
 import org.eclipse.lsp4j.MessageType;
 import org.eclipse.lsp4j.ServerCapabilities;
+import org.eclipse.lsp4j.SetTraceParams;
 import org.eclipse.lsp4j.TextDocumentSyncKind;
 import org.eclipse.lsp4j.services.LanguageClient;
 import org.eclipse.lsp4j.services.LanguageClientAware;
@@ -153,4 +154,8 @@ public class CamelLanguageServer extends AbstractLanguageServer implements Langu
 		return null;
 	}
 	
+	@Override
+	public void setTrace(SetTraceParams params) {
+		// Empty implementation to avoid error in VS Code
+	}
 }
