@@ -51,7 +51,7 @@
 		<camel.version>4.8.1</camel.version>
 		<camel.kamelet.catalog.version>4.8.1</camel.kamelet.catalog.version>
 		<camel.quarkus.version>3.16.0</camel.quarkus.version>
-		<roaster.version>2.29.0.Final</roaster.version>
+		<roaster.version>2.30.0.Final</roaster.version>
 		<awaitility.version>4.2.2</awaitility.version>
 		<tyrus.version>2.2.0</tyrus.version>
 		<commons-text.version>1.12.0</commons-text.version>
