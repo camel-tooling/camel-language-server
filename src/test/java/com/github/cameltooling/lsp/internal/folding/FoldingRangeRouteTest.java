@@ -21,7 +21,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.io.File;
 import java.util.List;
 
+import org.eclipse.lsp4j.DidCloseTextDocumentParams;
 import org.eclipse.lsp4j.FoldingRange;
+import org.eclipse.lsp4j.TextDocumentIdentifier;
 import org.junit.jupiter.api.Test;
 
 import com.github.cameltooling.lsp.internal.AbstractCamelLanguageServerTest;
@@ -65,6 +67,19 @@ class FoldingRangeRouteTest extends AbstractCamelLanguageServerTest {
 	void testNoFoldingRangeOnInvalidJavaFile() throws Exception {
 		File file = new File("src/test/resources/workspace/AnInvalid.java");
 		CamelLanguageServer languageServer = initializeLanguageServer(file);
+		
+		List<FoldingRange> foldingRanges = getFoldingRanges(file, languageServer).get();
+		
+		assertThat(foldingRanges).isEmpty();
+	}
+	
+	@Test
+	void testNoFoldingRangeOnClosedJavaFile() throws Exception {
+		File file = new File("src/test/resources/workspace/AnInterface.java");
+		CamelLanguageServer languageServer = initializeLanguageServer(file);
+		
+		DidCloseTextDocumentParams params = new DidCloseTextDocumentParams(new TextDocumentIdentifier(file.toURI().toString()));
+		languageServer.getTextDocumentService().didClose(params );
 		
 		List<FoldingRange> foldingRanges = getFoldingRanges(file, languageServer).get();
 		

@@ -280,7 +280,12 @@ public class CamelTextDocumentService implements TextDocumentService {
 		LOGGER.info("foldingRange: {}", textDocument);
 		String uri = textDocument.getUri();
 		TextDocumentItem textDocumentItem = openedDocuments.get(uri);
-		return new FoldingRangeProcessor().computeFoldingRanges(textDocumentItem);
+		if (textDocumentItem != null) {
+			// We support providing folding rages only when the document are opened. It doesn't make sense anyway when it is closed
+			return new FoldingRangeProcessor().computeFoldingRanges(textDocumentItem);
+		} else {
+			return CompletableFuture.completedFuture(Collections.emptyList());
+		}
 	}
 
 	@Override
