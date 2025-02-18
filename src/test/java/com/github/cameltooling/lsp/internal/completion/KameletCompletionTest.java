@@ -131,11 +131,7 @@ class KameletCompletionTest extends AbstractCamelLanguageServerTest {
 						new TextEdit(
 								new Range(new Position(0, 19), new Position(0, 19)),
 								"aws-ddb-streams-source")));
-		completionItem.setDocumentation("Receive events from Amazon DynamoDB Streams.\n"
-				+ "\n"
-				+ "The basic authentication method for the AWS DynamoDB Streams service is to specify an access key and a secret key. These parameters are optional because the Kamelet provides a default credentials provider.\n"
-				+ "\n"
-				+ "If you use the default credentials provider, the DynamoDB Streams client loads the credentials through this provider and doesn't use the basic authentication method.");
+		completionItem.setDocumentation("Receive events from Amazon DynamoDB Streams.");
 		return completionItem;
 	}
 	
@@ -146,17 +142,7 @@ class KameletCompletionTest extends AbstractCamelLanguageServerTest {
 						new TextEdit(
 								new Range(new Position(0, 19), new Position(0, 19)),
 								"aws-kinesis-sink")));
-		completionItem.setDocumentation("Send data to AWS Kinesis.\n"
-				+ "\n"
-				+ "The basic authentication method for the Kinesis service is to specify an access key and a secret key. These parameters are optional because the Kamelet provides a default credentials provider.\n"
-				+ "\n"
-				+ "If you use the default credentials provider, the Kinesis client loads the credentials through this provider and doesn't use the basic authentication method.\n"
-				+ "\n"
-				+ "In the header, you can optionally set the `file` / `ce-partition` property to set the Kinesis partition key.\n"
-				+ "\n"
-				+ "If you do not set the property in the header, the Kamelet uses the exchange ID for the partition key.\n"
-				+ "\n"
-				+ "You can also set the `sequence-number` / `ce-sequencenumber` property in the header to specify the Sequence number.");
+		completionItem.setDocumentation("Send data to AWS Kinesis.");
 		return completionItem;
 	}
 		
