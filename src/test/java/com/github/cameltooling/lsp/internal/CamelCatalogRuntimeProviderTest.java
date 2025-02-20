@@ -76,12 +76,13 @@ class CamelCatalogRuntimeProviderTest extends AbstractCamelLanguageServerTest {
 	private void testRuntimeProviderWithProvidedValue(String settingValue, Class<? extends RuntimeProvider> expectedRuntimeProviderType)
 			throws URISyntaxException, InterruptedException, ExecutionException {
 		runtimeProvider = settingValue;
-		CamelLanguageServer camelLanguageServer = initializeLanguageServer("// camel-k: dependency=\nfrom('');", ".groovy");
+		CamelLanguageServer camelLanguageServer = initializeLanguageServer(
+				"# camel-k: dependency=\n- from:\n    uri: \"\"", ".yaml");
 		RuntimeProvider usedRuntimeProvider = camelLanguageServer.getTextDocumentService().getCamelCatalog().get().getRuntimeProvider();
 		assertThat(usedRuntimeProvider).isExactlyInstanceOf(expectedRuntimeProviderType);
-		CompletableFuture<Either<List<CompletionItem>, CompletionList>> camelUriCompletion = getCompletionFor(camelLanguageServer, new Position(1, "from('".length()));
+		CompletableFuture<Either<List<CompletionItem>, CompletionList>> camelUriCompletion = getCompletionFor(camelLanguageServer, new Position(2,"    uri: \"".length()));
 		assertThat(camelUriCompletion.get().getLeft()).isNotEmpty();
-		CompletableFuture<Either<List<CompletionItem>, CompletionList>> dependencyCompletion = getCompletionFor(camelLanguageServer, new Position(0, "// camel-k: dependency=".length()));
+		CompletableFuture<Either<List<CompletionItem>, CompletionList>> dependencyCompletion = getCompletionFor(camelLanguageServer, new Position(0, "# camel-k: dependency=".length()));
 		assertThat(dependencyCompletion.get().getLeft()).isNotEmpty();
 	}
 

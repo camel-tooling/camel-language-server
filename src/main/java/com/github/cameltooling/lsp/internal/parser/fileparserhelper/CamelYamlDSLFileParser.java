@@ -23,10 +23,7 @@ import org.eclipse.lsp4j.TextDocumentItem;
 
 public class CamelYamlDSLFileParser extends Parser {
 
-	private final Parser nextFileParser;
-
-	CamelYamlDSLFileParser(Parser parser) {
-		this.nextFileParser = parser;
+	CamelYamlDSLFileParser() {
 	}
 
 	@Override
@@ -37,8 +34,6 @@ public class CamelYamlDSLFileParser extends Parser {
 			if (camelKYamlDSLParser.getCorrespondingType(textDocumentItem, line) != null) {
 				return camelKYamlDSLParser;
 			}
-		} else if (nextFileParser != null) {
-			return nextFileParser.getMatchedFileParser(textDocumentItem, line, parserFileHelperFactory);
 		}
 
 		return null;

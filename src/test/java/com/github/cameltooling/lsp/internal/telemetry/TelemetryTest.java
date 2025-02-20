@@ -72,9 +72,7 @@ class TelemetryTest extends AbstractCamelLanguageServerTest {
 		return Stream.of(
 				Arguments.of(RouteTextBuilder.createXMLSpringRoute(""), "xml"),
 				Arguments.of(javaContent, "java"),
-				Arguments.of("# camel-k:", "yaml"),
-				Arguments.of("// camel-k:", "kts"),
-				Arguments.of("// camel-k:", "js")
+				Arguments.of("# camel-k:", "yaml")
 				);
 	}
 	

@@ -74,9 +74,9 @@ class CamelKModelineCompletionTest extends AbstractCamelLanguageServerTest {
 	
 	@Test
 	void testProvideCompletionAtTheEndOfLine() throws Exception {
-		CamelLanguageServer camelLanguageServer = initializeLanguageServer("// camel-k: language=groovy trait=service.enabled=false ");
+		CamelLanguageServer camelLanguageServer = initializeLanguageServer("# camel-k: language=yaml trait=service.enabled=false ");
 		
-		CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = getCompletionFor(camelLanguageServer, new Position(0, 56));
+		CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = getCompletionFor(camelLanguageServer, new Position(0, 53));
 		
 		List<CompletionItem> completionItems = completions.get().getLeft();
 		assertThat(completionItems).hasSize(12);

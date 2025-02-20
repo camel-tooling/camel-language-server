@@ -24,7 +24,7 @@ import org.junit.jupiter.api.Test;
 
 class CamelKModelineOptionTest {
 	
-	String modelineString = "// camel-k: language=groovy";
+	String modelineString = "# camel-k: language=yaml";
 	CamelKModeline basicModeline = new CamelKModeline(modelineString, null, 0);
 
 	@Test
@@ -33,45 +33,45 @@ class CamelKModelineOptionTest {
 		assertThat(options).hasSize(1);
 		CamelKModelineOption languageOption = options.get(0);
 		assertThat(languageOption.getOptionName()).isEqualTo("language");
-		assertThat(languageOption.getOptionValue().getValueAsString()).isEqualTo("groovy");
+		assertThat(languageOption.getOptionValue().getValueAsString()).isEqualTo("yaml");
 	}
 	
 	@Test
 	void testOptionTraitWithIncompleteTraitContent() throws Exception {
-		String modelineWithMixedSeparator = "// camel-k: language=groovy trait=quarkus";
+		String modelineWithMixedSeparator = "# camel-k: language=yaml trait=quarkus";
 		List<CamelKModelineOption> options = new CamelKModeline(modelineWithMixedSeparator, null, 0).getOptions();
 		assertThat(options).hasSize(2);
 	}
 	
 	@Test
 	void test2Options() throws Exception {
-		String modelineWith2Options = "// camel-k: language=groovy trait=quarkus.enabled=true";
+		String modelineWith2Options = "# camel-k: language=yaml trait=quarkus.enabled=true";
 		checkFor2Options(modelineWith2Options);
 	}
 	
 	@Test
 	void test2OptionsWithTabSeparator() throws Exception {
-		String modelineWith2Options = "// camel-k:\tlanguage=groovy\ttrait=quarkus.enabled=true";
+		String modelineWith2Options = "# camel-k:\tlanguage=yaml\ttrait=quarkus.enabled=true";
 		checkFor2Options(modelineWith2Options);
 	}
 	
 	@Test
 	void testOptionsWithMixedSeparator() throws Exception {
-		String modelineWithMixedSeparator = "// camel-k:\tlanguage=groovy trait=quarkus.enabled=true\tdependency=mvn:org.my/application:1.0";
+		String modelineWithMixedSeparator = "# camel-k:\tlanguage=yaml trait=quarkus.enabled=true\tdependency=mvn:org.my/application:1.0";
 		List<CamelKModelineOption> options = new CamelKModeline(modelineWithMixedSeparator, null, 0).getOptions();
 		assertThat(options).hasSize(3);
 	}
 	
 	@Test
 	void testOptionsWithIncompleteOptions() throws Exception {
-		String modelineWithMixedSeparator = "// camel-k: language=groovy trait";
+		String modelineWithMixedSeparator = "# camel-k: language=yaml trait";
 		List<CamelKModelineOption> options = new CamelKModeline(modelineWithMixedSeparator, null, 0).getOptions();
 		assertThat(options).hasSize(2);
 		CamelKModelineOption incompleteOption = options.get(1);
 		assertThat(incompleteOption.getOptionName()).isEqualTo("trait");
 		assertThat(incompleteOption.getOptionValue()).isNull();
-		assertThat(incompleteOption.getStartPositionInLine()).isEqualTo(28);
-		assertThat(incompleteOption.getEndPositionInLine()).isEqualTo(33);
+		assertThat(incompleteOption.getStartPositionInLine()).isEqualTo(25);
+		assertThat(incompleteOption.getEndPositionInLine()).isEqualTo(30);
 	}
 
 	private void checkFor2Options(String modelineWith2Options) {
@@ -79,13 +79,13 @@ class CamelKModelineOptionTest {
 		assertThat(options).hasSize(2);
 		CamelKModelineOption languageGroovyOption = options.get(0);
 		assertThat(languageGroovyOption.getOptionName()).isEqualTo("language");
-		assertThat(languageGroovyOption.getOptionValue().getValueAsString()).isEqualTo("groovy");
-		assertThat(languageGroovyOption.getStartPositionInLine()).isEqualTo(12);
-		assertThat(languageGroovyOption.getEndPositionInLine()).isEqualTo(27);
+		assertThat(languageGroovyOption.getOptionValue().getValueAsString()).isEqualTo("yaml");
+		assertThat(languageGroovyOption.getStartPositionInLine()).isEqualTo(11);
+		assertThat(languageGroovyOption.getEndPositionInLine()).isEqualTo(24);
 		CamelKModelineOption traitOption = options.get(1);
 		assertThat(traitOption.getOptionName()).isEqualTo("trait");
 		assertThat(traitOption.getOptionValue().getValueAsString()).isEqualTo("quarkus.enabled=true");
-		assertThat(traitOption.getStartPositionInLine()).isEqualTo(28);
+		assertThat(traitOption.getStartPositionInLine()).isEqualTo(25);
 		assertThat(traitOption.getEndPositionInLine()).isEqualTo(modelineWith2Options.length());
 	}
 	

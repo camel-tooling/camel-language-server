@@ -23,12 +23,7 @@ import org.eclipse.lsp4j.TextDocumentItem;
 public class ParserChainOfResponsibility {
 	public static ParserFileHelper getMatchedParserFileHelper(TextDocumentItem textDocumentItem, int line,
 															  ParserFileHelperFactory parserFileHelperFactory) {
-		Parser fileParser = new XMLFileParser(
-		new JavaFileParser(
-		new CamelKGroovyDSLFileParser(
-		new CamelYamlDSLFileParser(
-		new CamelKKotlinDSLFileParser(
-		new CamelKJSDSLFileParser(null))))));
+		Parser fileParser = new XMLFileParser(new JavaFileParser(new CamelYamlDSLFileParser()));
 		return fileParser.getMatchedFileParser(textDocumentItem, line, parserFileHelperFactory);
 	}
 
