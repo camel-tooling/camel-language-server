@@ -95,61 +95,6 @@ class CamelLanguageServerTest extends AbstractCamelLanguageServerTest {
 		}
 	}
 	
-	@Test
-	void testProvideCompletionForGroovyOnRealFileWithCamelKExtension() throws Exception {
-		File f = new File("src/test/resources/workspace/sample.camelk.groovy");
-		assertThat(f).exists();
-		try (FileInputStream fis = new FileInputStream(f)) {
-			CamelLanguageServer cls = initializeLanguageServer(fis, ".camelk.groovy");
-			CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = getCompletionFor(cls, new Position(0, 6));
-			assertThat(completions.get().getLeft()).contains(createExpectedTimerCompletionItem(0, 6, 0, 25));
-		}
-	}
-	
-	@Test
-	void testProvideCompletionForGroovyOnRealFileWithCamelKShebang() throws Exception {
-		File f = new File("src/test/resources/workspace/samplewithshebang.groovy");
-		assertThat(f).exists();
-		try (FileInputStream fis = new FileInputStream(f)) {
-			CamelLanguageServer cls = initializeLanguageServer(fis, ".groovy");
-			CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = getCompletionFor(cls, new Position(2, 6));
-			assertThat(completions.get().getLeft()).contains(createExpectedTimerCompletionItem(2, 6, 2, 25));
-		}
-	}
-	
-	@Test
-	void testProvideCompletionForKotlinOnRealFileWithCamelKExtension() throws Exception {
-		File f = new File("src/test/resources/workspace/sample.camelk.kts");
-		assertThat(f).exists();
-		try (FileInputStream fis = new FileInputStream(f)) {
-			CamelLanguageServer cls = initializeLanguageServer(fis, ".camelk.kts");
-			CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = getCompletionFor(cls, new Position(0, 6));
-			assertThat(completions.get().getLeft()).contains(createExpectedTimerCompletionItem(0, 6, 0, 18));
-		}
-	}
-	
-	@Test
-	void testProvideCompletionForJSOnRealFileWithCamelKExtension() throws Exception {
-		File f = new File("src/test/resources/workspace/sample.camelk.js");
-		assertThat(f).exists();
-		try (FileInputStream fis = new FileInputStream(f)) {
-			CamelLanguageServer cls = initializeLanguageServer(fis, ".camelk.js");
-			CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = getCompletionFor(cls, new Position(0, 6));
-			assertThat(completions.get().getLeft()).contains(createExpectedTimerCompletionItem(0, 6, 0, 14));
-		}
-	}
-	
-	@Test
-	void testProvideCompletionForGroovyOnRealFileWithCamelKCloseToModeline() throws Exception {
-		File f = new File("src/test/resources/workspace/samplewithModelineLike.groovy");
-		assertThat(f).exists();
-		try (FileInputStream fis = new FileInputStream(f)) {
-			CamelLanguageServer cls = initializeLanguageServer(fis, ".groovy");
-			CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = getCompletionFor(cls, new Position(2, 6));
-			assertThat(completions.get().getLeft()).contains(createExpectedTimerCompletionItem(2, 6, 2, 25));
-		}
-	}
-	
 	@Nested
 	class Yaml {
 		@Test
@@ -397,17 +342,6 @@ class CamelLanguageServerTest extends AbstractCamelLanguageServerTest {
 	}
 
 	@Test
-	void testProvideCompletionForkotlinOnRealFileWithCamelKCloseToModeline() throws Exception {
-		File f = new File("src/test/resources/workspace/sampleWithModelineLike.kts");
-		assertThat(f).exists();
-		try (FileInputStream fis = new FileInputStream(f)) {
-			CamelLanguageServer cls = initializeLanguageServer(fis, ".kts");
-			CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = getCompletionFor(cls, new Position(2, 6));
-			assertThat(completions.get().getLeft()).contains(createExpectedTimerCompletionItem(2, 6, 2, 18));
-		}
-	}
-	
-	@Test
 	void testProvideCompletionForApplicationProperties() throws Exception {
 		File f = new File("src/test/resources/workspace/application.properties");
 		assertThat(f).exists();
@@ -419,18 +353,7 @@ class CamelLanguageServerTest extends AbstractCamelLanguageServerTest {
 			assertThat(completions.get().getLeft()).hasSize(mainModel.getGroups().size() + 1);
 		}
 	}
-	
-	@Test
-	void testProvideCompletionForJSOnRealFileWithCamelKCloseToModeline() throws Exception {
-		File f = new File("src/test/resources/workspace/sampleWithModelineLike.js");
-		assertThat(f).exists();
-		try (FileInputStream fis = new FileInputStream(f)) {
-			CamelLanguageServer cls = initializeLanguageServer(fis, ".js");
-			CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = getCompletionFor(cls, new Position(2, 6));
-			assertThat(completions.get().getLeft()).contains(createExpectedTimerCompletionItem(2, 6, 2, 14));
-		}
-	}
-	
+
 	@Test
 	void testProvideCompletionforMultilineXmlFile() throws Exception {
 		CamelLanguageServer camelLanguageServer = initializeLanguageServer(

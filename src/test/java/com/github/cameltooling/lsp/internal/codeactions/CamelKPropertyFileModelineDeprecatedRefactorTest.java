@@ -43,17 +43,17 @@ class CamelKPropertyFileModelineDeprecatedRefactorTest extends AbstractCamelLang
 
 	@Test
 	void testRefactor() throws Exception {
-		testBasicRefactor("// camel-k: property-file=aFile.properties", "property=file:aFile.properties");
+		testBasicRefactor("# camel-k: property-file=aFile.properties", "property=file:aFile.properties");
 	}
 	
 	@Test
 	void testRefactorWithEmptyValue() throws Exception {
-		testBasicRefactor("// camel-k: property-file=", "property=file:");
+		testBasicRefactor("# camel-k: property-file=", "property=file:");
 	}
 	
 	@Test
 	void testRefactorWithNoEqual() throws Exception {
-		testBasicRefactor("// camel-k: property-file", "property=file:");
+		testBasicRefactor("# camel-k: property-file", "property=file:");
 	}
 
 	private void testBasicRefactor(String text, String expectedNewText) throws URISyntaxException, InterruptedException, ExecutionException {
@@ -64,16 +64,16 @@ class CamelKPropertyFileModelineDeprecatedRefactorTest extends AbstractCamelLang
 		assertThat(codeAction.getTitle()).isEqualTo(ConvertCamelKPropertyFileModelineRefactorAction.CODE_ACTION_TITLE_CONVERT_PROPERTY_FILE);
 		Map<String, List<TextEdit>> changes = codeAction.getEdit().getChanges();
 		assertThat(changes).hasSize(1);
-		List<TextEdit> textEdits = changes.get(DUMMY_URI+".groovy");
+		List<TextEdit> textEdits = changes.get(DUMMY_URI+".yaml");
 		assertThat(textEdits).hasSize(1);
 		TextEdit textEdit = textEdits.get(0);
-		assertThat(textEdit.getRange()).isEqualTo(new Range(new Position(0,12), new Position(0, text.length())));
+		assertThat(textEdit.getRange()).isEqualTo(new Range(new Position(0,11), new Position(0, text.length())));
 		assertThat(textEdit.getNewText()).isEqualTo(expectedNewText);
 	}
 	
 	@Test
 	void testRefactorWithSeveralPropertyFileOptions() throws Exception {
-		String text = "// camel-k: property-file=aFile1.properties property-file=aFile2.properties";
+		String text = "# camel-k: property-file=aFile1.properties property-file=aFile2.properties";
 		List<Either<Command, CodeAction>> codeActions = retrieveCodeActions(text);
 		assertThat(codeActions).hasSize(1);
 		CodeAction codeAction = codeActions.get(0).getRight();
@@ -81,23 +81,23 @@ class CamelKPropertyFileModelineDeprecatedRefactorTest extends AbstractCamelLang
 		assertThat(codeAction.getTitle()).isEqualTo(ConvertCamelKPropertyFileModelineRefactorAction.CODE_ACTION_TITLE_CONVERT_PROPERTY_FILE);
 		Map<String, List<TextEdit>> changes = codeAction.getEdit().getChanges();
 		assertThat(changes).hasSize(1);
-		List<TextEdit> textEdits = changes.get(DUMMY_URI+".groovy");
+		List<TextEdit> textEdits = changes.get(DUMMY_URI+".yaml");
 		assertThat(textEdits).hasSize(2);
 		
 		TextEdit textEdit1 = textEdits.get(0);
-		assertThat(textEdit1.getRange()).isEqualTo(new Range(new Position(0,12), new Position(0, 43)));
+		assertThat(textEdit1.getRange()).isEqualTo(new Range(new Position(0,11), new Position(0, 42)));
 		assertThat(textEdit1.getNewText()).isEqualTo("property=file:aFile1.properties");
 		
 		TextEdit textEdit2 = textEdits.get(1);
-		assertThat(textEdit2.getRange()).isEqualTo(new Range(new Position(0,44), new Position(0, text.length())));
+		assertThat(textEdit2.getRange()).isEqualTo(new Range(new Position(0,43), new Position(0, text.length())));
 		assertThat(textEdit2.getNewText()).isEqualTo("property=file:aFile2.properties");
 	}
 
 	private List<Either<Command, CodeAction>> retrieveCodeActions(String text) throws URISyntaxException, InterruptedException, ExecutionException {
-		CamelLanguageServer languageServer = initializeLanguageServer(text, ".groovy");
+		CamelLanguageServer languageServer = initializeLanguageServer(text, ".yaml");
 		CodeActionContext context = new CodeActionContext(Collections.emptyList(), Collections.singletonList(CodeActionKind.Refactor));
-		Range range = new Range(new Position(0,14), new Position(0, 14));
-		CodeActionParams params = new CodeActionParams(new TextDocumentIdentifier(DUMMY_URI+".groovy"), range, context);
+		Range range = new Range(new Position(0,13), new Position(0, 13));
+		CodeActionParams params = new CodeActionParams(new TextDocumentIdentifier(DUMMY_URI+".yaml"), range, context);
 		return languageServer.getTextDocumentService().codeAction(params).get();
 	}
 

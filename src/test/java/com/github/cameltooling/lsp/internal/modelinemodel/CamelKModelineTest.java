@@ -30,12 +30,11 @@ import com.github.cameltooling.lsp.internal.CamelLanguageServer;
 
 class CamelKModelineTest {
 	
-	String modelineString = "// camel-k: language=groovy";
+	String modelineString = "# camel-k: language=yaml";
 	CamelKModeline basicModeline = new CamelKModeline(modelineString, null, 0);
 	
 	public static Stream<Arguments> data() {
 		return Stream.of(
-				Arguments.of("// camel-k: language=groovy"),
 				Arguments.of("# camel-k: language=yaml"),
 				Arguments.of("<!-- camel-k: language=xml -->"));
 	}
