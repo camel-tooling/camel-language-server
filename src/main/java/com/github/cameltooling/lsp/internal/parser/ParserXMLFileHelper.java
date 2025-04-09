@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Set;
 
 import javax.xml.XMLConstants;
+import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
@@ -105,7 +106,9 @@ public class ParserXMLFileHelper extends ParserFileHelper {
 		dbf.setAttribute(XMLConstants.ACCESS_EXTERNAL_DTD, "");
 		dbf.setAttribute(XMLConstants.ACCESS_EXTERNAL_SCHEMA, "");
 		dbf.setNamespaceAware(true);
-		Document xmlParsed = dbf.newDocumentBuilder().parse(new ByteArrayInputStream(textDocumentItem.getText().getBytes(StandardCharsets.UTF_8)));
+		DocumentBuilder documentBuilder = dbf.newDocumentBuilder();
+		documentBuilder.setErrorHandler(new NoopErrorHandler());
+		Document xmlParsed = documentBuilder.parse(new ByteArrayInputStream(textDocumentItem.getText().getBytes(StandardCharsets.UTF_8)));
 		Set<String> interestingCamelNodeType = new HashSet<>(CAMEL_POSSIBLE_TYPES);
 		interestingCamelNodeType.addAll(DOCUMENT_SYMBOL_POSSIBLE_TYPES);
 		for (String camelNodeTag : interestingCamelNodeType) {
