@@ -30,7 +30,7 @@ import com.github.cameltooling.lsp.internal.instancemodel.ComponentNameConstants
 
 public class ConnectedModeDiagnosticService extends DiagnosticService {
 
-	protected ConnectedModeDiagnosticService() {
+	public ConnectedModeDiagnosticService() {
 		super(null);
 	}
 

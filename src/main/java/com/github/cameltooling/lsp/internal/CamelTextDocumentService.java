@@ -98,7 +98,7 @@ import com.google.gson.Gson;
 public class CamelTextDocumentService implements TextDocumentService {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(CamelTextDocumentService.class);
-	private Map<String, TextDocumentItem> openedDocuments = new HashMap<>();
+	protected Map<String, TextDocumentItem> openedDocuments = new HashMap<>();
 	private CompletableFuture<CamelCatalog> camelCatalog;
 	private CamelLanguageServer camelLanguageServer;
 	private KameletsCatalogManager kameletsCatalogManager = new KameletsCatalogManager();

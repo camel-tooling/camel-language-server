@@ -50,7 +50,7 @@ public class EndpointDiagnosticService extends DiagnosticService {
 		super(camelCatalog);
 	}
 	
-	Map<CamelEndpointDetails, EndpointValidationResult> computeCamelEndpointErrors(String camelText, String uri) {
+	public Map<CamelEndpointDetails, EndpointValidationResult> computeCamelEndpointErrors(String camelText, String uri) {
 		List<CamelEndpointDetails> endpoints = retrieveEndpoints(uri, camelText);
 		return diagnoseEndpoints(uri, endpoints);
 	}
