@@ -133,6 +133,10 @@
 								<goals>
 									<goal>makeAggregateBom</goal>
 								</goals>
+								<configuration>
+									<!-- to be removed when https://github.com/CycloneDX/cyclonedx-maven-plugin/issues/597 is fixed-->
+									<skipNotDeployed>false</skipNotDeployed>
+								</configuration>
 							</execution>
 						</executions>
 					</plugin>
