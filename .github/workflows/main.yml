@@ -19,7 +19,7 @@ jobs:
         cache: 'maven'
         gpg-private-key: ${{ secrets.MAVEN_GPG_PRIVATE_KEY }}
         gpg-passphrase: MAVEN_GPG_PASSPHRASE # env variable for passphrase in sign and deploy
-        server-id: ossrh # Value of the distributionManagement/repository/id field of the pom.xml
+        server-id: central
         server-username: MAVEN_CENTRAL_USERNAME # env variable for username in deploy
         server-password: MAVEN_CENTRAL_TOKEN # env variable for token in deploy
     - name: Cache SonarCloud packages
@@ -32,8 +32,8 @@ jobs:
       run: mvn -P sign,build-extras -B deploy
       env:
         MAVEN_GPG_PASSPHRASE: ${{ secrets.MAVEN_GPG_PASSPHRASE }}
-        MAVEN_CENTRAL_USERNAME: ${{ secrets.MAVEN_CENTRAL_USERNAME }} # see https://github.com/chhh/sonatype-ossrh-parent/blob/master/publishing-to-maven-central.md#configuring-maven-to-know-the-credentials-for-sonatype-servers
-        MAVEN_CENTRAL_TOKEN: ${{ secrets.MAVEN_CENTRAL_TOKEN }} # see https://github.com/chhh/sonatype-ossrh-parent/blob/master/publishing-to-maven-central.md#configuring-maven-to-know-the-credentials-for-sonatype-servers
+        MAVEN_CENTRAL_USERNAME: ${{ secrets.MAVEN_CENTRAL_USERNAME }} # see https://central.sonatype.org/publish/generate-portal-token/
+        MAVEN_CENTRAL_TOKEN: ${{ secrets.MAVEN_CENTRAL_TOKEN }} # see https://central.sonatype.org/publish/generate-portal-token/
     - name: Sonar analysis
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
