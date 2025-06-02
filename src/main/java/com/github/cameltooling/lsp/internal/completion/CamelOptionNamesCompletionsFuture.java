@@ -181,7 +181,8 @@ public class CamelOptionNamesCompletionsFuture implements Function<CamelCatalog,
 				insertText += String.format("=%s", parameter.getDefaultValue());
 			}
 			completionItem.setInsertText(insertText);
-			completionItem.setDocumentation(parameter.getDescription());
+			completionItem.setDocumentation(getDocumentation(parameter));
+			completionItem.setDocumentation(getMarkupDocumentation(parameter));
 			completionItem.setDetail(parameter.getJavaType());
 			completionItem.setKind(kind);
 			configureSortTextToHaveApiBasedOptionsBefore(kind, completionItem, insertText);
@@ -190,9 +191,59 @@ public class CamelOptionNamesCompletionsFuture implements Function<CamelCatalog,
 			return completionItem;
 		};
 	}
+	
+	private MarkupContent getMarkupDocumentation(BaseOptionModel parameter) {
+		StringBuilder doc = new StringBuilder();
+		addMardownIfNotEmpty(doc,"**Group:** ", parameter.getGroup());
+		addMardownIfNotEmpty(doc,"**Required:** ", String.valueOf(parameter.isRequired()));
+		List<String> values = parameter.getEnums();
+		if (values != null) {
+			List<String> italic = values.stream().map(s -> "*" + s + "*").collect(Collectors.toList());
+			String value = String.join(", ", italic);
+			addMardownIfNotEmpty(doc,"**Possible values:** ", value);
+		}
+		String defaultValue = String.valueOf(parameter.getDefaultValue());
+		if (defaultValue != null && !defaultValue.isEmpty() && !"null".equals(defaultValue)) {
+			addMardownIfNotEmpty(doc, "**Default value:** ", "*" + defaultValue + "*");
+		}
+		doc.append("<br>");
+		doc.append(parameter.getDescription());
+		return new MarkupContent(MarkupKind.MARKDOWN, doc.toString());
+	}
+
+	private String getDocumentation(BaseOptionModel parameter) {
+		StringBuilder doc = new StringBuilder();
+		addIfNotEmpty(doc,"Group: ", parameter.getGroup());
+		addIfNotEmpty(doc,"Required: ", String.valueOf(parameter.isRequired()));
+		List<String> values = parameter.getEnums();
+		if (values != null) {
+			String value = String.join(", ", values);
+			addIfNotEmpty(doc,"Possible values: ", value);
+		}
+		addIfNotEmpty(doc, "Default value: ", String.valueOf(parameter.getDefaultValue()));
+		doc.append('\n');
+		doc.append(parameter.getDescription());
+		return doc.toString();
+	}
+
+	private void addIfNotEmpty(StringBuilder description, String key, String value){
+		if (value != null && !value.isEmpty() && !"null".equals(value)) {
+			description.append(key);
+			description.append(value);
+			description.append('\n');
+		}
+	}
+	
+	private void addMardownIfNotEmpty(StringBuilder description, String key, String value){
+		if (value != null && !value.isEmpty() && !"null".equals(value)) {
+			description.append(key);
+			description.append(value);
+			description.append("<br>");
+		}
+	}
 
 	private void configureSortTextToHaveApiBasedOptionsBefore(CompletionItemKind kind, CompletionItem completionItem, String insertText) {
-		if(CompletionItemKind.Variable.equals(kind)) {
+		if (CompletionItemKind.Variable.equals(kind)) {
 			completionItem.setSortText("1-"+insertText);
 		}
 	}

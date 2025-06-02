@@ -49,7 +49,7 @@ class CamelComponentOptionsCompletionsTest extends AbstractCamelLanguageServerTe
     	CompletionItem completionItem = new CompletionItem("paramConsumerOnly");
     	completionItem.setInsertText("paramConsumerOnly=1000");
     	completionItem.setTextEdit(Either.forLeft(new TextEdit(new Range(new Position(0, 33), new Position(0, 33)), "paramConsumerOnly=1000")));
-    	completionItem.setDocumentation("Description of parameter consumer only");
+		completionItem.setDocumentation("Group: consumer\nRequired: false\nDefault value: 1000\n\nDescription of parameter consumer only");
     	completionItem.setDetail("long");
     	completionItem.setDeprecated(false);
     	completionItem.setKind(CompletionItemKind.Property);
@@ -61,7 +61,7 @@ class CamelComponentOptionsCompletionsTest extends AbstractCamelLanguageServerTe
     	CompletionItem completionItem = new CompletionItem("paramConsumerOnly");
     	completionItem.setInsertText("paramConsumerOnly=1000");
     	completionItem.setTextEdit(Either.forLeft(new TextEdit(new Range(new Position(0, 28), new Position(0, 28)), "paramConsumerOnly=1000")));
-    	completionItem.setDocumentation("Description of parameter consumer only");
+    	completionItem.setDocumentation("Group: consumer\nRequired: false\nDefault value: 1000\n\nDescription of parameter consumer only");
     	completionItem.setDetail("long");
     	completionItem.setDeprecated(false);
     	completionItem.setKind(CompletionItemKind.Property);
@@ -73,7 +73,7 @@ class CamelComponentOptionsCompletionsTest extends AbstractCamelLanguageServerTe
     	CompletionItem completionItem = new CompletionItem("paramConsumerAndProducer");
     	completionItem.setInsertText("paramConsumerAndProducer=1000");
     	completionItem.setTextEdit(Either.forLeft(new TextEdit(new Range(new Position(0, 33), new Position(0, 33)), "paramConsumerAndProducer=1000")));
-    	completionItem.setDocumentation("Description of parameter both consumer and producer");
+    	completionItem.setDocumentation("Required: false\nDefault value: 1000\n\nDescription of parameter both consumer and producer");
     	completionItem.setDetail("long");
     	completionItem.setDeprecated(false);
     	completionItem.setKind(CompletionItemKind.Property);
@@ -101,7 +101,7 @@ class CamelComponentOptionsCompletionsTest extends AbstractCamelLanguageServerTe
 		CompletionItem completionItem = new CompletionItem("paramConsumerAndProducer");
 		completionItem.setInsertText("paramConsumerAndProducer=1000");
     	completionItem.setTextEdit(Either.forLeft(new TextEdit(new Range(new Position(0, startCharacter), new Position(0, endCharacter)), "paramConsumerAndProducer=1000")));
-    	completionItem.setDocumentation("Description of parameter both consumer and producer");
+		completionItem.setDocumentation("Required: false\nDefault value: 1000\n\nDescription of parameter both consumer and producer");
     	completionItem.setDetail("long");
     	completionItem.setKind(CompletionItemKind.Property);
     	completionItem.setDeprecated(false);
