@@ -169,7 +169,7 @@ class CamelLanguageServerTest extends AbstractCamelLanguageServerTest {
 				CamelLanguageServer cls = initializeLanguageServer(fis, ".yaml");
 				CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = getCompletionFor(cls, new Position(12, 47));
 				CompletionItem expectedanyOrderAttributeCompletionItem = new CompletionItem("anyOrder");
-				expectedanyOrderAttributeCompletionItem.setDocumentation("Whether the expected messages should arrive in the same order or can be in any order.");
+				expectedanyOrderAttributeCompletionItem.setDocumentation("Group: producer\nRequired: false\nDefault value: false\n\nWhether the expected messages should arrive in the same order or can be in any order.");
 				expectedanyOrderAttributeCompletionItem.setDeprecated(false);
 				expectedanyOrderAttributeCompletionItem.setDetail("boolean");
 				expectedanyOrderAttributeCompletionItem.setInsertText("anyOrder=false");
@@ -187,7 +187,7 @@ class CamelLanguageServerTest extends AbstractCamelLanguageServerTest {
 				CamelLanguageServer cls = initializeLanguageServer(fis, ".yaml");
 				CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = getCompletionFor(cls, new Position(12, 46));
 				CompletionItem expectedanyOrderAttributeCompletionItem = new CompletionItem("anyOrder");
-				expectedanyOrderAttributeCompletionItem.setDocumentation("Whether the expected messages should arrive in the same order or can be in any order.");
+				expectedanyOrderAttributeCompletionItem.setDocumentation("Group: producer\nRequired: false\nDefault value: false\n\nWhether the expected messages should arrive in the same order or can be in any order.");
 				expectedanyOrderAttributeCompletionItem.setDeprecated(false);
 				expectedanyOrderAttributeCompletionItem.setDetail("boolean");
 				expectedanyOrderAttributeCompletionItem.setInsertText("anyOrder=false");
@@ -205,7 +205,7 @@ class CamelLanguageServerTest extends AbstractCamelLanguageServerTest {
 				CamelLanguageServer cls = initializeLanguageServer(fis, ".yaml");
 				CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = getCompletionFor(cls, new Position(12, 47));
 				CompletionItem expectedanyOrderAttributeCompletionItem = new CompletionItem("anyOrder");
-				expectedanyOrderAttributeCompletionItem.setDocumentation("Whether the expected messages should arrive in the same order or can be in any order.");
+				expectedanyOrderAttributeCompletionItem.setDocumentation("Group: producer\nRequired: false\nDefault value: false\n\nWhether the expected messages should arrive in the same order or can be in any order.");
 				expectedanyOrderAttributeCompletionItem.setDeprecated(false);
 				expectedanyOrderAttributeCompletionItem.setDetail("boolean");
 				expectedanyOrderAttributeCompletionItem.setInsertText("anyOrder=false");
@@ -223,7 +223,7 @@ class CamelLanguageServerTest extends AbstractCamelLanguageServerTest {
 				CamelLanguageServer cls = initializeLanguageServer(fis, ".yaml");
 				CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = getCompletionFor(cls, new Position(12, 45));
 				CompletionItem expectedanyOrderAttributeCompletionItem = new CompletionItem("anyOrder");
-				expectedanyOrderAttributeCompletionItem.setDocumentation("Whether the expected messages should arrive in the same order or can be in any order.");
+				expectedanyOrderAttributeCompletionItem.setDocumentation("Group: producer\nRequired: false\nDefault value: false\n\nWhether the expected messages should arrive in the same order or can be in any order.");
 				expectedanyOrderAttributeCompletionItem.setDeprecated(false);
 				expectedanyOrderAttributeCompletionItem.setDetail("boolean");
 				expectedanyOrderAttributeCompletionItem.setInsertText("anyOrder=false");
@@ -241,7 +241,7 @@ class CamelLanguageServerTest extends AbstractCamelLanguageServerTest {
 				CamelLanguageServer cls = initializeLanguageServer(fis, ".yaml");
 				CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = getCompletionFor(cls, new Position(12, 45));
 				CompletionItem expectedanyOrderAttributeCompletionItem = new CompletionItem("anyOrder");
-				expectedanyOrderAttributeCompletionItem.setDocumentation("Whether the expected messages should arrive in the same order or can be in any order.");
+				expectedanyOrderAttributeCompletionItem.setDocumentation("Group: producer\nRequired: false\nDefault value: false\n\nWhether the expected messages should arrive in the same order or can be in any order.");
 				expectedanyOrderAttributeCompletionItem.setDeprecated(false);
 				expectedanyOrderAttributeCompletionItem.setDetail("boolean");
 				expectedanyOrderAttributeCompletionItem.setInsertText("anyOrder=false");
@@ -259,7 +259,7 @@ class CamelLanguageServerTest extends AbstractCamelLanguageServerTest {
 				CamelLanguageServer cls = initializeLanguageServer(fis, ".yaml");
 				CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = getCompletionFor(cls, new Position(12, 50));
 				CompletionItem expectedanyOrderAttributeCompletionItem = new CompletionItem("anyOrder");
-				expectedanyOrderAttributeCompletionItem.setDocumentation("Whether the expected messages should arrive in the same order or can be in any order.");
+				expectedanyOrderAttributeCompletionItem.setDocumentation("Group: producer\nRequired: false\nDefault value: false\n\nWhether the expected messages should arrive in the same order or can be in any order.");
 				expectedanyOrderAttributeCompletionItem.setDeprecated(false);
 				expectedanyOrderAttributeCompletionItem.setDetail("boolean");
 				expectedanyOrderAttributeCompletionItem.setInsertText("anyOrder=false");
