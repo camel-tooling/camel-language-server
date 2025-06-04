@@ -18,7 +18,6 @@ package com.github.cameltooling.lsp.internal.catalog.runtimeprovider;
 
 import org.apache.camel.catalog.DefaultRuntimeProvider;
 import org.apache.camel.catalog.RuntimeProvider;
-import org.apache.camel.catalog.karaf.KarafRuntimeProvider;
 import org.apache.camel.catalog.quarkus.QuarkusRuntimeProvider;
 import org.apache.camel.springboot.catalog.SpringBootRuntimeProvider;
 import org.slf4j.Logger;
@@ -26,7 +25,6 @@ import org.slf4j.LoggerFactory;
 
 public enum CamelRuntimeProvider {
 	DEFAULT,
-	KARAF,
 	SPRINGBOOT,
 	QUARKUS;
 	
@@ -41,8 +39,6 @@ public enum CamelRuntimeProvider {
 				return new SpringBootRuntimeProvider();
 			case QUARKUS:
 				return new QuarkusRuntimeProvider();
-			case KARAF:
-				return new KarafRuntimeProvider();
 			default:
 				LOGGER.warn("Unsupported Runtime Provider: {}", runtimeProvider);
 				return null;

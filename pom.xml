@@ -266,11 +266,6 @@
 			<version>${camel.kamelet.catalog.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>org.apache.camel.karaf</groupId>
-			<artifactId>camel-catalog-provider-karaf</artifactId>
-			<version>3.22.4</version>
-		</dependency>
-		<dependency>
 			<groupId>org.apache.camel.springboot</groupId>
 			<artifactId>camel-catalog-provider-springboot</artifactId>
 			<version>${camel.version}</version>

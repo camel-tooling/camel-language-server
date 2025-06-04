@@ -27,7 +27,6 @@ import java.util.concurrent.ExecutionException;
 
 import org.apache.camel.catalog.DefaultRuntimeProvider;
 import org.apache.camel.catalog.RuntimeProvider;
-import org.apache.camel.catalog.karaf.KarafRuntimeProvider;
 import org.apache.camel.catalog.quarkus.QuarkusRuntimeProvider;
 import org.apache.camel.springboot.catalog.SpringBootRuntimeProvider;
 import org.eclipse.lsp4j.CompletionItem;
@@ -61,11 +60,6 @@ class CamelCatalogRuntimeProviderTest extends AbstractCamelLanguageServerTest {
 	@Test
 	void testSpringBootValueSpecifiedReturnsSpringBootRuntimeProvider() throws Exception {
 		testRuntimeProviderWithProvidedValue(CamelRuntimeProvider.SPRINGBOOT.name(), SpringBootRuntimeProvider.class);
-	}
-	
-	@Test
-	void testKarafValueSpecifiedReturnsKarafRuntimeProvider() throws Exception {
-		testRuntimeProviderWithProvidedValue(CamelRuntimeProvider.KARAF.name(), KarafRuntimeProvider.class);
 	}
 	
 	@Test
