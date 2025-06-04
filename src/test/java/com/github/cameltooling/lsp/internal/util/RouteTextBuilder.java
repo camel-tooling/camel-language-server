@@ -21,6 +21,7 @@ public class RouteTextBuilder {
 	public static final String XML_PREFIX_FROM = "<from uri=\"";
 	private static final String XML_SUFFIX_FROM_SPRING = "\" xmlns=\"http://camel.apache.org/schema/spring\"/>\n";
 	private static final String XML_SUFFIX_FROM_BLUEPRINT = "\" xmlns=\"http://camel.apache.org/schema/blueprint\"/>\n";
+	private static final String XML_SUFFIX_FROM_XMLIO = "\" xmlns=\"http://camel.apache.org/schema/xml-io\"/>\n";
 	
 	/**
 	 * @param camelUri
@@ -36,6 +37,14 @@ public class RouteTextBuilder {
 	 */
 	public static String createXMLBlueprintRoute(String camelUri) {
 		return XML_PREFIX_FROM + camelUri + XML_SUFFIX_FROM_BLUEPRINT;
+	}
+	
+	/**
+	 * @param camelUri
+	 * @return a single line xml route with a from having camelUri as uri and with XML IO namespace
+	 */
+	public static String createXMLIORoute(String camelUri) {
+		return XML_PREFIX_FROM + camelUri + XML_SUFFIX_FROM_XMLIO;
 	}
 
 }

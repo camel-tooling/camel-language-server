@@ -73,6 +73,15 @@ class CamelLanguageServerTest extends AbstractCamelLanguageServerTest {
 	}
 	
 	@Test
+	void testProvideCompletionForCamelXMLIONamespace() throws Exception {
+		CamelLanguageServer camelLanguageServer = initializeLanguageServer(RouteTextBuilder.createXMLIORoute(""));
+		
+		CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = getCompletionFor(camelLanguageServer, new Position(0, 11));
+		
+		assertThat(completions.get().getLeft()).contains(createExpectedTimerCompletionItem(0, 11, 0, 11));
+	}
+	
+	@Test
 	void testProvideCompletionForJava() throws Exception {
 		CamelLanguageServer camelLanguageServer = initializeLanguageServer(
 				"//camel file\n"+
