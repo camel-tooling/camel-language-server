@@ -20,10 +20,12 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.lsp4j.ClientCapabilities;
 import org.eclipse.lsp4j.DidChangeConfigurationParams;
 import org.eclipse.lsp4j.InitializeParams;
 
 import com.github.cameltooling.lsp.internal.CamelTextDocumentService;
+import org.eclipse.lsp4j.MarkupKind;
 
 public class SettingsManager {
 
@@ -35,6 +37,7 @@ public class SettingsManager {
 	
 	private CamelTextDocumentService textDocumentService;
 	private String kafkaConnectionUrl;
+	private boolean mardownSupport;
 
 	public SettingsManager(CamelTextDocumentService textDocumentService) {
 		this.textDocumentService = textDocumentService;
@@ -42,6 +45,10 @@ public class SettingsManager {
 
 	public void apply(InitializeParams params) {
 		applySettings(params.getInitializationOptions());
+		ClientCapabilities capabilities = params.getCapabilities();
+		if (capabilities != null && capabilities.getTextDocument().getCompletion().getCompletionItem().getDocumentationFormat().contains(MarkupKind.MARKDOWN)) {
+			this.mardownSupport = true;
+		}
 	}
 	
 	public void apply(DidChangeConfigurationParams params) {
@@ -75,5 +82,9 @@ public class SettingsManager {
 
 	public String getKafkaConnectionUrl() {
 		return kafkaConnectionUrl;
+	}
+
+	public boolean isMardownSupport() {
+		return mardownSupport;
 	}
 }

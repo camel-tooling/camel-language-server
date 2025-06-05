@@ -62,7 +62,8 @@ public class OptionParamKeyURIInstance extends CamelUriElementInstance {
 					getFilter(positionInCamelUri),
 					positionInCamelUri,
 					getAlreadyDefinedUriOptions(),
-					kameletsCatalogManager));
+					kameletsCatalogManager,
+					settingsManager.isMardownSupport()));
 		} else {
 			return CompletableFuture.completedFuture(Collections.emptyList());
 		}

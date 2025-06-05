@@ -47,9 +47,9 @@ import com.github.cameltooling.lsp.internal.instancemodel.PathParamURIInstance;
 import io.fabric8.kubernetes.api.model.AnyType;
 
 
-
 public class CamelOptionNamesCompletionsFuture implements Function<CamelCatalog, List<CompletionItem>>  {
 
+	private final boolean markdown;
 	private CamelUriElementInstance uriElement;
 	private String camelComponentName;
 	private boolean isProducer;
@@ -58,7 +58,7 @@ public class CamelOptionNamesCompletionsFuture implements Function<CamelCatalog,
 	private Set<OptionParamURIInstance> alreadyDefinedOptions;
 	private KameletsCatalogManager kameletsCatalogManager;
 
-	public CamelOptionNamesCompletionsFuture(CamelUriElementInstance uriElement, String camelComponentName, boolean isProducer, String filterText, int positionInCamelURI, Set<OptionParamURIInstance> alreadyDefinedOptions, KameletsCatalogManager kameletsCatalogManager) {
+	public CamelOptionNamesCompletionsFuture(CamelUriElementInstance uriElement, String camelComponentName, boolean isProducer, String filterText, int positionInCamelURI, Set<OptionParamURIInstance> alreadyDefinedOptions, KameletsCatalogManager kameletsCatalogManager, boolean markdown) {
 		this.uriElement = uriElement;
 		this.camelComponentName = camelComponentName;
 		this.isProducer = isProducer;
@@ -66,6 +66,7 @@ public class CamelOptionNamesCompletionsFuture implements Function<CamelCatalog,
 		this.positionInCamelURI = positionInCamelURI;
 		this.alreadyDefinedOptions = alreadyDefinedOptions;
 		this.kameletsCatalogManager = kameletsCatalogManager;
+		this.markdown = markdown;
 	}
 
 	@Override
@@ -181,8 +182,11 @@ public class CamelOptionNamesCompletionsFuture implements Function<CamelCatalog,
 				insertText += String.format("=%s", parameter.getDefaultValue());
 			}
 			completionItem.setInsertText(insertText);
-			completionItem.setDocumentation(getDocumentation(parameter));
-			completionItem.setDocumentation(getMarkupDocumentation(parameter));
+			if (markdown) {
+				completionItem.setDocumentation(getMarkupDocumentation(parameter));
+			} else {
+				completionItem.setDocumentation(getDocumentation(parameter));
+			}
 			completionItem.setDetail(parameter.getJavaType());
 			completionItem.setKind(kind);
 			configureSortTextToHaveApiBasedOptionsBefore(kind, completionItem, insertText);
@@ -194,17 +198,17 @@ public class CamelOptionNamesCompletionsFuture implements Function<CamelCatalog,
 	
 	private MarkupContent getMarkupDocumentation(BaseOptionModel parameter) {
 		StringBuilder doc = new StringBuilder();
-		addMardownIfNotEmpty(doc,"**Group:** ", parameter.getGroup());
-		addMardownIfNotEmpty(doc,"**Required:** ", String.valueOf(parameter.isRequired()));
+		addMarkdownIfNotEmpty(doc,"**Group:** ", parameter.getGroup());
+		addMarkdownIfNotEmpty(doc,"**Required:** ", String.valueOf(parameter.isRequired()));
 		List<String> values = parameter.getEnums();
 		if (values != null) {
 			List<String> italic = values.stream().map(s -> "*" + s + "*").collect(Collectors.toList());
 			String value = String.join(", ", italic);
-			addMardownIfNotEmpty(doc,"**Possible values:** ", value);
+			addMarkdownIfNotEmpty(doc,"**Possible values:** ", value);
 		}
 		String defaultValue = String.valueOf(parameter.getDefaultValue());
 		if (defaultValue != null && !defaultValue.isEmpty() && !"null".equals(defaultValue)) {
-			addMardownIfNotEmpty(doc, "**Default value:** ", "*" + defaultValue + "*");
+			addMarkdownIfNotEmpty(doc, "**Default value:** ", "*" + defaultValue + "*");
 		}
 		doc.append("<br>");
 		doc.append(parameter.getDescription());
@@ -234,7 +238,7 @@ public class CamelOptionNamesCompletionsFuture implements Function<CamelCatalog,
 		}
 	}
 	
-	private void addMardownIfNotEmpty(StringBuilder description, String key, String value){
+	private void addMarkdownIfNotEmpty(StringBuilder description, String key, String value){
 		if (value != null && !value.isEmpty() && !"null".equals(value)) {
 			description.append(key);
 			description.append(value);
