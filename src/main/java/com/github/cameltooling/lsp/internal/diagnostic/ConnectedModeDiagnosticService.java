@@ -53,13 +53,6 @@ public class ConnectedModeDiagnosticService extends DiagnosticService {
 						DiagnosticSeverity.Hint,
 						APACHE_CAMEL_VALIDATION,
 						null));
-			} else if (endpointUri.startsWith(ComponentNameConstants.COMPONENT_NAME_KAFKA)) {
-				diagnostics.add(new Diagnostic(
-						computeRange(camelText, documentItem, camelEndpointDetails),
-						"If a local kafka instance is running, the completion will be dynamically augmented.",
-						DiagnosticSeverity.Hint,
-						APACHE_CAMEL_VALIDATION,
-						null));
 			}
 		}
 		return diagnostics;

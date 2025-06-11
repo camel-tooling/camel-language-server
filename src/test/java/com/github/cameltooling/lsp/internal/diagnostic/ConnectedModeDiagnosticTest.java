@@ -48,19 +48,4 @@ public class ConnectedModeDiagnosticTest extends AbstractDiagnosticTest {
 		Range range = lastPublishedDiagnostics.getDiagnostics().get(0).getRange();
 		checkRange(range, 12, 14, 12, 58);
 	}
-	
-	@Test
-	void testKafkaHintOnXml() throws Exception {
-		testDiagnostic("camel-with-kafka-endpoint", 1, ".xml");
-		Range range = lastPublishedDiagnostics.getDiagnostics().get(0).getRange();
-		checkRange(range, 8, 16, 8, 28);
-	}
-	
-	@Test
-	void testKafkaHintOnJava() throws Exception {
-		testDiagnostic("camel-with-kafka-endpoint", 1, ".java");
-		Range range = lastPublishedDiagnostics.getDiagnostics().get(0).getRange();
-		checkRange(range, 12, 14, 12, 26);
-	}
-	
 }

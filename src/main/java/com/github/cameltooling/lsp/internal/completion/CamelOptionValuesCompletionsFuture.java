@@ -25,14 +25,9 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import io.fabric8.kubernetes.api.model.ConfigMap;
-import io.fabric8.kubernetes.api.model.ConfigMapList;
 import io.fabric8.kubernetes.client.NamespacedKubernetesClient;
-import io.fabric8.kubernetes.client.dsl.MixedOperation;
-import io.fabric8.kubernetes.client.dsl.Resource;
 import org.apache.camel.catalog.CamelCatalog;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.kafka.common.errors.ApiException;
 import org.eclipse.lsp4j.CompletionItem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -80,7 +75,7 @@ public class CamelOptionValuesCompletionsFuture implements Function<CamelCatalog
 						CompletionResolverUtils.applyTextEditToCompletionItem(optionParamValueURIInstance, completionItem);
 						return completionItem;
 					}).collect(Collectors.toList());
-				} catch (ApiException e) {
+				} catch (Exception e) {
 					LOGGER.error("Error while trying to provide completion for Kubernetes connected mode", e);
 				}
 			} else if ("lang".equalsIgnoreCase(endpointOptionModel.getName())
