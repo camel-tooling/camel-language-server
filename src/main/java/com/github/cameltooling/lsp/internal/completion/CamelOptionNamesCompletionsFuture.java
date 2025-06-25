@@ -210,7 +210,7 @@ public class CamelOptionNamesCompletionsFuture implements Function<CamelCatalog,
 		if (defaultValue != null && !defaultValue.isEmpty() && !"null".equals(defaultValue)) {
 			addMarkdownIfNotEmpty(doc, "**Default value:** ", "*" + defaultValue + "*");
 		}
-		doc.append("<br>");
+		doc.append("\\\n");
 		doc.append(parameter.getDescription());
 		return new MarkupContent(MarkupKind.MARKDOWN, doc.toString());
 	}
@@ -242,7 +242,7 @@ public class CamelOptionNamesCompletionsFuture implements Function<CamelCatalog,
 		if (value != null && !value.isEmpty() && !"null".equals(value)) {
 			description.append(key);
 			description.append(value);
-			description.append("<br>");
+			description.append("\\\n");
 		}
 	}
 
