@@ -150,6 +150,8 @@ public final class ModelHelper {
 				option.setReader(methodDescriptor);
 			} else if("updater".equals(methodName)) {
 				option.setUpdater(methodDescriptor);
+			} else {
+				option.setPropertyMethod(methodDescriptor);
 			}
 		}
 		return option;
