@@ -24,6 +24,7 @@ public class ApiPropertyOptionModel {
 	private ApiPropertyMethodOptionModel fetcher;
 	private ApiPropertyMethodOptionModel reader;
 	private ApiPropertyMethodOptionModel updater;
+	private ApiPropertyMethodOptionModel propertyMethod;
 	
 	public String getName() {
 		return name;
@@ -61,5 +62,10 @@ public class ApiPropertyOptionModel {
 	public void setUpdater(ApiPropertyMethodOptionModel updater) {
 		this.updater = updater;
 	}
-	
+	public void setPropertyMethod(ApiPropertyMethodOptionModel methodDescriptor) {
+		this.propertyMethod = methodDescriptor;
+	}
+	public ApiPropertyMethodOptionModel getPropertyMethod() {
+		return propertyMethod;
+	}
 }

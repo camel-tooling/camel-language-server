@@ -178,6 +178,17 @@ public class CamelCompletionForApisTest extends AbstractCamelLanguageServerTest 
 	}
 	
 	@Test
+	void testGoogleSheetsSpreadsheetId() throws Exception {
+		// it allows to test when there is no alias defined
+		String camelUri = "google-sheets:spreadsheets/get?spread";
+		String text = RouteTextBuilder.createXMLSpringRoute(camelUri);
+		CamelLanguageServer languageServer = initializeLanguageServer(text, ".xml");
+		List<CompletionItem> completions = getCompletionFor(languageServer, new Position(0, RouteTextBuilder.XML_PREFIX_FROM.length() + camelUri.length())).get().getLeft();
+		assertThat(completions).hasSize(1);
+		assertThat(completions.get(0).getLabel()).isEqualTo("spreadsheetId");
+	}
+	
+	@Test
 	void testUpdater() throws Exception {
 		String camelUri = "aComponentWithApis:account/update?";
 		String text = RouteTextBuilder.createXMLSpringRoute(camelUri);
