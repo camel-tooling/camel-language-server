@@ -123,6 +123,8 @@ public abstract class CamelUriElementInstance implements ILineRangeDefineable{
 				return apiProperty.getReader();
 			} else if(ApiOptionModel.API_METHOD_KIND_UPDATER.equals(methodKind)) {
 				return apiProperty.getUpdater();
+			} else {
+				return apiProperty.getPropertyMethod();
 			}
 		}
 		return null;
