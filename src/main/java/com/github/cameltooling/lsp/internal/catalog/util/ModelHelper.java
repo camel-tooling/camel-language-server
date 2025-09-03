@@ -151,7 +151,7 @@ public final class ModelHelper {
 			} else if("updater".equals(methodName)) {
 				option.setUpdater(methodDescriptor);
 			} else {
-				option.setPropertyMethod(methodDescriptor);
+				option.addPropertyMethod(methodName, methodDescriptor);
 			}
 		}
 		return option;
