@@ -1,0 +1,24 @@
+name: Add New Issue to GitHub Project
+
+on:
+  issues:
+    types: [opened] # Only trigger when an issue is newly opened.
+
+jobs:
+  add-issue-to-project:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      issues: write
+      repository-projects: write
+
+    steps:
+      - name: Checkout repository code
+        uses: actions/checkout@v4
+
+      - name: Add newly opened issue to GitHub Project
+        uses: actions/add-to-project@v0.6.0
+        with:
+          project-url: ${{ secrets.PROJECT_URL }}
+          github-token: ${{ secrets.PROJECTS_TOKEN }}
