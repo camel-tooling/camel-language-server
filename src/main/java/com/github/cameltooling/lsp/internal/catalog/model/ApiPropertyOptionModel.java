@@ -16,6 +16,9 @@
  */
 package com.github.cameltooling.lsp.internal.catalog.model;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class ApiPropertyOptionModel {
 
 	private String name;
@@ -24,7 +27,7 @@ public class ApiPropertyOptionModel {
 	private ApiPropertyMethodOptionModel fetcher;
 	private ApiPropertyMethodOptionModel reader;
 	private ApiPropertyMethodOptionModel updater;
-	private ApiPropertyMethodOptionModel propertyMethod;
+	private Map<String, ApiPropertyMethodOptionModel> propertyMethods = new HashMap<>();
 	
 	public String getName() {
 		return name;
@@ -62,10 +65,10 @@ public class ApiPropertyOptionModel {
 	public void setUpdater(ApiPropertyMethodOptionModel updater) {
 		this.updater = updater;
 	}
-	public void setPropertyMethod(ApiPropertyMethodOptionModel methodDescriptor) {
-		this.propertyMethod = methodDescriptor;
+	public ApiPropertyMethodOptionModel getPropertyMethod(String propertyMethodName) {
+		return propertyMethods.get(propertyMethodName);
 	}
-	public ApiPropertyMethodOptionModel getPropertyMethod() {
-		return propertyMethod;
+	public void addPropertyMethod(String propertyMethodName, ApiPropertyMethodOptionModel methodDescriptor) {
+		propertyMethods.put(propertyMethodName, methodDescriptor);
 	}
 }
