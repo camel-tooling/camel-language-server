@@ -15,7 +15,7 @@ jobs:
 
     steps:
       - name: Checkout repository code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Add newly opened issue to GitHub Project
         uses: actions/add-to-project@v0.6.0
