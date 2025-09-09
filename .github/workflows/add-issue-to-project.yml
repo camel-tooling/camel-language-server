@@ -18,7 +18,7 @@ jobs:
         uses: actions/checkout@v5
 
       - name: Add newly opened issue to GitHub Project
-        uses: actions/add-to-project@v0.6.0
+        uses: actions/add-to-project@v1.0.2
         with:
           project-url: ${{ secrets.PROJECT_URL }}
           github-token: ${{ secrets.PROJECTS_TOKEN }}
