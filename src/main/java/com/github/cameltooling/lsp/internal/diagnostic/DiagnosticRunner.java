@@ -79,8 +79,12 @@ public class DiagnosticRunner {
 			diagnostics.addAll(configurationPropertiesDiagnosticService.converToLSPDiagnostics(configurationPropertiesErrors));
 			diagnostics.addAll(camelKModelineDiagnosticService.compute(camelText, documentItem));
 			diagnostics.addAll(connectedModeDiagnosticService.compute(camelText, documentItem));
-			camelLanguageServer.getClient().publishDiagnostics(new PublishDiagnosticsParams(uri, diagnostics));
-			lastTriggeredDiagnostic.remove(uri);
+			if(!Thread.currentThread().isInterrupted()) {
+				camelLanguageServer.getClient().publishDiagnostics(new PublishDiagnosticsParams(uri, diagnostics));
+				lastTriggeredDiagnostic.remove(uri);
+			} else {
+				System.out.println("### Thread was interrupted (i.e. Future for diagnostic cancelled)");
+			}
 		});
 		lastTriggeredDiagnostic.put(uri, lastTriggeredComputation);
 	}
@@ -97,6 +101,7 @@ public class DiagnosticRunner {
 		CompletableFuture<Void> previousComputation = lastTriggeredDiagnostic.get(uri);
 		if (previousComputation != null) {
 			previousComputation.cancel(true);
+			lastTriggeredDiagnostic.remove(uri);
 		}
 		camelLanguageServer.getClient().publishDiagnostics(new PublishDiagnosticsParams(uri, Collections.emptyList()));
 	}
