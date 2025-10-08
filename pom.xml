@@ -48,7 +48,7 @@
 		<junit.version>6.0.0</junit.version>
 		<assertj.version>3.27.6</assertj.version>
 		<jgit.version>7.3.0.202506031305-r</jgit.version>
-		<camel.version>4.14.1</camel.version>
+		<camel.version>4.15.0</camel.version>
 		<camel.kamelet.catalog.version>4.14.1</camel.kamelet.catalog.version>
 		<camel.quarkus.version>3.27.0</camel.quarkus.version>
 		<roaster.version>2.30.1.Final</roaster.version>
