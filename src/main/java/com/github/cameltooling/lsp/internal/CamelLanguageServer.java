@@ -6,7 +6,7 @@
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
  *
- *      https://www.apache.org/licenses/LICENSE-2.0
+ * https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -16,6 +16,7 @@
  */
 package com.github.cameltooling.lsp.internal;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.concurrent.CompletableFuture;
 
@@ -35,6 +36,7 @@ import org.eclipse.lsp4j.services.LanguageClient;
 import org.eclipse.lsp4j.services.LanguageClientAware;
 import org.eclipse.lsp4j.services.LanguageServer;
 import org.eclipse.lsp4j.services.NotebookDocumentService;
+import org.eclipse.lsp4j.services.TextDocumentService;
 import org.eclipse.lsp4j.services.WorkspaceService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,118 +46,180 @@ import com.github.cameltooling.lsp.internal.telemetry.TelemetryManager;
 
 /**
  * this is the actual server implementation
- * 
- * @author lhein
+ * * @author lhein
  */
-public class CamelLanguageServer extends AbstractLanguageServer implements LanguageServer, LanguageClientAware {
-	
-	public static final String LANGUAGE_ID = "LANGUAGE_ID_APACHE_CAMEL";
-	private static final Logger LOGGER = LoggerFactory.getLogger(CamelLanguageServer.class);
-	
-	private LanguageClient client;
-	private SettingsManager settingsManager;
-	private TelemetryManager telemetryManager;
-	
-	public CamelLanguageServer() {
-		CamelTextDocumentService textDocumentService = new CamelTextDocumentService(this);
-		setTextDocumentService(textDocumentService);
-		settingsManager = new SettingsManager(textDocumentService);
-		setWorkspaceService(new CamelWorkspaceService(getSettingsManager()));
-	}
+public class CamelLanguageServer implements LanguageServer, LanguageClientAware {
 
-	@Override
-	public void connect(LanguageClient client) {
-		this.client = client;
-		telemetryManager = new TelemetryManager(client);
-	}
-	
-	@Override
-	public void exit() {
-		super.stopServer();
-		System.exit(0);
-	}
-	
-	@Override
-	public CompletableFuture<InitializeResult> initialize(InitializeParams params) {
-		Integer processId = params.getProcessId();
-		if(processId != null) {
-			setParentProcessId(processId.longValue());
-		} else {
-			LOGGER.info("Missing Parent process ID!!");
-			setParentProcessId(0);
-		}
-		
-		getSettingsManager().apply(params);
-		
-		ServerCapabilities capabilities = createServerCapabilities();
-		InitializeResult result = new InitializeResult(capabilities);
-		return CompletableFuture.completedFuture(result);
-	}
-	
-	@Override
-	public void initialized(InitializedParams params) {
-		LanguageServer.super.initialized(params);
-		if(telemetryManager != null) {
-			telemetryManager.onInitialized();
-		}
-	}
+    public static final String LANGUAGE_ID = "LANGUAGE_ID_APACHE_CAMEL";
+    private static final Logger LOGGER = LoggerFactory.getLogger(CamelLanguageServer.class);
+    private static final String OS = System.getProperty("os.name").toLowerCase();
 
-	private ServerCapabilities createServerCapabilities() {
-		ServerCapabilities capabilities = new ServerCapabilities();
-		capabilities.setTextDocumentSync(TextDocumentSyncKind.Full);
-		capabilities.setCompletionProvider(new CompletionOptions(Boolean.TRUE, Arrays.asList(".","?","&", "\"", "=")));
-		capabilities.setHoverProvider(Boolean.TRUE);
-		capabilities.setDocumentSymbolProvider(new DocumentSymbolOptions("Camel"));
-		capabilities.setReferencesProvider(Boolean.TRUE);
-		capabilities.setDefinitionProvider(Boolean.TRUE);
-		capabilities.setCodeActionProvider(new CodeActionOptions(Arrays.asList(CodeActionKind.QuickFix)));
-		capabilities.setFoldingRangeProvider(Boolean.TRUE);
-		return capabilities;
-	}
+    private LanguageClient client;
+    private SettingsManager settingsManager;
+    private TelemetryManager telemetryManager;
+    private CamelTextDocumentService textDocumentService;
+    private WorkspaceService workspaceService;
 
-	@Override
-	public CompletableFuture<Object> shutdown() {
-		super.shutdownServer();
-		return CompletableFuture.completedFuture(new Object());
-	}
-	
-	@Override
-	public WorkspaceService getWorkspaceService() {
-		return super.getWorkspaceService();
-	}
-	
-	/**
-	 * Sends the given <code>show message notification</code> back to the client
-	 * as a notification
-	 * 
-	 * @param type
-	 *            the type of message
-	 * @param msg
-	 *            The message to send back to the client
-	 */
-	public void sendShowMessageNotification(final MessageType type, final String msg) {
-		getClient().showMessage(new MessageParams(type, msg));
-	}
+    private Thread runner;
+    private volatile boolean shutdown;
+    private long parentProcessId;
 
-	public LanguageClient getClient() {
-		return client;
-	}
+    private final class CamelServerRunnable implements Runnable {
+        @Override
+        public void run() {
+            LOGGER.info("Starting Camel Language Server...");
+            while (!shutdown && parentProcessStillRunning() && !Thread.currentThread().isInterrupted()) {
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    LOGGER.error(e.getMessage(), e);
+                    Thread.currentThread().interrupt();
+                }
+            }
+            if (!Thread.currentThread().isInterrupted()) {
+                LOGGER.info("Camel Language Server - Client vanished...");
+            }
+        }
+    }
 
-	public SettingsManager getSettingsManager() {
-		return settingsManager;
-	}
+    public CamelLanguageServer() {
+        this.textDocumentService = new CamelTextDocumentService(this);
+        this.settingsManager = new SettingsManager(textDocumentService);
+        this.workspaceService = new CamelWorkspaceService(settingsManager);
+    }
 
-	public TelemetryManager getTelemetryManager() {
-		return telemetryManager;
-	}
-	
-	@Override
-	public NotebookDocumentService getNotebookDocumentService() {
-		return null;
-	}
-	
-	@Override
-	public void setTrace(SetTraceParams params) {
-		// Empty implementation to avoid error in VS Code
-	}
+    public int startServer() {
+        runner = new Thread(new CamelServerRunnable(), "Camel Language Client Watcher");
+        runner.start();
+        return 0;
+    }
+
+    public void stopServer() {
+        LOGGER.info("Stopping language server");
+        if (runner != null) {
+            runner.interrupt();
+        } else {
+            LOGGER.info("Request to stop the server has been received but it wasn't started.");
+        }
+    }
+
+    protected boolean parentProcessStillRunning() {
+        if (parentProcessId == 0) {
+            LOGGER.info("Waiting for a client connection...");
+            return true;
+        }
+
+        String command;
+        if (OS.indexOf("win") != -1) {
+            command = "cmd /c \"tasklist /FI \"PID eq " + parentProcessId + "\" | findstr " + parentProcessId + "\"";
+        } else {
+            command = "ps -p " + parentProcessId;
+        }
+        try {
+            Process process = Runtime.getRuntime().exec(command);
+            int processResult = process.waitFor();
+            return processResult == 0;
+        } catch (IOException e) {
+            LOGGER.error(e.getMessage(), e);
+            return true;
+        } catch (InterruptedException e) {
+            LOGGER.error(e.getMessage(), e);
+            Thread.currentThread().interrupt();
+            return true;
+        }
+    }
+
+    @Override
+    public void connect(LanguageClient client) {
+        this.client = client;
+        telemetryManager = new TelemetryManager(client);
+    }
+
+    @Override
+    public void exit() {
+        stopServer();
+        System.exit(0);
+    }
+
+    @Override
+    public CompletableFuture<InitializeResult> initialize(InitializeParams params) {
+        Integer processId = params.getProcessId();
+        if(processId != null) {
+            this.parentProcessId = processId.longValue();
+            LOGGER.info("Setting client pid to {}", parentProcessId);
+        } else {
+            LOGGER.info("Missing Parent process ID!!");
+            this.parentProcessId = 0;
+        }
+
+        getSettingsManager().apply(params);
+
+        ServerCapabilities capabilities = createServerCapabilities();
+        InitializeResult result = new InitializeResult(capabilities);
+        return CompletableFuture.completedFuture(result);
+    }
+
+    @Override
+    public void initialized(InitializedParams params) {
+        LanguageServer.super.initialized(params);
+        if(telemetryManager != null) {
+            telemetryManager.onInitialized();
+        }
+    }
+
+    private ServerCapabilities createServerCapabilities() {
+        ServerCapabilities capabilities = new ServerCapabilities();
+        capabilities.setTextDocumentSync(TextDocumentSyncKind.Full);
+        capabilities.setCompletionProvider(new CompletionOptions(Boolean.TRUE, Arrays.asList(".","?","&", "\"", "=")));
+        capabilities.setHoverProvider(Boolean.TRUE);
+        capabilities.setDocumentSymbolProvider(new DocumentSymbolOptions("Camel"));
+        capabilities.setReferencesProvider(Boolean.TRUE);
+        capabilities.setDefinitionProvider(Boolean.TRUE);
+        capabilities.setCodeActionProvider(new CodeActionOptions(Arrays.asList(CodeActionKind.QuickFix)));
+        capabilities.setFoldingRangeProvider(Boolean.TRUE);
+        return capabilities;
+    }
+
+    @Override
+    public CompletableFuture<Object> shutdown() {
+        LOGGER.info("Shutting down language server");
+        shutdown = true;
+        return CompletableFuture.completedFuture(new Object());
+    }
+
+    @Override
+    public CamelTextDocumentService getTextDocumentService() {
+        return textDocumentService;
+    }
+
+    @Override
+    public WorkspaceService getWorkspaceService() {
+        return workspaceService;
+    }
+
+    public void sendShowMessageNotification(final MessageType type, final String msg) {
+        getClient().showMessage(new MessageParams(type, msg));
+    }
+
+    public LanguageClient getClient() {
+        return client;
+    }
+
+    public SettingsManager getSettingsManager() {
+        return settingsManager;
+    }
+
+    public TelemetryManager getTelemetryManager() {
+        return telemetryManager;
+    }
+
+    @Override
+    public NotebookDocumentService getNotebookDocumentService() {
+        return null;
+    }
+
+    @Override
+    public void setTrace(SetTraceParams params) {
+        // Empty implementation to avoid error in VS Code
+    }
 }
