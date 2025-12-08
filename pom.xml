@@ -54,7 +54,7 @@
 		<roaster.version>2.30.3.Final</roaster.version>
 		<awaitility.version>4.3.0</awaitility.version>
 		<tyrus.version>2.2.1</tyrus.version>
-		<commons-text.version>1.14.0</commons-text.version>
+		<commons-text.version>1.15.0</commons-text.version>
 		<kubernetes.client.version>7.4.0</kubernetes.client.version>
 	</properties>
 
