@@ -43,13 +43,22 @@ public class SettingsManager {
 		this.textDocumentService = textDocumentService;
 	}
 
-	public void apply(InitializeParams params) {
-		applySettings(params.getInitializationOptions());
-		ClientCapabilities capabilities = params.getCapabilities();
-		if (capabilities != null && capabilities.getTextDocument().getCompletion().getCompletionItem().getDocumentationFormat().contains(MarkupKind.MARKDOWN)) {
-			this.mardownSupport = true;
-		}
-	}
+    public void apply(InitializeParams params) {
+        applySettings(params.getInitializationOptions());
+        ClientCapabilities capabilities = params.getCapabilities();
+
+        if (capabilities != null && capabilities.getTextDocument() != null) {
+            var completion = capabilities.getTextDocument().getCompletion();
+
+            if (completion != null && completion.getCompletionItem() != null) {
+                List<String> formats = completion.getCompletionItem().getDocumentationFormat();
+
+                if (formats != null && formats.contains(MarkupKind.MARKDOWN)) {
+                    this.mardownSupport = true;
+                }
+            }
+        }
+    }
 	
 	public void apply(DidChangeConfigurationParams params) {
 		applySettings(params.getSettings());
