@@ -191,9 +191,13 @@ public class ParserXMLFileHelper extends ParserFileHelper {
 	}
 
 	@Override
-	public int getPositionInCamelURI(TextDocumentItem textDocumentItem, Position position) {
-		return position.getCharacter() - parserFileHelperUtil.getLine(textDocumentItem, position).indexOf(URI_PARAM) - 5;
-	}
+    public int getPositionInCamelURI(TextDocumentItem textDocumentItem, Position position) {
+        String line = parserFileHelperUtil.getLine(textDocumentItem, position);
+        int uriParamIndex = line.indexOf(URI_PARAM);
+        int uriParamAndQuoteLength = URI_PARAM.length() + 1;
+
+        return position.getCharacter() - uriParamIndex - uriParamAndQuoteLength;
+    }
 
 	public List<Node> getAllEndpoints(TextDocumentItem textDocumentItem) throws Exception {
 		if (hasElementFromCamelNamespace(textDocumentItem)) {
