@@ -6,7 +6,7 @@
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
  *
- *      https://www.apache.org/licenses/LICENSE-2.0
+ * https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -28,27 +28,26 @@ import com.github.cameltooling.lsp.internal.instancemodel.propertiesfile.CamelCo
 
 public class CamelComponentIdsCompletionsFuture implements Function<CamelCatalog, List<CompletionItem>> {
 
-	private String startFilter;
-	private CamelComponentNamePropertyInstance camelComponentNamePropertyFileInstance;
+    private String startFilter;
+    private CamelComponentNamePropertyInstance propertyInstance;
 
-	public CamelComponentIdsCompletionsFuture(CamelComponentNamePropertyInstance camelComponentNamePropertyFileInstance, String startFilter) {
-		this.camelComponentNamePropertyFileInstance = camelComponentNamePropertyFileInstance;
-		this.startFilter = startFilter;
-	}
+    public CamelComponentIdsCompletionsFuture(CamelComponentNamePropertyInstance propertyInstance, String startFilter) {
+        this.propertyInstance = propertyInstance;
+        this.startFilter = startFilter;
+    }
 
-	@Override
-	public List<CompletionItem> apply(CamelCatalog catalog) {
-		return catalog.findComponentNames().stream()
-			.map(componentName -> ModelHelper.generateComponentModel(catalog.componentJSonSchema(componentName), true))
-			.map(componentModel -> {
-				CompletionItem completionItem = new CompletionItem(componentModel.getScheme());
-				completionItem.setDocumentation(componentModel.getDescription());
-				CompletionResolverUtils.applyDeprecation(completionItem, componentModel.getDeprecated());
-				CompletionResolverUtils.applyTextEditToCompletionItem(camelComponentNamePropertyFileInstance, completionItem);
-				return completionItem;
-			})
-			.filter(FilterPredicateUtils.matchesCompletionFilter(startFilter))
-			.collect(Collectors.toList());
-	}
-
+    @Override
+    public List<CompletionItem> apply(CamelCatalog catalog) {
+        return catalog.findComponentNames().stream()
+                .map(componentName -> ModelHelper.generateComponentModel(catalog.componentJSonSchema(componentName), true))
+                .map(componentModel -> {
+                    CompletionItem completionItem = new CompletionItem(componentModel.getScheme());
+                    completionItem.setDocumentation(componentModel.getDescription());
+                    CompletionResolverUtils.applyDeprecation(completionItem, componentModel.getDeprecated());
+                    CompletionResolverUtils.applyTextEditToCompletionItem(propertyInstance, completionItem);
+                    return completionItem;
+                })
+                .filter(FilterPredicateUtils.matchesCompletionFilter(startFilter))
+                .collect(Collectors.toList());
+    }
 }
