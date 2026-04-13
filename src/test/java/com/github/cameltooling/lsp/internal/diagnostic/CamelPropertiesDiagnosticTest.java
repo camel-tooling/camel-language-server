@@ -32,7 +32,7 @@ class CamelPropertiesDiagnosticTest extends AbstractDiagnosticTest {
 		Diagnostic diagnostic = lastPublishedDiagnostics.getDiagnostics().get(0);
 		Range range1 = diagnostic.getRange();
 		checkRange(range1, 0, 22, 0, 38);
-		assertThat(diagnostic.getMessage()).isEqualTo("Unknown option");
+		assertThat(getDiagnosticMessage(diagnostic)).isEqualTo("Unknown option");
 	}
 	
 	@Test
@@ -61,7 +61,7 @@ class CamelPropertiesDiagnosticTest extends AbstractDiagnosticTest {
 	void testInvalidEnum() throws Exception {
 		testDiagnostic("camel-with-invalid-enum", 1);
 		Diagnostic diagnostic = lastPublishedDiagnostics.getDiagnostics().get(0);
-		assertThat(diagnostic.getMessage()).isNotNull();
+		assertThat(getDiagnosticMessage(diagnostic)).isNotNull();
 	}
 	
 	private void testDiagnostic(String fileUnderTest, int expectedNumberOfError) throws FileNotFoundException {

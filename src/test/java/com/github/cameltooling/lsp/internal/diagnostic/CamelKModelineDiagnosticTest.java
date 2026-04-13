@@ -51,11 +51,11 @@ class CamelKModelineDiagnosticTest extends AbstractDiagnosticTest {
 		Diagnostic diagnostic1 = diagnostics.get(0);
 		Range range1 = diagnostic1.getRange();
 		checkRange(range1, lineNumber, 18, lineNumber, 38);
-		assertThat(diagnostic1.getMessage()).isEqualTo("More than one trait defines the same property: quarkus.enabled");
+		assertThat(getDiagnosticMessage(diagnostic1)).isEqualTo("More than one trait defines the same property: quarkus.enabled");
 		Diagnostic diagnostic2 = diagnostics.get(1);
 		Range range2 = diagnostic2.getRange();
 		checkRange(range2, lineNumber, 45, lineNumber, 66);
-		assertThat(diagnostic2.getMessage()).isEqualTo("More than one trait defines the same property: quarkus.enabled");
+		assertThat(getDiagnosticMessage(diagnostic2)).isEqualTo("More than one trait defines the same property: quarkus.enabled");
 	}
 	
 }

@@ -8,5 +8,6 @@ target
 bin
 .metadata
 .idea
+.codex
 libs/
 

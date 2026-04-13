@@ -66,9 +66,19 @@ public abstract class AbstractDiagnosticTest extends AbstractCamelLanguageServer
 		return await().pollDelay(Duration.ZERO).pollInterval(AWAIT_POLL_INTERVAL).timeout(AWAIT_TIMEOUT);
 	}
 
+	protected String getDiagnosticMessage(Diagnostic diagnostic) {
+		if (diagnostic.getMessage() == null) {
+			return null;
+		}
+		if (diagnostic.getMessage().isLeft()) {
+			return diagnostic.getMessage().getLeft();
+		}
+		return diagnostic.getMessage().getRight() != null ? diagnostic.getMessage().getRight().getValue() : null;
+	}
+
 	private void checkHasNonEmptyMessage(List<Diagnostic> diagnostics) {
 		for (Diagnostic diagnostic : diagnostics) {
-			assertThat(diagnostic.getMessage()).isNotEmpty();
+			assertThat(getDiagnosticMessage(diagnostic)).isNotEmpty();
 		}
 		
 	}

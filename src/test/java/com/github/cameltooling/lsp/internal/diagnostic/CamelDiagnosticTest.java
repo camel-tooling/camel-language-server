@@ -81,7 +81,7 @@ class CamelDiagnosticTest extends AbstractDiagnosticTest {
 	void testInvalidEnum() throws Exception {
 		testDiagnostic("camel-with-invalid-enum", 1, ".xml");
 		Diagnostic diagnostic = lastPublishedDiagnostics.getDiagnostics().get(0);
-		assertThat(diagnostic.getMessage()).isNotNull();
+		assertThat(getDiagnosticMessage(diagnostic)).isNotNull();
 		Range range = diagnostic.getRange();
 		checkRange(range, 9, 49, 9, 54);
 	}
@@ -90,7 +90,7 @@ class CamelDiagnosticTest extends AbstractDiagnosticTest {
 	void testInvalidEnumWithSameStringOnSameLine() throws Exception {
 		testDiagnostic("camel-with-invalid-enum-with-same-string-in-camel-uri", 1, ".xml");
 		Diagnostic diagnostic = lastPublishedDiagnostics.getDiagnostics().get(0);
-		assertThat(diagnostic.getMessage()).isNotNull();
+		assertThat(getDiagnosticMessage(diagnostic)).isNotNull();
 		Range range = diagnostic.getRange();
 		checkRange(range, 9, 56, 9, 72);
 	}
@@ -99,12 +99,12 @@ class CamelDiagnosticTest extends AbstractDiagnosticTest {
 	void testMissingMethodNameForApiBasedComponent() throws Exception {
 		testDiagnostic("camel-with-missing-methodname", 2, ".xml");
 		Diagnostic diagnostic = lastPublishedDiagnostics.getDiagnostics().get(0);
-		assertThat(diagnostic.getMessage()).isNotNull();
+		assertThat(getDiagnosticMessage(diagnostic)).isNotNull();
 		Range range = diagnostic.getRange();
 		checkRange(range, 9, 17, 9, 32);
 		
 		Diagnostic diagnostic2 = lastPublishedDiagnostics.getDiagnostics().get(1);
-		assertThat(diagnostic2.getMessage()).isNotNull();
+		assertThat(getDiagnosticMessage(diagnostic2)).isNotNull();
 		Range range2 = diagnostic2.getRange();
 		checkRange(range2, 9, 17, 9, 32);
 	}
@@ -113,7 +113,7 @@ class CamelDiagnosticTest extends AbstractDiagnosticTest {
 	void testValidationErrorWithSyntaxError() throws Exception {
 		testDiagnostic("camel-with-endpoint-error-withampersand", 1, ".xml");
 		Diagnostic diagnostic = lastPublishedDiagnostics.getDiagnostics().get(0);
-		assertThat(diagnostic.getMessage()).isNotNull();
+		assertThat(getDiagnosticMessage(diagnostic)).isNotNull();
 		Range range = diagnostic.getRange();
 		checkRange(range, 8, 16, 8, 47);
 	}
