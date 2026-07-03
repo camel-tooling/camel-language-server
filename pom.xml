@@ -48,7 +48,7 @@
 		<junit.version>6.1.1</junit.version>
 		<assertj.version>3.27.7</assertj.version>
 		<jgit.version>7.7.0.202606012155-r</jgit.version>
-		<camel.version>4.18.1</camel.version>
+		<camel.version>4.21.0</camel.version>
 		<camel.kamelet.catalog.version>4.20.0</camel.kamelet.catalog.version>
 		<camel.quarkus.version>3.36.0</camel.quarkus.version>
 		<roaster.version>2.31.1.Final</roaster.version>
@@ -353,7 +353,12 @@
 			<artifactId>kubernetes-server-mock</artifactId>
 			<version>${kubernetes.client.version}</version>
 			<scope>test</scope>
-
+		</dependency>
+		<dependency>
+			<groupId>jakarta.inject</groupId>
+			<artifactId>jakarta.inject-api</artifactId>
+			<version>2.0.1</version>
+			<scope>test</scope>
 		</dependency>
 	</dependencies>
 	<dependencyManagement>
