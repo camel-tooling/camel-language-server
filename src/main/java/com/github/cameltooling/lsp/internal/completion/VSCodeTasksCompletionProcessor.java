@@ -32,7 +32,6 @@ import org.eclipse.lsp4j.TextDocumentItem;
 import org.eclipse.lsp4j.TextEdit;
 import org.eclipse.lsp4j.jsonrpc.messages.Either;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.github.cameltooling.lsp.internal.completion.traits.CamelKTraitManager;
 import com.github.cameltooling.lsp.internal.parser.ParserFileHelperUtil;
 
@@ -93,7 +92,7 @@ public class VSCodeTasksCompletionProcessor {
 	private CompletionItem createCompletionItemForProperty(Position position, Entry<String, JSONSchemaProps> property) {
 		String label = property.getKey();
 		CompletionItem completion = new CompletionItem(label);
-		JsonNode defaultPropertyValue = property.getValue().getDefault();
+		Object defaultPropertyValue = property.getValue().getDefault();
 		String insertText;
 		if (defaultPropertyValue != null) {
 			insertText = label + "=" + defaultPropertyValue;
