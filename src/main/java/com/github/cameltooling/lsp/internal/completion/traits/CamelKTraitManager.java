@@ -16,7 +16,6 @@
  */
 package com.github.cameltooling.lsp.internal.completion.traits;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collections;
 import java.util.List;
@@ -24,9 +23,9 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.eclipse.lsp4j.CompletionItem;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.github.cameltooling.lsp.internal.completion.CompletionResolverUtils;
 import com.github.cameltooling.lsp.internal.completion.FilterPredicateUtils;
 import com.github.cameltooling.lsp.internal.modelinemodel.CamelKModelineTraitDefinition;
@@ -35,26 +34,26 @@ import com.github.cameltooling.lsp.internal.modelinemodel.CamelKModelineTraitOpt
 
 import io.fabric8.kubernetes.api.model.apiextensions.v1.CustomResourceDefinition;
 import io.fabric8.kubernetes.api.model.apiextensions.v1.JSONSchemaProps;
+import io.fabric8.kubernetes.client.utils.Serialization;
 
 public class CamelKTraitManager {
-	
+
+	private static final Logger LOGGER = LoggerFactory.getLogger(CamelKTraitManager.class);
+
 	private CamelKTraitManager() {
-		
 	}
-	
+
 	private static Map<String, JSONSchemaProps> traits;
-	private static ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
 
 	public static Map<String, JSONSchemaProps> getTraits() {
-		if(traits == null) {
-			InputStream inputStreamCRD = CamelKTraitManager.class.getResourceAsStream("/camel.apache.org_integrations-2.0.1.yaml");	
+		if (traits == null) {
+			InputStream inputStreamCRD = CamelKTraitManager.class.getResourceAsStream("/camel.apache.org_integrations-2.0.1.yaml");
 			try {
-				CustomResourceDefinition crd = mapper.readValue(inputStreamCRD, CustomResourceDefinition.class);
+				CustomResourceDefinition crd = Serialization.unmarshal(inputStreamCRD, CustomResourceDefinition.class);
 				JSONSchemaProps traitsSchema = retrieveTraitsDefinitionFromCamelKCRD(crd);
 				traits = traitsSchema.getProperties();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+			} catch (Exception e) {
+				LOGGER.error("Failed to load Camel-K trait CRD", e);
 				traits = Collections.emptyMap();
 			}
 		}
