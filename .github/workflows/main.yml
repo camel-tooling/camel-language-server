@@ -12,7 +12,7 @@ jobs:
     steps:
     - uses: actions/checkout@v7
     - name: Set up JDK 17
-      uses: actions/setup-java@v5
+      uses: actions/setup-java@v6
       with:
         java-version: 17
         distribution: 'temurin'
@@ -29,7 +29,7 @@ jobs:
         key: ${{ runner.os }}-sonar
         restore-keys: ${{ runner.os }}-sonar
     - name: Build, sign and deploy
-      run: mvn -P sign,build-extras -B deploy
+      run: mvn -P sign,build-extras -B deploy -Dmaven.repository.credentialScope=id
       env:
         MAVEN_GPG_PASSPHRASE: ${{ secrets.MAVEN_GPG_PASSPHRASE }}
         MAVEN_CENTRAL_USERNAME: ${{ secrets.MAVEN_CENTRAL_USERNAME }} # see https://central.sonatype.org/publish/generate-portal-token/
