@@ -18,10 +18,10 @@ jobs:
         distribution: 'temurin'
         cache: 'maven'
         gpg-private-key: ${{ secrets.MAVEN_GPG_PRIVATE_KEY }}
-        gpg-passphrase: MAVEN_GPG_PASSPHRASE # env variable for passphrase in sign and deploy
+        gpg-passphrase-env-var: MAVEN_GPG_PASSPHRASE # env variable for passphrase in sign and deploy
         server-id: central
-        server-username: MAVEN_CENTRAL_USERNAME # env variable for username in deploy
-        server-password: MAVEN_CENTRAL_TOKEN # env variable for token in deploy
+        server-username-env-var: MAVEN_CENTRAL_USERNAME # env variable for username in deploy
+        server-password-env-var: MAVEN_CENTRAL_TOKEN # env variable for token in deploy
     - name: Cache SonarCloud packages
       uses: actions/cache@v6.1.0
       with:
