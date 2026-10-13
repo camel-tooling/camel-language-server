@@ -42,7 +42,7 @@ jobs:
         mvn -B verify
         -P !build-extras
         -Dtest="*,!RunnerStandardIOTest,!RunnerWebSocketTest"
-        sonar:sonar
+        org.sonarsource.scanner.maven:sonar-maven-plugin:sonar
         -Dsonar.login=${SONAR_TOKEN}
         -Dsonar.organization="camel-tooling"
         -Dsonar.projectKey="camel-lsp-server"
