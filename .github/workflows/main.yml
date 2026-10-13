@@ -43,7 +43,6 @@ jobs:
         -P !build-extras
         -Dtest="*,!RunnerStandardIOTest,!RunnerWebSocketTest"
         org.sonarsource.scanner.maven:sonar-maven-plugin:sonar
-        -Dsonar.login=${SONAR_TOKEN}
         -Dsonar.organization="camel-tooling"
         -Dsonar.projectKey="camel-lsp-server"
         -Dsonar.projectName="Camel LSP Server"
