@@ -29,6 +29,7 @@ import org.eclipse.lsp4j.InitializedParams;
 import org.eclipse.lsp4j.MessageParams;
 import org.eclipse.lsp4j.MessageType;
 import org.eclipse.lsp4j.ServerCapabilities;
+import org.eclipse.lsp4j.ServerInfo;
 import org.eclipse.lsp4j.SetTraceParams;
 import org.eclipse.lsp4j.TextDocumentSyncKind;
 import org.eclipse.lsp4j.services.LanguageClient;
@@ -89,6 +90,7 @@ public class CamelLanguageServer extends AbstractLanguageServer implements Langu
 		
 		ServerCapabilities capabilities = createServerCapabilities();
 		InitializeResult result = new InitializeResult(capabilities);
+		result.setServerInfo(new ServerInfo("Apache Camel Language Server", getServerVersion()));
 		return CompletableFuture.completedFuture(result);
 	}
 	
@@ -98,6 +100,14 @@ public class CamelLanguageServer extends AbstractLanguageServer implements Langu
 		if(telemetryManager != null) {
 			telemetryManager.onInitialized();
 		}
+	}
+
+	private String getServerVersion() {
+		String version = getClass().getPackage().getImplementationVersion();
+		if (version == null) {
+			version = getClass().getPackage().getSpecificationVersion();
+		}
+		return version != null ? version : "dev";
 	}
 
 	private ServerCapabilities createServerCapabilities() {
