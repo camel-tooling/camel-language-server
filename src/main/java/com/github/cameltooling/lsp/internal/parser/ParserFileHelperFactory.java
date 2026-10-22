@@ -29,8 +29,14 @@ public class ParserFileHelperFactory {
 	private static final String CAMELK_XML_FILENAME_SUFFIX = "camelk.xml";
 	private static final String CAMELK_YAML_FILENAME_SUFFIX = ".camelk.yaml";
 	private static final String PLAIN_CAMEL_YAML_FILENAME_SUFFIX = ".camel.yaml";
+	private static final String KAMELET_YAML_FILENAME_SUFFIX = ".kamelet.yaml";
+	private static final String PIPE_YAML_FILENAME_SUFFIX = ".pipe.yaml";
+	private static final String PIPE_DASH_YAML_FILENAME_SUFFIX = "-pipe.yaml";
 	private static final String CAMELK_YML_FILENAME_SUFFIX = ".camelk.yml";
 	private static final String PLAIN_CAMEL_YML_FILENAME_SUFFIX = ".camel.yml";
+	private static final String KAMELET_YML_FILENAME_SUFFIX = ".kamelet.yml";
+	private static final String PIPE_YML_FILENAME_SUFFIX = ".pipe.yml";
+	private static final String PIPE_DASH_YML_FILENAME_SUFFIX = "-pipe.yml";
 	private static final String SHEBANG_CAMEL_K = "#!/usr/bin/env camel-k";
 
 	public ParserFileHelper getCorrespondingParserFileHelper(TextDocumentItem textDocumentItem, int line) {
@@ -63,6 +69,12 @@ public class ParserFileHelperFactory {
 				|| uri.endsWith(CAMELK_YML_FILENAME_SUFFIX)
 				|| uri.endsWith(PLAIN_CAMEL_YAML_FILENAME_SUFFIX)
 				|| uri.endsWith(PLAIN_CAMEL_YML_FILENAME_SUFFIX)
+				|| uri.endsWith(KAMELET_YAML_FILENAME_SUFFIX)
+				|| uri.endsWith(KAMELET_YML_FILENAME_SUFFIX)
+				|| uri.endsWith(PIPE_YAML_FILENAME_SUFFIX)
+				|| uri.endsWith(PIPE_YML_FILENAME_SUFFIX)
+				|| uri.endsWith(PIPE_DASH_YAML_FILENAME_SUFFIX)
+				|| uri.endsWith(PIPE_DASH_YML_FILENAME_SUFFIX)
 				|| isYamlFileWithCamelKShebang(textDocumentItem, uri)
 				|| isYamlFileWithCamelKModelineLike(textDocumentItem, uri)
 				|| isYamlFileOfCRDType(textDocumentItem, uri);
