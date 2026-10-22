@@ -196,7 +196,7 @@ public class CamelOptionNamesCompletionsFuture implements Function<CamelCatalog,
 		};
 	}
 	
-	private MarkupContent getMarkupDocumentation(BaseOptionModel parameter) {
+	static MarkupContent getMarkupDocumentation(BaseOptionModel parameter) {
 		StringBuilder doc = new StringBuilder();
 		addMarkdownIfNotEmpty(doc,"**Group:** ", parameter.getGroup());
 		addMarkdownIfNotEmpty(doc,"**Required:** ", String.valueOf(parameter.isRequired()));
@@ -215,7 +215,7 @@ public class CamelOptionNamesCompletionsFuture implements Function<CamelCatalog,
 		return new MarkupContent(MarkupKind.MARKDOWN, doc.toString());
 	}
 
-	private String getDocumentation(BaseOptionModel parameter) {
+	static String getDocumentation(BaseOptionModel parameter) {
 		StringBuilder doc = new StringBuilder();
 		addIfNotEmpty(doc,"Group: ", parameter.getGroup());
 		addIfNotEmpty(doc,"Required: ", String.valueOf(parameter.isRequired()));
@@ -230,7 +230,7 @@ public class CamelOptionNamesCompletionsFuture implements Function<CamelCatalog,
 		return doc.toString();
 	}
 
-	private void addIfNotEmpty(StringBuilder description, String key, String value){
+	private static void addIfNotEmpty(StringBuilder description, String key, String value){
 		if (value != null && !value.isEmpty() && !"null".equals(value)) {
 			description.append(key);
 			description.append(value);
@@ -238,7 +238,7 @@ public class CamelOptionNamesCompletionsFuture implements Function<CamelCatalog,
 		}
 	}
 	
-	private void addMarkdownIfNotEmpty(StringBuilder description, String key, String value){
+	private static void addMarkdownIfNotEmpty(StringBuilder description, String key, String value){
 		if (value != null && !value.isEmpty() && !"null".equals(value)) {
 			description.append(key);
 			description.append(value);
