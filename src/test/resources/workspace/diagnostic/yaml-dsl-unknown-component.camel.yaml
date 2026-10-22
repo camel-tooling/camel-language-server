@@ -1,0 +1,4 @@
+- from:
+    uri: tmer:tick
+    steps:
+      - log: "${body}"

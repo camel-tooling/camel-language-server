@@ -39,6 +39,7 @@ public class DiagnosticRunner {
 	private ConfigurationPropertiesDiagnosticService configurationPropertiesDiagnosticService;
 	private CamelKModelineDiagnosticService camelKModelineDiagnosticService;
 	private ConnectedModeDiagnosticService connectedModeDiagnosticService;
+	private YamlDslDiagnosticService yamlDslDiagnosticService;
 	private Map<String, CompletableFuture<Void>> lastTriggeredDiagnostic = new HashMap<String, CompletableFuture<Void>>();
 
 	public DiagnosticRunner(CompletableFuture<CamelCatalog> camelCatalog, CamelLanguageServer camelLanguageServer) {
@@ -47,6 +48,7 @@ public class DiagnosticRunner {
 		configurationPropertiesDiagnosticService = new ConfigurationPropertiesDiagnosticService(camelCatalog);
 		camelKModelineDiagnosticService = new CamelKModelineDiagnosticService();
 		connectedModeDiagnosticService = new ConnectedModeDiagnosticService();
+		yamlDslDiagnosticService = new YamlDslDiagnosticService(camelCatalog);
 	}
 
 	public void compute(DidSaveTextDocumentParams params) {
@@ -79,6 +81,7 @@ public class DiagnosticRunner {
 			diagnostics.addAll(configurationPropertiesDiagnosticService.converToLSPDiagnostics(configurationPropertiesErrors));
 			diagnostics.addAll(camelKModelineDiagnosticService.compute(camelText, documentItem));
 			diagnostics.addAll(connectedModeDiagnosticService.compute(camelText, documentItem));
+			diagnostics.addAll(yamlDslDiagnosticService.compute(camelText, documentItem));
 			camelLanguageServer.getClient().publishDiagnostics(new PublishDiagnosticsParams(uri, diagnostics));
 			lastTriggeredDiagnostic.remove(uri);
 		});

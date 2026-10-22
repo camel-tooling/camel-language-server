@@ -1,0 +1,9 @@
+- from:
+    uri: timer:tick
+    parameters:
+      fixedRate: notABoolean
+    steps:
+      - to:
+          uri: log:out
+          parameters:
+            level: VERBOSE

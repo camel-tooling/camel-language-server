@@ -1,0 +1,67 @@
+- route:
+    id: route-1
+    from:
+      id: from-1
+      uri: timer
+      parameters:
+        timerName: template
+        period: "{{timer.period}}"
+        delay: 500ms
+        repeatCount: "{{?count}}"
+      steps:
+        - setBody:
+            id: setBody-1
+            expression:
+              simple:
+                expression: Hello ${body}
+        - setHeader:
+            name: greeting
+            simple: "${body}"
+        - choice:
+            when:
+              - simple: "${header.greeting} == 'hi'"
+                steps:
+                  - log: hi
+            otherwise:
+              steps:
+                - marshal:
+                    json:
+                      library: Jackson
+        - setBody:
+            constant: |
+              {"greeting": "hello", "count": 1}
+        - to:
+            uri: log
+            parameters:
+              loggerName: info
+              level: info
+              showAll: true # with a comment
+        - to: "log:out?showHeaders=true"
+        - toD:
+            uri: "direct:${header.target}"
+        - to:
+            uri: kamelet:log-sink
+            parameters:
+              showHeaders: true
+        - to:
+            uri: https://example.com/api
+            parameters:
+              customQueryParam: abc
+        - to:
+            uri: "{{output.uri}}"
+- from:
+    uri: direct:indentless
+    steps:
+    - log: "${body}"
+    - to: direct:end
+- rest:
+    path: /api
+    get:
+      - path: /hello
+        to: direct:hello
+- beans:
+    - name: mailer
+      type: "#class:org.example.Mailer"
+      properties:
+        from: me@example.com
+        to: you@example.com

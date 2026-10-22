@@ -1,0 +1,13 @@
+- route:
+    from:
+      uri: timer:tick
+      steps:
+        - to:
+            uri: "fhir://{{apiName}}/{{methodName}}"
+            parameters:
+              serverUrl: "{{serverUrl}}"
+        - to:
+            uri: google-sheets:data/{{operation}}
+            parameters:
+              spreadsheetId: "{{id}}"
+              range: "{{?range}}"

@@ -1,0 +1,9 @@
+- route:
+    from:
+      uri: timer:tick
+      steps:
+        - to:
+            uri: google-sheets:data/{{operation}}
+            parameters:
+              spreadsheetId: "{{id}}"
+              unknownX: 1

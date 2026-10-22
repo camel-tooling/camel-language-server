@@ -1,0 +1,6 @@
+- from:
+    uri: timer:tick
+    parameters:
+      perid: 1000
+    steps:
+      - log: "${body}"
