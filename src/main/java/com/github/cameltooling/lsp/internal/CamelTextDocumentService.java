@@ -55,6 +55,8 @@ import org.eclipse.lsp4j.Hover;
 import org.eclipse.lsp4j.HoverParams;
 import org.eclipse.lsp4j.Location;
 import org.eclipse.lsp4j.LocationLink;
+import org.eclipse.lsp4j.MessageParams;
+import org.eclipse.lsp4j.MessageType;
 import org.eclipse.lsp4j.ReferenceParams;
 import org.eclipse.lsp4j.RenameParams;
 import org.eclipse.lsp4j.SignatureHelp;
@@ -109,6 +111,7 @@ public class CamelTextDocumentService implements TextDocumentService {
 	}
 	
 	public void updateCatalog(String camelVersion, String camelCatalogRuntimeProvider, List<Map<?,?>> extraComponents) {
+		logToClient(MessageType.Info, String.format("Updating Camel catalog - requested version: %s, runtime provider: %s", camelVersion, camelCatalogRuntimeProvider));
 		ClassLoader callerClassLoader = Thread.currentThread().getContextClassLoader();
 		camelCatalog = CompletableFuture.supplyAsync(() -> {
 			Thread.currentThread().setContextClassLoader(callerClassLoader);
@@ -116,6 +119,9 @@ public class CamelTextDocumentService implements TextDocumentService {
 			updateCatalogVersion(camelVersion, catalog);
 			updateCatalogRuntimeProvider(camelCatalogRuntimeProvider, catalog);
 			updateCatalogExtraComponents(extraComponents, catalog);
+			logToClient(MessageType.Info, String.format("Camel catalog updated - active version: %s, runtime provider: %s",
+					catalog.getCatalogVersion(),
+					camelCatalogRuntimeProvider != null ? camelCatalogRuntimeProvider : "DEFAULT"));
 			return catalog;
 		});
 	}
@@ -138,21 +144,37 @@ public class CamelTextDocumentService implements TextDocumentService {
 			RuntimeProvider runtimeProvider = CamelRuntimeProvider.getProvider(camelCatalogRuntimeProvider);
 			if(runtimeProvider != null) {
 				catalog.setRuntimeProvider(runtimeProvider);
+				logToClient(MessageType.Info, "Runtime provider set to: " + camelCatalogRuntimeProvider);
+			} else {
+				logToClient(MessageType.Warning, "Unknown runtime provider: " + camelCatalogRuntimeProvider);
 			}
 		}
 	}
 
 	private void updateCatalogVersion(String camelVersion, DefaultCamelCatalog catalog) {
 		if (camelVersion != null && !camelVersion.isEmpty()) {
+			logToClient(MessageType.Info, "Loading Camel catalog version: " + camelVersion);
 			MavenVersionManager versionManager = new MavenVersionManager();
 			if (camelVersion.contains("redhat")) {
 				versionManager.addMavenRepository("central", "https://repo1.maven.org/maven2/");
 				versionManager.addMavenRepository("maven.redhat.ga", "https://maven.repository.redhat.com/ga/");
+				logToClient(MessageType.Info, "Added Red Hat GA Maven repository for version: " + camelVersion);
 			}
 			catalog.setVersionManager(versionManager);
 			if (!catalog.loadVersion(camelVersion)) {
 				LOGGER.warn("Cannot load Camel catalog with version {}", camelVersion);
+				logToClient(MessageType.Warning, "Cannot load Camel catalog with version " + camelVersion);
+			} else {
+				logToClient(MessageType.Info, "Camel catalog version loaded successfully: " + camelVersion);
 			}
+		} else {
+			logToClient(MessageType.Info, "No Camel catalog version specified, using built-in default: " + catalog.getCatalogVersion());
+		}
+	}
+
+	private void logToClient(MessageType type, String message) {
+		if (camelLanguageServer.getClient() != null) {
+			camelLanguageServer.getClient().logMessage(new MessageParams(type, message));
 		}
 	}
 
