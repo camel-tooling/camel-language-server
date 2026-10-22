@@ -1,0 +1,9 @@
+- from:
+    uri: timer:tick
+    steps:
+      - serviceCall:
+          name: foo
+      - switch:
+          case:
+            - value: a
+              uri: log:a

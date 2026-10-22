@@ -1,0 +1,4 @@
+- from:
+    uri: timer:tick
+    steps:
+      - to: "log:out

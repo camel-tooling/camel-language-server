@@ -1,0 +1,5 @@
+- from:
+    uri: timer:tick
+    steps:
+      - setBdy:
+          constant: Hello

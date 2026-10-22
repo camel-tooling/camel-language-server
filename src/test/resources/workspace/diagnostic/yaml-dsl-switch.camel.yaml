@@ -1,0 +1,13 @@
+- from:
+    uri: timer:tick
+    steps:
+      - switch:
+          selector:
+            simple: "${header.type}"
+          case:
+            - value: a
+              uri: log:a
+              parameters:
+                unknownX: 1
+          otherwise:
+            uri: "log:other?showAlll=true"

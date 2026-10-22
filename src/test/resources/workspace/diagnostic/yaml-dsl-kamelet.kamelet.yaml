@@ -1,0 +1,24 @@
+apiVersion: camel.apache.org/v1
+kind: Kamelet
+metadata:
+  name: my-source
+spec:
+  definition:
+    title: My source
+    properties:
+      period:
+        title: Period
+        type: integer
+        default: 1000
+      message:
+        title: Message
+        type: string
+  template:
+    from:
+      uri: timer:tick
+      parameters:
+        period: "{{period}}"
+      steps:
+      - setBody:
+          constant: "{{message}}"
+      - to: kamelet:sink
