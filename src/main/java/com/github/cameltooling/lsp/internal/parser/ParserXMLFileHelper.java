@@ -101,6 +101,10 @@ public class ParserXMLFileHelper extends ParserFileHelper {
 		}
 	}
 
+	public static boolean isCamelNamespace(String namespaceUri) {
+		return CAMEL_NAMESPACE_URIS.contains(namespaceUri);
+	}
+
 	public boolean hasElementFromCamelNamespace(TextDocumentItem textDocumentItem) throws SAXException, IOException, ParserConfigurationException {
 		DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 		dbf.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);

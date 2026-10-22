@@ -91,6 +91,7 @@ import com.github.cameltooling.lsp.internal.folding.FoldingRangeProcessor;
 import com.github.cameltooling.lsp.internal.hover.CamelKModelineHoverProcessor;
 import com.github.cameltooling.lsp.internal.hover.CamelPropertiesFileHoverProcessor;
 import com.github.cameltooling.lsp.internal.hover.CamelURIHoverProcessor;
+import com.github.cameltooling.lsp.internal.hover.CamelXmlEipHoverProcessor;
 import com.github.cameltooling.lsp.internal.parser.CamelKModelineParser;
 import com.github.cameltooling.lsp.internal.parser.ParserFileHelper;
 import com.github.cameltooling.lsp.internal.parser.ParserFileHelperFactory;
@@ -268,6 +269,12 @@ public class CamelTextDocumentService implements TextDocumentService {
 		} else if (textDocumentItem != null && isCamelYamlDslKey(textDocumentItem, hoverParams.getPosition())) {
 			return getYamlDslHover(textDocumentItem, hoverParams.getPosition());
 		} else {
+			if (textDocumentItem != null && uri.endsWith(".xml")) {
+				CompletableFuture<Hover> eipHover = new CamelXmlEipHoverProcessor(textDocumentItem, getCamelCatalog(), getSettingsManager().isMardownSupport()).getHover(hoverParams.getPosition());
+				if (eipHover != null) {
+					return eipHover;
+				}
+			}
 			return new CamelURIHoverProcessor(textDocumentItem, getCamelCatalog(), getKameletsCatalogManager()).getHover(hoverParams.getPosition());
 		}
 	}
