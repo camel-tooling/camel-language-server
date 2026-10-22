@@ -57,6 +57,7 @@ import org.eclipse.lsp4j.Location;
 import org.eclipse.lsp4j.LocationLink;
 import org.eclipse.lsp4j.MessageParams;
 import org.eclipse.lsp4j.MessageType;
+import org.eclipse.lsp4j.Position;
 import org.eclipse.lsp4j.ReferenceParams;
 import org.eclipse.lsp4j.RenameParams;
 import org.eclipse.lsp4j.SignatureHelp;
@@ -77,8 +78,11 @@ import com.github.cameltooling.lsp.internal.catalog.util.KameletsCatalogManager;
 import com.github.cameltooling.lsp.internal.codeactions.CodeActionProcessor;
 import com.github.cameltooling.lsp.internal.completion.CamelEndpointCompletionProcessor;
 import com.github.cameltooling.lsp.internal.completion.CamelPropertiesCompletionProcessor;
+import com.github.cameltooling.lsp.internal.completion.CamelYamlDslKeywordProcessor;
+import com.github.cameltooling.lsp.internal.completion.CamelYamlParametersCompletionProcessor;
 import com.github.cameltooling.lsp.internal.completion.PomCompletionProcessor;
 import com.github.cameltooling.lsp.internal.completion.VSCodeTasksCompletionProcessor;
+import com.github.cameltooling.lsp.internal.completion.YamlDslLines;
 import com.github.cameltooling.lsp.internal.completion.modeline.CamelKModelineCompletionprocessor;
 import com.github.cameltooling.lsp.internal.definition.DefinitionProcessor;
 import com.github.cameltooling.lsp.internal.diagnostic.DiagnosticRunner;
@@ -88,6 +92,8 @@ import com.github.cameltooling.lsp.internal.hover.CamelKModelineHoverProcessor;
 import com.github.cameltooling.lsp.internal.hover.CamelPropertiesFileHoverProcessor;
 import com.github.cameltooling.lsp.internal.hover.CamelURIHoverProcessor;
 import com.github.cameltooling.lsp.internal.parser.CamelKModelineParser;
+import com.github.cameltooling.lsp.internal.parser.ParserFileHelper;
+import com.github.cameltooling.lsp.internal.parser.ParserFileHelperFactory;
 import com.github.cameltooling.lsp.internal.references.ReferencesProcessor;
 import com.github.cameltooling.lsp.internal.settings.JSONUtility;
 import com.github.cameltooling.lsp.internal.settings.SettingsManager;
@@ -178,6 +184,44 @@ public class CamelTextDocumentService implements TextDocumentService {
 		}
 	}
 
+	private CompletableFuture<List<CompletionItem>> getYamlDslCompletions(TextDocumentItem textDocumentItem, Position position) {
+		YamlDslLines lines = new YamlDslLines(textDocumentItem.getText());
+		boolean markdown = getSettingsManager().isMardownSupport();
+		CamelYamlParametersCompletionProcessor parametersProcessor = new CamelYamlParametersCompletionProcessor(lines, getCamelCatalog(), getKameletsCatalogManager(), markdown);
+		if (parametersProcessor.isInParametersBlock(position)) {
+			return parametersProcessor.getCompletions(position);
+		}
+		return new CamelYamlDslKeywordProcessor(lines, getCamelCatalog(), markdown).getCompletions(position);
+	}
+
+	private CompletableFuture<Hover> getYamlDslHover(TextDocumentItem textDocumentItem, Position position) {
+		YamlDslLines lines = new YamlDslLines(textDocumentItem.getText());
+		boolean markdown = getSettingsManager().isMardownSupport();
+		CamelYamlParametersCompletionProcessor parametersProcessor = new CamelYamlParametersCompletionProcessor(lines, getCamelCatalog(), getKameletsCatalogManager(), markdown);
+		if (parametersProcessor.isInParametersBlock(position)) {
+			return parametersProcessor.getHover(position);
+		}
+		return new CamelYamlDslKeywordProcessor(lines, getCamelCatalog(), markdown).getHover(position);
+	}
+
+	/**
+	 * @return whether the position is in a Camel YAML DSL document, outside of an endpoint URI.
+	 * Endpoint URIs are handled by the processors shared by all the DSLs.
+	 */
+	private boolean isCamelYamlDslKey(TextDocumentItem textDocumentItem, Position position) {
+		ParserFileHelperFactory parserFileHelperFactory = new ParserFileHelperFactory();
+		if (!parserFileHelperFactory.isCamelYamlDSL(textDocumentItem, textDocumentItem.getUri())) {
+			return false;
+		}
+		try {
+			ParserFileHelper parserFileHelper = parserFileHelperFactory.getCorrespondingParserFileHelper(textDocumentItem, position.getLine());
+			return parserFileHelper == null || parserFileHelper.getCamelComponentUri(textDocumentItem, position) == null;
+		} catch (Exception e) {
+			// a line which cannot be parsed is left to the endpoint URI processors, as before
+			return false;
+		}
+	}
+
 	@Override
 	public CompletableFuture<Either<List<CompletionItem>, CompletionList>> completion(CompletionParams completionParams) {
 		String uri = completionParams.getTextDocument().getUri();
@@ -195,6 +239,8 @@ public class CamelTextDocumentService implements TextDocumentService {
 				return new PomCompletionProcessor(textDocumentItem, getCamelCatalog()).getCompletions(completionParams.getPosition()).thenApply(Either::forLeft);
 			} else if(uri.endsWith("tasks.json")) {
 				return new VSCodeTasksCompletionProcessor(textDocumentItem).getCompletions(completionParams.getPosition()).thenApply(Either::forLeft);
+			} else if (isCamelYamlDslKey(textDocumentItem, completionParams.getPosition())) {
+				return getYamlDslCompletions(textDocumentItem, completionParams.getPosition()).thenApply(Either::forLeft);
 			} else {
 				return new CamelEndpointCompletionProcessor(textDocumentItem, getCamelCatalog(), getKameletsCatalogManager()).getCompletions(completionParams.getPosition(), getSettingsManager()).thenApply(Either::forLeft);
 			}
@@ -219,6 +265,8 @@ public class CamelTextDocumentService implements TextDocumentService {
 			return new CamelPropertiesFileHoverProcessor(textDocumentItem).getHover(hoverParams.getPosition(), getCamelCatalog(), getKameletsCatalogManager());
 		} else if(new CamelKModelineParser().isOnCamelKModeline(hoverParams.getPosition().getLine(), textDocumentItem)) {
 			return new CamelKModelineHoverProcessor(textDocumentItem).getHover(hoverParams.getPosition(), getCamelCatalog());
+		} else if (textDocumentItem != null && isCamelYamlDslKey(textDocumentItem, hoverParams.getPosition())) {
+			return getYamlDslHover(textDocumentItem, hoverParams.getPosition());
 		} else {
 			return new CamelURIHoverProcessor(textDocumentItem, getCamelCatalog(), getKameletsCatalogManager()).getHover(hoverParams.getPosition());
 		}
