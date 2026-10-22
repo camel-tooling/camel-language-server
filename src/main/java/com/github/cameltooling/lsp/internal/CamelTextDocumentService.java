@@ -109,7 +109,9 @@ public class CamelTextDocumentService implements TextDocumentService {
 	}
 	
 	public void updateCatalog(String camelVersion, String camelCatalogRuntimeProvider, List<Map<?,?>> extraComponents) {
+		ClassLoader callerClassLoader = Thread.currentThread().getContextClassLoader();
 		camelCatalog = CompletableFuture.supplyAsync(() -> {
+			Thread.currentThread().setContextClassLoader(callerClassLoader);
 			DefaultCamelCatalog catalog = new DefaultCamelCatalog(true);
 			updateCatalogVersion(camelVersion, catalog);
 			updateCatalogRuntimeProvider(camelCatalogRuntimeProvider, catalog);
