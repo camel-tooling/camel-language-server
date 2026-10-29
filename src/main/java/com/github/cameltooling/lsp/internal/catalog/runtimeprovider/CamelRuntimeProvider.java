@@ -24,12 +24,34 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public enum CamelRuntimeProvider {
-	DEFAULT,
-	SPRINGBOOT,
-	QUARKUS;
-	
+	DEFAULT(null, null),
+	SPRINGBOOT("org.apache.camel.springboot", "camel-catalog-provider-springboot"),
+	QUARKUS("org.apache.camel.quarkus", "camel-quarkus-catalog");
+
 	private static final Logger LOGGER = LoggerFactory.getLogger(CamelRuntimeProvider.class);
-	
+
+	private final String catalogGroupId;
+	private final String catalogArtifactId;
+
+	CamelRuntimeProvider(String catalogGroupId, String catalogArtifactId) {
+		this.catalogGroupId = catalogGroupId;
+		this.catalogArtifactId = catalogArtifactId;
+	}
+
+	/**
+	 * @return the group id of the Maven artifact providing the catalog of a version of the runtime, or null when the runtime has no own catalog
+	 */
+	public String getCatalogGroupId() {
+		return catalogGroupId;
+	}
+
+	/**
+	 * @return the id of the Maven artifact providing the catalog of a version of the runtime, or null when the runtime has no own catalog
+	 */
+	public String getCatalogArtifactId() {
+		return catalogArtifactId;
+	}
+
 	public static RuntimeProvider getProvider(String runtimeProvider){
 		try {
 			switch (CamelRuntimeProvider.valueOf(runtimeProvider)) {

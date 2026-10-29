@@ -117,18 +117,21 @@ public class CamelTextDocumentService implements TextDocumentService {
 		camelCatalog = CompletableFuture.supplyAsync(() -> new DefaultCamelCatalog(true));
 	}
 	
-	public void updateCatalog(String camelVersion, String camelCatalogRuntimeProvider, List<Map<?,?>> extraComponents) {
-		logToClient(MessageType.Info, String.format("Updating Camel catalog - requested version: %s, runtime provider: %s", camelVersion, camelCatalogRuntimeProvider));
+	public void updateCatalog(String camelVersion, String camelCatalogRuntimeProvider, String camelCatalogRuntimeProviderVersion, List<Map<?,?>> extraComponents) {
+		logToClient(MessageType.Info, String.format("Updating Camel catalog - requested version: %s, runtime provider: %s, runtime provider version: %s",
+				camelVersion, camelCatalogRuntimeProvider, camelCatalogRuntimeProviderVersion));
 		ClassLoader callerClassLoader = Thread.currentThread().getContextClassLoader();
 		camelCatalog = CompletableFuture.supplyAsync(() -> {
 			Thread.currentThread().setContextClassLoader(callerClassLoader);
 			DefaultCamelCatalog catalog = new DefaultCamelCatalog(true);
 			updateCatalogVersion(camelVersion, catalog);
-			updateCatalogRuntimeProvider(camelCatalogRuntimeProvider, catalog);
+			updateCatalogRuntimeProvider(camelCatalogRuntimeProvider, camelCatalogRuntimeProviderVersion, catalog);
 			updateCatalogExtraComponents(extraComponents, catalog);
-			logToClient(MessageType.Info, String.format("Camel catalog updated - active version: %s, runtime provider: %s",
+			String loadedRuntimeProviderVersion = catalog.getRuntimeProviderLoadedVersion();
+			logToClient(MessageType.Info, String.format("Camel catalog updated - active version: %s, runtime provider: %s%s",
 					catalog.getCatalogVersion(),
-					camelCatalogRuntimeProvider != null ? camelCatalogRuntimeProvider : "DEFAULT"));
+					camelCatalogRuntimeProvider != null ? camelCatalogRuntimeProvider : "DEFAULT",
+					loadedRuntimeProviderVersion != null ? " " + loadedRuntimeProviderVersion : ""));
 			return catalog;
 		});
 	}
@@ -146,15 +149,41 @@ public class CamelTextDocumentService implements TextDocumentService {
 		}
 	}
 
-	private void updateCatalogRuntimeProvider(String camelCatalogRuntimeProvider, DefaultCamelCatalog catalog) {
+	private void updateCatalogRuntimeProvider(String camelCatalogRuntimeProvider, String camelCatalogRuntimeProviderVersion, DefaultCamelCatalog catalog) {
 		if(camelCatalogRuntimeProvider != null && !camelCatalogRuntimeProvider.isEmpty()) {
 			RuntimeProvider runtimeProvider = CamelRuntimeProvider.getProvider(camelCatalogRuntimeProvider);
 			if(runtimeProvider != null) {
 				catalog.setRuntimeProvider(runtimeProvider);
 				logToClient(MessageType.Info, "Runtime provider set to: " + camelCatalogRuntimeProvider);
+				updateCatalogRuntimeProviderVersion(CamelRuntimeProvider.valueOf(camelCatalogRuntimeProvider), camelCatalogRuntimeProviderVersion, catalog);
 			} else {
 				logToClient(MessageType.Warning, "Unknown runtime provider: " + camelCatalogRuntimeProvider);
 			}
+		}
+	}
+
+	/**
+	 * Loads the catalog of the requested version of the runtime, which provides the components available on this runtime
+	 * and their runtime specific metadata. Otherwise the catalog of the runtime bundled with the Language Server is used.
+	 */
+	private void updateCatalogRuntimeProviderVersion(CamelRuntimeProvider runtimeProvider, String runtimeProviderVersion, DefaultCamelCatalog catalog) {
+		if (runtimeProviderVersion == null || runtimeProviderVersion.isEmpty() || runtimeProvider.getCatalogArtifactId() == null) {
+			return;
+		}
+		logToClient(MessageType.Info, "Loading " + runtimeProvider + " runtime provider catalog version: " + runtimeProviderVersion);
+		MavenVersionManager versionManager;
+		if (catalog.getVersionManager() instanceof MavenVersionManager) {
+			versionManager = (MavenVersionManager) catalog.getVersionManager();
+		} else {
+			versionManager = new MavenVersionManager();
+			catalog.setVersionManager(versionManager);
+		}
+		addRedHatRepositoryIfNeeded(versionManager, runtimeProviderVersion);
+		if (catalog.loadRuntimeProviderVersion(runtimeProvider.getCatalogGroupId(), runtimeProvider.getCatalogArtifactId(), runtimeProviderVersion)) {
+			logToClient(MessageType.Info, "Runtime provider catalog version loaded successfully: " + runtimeProviderVersion);
+		} else {
+			LOGGER.warn("Cannot load {} runtime provider catalog with version {}", runtimeProvider, runtimeProviderVersion);
+			logToClient(MessageType.Warning, "Cannot load " + runtimeProvider + " runtime provider catalog with version " + runtimeProviderVersion);
 		}
 	}
 
@@ -162,11 +191,7 @@ public class CamelTextDocumentService implements TextDocumentService {
 		if (camelVersion != null && !camelVersion.isEmpty()) {
 			logToClient(MessageType.Info, "Loading Camel catalog version: " + camelVersion);
 			MavenVersionManager versionManager = new MavenVersionManager();
-			if (camelVersion.contains("redhat")) {
-				versionManager.addMavenRepository("central", "https://repo1.maven.org/maven2/");
-				versionManager.addMavenRepository("maven.redhat.ga", "https://maven.repository.redhat.com/ga/");
-				logToClient(MessageType.Info, "Added Red Hat GA Maven repository for version: " + camelVersion);
-			}
+			addRedHatRepositoryIfNeeded(versionManager, camelVersion);
 			catalog.setVersionManager(versionManager);
 			if (!catalog.loadVersion(camelVersion)) {
 				LOGGER.warn("Cannot load Camel catalog with version {}", camelVersion);
@@ -176,6 +201,14 @@ public class CamelTextDocumentService implements TextDocumentService {
 			}
 		} else {
 			logToClient(MessageType.Info, "No Camel catalog version specified, using built-in default: " + catalog.getCatalogVersion());
+		}
+	}
+
+	private void addRedHatRepositoryIfNeeded(MavenVersionManager versionManager, String version) {
+		if (version.contains("redhat")) {
+			versionManager.addMavenRepository("central", "https://repo1.maven.org/maven2/");
+			versionManager.addMavenRepository("maven.redhat.ga", "https://maven.repository.redhat.com/ga/");
+			logToClient(MessageType.Info, "Added Red Hat GA Maven repository for version: " + version);
 		}
 	}
 
