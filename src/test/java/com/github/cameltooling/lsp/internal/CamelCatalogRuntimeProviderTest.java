@@ -25,6 +25,7 @@ import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
+import org.apache.camel.catalog.CamelCatalog;
 import org.apache.camel.catalog.DefaultRuntimeProvider;
 import org.apache.camel.catalog.RuntimeProvider;
 import org.apache.camel.catalog.quarkus.QuarkusRuntimeProvider;
@@ -41,6 +42,7 @@ import com.github.cameltooling.lsp.internal.settings.SettingsManager;
 class CamelCatalogRuntimeProviderTest extends AbstractCamelLanguageServerTest {
 
 	private String runtimeProvider;
+	private String runtimeProviderVersion;
 	
 	@Test
 	void testNoValueSpecifiedReturnsDefaultRuntimeProvider() throws Exception {
@@ -67,6 +69,18 @@ class CamelCatalogRuntimeProviderTest extends AbstractCamelLanguageServerTest {
 		testRuntimeProviderWithProvidedValue(CamelRuntimeProvider.QUARKUS.name(), QuarkusRuntimeProvider.class);
 	}
 	
+	@Test
+	void testRuntimeProviderCatalogVersionIsLoaded() throws Exception {
+		runtimeProvider = CamelRuntimeProvider.QUARKUS.name();
+		runtimeProviderVersion = "3.20.4";
+		CamelLanguageServer camelLanguageServer = initializeLanguageServer("- from:\n    uri: \"\"", ".camel.yaml");
+
+		CamelCatalog catalog = camelLanguageServer.getTextDocumentService().getCamelCatalog().get();
+
+		assertThat(catalog.getRuntimeProviderLoadedVersion()).isEqualTo(runtimeProviderVersion);
+		assertThat(catalog.componentJSonSchema("timer")).contains("\"version\": \"" + runtimeProviderVersion + "\"");
+	}
+
 	private void testRuntimeProviderWithProvidedValue(String settingValue, Class<? extends RuntimeProvider> expectedRuntimeProviderType)
 			throws URISyntaxException, InterruptedException, ExecutionException {
 		runtimeProvider = settingValue;
@@ -88,6 +102,7 @@ class CamelCatalogRuntimeProviderTest extends AbstractCamelLanguageServerTest {
 	private Map<Object, Object> createMapSettingsWithRuntimeProvider(String runtimeProvider) {
 		Map<Object, Object> camelIntializationOptions = new HashMap<>();
 		camelIntializationOptions.put(SettingsManager.CATALOG_RUNTIME_PROVIDER, runtimeProvider);
+		camelIntializationOptions.put(SettingsManager.CATALOG_RUNTIME_PROVIDER_VERSION, runtimeProviderVersion);
 		HashMap<Object, Object> initializationOptions = new HashMap<>();
 		initializationOptions.put(SettingsManager.TOP_LEVEL_SETTINGS_ID, camelIntializationOptions);
 		return initializationOptions;

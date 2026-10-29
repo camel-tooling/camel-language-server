@@ -33,6 +33,7 @@ public class SettingsManager {
 	public static final String TOP_LEVEL_SETTINGS_ID = "camel";
 	public static final String EXTRA_COMPONENTS = "extra-components";
 	public static final String CATALOG_RUNTIME_PROVIDER = "Camel catalog runtime provider";
+	public static final String CATALOG_RUNTIME_PROVIDER_VERSION = "Camel catalog runtime provider version";
 	public static final String KAKFA_CONNECTION_URL = "Kafka Connection URL";
 	
 	private CamelTextDocumentService textDocumentService;
@@ -61,7 +62,8 @@ public class SettingsManager {
 		String camelCatalogVersion = getSetting(camelSetting, CAMEL_CATALOG_VERSION, String.class);
 		List<?> extraComponents = getSetting(camelSetting, EXTRA_COMPONENTS, List.class);
 		String camelCatalogRuntimeProvider = getSetting(camelSetting, CATALOG_RUNTIME_PROVIDER, String.class);
-		textDocumentService.updateCatalog(camelCatalogVersion, camelCatalogRuntimeProvider, (List<Map<?, ?>>) extraComponents);
+		String camelCatalogRuntimeProviderVersion = getSetting(camelSetting, CATALOG_RUNTIME_PROVIDER_VERSION, String.class);
+		textDocumentService.updateCatalog(camelCatalogVersion, camelCatalogRuntimeProvider, camelCatalogRuntimeProviderVersion, (List<Map<?, ?>>) extraComponents);
 		kafkaConnectionUrl = getSetting(camelSetting, KAKFA_CONNECTION_URL, String.class);
 	}
 
