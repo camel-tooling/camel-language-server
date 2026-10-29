@@ -80,14 +80,17 @@ public class EndpointDiagnosticService extends DiagnosticService {
 
 	public List<Diagnostic> converToLSPDiagnostics(String fullCamelText, Map<CamelEndpointDetails, EndpointValidationResult> endpointErrors, TextDocumentItem textDocumentItem) {
 		List<Diagnostic> lspDiagnostics = new ArrayList<>();
+		// the catalog that validated the endpoints
+		CamelCatalog catalog = camelCatalog.getNow(null);
 		for (Map.Entry<CamelEndpointDetails, EndpointValidationResult> endpointError : endpointErrors.entrySet()) {
 			EndpointValidationResult validationResult = endpointError.getValue();
 			CamelEndpointDetails camelEndpointDetails = endpointError.getKey();
-			List<Diagnostic> unknownParameterDiagnostics = computeUnknowParameters(fullCamelText, textDocumentItem, validationResult, camelEndpointDetails);
+			PlaceholderErrors placeholderErrors = PlaceholderErrors.of(catalog, camelEndpointDetails.getEndpointUri(), validationResult);
+			List<Diagnostic> unknownParameterDiagnostics = computeUnknowParameters(fullCamelText, textDocumentItem, validationResult, camelEndpointDetails, placeholderErrors);
 			lspDiagnostics.addAll(unknownParameterDiagnostics);
-			List<Diagnostic> invalidEnumDiagnostics = computeInvalidEnumsDiagnostic(fullCamelText, textDocumentItem, validationResult, camelEndpointDetails);
+			List<Diagnostic> invalidEnumDiagnostics = computeInvalidEnumsDiagnostic(fullCamelText, textDocumentItem, validationResult, camelEndpointDetails, placeholderErrors);
 			lspDiagnostics.addAll(invalidEnumDiagnostics);
-			if (invalidEnumDiagnostics.size() + unknownParameterDiagnostics.size() < validationResult.getNumberOfErrors()) {
+			if (invalidEnumDiagnostics.size() + unknownParameterDiagnostics.size() + placeholderErrors.getNumberOfErrors() < validationResult.getNumberOfErrors()) {
 				lspDiagnostics.add(new Diagnostic(
 						computeRange(fullCamelText, textDocumentItem, camelEndpointDetails),
 						computeErrorMessage(validationResult),
@@ -99,11 +102,14 @@ public class EndpointDiagnosticService extends DiagnosticService {
 		return lspDiagnostics;
 	}
 
-	private List<Diagnostic> computeInvalidEnumsDiagnostic(String fullCamelText, TextDocumentItem textDocumentItem, EndpointValidationResult validationResult, CamelEndpointDetails camelEndpointDetails) {
+	private List<Diagnostic> computeInvalidEnumsDiagnostic(String fullCamelText, TextDocumentItem textDocumentItem, EndpointValidationResult validationResult, CamelEndpointDetails camelEndpointDetails, PlaceholderErrors placeholderErrors) {
 		List<Diagnostic> lspDiagnostics = new ArrayList<>();
 		Map<String, String> invalidEnums = validationResult.getInvalidEnum();
 		if (invalidEnums != null) {
 			for (Entry<String, String> invalidEnum : invalidEnums.entrySet()) {
+				if (placeholderErrors.isInvalidEnum(invalidEnum.getKey())) {
+					continue;
+				}
 				lspDiagnostics.add(new Diagnostic(
 						computeRange(fullCamelText, textDocumentItem, camelEndpointDetails, invalidEnum),
 						new EnumErrorMsg().getErrorMessage(validationResult, invalidEnum),
@@ -115,11 +121,14 @@ public class EndpointDiagnosticService extends DiagnosticService {
 		return lspDiagnostics;
 	}
 
-	private List<Diagnostic> computeUnknowParameters(String fullCamelText, TextDocumentItem textDocumentItem, EndpointValidationResult validationResult, CamelEndpointDetails camelEndpointDetails) {
+	private List<Diagnostic> computeUnknowParameters(String fullCamelText, TextDocumentItem textDocumentItem, EndpointValidationResult validationResult, CamelEndpointDetails camelEndpointDetails, PlaceholderErrors placeholderErrors) {
 		List<Diagnostic> lspDiagnostics = new ArrayList<>();
 		Set<String> unknownParameters = validationResult.getUnknown();
 		if (unknownParameters != null) {
 			for (String unknownParameter : unknownParameters) {
+				if (placeholderErrors.isUnknownOption(unknownParameter)) {
+					continue;
+				}
 				lspDiagnostics.add(new Diagnostic(
 						computeRange(fullCamelText, textDocumentItem, camelEndpointDetails, unknownParameter),
 						new UnknownErrorMsg().getErrorMessage(unknownParameter),

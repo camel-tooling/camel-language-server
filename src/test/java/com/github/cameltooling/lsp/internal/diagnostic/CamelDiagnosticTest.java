@@ -49,6 +49,18 @@ class CamelDiagnosticTest extends AbstractDiagnosticTest {
 	}
 
 	@Test
+	void testPlaceholdersInTheApiOfApiComponents() throws Exception {
+		testDiagnostic("camel-with-api-placeholders", 0, ".xml");
+	}
+
+	@Test
+	void testErrorsNextToPlaceholdersInTheApiOfApiComponents() throws Exception {
+		// the invalid API name, and the option that no method of the API has
+		testDiagnostic("camel-with-api-placeholders-and-errors", 2, ".xml");
+		assertThat(lastPublishedDiagnostics.getDiagnostics()).extracting(diagnostic -> diagnostic.getRange().getStart().getLine()).containsExactlyInAnyOrder(10, 11);
+	}
+
+	@Test
 	void testValidationErrorWithNamespacePrefix() throws Exception {
 		testDiagnostic("camel-with-endpoint-error-withNamespacePrefix", 1, ".xml");
 		Range range = lastPublishedDiagnostics.getDiagnostics().get(0).getRange();
