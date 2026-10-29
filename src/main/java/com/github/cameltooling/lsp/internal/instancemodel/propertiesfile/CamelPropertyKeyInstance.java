@@ -42,7 +42,6 @@ import com.github.cameltooling.lsp.internal.catalog.util.StringUtils;
 import com.github.cameltooling.lsp.internal.completion.FilterPredicateUtils;
 import com.github.cameltooling.lsp.internal.diagnostic.DiagnosticService;
 import com.github.cameltooling.lsp.internal.instancemodel.ILineRangeDefineable;
-import com.google.gson.Gson;
 
 /**
  * Represents one key in properties file.
@@ -107,7 +106,7 @@ public class CamelPropertyKeyInstance implements ILineRangeDefineable {
 	protected CompletableFuture<List<CompletionItem>> getTopLevelCamelCompletion(CompletableFuture<CamelCatalog> camelCatalog, int indexOfSecondDot, int completionPositionRequest) {
 		String filterString = camelPropertyKey.substring(CAMEL_KEY_PREFIX.length(), completionPositionRequest - getStartPositionInLine());
 		return camelCatalog.thenApply(catalog -> {
-			MainModel mainModel = new Gson().fromJson(catalog.mainJsonSchema(), MainModel.class);
+			MainModel mainModel = catalog.mainModel();
 			List<CompletionItem> allCompletionItems = new ArrayList<>();
 			allCompletionItems.addAll(createGroupCompletionFromMainModel(mainModel, indexOfSecondDot));
 			allCompletionItems.add(createCompletionItemForCamelComponent(indexOfSecondDot));

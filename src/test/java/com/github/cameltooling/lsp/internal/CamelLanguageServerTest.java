@@ -40,7 +40,6 @@ import com.github.cameltooling.lsp.internal.completion.CamelEndpointCompletionPr
 import com.github.cameltooling.lsp.internal.util.RouteTextBuilder;
 import com.github.cameltooling.lsp.internal.util.TestLogAppender;
 import com.github.cameltooling.lsp.internal.util.TestLoggerUtil;
-import com.google.gson.Gson;
 
 
 class CamelLanguageServerTest extends AbstractCamelLanguageServerTest {
@@ -357,8 +356,7 @@ class CamelLanguageServerTest extends AbstractCamelLanguageServerTest {
 		try (FileInputStream fis = new FileInputStream(f)) {
 			CamelLanguageServer cls = initializeLanguageServerWithFileName(fis, "application.properties");
 			CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = getCompletionFor(cls, new Position(2, 6), "application.properties");
-			String mainJsonSchema = cls.getTextDocumentService().getCamelCatalog().get().mainJsonSchema();
-			MainModel mainModel = new Gson().fromJson(mainJsonSchema, MainModel.class);
+			MainModel mainModel = cls.getTextDocumentService().getCamelCatalog().get().mainModel();
 			assertThat(completions.get().getLeft()).hasSize(mainModel.getGroups().size() + 1);
 		}
 	}

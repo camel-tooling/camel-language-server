@@ -33,7 +33,6 @@ import org.junit.jupiter.api.Test;
 
 import com.github.cameltooling.lsp.internal.AbstractCamelLanguageServerTest;
 import com.github.cameltooling.lsp.internal.CamelLanguageServer;
-import com.google.gson.Gson;
 
 class CamelPropertiesTopLevelCompletionTest extends AbstractCamelLanguageServerTest {
 	
@@ -59,8 +58,7 @@ class CamelPropertiesTopLevelCompletionTest extends AbstractCamelLanguageServerT
 	}
 
 	private MainModel loadMainModel(CamelLanguageServer camelLanguageServer) throws InterruptedException, ExecutionException {
-		String mainJsonSchema = camelLanguageServer.getTextDocumentService().getCamelCatalog().get().mainJsonSchema();
-		return new Gson().fromJson(mainJsonSchema, MainModel.class);
+		return camelLanguageServer.getTextDocumentService().getCamelCatalog().get().mainModel();
 	}
 	
 	@Test
