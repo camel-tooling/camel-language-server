@@ -1,0 +1,18 @@
+- from:
+    uri: timer:tick
+  steps:
+    - log: hello
+- route:
+    from:
+      uri: direct:a
+      steps:
+        - choice:
+            when:
+              - simple: "${body} == 'a'"
+                steps:
+                  - to: direct:b
+            otherwise:
+              stps:
+                - to: direct:c
+        - set-body:
+            constant: x

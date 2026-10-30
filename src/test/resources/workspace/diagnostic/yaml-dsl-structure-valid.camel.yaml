@@ -1,0 +1,174 @@
+- beans:
+    - name: myProcessor
+      type: "#class:org.example.MyProcessor"
+- routeConfiguration:
+    id: config
+    errorHandler:
+      deadLetterChannel:
+        deadLetterUri: direct:dead
+        redeliveryPolicy:
+          maximumRedeliveries: 3
+    onException:
+      - onException:
+          exception:
+            - java.lang.IllegalStateException
+          handled:
+            constant: true
+          steps:
+            - log: failed
+    intercept:
+      - intercept:
+          steps:
+            - log: intercepted
+    interceptSendToEndpoint:
+      - interceptSendToEndpoint:
+          uri: direct:*
+          skipSendToOriginalEndpoint: true
+          steps:
+            - log: skipped
+- restConfiguration:
+    component: platform-http
+    bindingMode: json
+- rest:
+    path: /api
+    get:
+      - path: /orders/{id}
+        to: direct:order
+        param:
+          - name: id
+            type: path
+        responseMessage:
+          - code: "200"
+            message: OK
+    post:
+      - path: /orders
+        consumes: application/json
+        to:
+          uri: direct:create
+- routeTemplate:
+    id: myTemplate
+    parameters:
+      - name: period
+        defaultValue: "1000"
+    from:
+      uri: "timer:{{name}}?period={{period}}"
+      steps:
+        - log: "${body}"
+- templatedRoute:
+    routeTemplateRef: myTemplate
+    parameters:
+      - name: period
+        value: "5000"
+- route:
+    id: main
+    routeProperty:
+      - key: owner
+        value: kaoto
+    from:
+      uri: timer:tick
+      steps:
+        - setBody:
+            simple:
+              expression: "${random(10)}"
+              resultType: java.lang.Integer
+        - setHeaders:
+            headers:
+              - name: one
+                constant: "1"
+              - name: two
+                simple: "${body}"
+        - filter:
+            expression:
+              simple: "${body} > 5"
+            steps:
+              - log:
+                  message: big
+                  logging-level: DEBUG
+        - split:
+            tokenize:
+              token: ","
+            streaming: true
+            steps:
+              - convertBodyTo:
+                  type: java.lang.String
+        - aggregate:
+            correlationExpression:
+              header: id
+            aggregationStrategy: myStrategy
+            completionSize: 2
+            steps:
+              - to: direct:aggregated
+        - doTry:
+            steps:
+              - process:
+                  ref: myProcessor
+            doCatch:
+              - exception:
+                  - java.io.IOException
+                onWhen:
+                  simple: "${exception.message} contains 'boom'"
+                steps:
+                  - log: caught
+            doFinally:
+              steps:
+                - removeHeaders:
+                    pattern: "*"
+        - circuitBreaker:
+            resilience4jConfiguration:
+              timeoutEnabled: true
+            steps:
+              - to: direct:remote
+            onFallback:
+              steps:
+                - transform:
+                    constant: fallback
+        - loadBalance:
+            roundRobinLoadBalancer: {}
+            steps:
+              - to: direct:a
+              - to: direct:b
+        - multicast:
+            parallelProcessing: true
+            steps:
+              - to: direct:c
+        - loop:
+            constant: "3"
+            steps:
+              - delay:
+                  constant: "100"
+        - throttle:
+            constant: "10"
+        - idempotentConsumer:
+            header: messageId
+            idempotentRepository: myRepo
+            steps:
+              - to: direct:once
+        - enrich:
+            constant: direct:enrich
+        - recipientList:
+            header: recipients
+        - wireTap:
+            uri: direct:tap
+        - kamelet:
+            name: log-sink
+        - marshal:
+            json:
+              library: Jackson
+        - unmarshal:
+            jacksonXml: {}
+        - script:
+            groovy: "body.size()"
+        - validate:
+            simple: "${body} != null"
+        - bean:
+            ref: myBean
+            method: hello
+        - choice:
+            when:
+              - expression:
+                  jq: ".kind == 'a'"
+                steps:
+                  - stop: {}
+            otherwise:
+              steps:
+                - toD: "direct:${header.target}"

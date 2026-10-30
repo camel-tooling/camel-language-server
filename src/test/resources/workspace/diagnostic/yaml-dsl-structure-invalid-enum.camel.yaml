@@ -1,0 +1,12 @@
+- from:
+    uri: timer:tick
+    steps:
+      - log:
+          message: hello
+          loggingLevel: VERBOSE
+      - marshal:
+          json:
+            library: jackson
+      - log:
+          message: placeholder
+          loggingLevel: "{{level}}"
