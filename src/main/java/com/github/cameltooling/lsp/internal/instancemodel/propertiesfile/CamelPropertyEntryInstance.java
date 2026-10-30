@@ -65,7 +65,7 @@ public class CamelPropertyEntryInstance implements ILineRangeDefineable {
 	
 	public CompletableFuture<List<CompletionItem>> getCompletions(Position position, CompletableFuture<CamelCatalog> camelCatalog, SettingsManager settingsManager, KameletsCatalogManager kameletsCatalogManager) {
 		if (isOnPropertyKey(position)) {
-			return camelPropertyKeyInstance.getCompletions(position, camelCatalog);
+			return camelPropertyKeyInstance.getCompletions(position, camelCatalog, settingsManager != null && settingsManager.isMardownSupport());
 		} else {
 			return camelPropertyValueInstance.getCompletions(position, camelCatalog, kameletsCatalogManager);
 		}
@@ -83,6 +83,10 @@ public class CamelPropertyEntryInstance implements ILineRangeDefineable {
 		return camelPropertyValueInstance;
 	}
 
+	boolean hasValue() {
+		return line.indexOf('=') != -1;
+	}
+
 	public int getLine() {
 		return startPosition.getLine();
 	}
@@ -97,9 +101,9 @@ public class CamelPropertyEntryInstance implements ILineRangeDefineable {
 		return getStartPositionInLine() + line.length();
 	}
 
-	public CompletableFuture<Hover> getHover(Position position, CompletableFuture<CamelCatalog> camelCatalog, KameletsCatalogManager kameletCatalogManager) {
+	public CompletableFuture<Hover> getHover(Position position, CompletableFuture<CamelCatalog> camelCatalog, KameletsCatalogManager kameletCatalogManager, boolean markdown) {
 		if (isOnPropertyKey(position)) {
-			return camelPropertyKeyInstance.getHover(position, camelCatalog);
+			return camelPropertyKeyInstance.getHover(position, camelCatalog, markdown);
 		} else {
 			return camelPropertyValueInstance.getHover(position, camelCatalog, kameletCatalogManager);
 		}

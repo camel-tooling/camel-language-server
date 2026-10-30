@@ -30,15 +30,17 @@ import com.github.cameltooling.lsp.internal.parser.ParserFileHelperUtil;
 public class CamelPropertiesFileHoverProcessor {
 
 	private TextDocumentItem textDocumentItem;
+	private boolean markdown;
 
-	public CamelPropertiesFileHoverProcessor(TextDocumentItem textDocumentItem) {
+	public CamelPropertiesFileHoverProcessor(TextDocumentItem textDocumentItem, boolean markdown) {
 		this.textDocumentItem = textDocumentItem;
+		this.markdown = markdown;
 	}
 
 	public CompletableFuture<Hover> getHover(Position position, CompletableFuture<CamelCatalog> camelCatalog, KameletsCatalogManager kameletCatalogManager) {
 		int line = position.getLine();
 		String propertyEntryTextLine = new ParserFileHelperUtil().getLine(textDocumentItem, line);
-		return new CamelPropertyEntryInstance(propertyEntryTextLine, new Position(line, 0), textDocumentItem).getHover(position, camelCatalog, kameletCatalogManager);
+		return new CamelPropertyEntryInstance(propertyEntryTextLine, new Position(line, 0), textDocumentItem).getHover(position, camelCatalog, kameletCatalogManager, markdown);
 	}
 
 }

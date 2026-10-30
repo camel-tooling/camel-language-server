@@ -1,0 +1,84 @@
+{
+  "configRoots": [
+    {
+      "extension": {
+        "groupId": "org.apache.camel.quarkus",
+        "artifactId": "camel-quarkus-core",
+        "name": "Camel Core"
+      },
+      "prefix": "quarkus.camel",
+      "topLevelPrefix": "quarkus.camel",
+      "items": [
+        {
+          "@class": "io.quarkus.annotation.processor.documentation.config.model.ConfigProperty",
+          "path": {
+            "property": "quarkus.camel.bootstrap.enabled",
+            "environmentVariable": "QUARKUS_CAMEL_BOOTSTRAP_ENABLED"
+          },
+          "sourceType": "org.apache.camel.quarkus.core.CamelConfig.BootstrapConfig",
+          "sourceElementName": "enabled",
+          "type": "boolean",
+          "typeDescription": "boolean",
+          "defaultValue": "true",
+          "deprecation": {}
+        },
+        {
+          "@class": "io.quarkus.annotation.processor.documentation.config.model.ConfigProperty",
+          "path": {
+            "property": "quarkus.camel.csimple.on-build-time-analysis-failure",
+            "environmentVariable": "QUARKUS_CAMEL_CSIMPLE_ON_BUILD_TIME_ANALYSIS_FAILURE"
+          },
+          "sourceType": "org.apache.camel.quarkus.core.CamelConfig.CSimpleConfig",
+          "sourceElementName": "onBuildTimeAnalysisFailure",
+          "type": "org.apache.camel.quarkus.core.CamelConfig.FailureRemedy",
+          "typeDescription": "FailureRemedy",
+          "defaultValue": "warn",
+          "enum": true,
+          "enumAcceptedValues": {
+            "qualifiedName": "org.apache.camel.quarkus.core.CamelConfig.FailureRemedy",
+            "values": {
+              "fail": { "configValue": "fail" },
+              "ignore": { "configValue": "ignore" },
+              "warn": { "configValue": "warn" }
+            }
+          }
+        },
+        {
+          "@class": "io.quarkus.annotation.processor.documentation.config.model.ConfigSection",
+          "path": {
+            "property": "quarkus.camel.service"
+          },
+          "items": [
+            {
+              "@class": "io.quarkus.annotation.processor.documentation.config.model.ConfigProperty",
+              "path": {
+                "property": "quarkus.camel.service.discovery.include-patterns",
+                "environmentVariable": "QUARKUS_CAMEL_SERVICE_DISCOVERY_INCLUDE_PATTERNS"
+              },
+              "sourceType": "org.apache.camel.quarkus.core.CamelConfig.ServiceDiscoveryConfig",
+              "sourceElementName": "includePatterns",
+              "type": "java.util.List",
+              "typeDescription": "string",
+              "list": true
+            }
+          ]
+        },
+        {
+          "@class": "io.quarkus.annotation.processor.documentation.config.model.ConfigProperty",
+          "path": {
+            "property": "quarkus.camel.routes-discovery.enabled",
+            "environmentVariable": "QUARKUS_CAMEL_ROUTES_DISCOVERY_ENABLED"
+          },
+          "sourceType": "org.apache.camel.quarkus.core.CamelConfig.RoutesDiscoveryConfig",
+          "sourceElementName": "enabled",
+          "type": "boolean",
+          "typeDescription": "boolean",
+          "defaultValue": "true",
+          "deprecation": {
+            "since": "3.26.0"
+          }
+        }
+      ]
+    }
+  ]
+}

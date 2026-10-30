@@ -1,0 +1,49 @@
+{
+  "groups": [
+    {
+      "name": "camel.main",
+      "type": "org.apache.camel.spring.boot.CamelConfigurationProperties$Main"
+    }
+  ],
+  "properties": [
+    {
+      "name": "camel.main.name",
+      "type": "java.lang.String",
+      "description": "Sets the name of the CamelContext."
+    },
+    {
+      "name": "camel.main.auto-startup",
+      "type": "java.lang.Boolean",
+      "description": "Sets whether the object should automatically start when Camel starts.",
+      "defaultValue": true
+    },
+    {
+      "name": "camel.main.run-controller",
+      "type": "java.lang.Boolean",
+      "description": "Whether to use the main run controller to ensure the Spring-Boot application keeps running.",
+      "defaultValue": false
+    },
+    {
+      "name": "camel.main.main-run-controller",
+      "type": "java.lang.Boolean",
+      "description": "Whether to use the main run controller to ensure the Spring-Boot application keeps running.",
+      "defaultValue": false,
+      "deprecated": true,
+      "deprecation": {
+        "replacement": "camel.main.run-controller",
+        "since": "4.14.0"
+      }
+    },
+    {
+      "name": "camel.ssl.cipher-suites-filter",
+      "type": "org.apache.camel.support.jsse.FilterParameters"
+    },
+    {
+      "name": "management.endpoint.camel.access",
+      "type": "org.springframework.boot.actuate.endpoint.Access",
+      "description": "Permitted level of access for the camel endpoint.",
+      "defaultValue": "unrestricted"
+    }
+  ],
+  "hints": []
+}

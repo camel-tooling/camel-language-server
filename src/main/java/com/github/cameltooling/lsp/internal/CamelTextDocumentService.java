@@ -74,6 +74,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.github.cameltooling.lsp.internal.catalog.runtimeprovider.CamelRuntimeProvider;
+import com.github.cameltooling.lsp.internal.catalog.runtimeprovider.RuntimeConfigurationProperties;
+import com.github.cameltooling.lsp.internal.catalog.runtimeprovider.RuntimeConfigurationPropertiesLoader;
 import com.github.cameltooling.lsp.internal.catalog.util.KameletsCatalogManager;
 import com.github.cameltooling.lsp.internal.codeactions.CodeActionProcessor;
 import com.github.cameltooling.lsp.internal.completion.CamelEndpointCompletionProcessor;
@@ -114,7 +116,11 @@ public class CamelTextDocumentService implements TextDocumentService {
 
 	public CamelTextDocumentService(CamelLanguageServer camelLanguageServer) {
 		this.camelLanguageServer = camelLanguageServer;
-		camelCatalog = CompletableFuture.supplyAsync(() -> new DefaultCamelCatalog(true));
+		camelCatalog = CompletableFuture.supplyAsync(() -> {
+			DefaultCamelCatalog catalog = new DefaultCamelCatalog(true);
+			registerConfigurationProperties(catalog, RuntimeConfigurationProperties.NONE);
+			return catalog;
+		});
 	}
 	
 	public void updateCatalog(String camelVersion, String camelCatalogRuntimeProvider, String camelCatalogRuntimeProviderVersion, List<Map<?,?>> extraComponents) {
@@ -125,8 +131,9 @@ public class CamelTextDocumentService implements TextDocumentService {
 			Thread.currentThread().setContextClassLoader(callerClassLoader);
 			DefaultCamelCatalog catalog = new DefaultCamelCatalog(true);
 			updateCatalogVersion(camelVersion, catalog);
-			updateCatalogRuntimeProvider(camelCatalogRuntimeProvider, camelCatalogRuntimeProviderVersion, catalog);
+			RuntimeConfigurationProperties runtimeProperties = updateCatalogRuntimeProvider(camelCatalogRuntimeProvider, camelCatalogRuntimeProviderVersion, catalog);
 			updateCatalogExtraComponents(extraComponents, catalog);
+			registerConfigurationProperties(catalog, runtimeProperties);
 			String loadedRuntimeProviderVersion = catalog.getRuntimeProviderLoadedVersion();
 			logToClient(MessageType.Info, String.format("Camel catalog updated - active version: %s, runtime provider: %s%s",
 					catalog.getCatalogVersion(),
@@ -149,26 +156,31 @@ public class CamelTextDocumentService implements TextDocumentService {
 		}
 	}
 
-	private void updateCatalogRuntimeProvider(String camelCatalogRuntimeProvider, String camelCatalogRuntimeProviderVersion, DefaultCamelCatalog catalog) {
+	/**
+	 * @return the configuration properties that the requested version of the runtime adds to the ones of Camel Main
+	 */
+	private RuntimeConfigurationProperties updateCatalogRuntimeProvider(String camelCatalogRuntimeProvider, String camelCatalogRuntimeProviderVersion, DefaultCamelCatalog catalog) {
 		if(camelCatalogRuntimeProvider != null && !camelCatalogRuntimeProvider.isEmpty()) {
 			RuntimeProvider runtimeProvider = CamelRuntimeProvider.getProvider(camelCatalogRuntimeProvider);
 			if(runtimeProvider != null) {
 				catalog.setRuntimeProvider(runtimeProvider);
 				logToClient(MessageType.Info, "Runtime provider set to: " + camelCatalogRuntimeProvider);
-				updateCatalogRuntimeProviderVersion(CamelRuntimeProvider.valueOf(camelCatalogRuntimeProvider), camelCatalogRuntimeProviderVersion, catalog);
+				return updateCatalogRuntimeProviderVersion(CamelRuntimeProvider.valueOf(camelCatalogRuntimeProvider), camelCatalogRuntimeProviderVersion, catalog);
 			} else {
 				logToClient(MessageType.Warning, "Unknown runtime provider: " + camelCatalogRuntimeProvider);
 			}
 		}
+		return RuntimeConfigurationProperties.NONE;
 	}
 
 	/**
 	 * Loads the catalog of the requested version of the runtime, which provides the components available on this runtime
 	 * and their runtime specific metadata. Otherwise the catalog of the runtime bundled with the Language Server is used.
+	 * @return the configuration properties that this version of the runtime adds to the ones of Camel Main
 	 */
-	private void updateCatalogRuntimeProviderVersion(CamelRuntimeProvider runtimeProvider, String runtimeProviderVersion, DefaultCamelCatalog catalog) {
+	private RuntimeConfigurationProperties updateCatalogRuntimeProviderVersion(CamelRuntimeProvider runtimeProvider, String runtimeProviderVersion, DefaultCamelCatalog catalog) {
 		if (runtimeProviderVersion == null || runtimeProviderVersion.isEmpty() || runtimeProvider.getCatalogArtifactId() == null) {
-			return;
+			return RuntimeConfigurationProperties.NONE;
 		}
 		logToClient(MessageType.Info, "Loading " + runtimeProvider + " runtime provider catalog version: " + runtimeProviderVersion);
 		MavenVersionManager versionManager;
@@ -181,10 +193,31 @@ public class CamelTextDocumentService implements TextDocumentService {
 		addRedHatRepositoryIfNeeded(versionManager, runtimeProviderVersion);
 		if (catalog.loadRuntimeProviderVersion(runtimeProvider.getCatalogGroupId(), runtimeProvider.getCatalogArtifactId(), runtimeProviderVersion)) {
 			logToClient(MessageType.Info, "Runtime provider catalog version loaded successfully: " + runtimeProviderVersion);
+			return loadRuntimeConfigurationProperties(runtimeProvider, runtimeProviderVersion, versionManager, catalog);
 		} else {
 			LOGGER.warn("Cannot load {} runtime provider catalog with version {}", runtimeProvider, runtimeProviderVersion);
 			logToClient(MessageType.Warning, "Cannot load " + runtimeProvider + " runtime provider catalog with version " + runtimeProviderVersion);
+			return RuntimeConfigurationProperties.NONE;
 		}
+	}
+
+	private RuntimeConfigurationProperties loadRuntimeConfigurationProperties(CamelRuntimeProvider runtimeProvider, String runtimeProviderVersion, MavenVersionManager versionManager, DefaultCamelCatalog catalog) {
+		String runtime = runtimeProvider.getTitle() + " " + runtimeProviderVersion;
+		RuntimeConfigurationProperties properties = new RuntimeConfigurationPropertiesLoader(versionManager).load(runtimeProvider, runtimeProviderVersion, catalog.mainModel());
+		if (properties.isEmpty()) {
+			logToClient(MessageType.Info, "No configuration properties found for " + runtime);
+		} else {
+			logToClient(MessageType.Info, String.format("Loaded %d configuration properties of %s", properties.getProperties().size(), runtime));
+		}
+		return properties;
+	}
+
+	/**
+	 * Registers the configuration properties that Camel JBang and the runtime add to the ones of Camel Main,
+	 * for the completion, the hover and the validation of the application properties files.
+	 */
+	private void registerConfigurationProperties(DefaultCamelCatalog catalog, RuntimeConfigurationProperties runtimeProperties) {
+		RuntimeConfigurationProperties.register(catalog, RuntimeConfigurationPropertiesLoader.loadCamelJBang(catalog).with(runtimeProperties));
 	}
 
 	private void updateCatalogVersion(String camelVersion, DefaultCamelCatalog catalog) {
@@ -296,7 +329,7 @@ public class CamelTextDocumentService implements TextDocumentService {
 		String uri = hoverParams.getTextDocument().getUri();
 		TextDocumentItem textDocumentItem = openedDocuments.get(uri);
 		if (uri.endsWith(".properties")){
-			return new CamelPropertiesFileHoverProcessor(textDocumentItem).getHover(hoverParams.getPosition(), getCamelCatalog(), getKameletsCatalogManager());
+			return new CamelPropertiesFileHoverProcessor(textDocumentItem, getSettingsManager().isMardownSupport()).getHover(hoverParams.getPosition(), getCamelCatalog(), getKameletsCatalogManager());
 		} else if(new CamelKModelineParser().isOnCamelKModeline(hoverParams.getPosition().getLine(), textDocumentItem)) {
 			return new CamelKModelineHoverProcessor(textDocumentItem).getHover(hoverParams.getPosition(), getCamelCatalog());
 		} else if (textDocumentItem != null && isCamelYamlDslKey(textDocumentItem, hoverParams.getPosition())) {

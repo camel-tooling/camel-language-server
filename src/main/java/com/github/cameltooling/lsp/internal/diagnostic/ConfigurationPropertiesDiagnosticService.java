@@ -31,6 +31,7 @@ import java.util.concurrent.ExecutionException;
 
 import org.apache.camel.catalog.CamelCatalog;
 import org.apache.camel.catalog.ConfigurationPropertiesValidationResult;
+import org.apache.camel.util.StringHelper;
 import org.eclipse.lsp4j.Diagnostic;
 import org.eclipse.lsp4j.DiagnosticSeverity;
 import org.eclipse.lsp4j.Position;
@@ -42,6 +43,7 @@ import com.github.cameltooling.lsp.internal.catalog.diagnostic.IntegerErrorMsg;
 import com.github.cameltooling.lsp.internal.catalog.diagnostic.NumberErrorMsg;
 import com.github.cameltooling.lsp.internal.catalog.diagnostic.ReferenceErrorMsg;
 import com.github.cameltooling.lsp.internal.catalog.diagnostic.UnknownErrorMsg;
+import com.github.cameltooling.lsp.internal.catalog.runtimeprovider.RuntimeConfigurationProperties;
 
 public class ConfigurationPropertiesDiagnosticService extends DiagnosticService {
 
@@ -56,11 +58,15 @@ public class ConfigurationPropertiesDiagnosticService extends DiagnosticService 
 			String line=null;
 			int lineNumber = 0;
 			try {
+				CamelCatalog catalog = camelCatalog.get();
+				RuntimeConfigurationProperties runtimeProperties = RuntimeConfigurationProperties.of(catalog);
 				while((line=bufReader.readLine()) != null){
-					ConfigurationPropertiesValidationResult validationResult = camelCatalog.get().validateConfigurationProperty(line);
-					if(validationResult.hasErrors() && validationResult.getIncapable() == null) {
-						validationResult.setLineNumber(lineNumber);
-						errors.put(line, validationResult);
+					if (!isRuntimeConfigurationProperty(line, runtimeProperties)) {
+						ConfigurationPropertiesValidationResult validationResult = catalog.validateConfigurationProperty(line);
+						if(validationResult.hasErrors() && validationResult.getIncapable() == null) {
+							validationResult.setLineNumber(lineNumber);
+							errors.put(line, validationResult);
+						}
 					}
 					lineNumber++;
 				}
@@ -74,6 +80,15 @@ public class ConfigurationPropertiesDiagnosticService extends DiagnosticService 
 		return errors;
 	}
 	
+	/**
+	 * @return whether the line sets a configuration property of the runtime, which the catalog does not know,
+	 * for instance {@code camel.main.run-controller} on Camel Spring Boot
+	 */
+	private boolean isRuntimeConfigurationProperty(String line, RuntimeConfigurationProperties runtimeProperties) {
+		String key = StringHelper.before(line, "=");
+		return key != null && runtimeProperties.find(key.trim()).isPresent();
+	}
+
 	public Collection<Diagnostic> converToLSPDiagnostics(Map<String, ConfigurationPropertiesValidationResult> configurationPropertiesErrors) {
 		List<Diagnostic> lspDiagnostics = new ArrayList<>();
 		for (Map.Entry<String, ConfigurationPropertiesValidationResult> errorEntry : configurationPropertiesErrors.entrySet()) {

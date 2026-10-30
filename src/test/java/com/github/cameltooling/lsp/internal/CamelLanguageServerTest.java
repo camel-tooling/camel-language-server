@@ -357,7 +357,8 @@ class CamelLanguageServerTest extends AbstractCamelLanguageServerTest {
 			CamelLanguageServer cls = initializeLanguageServerWithFileName(fis, "application.properties");
 			CompletableFuture<Either<List<CompletionItem>, CompletionList>> completions = getCompletionFor(cls, new Position(2, 6), "application.properties");
 			MainModel mainModel = cls.getTextDocumentService().getCamelCatalog().get().mainModel();
-			assertThat(completions.get().getLeft()).hasSize(mainModel.getGroups().size() + 1);
+			// the groups of the Camel Main options, component, and jbang for the Camel JBang options
+			assertThat(completions.get().getLeft()).hasSize(mainModel.getGroups().size() + 2);
 		}
 	}
 

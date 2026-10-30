@@ -18,10 +18,38 @@ package com.github.cameltooling.lsp.internal.catalog.util;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.Collections;
+
 import org.apache.camel.tooling.model.EipModel.EipOptionModel;
+import org.eclipse.lsp4j.MarkupKind;
 import org.junit.jupiter.api.Test;
 
+import com.github.cameltooling.lsp.internal.catalog.runtimeprovider.RuntimeConfigurationProperty;
+
 class ModelDocumentationHelperTest {
+
+	private static final RuntimeConfigurationProperty BOOTSTRAP = new RuntimeConfigurationProperty("Camel Quarkus 3.40.0", "quarkus.camel.bootstrap.enabled",
+			"When set to true, the CamelRuntime will be started automatically.", "boolean", "true", Collections.emptyList(), null);
+
+	@Test
+	void testMarkdownDetailsAreSeparatedByLineBreaks() {
+		String documentation = ModelDocumentationHelper.getConfigurationPropertyDocumentation(BOOTSTRAP, true).getValue();
+
+		assertThat(documentation).isEqualTo("**quarkus.camel.bootstrap.enabled**\n\n"
+				+ "When set to true, the CamelRuntime will be started automatically.\n\n"
+				+ "**Type:** boolean\\\n"
+				+ "**Default value:** true\\\n"
+				+ "**Runtime:** Camel Quarkus 3.40.0");
+	}
+
+	@Test
+	void testPlainTextDetailsAreOnTheirOwnLines() {
+		assertThat(ModelDocumentationHelper.getConfigurationPropertyDocumentation(BOOTSTRAP, false))
+				.satisfies(documentation -> {
+					assertThat(documentation.getKind()).isEqualTo(MarkupKind.PLAINTEXT);
+					assertThat(documentation.getValue()).endsWith("Type: boolean\nDefault value: true\nRuntime: Camel Quarkus 3.40.0");
+				});
+	}
 
 	@Test
 	void testMarkdownOptionDocumentationDoesNotEndWithLineBreak() {
