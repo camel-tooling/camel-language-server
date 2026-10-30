@@ -1,0 +1,14 @@
+- from:
+    uri: timer:tick
+    steps:
+      - wireTap:
+          uri: direct:tap
+          pattern: InOnly
+      - serviceCall:
+          name: foo
+      - setBody:
+          csimple: "${body}"
+      - setBdy:
+          constant: x
+      - transform:
+          toType: "aws2-ddb:application-json"

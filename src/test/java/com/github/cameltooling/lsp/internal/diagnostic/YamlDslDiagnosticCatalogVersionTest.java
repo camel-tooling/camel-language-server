@@ -21,12 +21,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.eclipse.lsp4j.Diagnostic;
 import org.junit.jupiter.api.Test;
 
 import com.github.cameltooling.lsp.internal.settings.SettingsManager;
 
 /**
- * The catalog of Camel 4.10 provides no YAML DSL model: the steps are the ones that Camel 4.10 knows.
+ * The catalog of Camel 4.10 provides no YAML DSL model: the steps are the ones that Camel 4.10 knows, the structure is
+ * validated with the model of the bundled catalog and the keys that Camel 4.10 knows.
  */
 class YamlDslDiagnosticCatalogVersionTest extends AbstractDiagnosticTest {
 
@@ -36,6 +38,16 @@ class YamlDslDiagnosticCatalogVersionTest extends AbstractDiagnosticTest {
 		testDiagnostic("yaml-dsl-older-version-steps", 2, ".camel.yaml");
 		assertThat(lastPublishedDiagnostics.getDiagnostics()).extracting(this::getDiagnosticMessage)
 				.containsExactlyInAnyOrder("'serviceCall' is deprecated", "Unknown Camel EIP or step: 'switch'");
+	}
+
+	@Test
+	void testKeysRemovedAfterTheCatalogVersionAreAccepted() throws Exception {
+		// the pattern of wireTap, serviceCall, the csimple language and the toType of transform
+		testDiagnostic("yaml-dsl-structure-older-version", 2, ".camel.yaml");
+		assertThat(lastPublishedDiagnostics.getDiagnostics()).extracting(this::getDiagnosticMessage)
+				.containsExactly("'serviceCall' is deprecated", "Unknown Camel EIP or step: 'setBdy'");
+		Diagnostic unknownStep = lastPublishedDiagnostics.getDiagnostics().get(1);
+		checkRange(unknownStep.getRange(), 10, 8, 10, 14);
 	}
 
 	@Override

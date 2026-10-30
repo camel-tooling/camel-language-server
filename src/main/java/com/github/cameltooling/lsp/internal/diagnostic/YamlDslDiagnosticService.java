@@ -20,10 +20,12 @@ import java.io.StringReader;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.regex.Pattern;
@@ -31,9 +33,11 @@ import java.util.regex.Pattern;
 import org.apache.camel.catalog.CamelCatalog;
 import org.apache.camel.catalog.EndpointValidationResult;
 import org.apache.camel.tooling.model.EipModel;
+import org.apache.camel.tooling.model.EipModel.EipOptionModel;
 import org.apache.camel.util.StringHelper;
 import org.eclipse.lsp4j.Diagnostic;
 import org.eclipse.lsp4j.DiagnosticSeverity;
+import org.eclipse.lsp4j.DiagnosticTag;
 import org.eclipse.lsp4j.Position;
 import org.eclipse.lsp4j.Range;
 import org.eclipse.lsp4j.TextDocumentItem;
@@ -66,17 +70,23 @@ import com.github.cameltooling.lsp.internal.catalog.util.YamlDslModel.Child;
 import com.github.cameltooling.lsp.internal.parser.ParserFileHelperFactory;
 
 /**
- * Validates the endpoints and the step names of Camel YAML DSL documents.
+ * Validates the structure and the endpoints of Camel YAML DSL documents.
  * <p>
- * The endpoints, including the options written in their {@code parameters}, are validated with the Camel catalog
- * like the endpoints of the XML and Java DSLs. The steps must be known Camel models. The elements of the documents,
- * and the ones which are endpoints, are found with the YAML DSL model of the Camel catalog.
+ * The structure is validated with the YAML DSL model of the Camel catalog: unknown elements, steps and options, missing
+ * required options, invalid enum values and deprecated elements. The endpoints, including the options written in their
+ * {@code parameters}, are validated with the Camel catalog like the endpoints of the XML and Java DSLs.
+ * <p>
+ * The catalogs of the Camel versions before 4.22 provide no model, the model of the bundled catalog is used instead.
+ * The steps are then the ones of the Camel version of the catalog, and the keys that this version knows and that the
+ * model no longer knows are accepted: the options of its EIP models, the elements these options list and its languages.
  */
 public class YamlDslDiagnosticService extends DiagnosticService {
 
 	private static final Pattern SCHEME = Pattern.compile("[a-zA-Z][a-zA-Z0-9+.-]*");
 	/** Durations with milliseconds, accepted by Camel but not by the Camel catalog validation. */
 	private static final Pattern DURATION_WITH_MILLISECONDS = Pattern.compile("(\\d+(ms|[dhms]))+");
+	private static final String ATTRIBUTE_KIND = "attribute";
+	private static final Set<String> SCALAR_TYPES = Set.of("string", "enum", "boolean", "number", "integer");
 
 	public YamlDslDiagnosticService(CompletableFuture<CamelCatalog> camelCatalog) {
 		super(camelCatalog);
@@ -171,29 +181,39 @@ public class YamlDslDiagnosticService extends DiagnosticService {
 				}
 				Child child = model.getChild(list, key);
 				if (YamlDslKeys.STEPS.equals(list.getName())) {
-					validateStepName(key, entry.getKeyNode(), child);
+					if (!validateStepName(key, entry.getKeyNode(), child)) {
+						// the elements of a step that the Camel version of the catalog does not know cannot be validated
+						continue;
+					}
+				} else if (child != null) {
+					checkDeprecation(key, child, null, entry.getKeyNode());
+				} else if (model.isOwnModel() || !catalog.findModelNames().contains(key)) {
+					addWarning(entry.getKeyNode(), String.format("Unknown Camel YAML DSL element: '%s'", key));
 				}
 				if (child != null) {
-					validateValue(child, entry.getValueNode());
+					validateValue(child, entry.getKeyNode(), entry.getValueNode());
 				}
 			}
 		}
 
-		private void validateValue(Child child, Node value) {
+		private void validateValue(Child child, Node keyNode, Node value) {
 			if (isNull(value)) {
 				return;
 			}
 			if (model.isWrappedList(child)) {
-				validateWrappedList(child.getName(), value);
+				validateWrappedList(child, value);
 			} else {
-				validateNode(model.getNode(child), value);
+				validateNode(child, model.getNode(child), keyNode, value);
 			}
 		}
 
 		/**
 		 * Validates the node when it is an endpoint, then its elements.
+		 *
+		 * @param child the key of the node
+		 * @param anchor the node on which the missing options are reported
 		 */
-		private void validateNode(YamlDslModel.Node node, Node value) {
+		private void validateNode(Child child, YamlDslModel.Node node, Node anchor, Node value) {
 			if (node == null) {
 				// scalar or free-form value, such as the parameters of an endpoint
 				return;
@@ -203,38 +223,139 @@ public class YamlDslDiagnosticService extends DiagnosticService {
 			} else if (value instanceof SequenceNode) {
 				// a list of elements of the node, such as the cases of a switch
 				for (Node item : ((SequenceNode) value).getValue()) {
-					validateNode(node, item);
+					validateNode(child, node, getFirstKey(item), item);
 				}
 			} else {
 				if (YamlDslModel.isEndpoint(node)) {
 					validateEndpoint(value, YamlDslKeys.PARAMETERS);
 				}
-				validateMapping(node, value);
+				validateMapping(child, node, anchor, value);
 			}
 		}
 
-		private void validateMapping(YamlDslModel.Node node, Node value) {
-			if (value instanceof MappingNode) {
-				for (NodeTuple entry : ((MappingNode) value).getValue()) {
-					String key = getScalarValue(entry.getKeyNode());
-					// like the YAML DSL deserializers, accept the options in kebab case
-					Child child = key != null ? model.getChild(node, StringHelper.dashToCamelCase(key)) : null;
-					if (child != null) {
-						validateValue(child, entry.getValueNode());
+		private void validateMapping(Child child, YamlDslModel.Node node, Node anchor, Node value) {
+			if (!(value instanceof MappingNode) || node.getChildren().isEmpty()) {
+				// scalar shorthand, for instance to: "log:info", or free-form value
+				return;
+			}
+			String name = child.getName();
+			EipModel eipModel = catalog.eipModel(node.getName());
+			// the keys of an expression are languages, the keys of an element with an expression can be its language
+			YamlDslModel.Node languages = YamlDslModel.KIND_EXPRESSION.equals(child.getKind()) ? node : model.getLanguages(node);
+			Set<String> definedKeys = new HashSet<>();
+			boolean unknownKeys = false;
+			boolean olderVersionKeys = false;
+			for (NodeTuple entry : ((MappingNode) value).getValue()) {
+				String writtenKey = getScalarValue(entry.getKeyNode());
+				if (writtenKey == null) {
+					continue;
+				}
+				// like the YAML DSL deserializers, accept the options in kebab case but not the names of the steps
+				String key = StringHelper.dashToCamelCase(writtenKey);
+				Child keyChild = model.getChild(node, key);
+				definedKeys.add(languages != null && languages.getChild(key) != null ? YamlDslKeys.EXPRESSION : key);
+				if (keyChild != null) {
+					EipOptionModel option = findOption(eipModel, key);
+					checkDeprecation(writtenKey, keyChild, option, entry.getKeyNode());
+					checkEnumValue(writtenKey, keyChild, option, entry.getValueNode());
+					validateValue(keyChild, entry.getKeyNode(), entry.getValueNode());
+				} else if (!model.isOwnModel() && isKeyOfCatalogVersion(node, eipModel, languages, key)) {
+					olderVersionKeys = true;
+				} else {
+					unknownKeys = true;
+					addWarning(entry.getKeyNode(), String.format("Unknown option '%s' for '%s'", writtenKey, name));
+				}
+			}
+			// the keys removed after the Camel version of the catalog can stand for the required ones of the model, for
+			// instance the toType of transform, replaced in 4.18 by the transformDataType EIP, for its expression
+			if (!olderVersionKeys) {
+				for (Child option : node.getChildren()) {
+					if (option.isRequired() && !definedKeys.contains(option.getName()) && isCheckedWhenRequired(option, eipModel, unknownKeys)) {
+						addWarning(anchor, String.format("Missing required option '%s' for '%s'", option.getName(), name));
 					}
 				}
 			}
 		}
 
 		/**
+		 * @return whether the Camel version of the catalog knows the key that the model, of a more recent version, does
+		 * not know: an option of the EIP model of the node, an element listed by an option like the elements of the node,
+		 * such as the data formats of marshal, or a language
+		 */
+		private boolean isKeyOfCatalogVersion(YamlDslModel.Node node, EipModel eipModel, YamlDslModel.Node languages, String key) {
+			if (languages != null && catalog.findLanguageNames().contains(key)) {
+				return true;
+			}
+			if (eipModel != null) {
+				for (EipOptionModel option : eipModel.getOptions()) {
+					List<String> elements = option.getOneOfs();
+					if (key.equals(option.getName()) && ATTRIBUTE_KIND.equals(option.getKind())
+							|| elements != null && elements.contains(key) && elements.stream().anyMatch(element -> node.getChild(element) != null)) {
+						return true;
+					}
+				}
+			}
+			return false;
+		}
+
+		/**
+		 * The required elements are not checked, as the model marks elements as required even when they have alternatives,
+		 * for instance the route of a route template which can be defined with its from only. With the model of a more
+		 * recent version, the options are checked when the EIP model of the Camel version of the catalog requires them.
+		 */
+		private boolean isCheckedWhenRequired(Child child, EipModel eipModel, boolean unknownKeys) {
+			if (!model.isOwnModel() && eipModel != null) {
+				EipOptionModel option = findOption(eipModel, child.getName());
+				if (option == null || !option.isRequired()) {
+					return false;
+				}
+			}
+			if (YamlDslModel.KIND_EXPRESSION.equals(child.getKind())) {
+				// an unknown key is likely the expression, with a misspelled language
+				return !unknownKeys;
+			}
+			return child.isScalar() && SCALAR_TYPES.contains(child.getType());
+		}
+
+		/**
+		 * @param option the option of the EIP model of the Camel version of the catalog, which knows the values of its version
+		 */
+		private void checkEnumValue(String key, Child child, EipOptionModel option, Node value) {
+			List<String> values = option != null && option.getEnums() != null && !option.getEnums().isEmpty() ? option.getEnums() : child.getEnumValues();
+			String text = getScalarValue(value);
+			if (values.isEmpty() || text == null || isNull(value) || text.contains("{{") || text.contains("${")) {
+				return;
+			}
+			if (values.stream().noneMatch(text::equalsIgnoreCase)) {
+				addWarning(value, String.format("Invalid value '%s' for '%s', the possible values are: %s", text, key, String.join(", ", values)));
+			}
+		}
+
+		private void checkDeprecation(String key, Child child, EipOptionModel option, Node keyNode) {
+			YamlDslModel.Node node = model.getNode(child);
+			if (option != null ? option.isDeprecated() : child.isDeprecated() || node != null && node.isDeprecated()) {
+				addDeprecation(keyNode, key);
+			}
+		}
+
+		/**
 		 * Validates a list of mappings with the name of the list as single key, such as the onException of a route configuration.
 		 */
-		private void validateWrappedList(String name, Node value) {
+		private void validateWrappedList(Child child, Node value) {
+			String name = child.getName();
 			if (value instanceof SequenceNode) {
 				for (Node item : ((SequenceNode) value).getValue()) {
-					Node wrapped = getValue(item, name);
-					if (wrapped != null && !isNull(wrapped)) {
-						validateNode(model.getNode(name), wrapped);
+					if (item instanceof MappingNode) {
+						for (NodeTuple entry : ((MappingNode) item).getValue()) {
+							String key = getScalarValue(entry.getKeyNode());
+							if (name.equals(key)) {
+								if (!isNull(entry.getValueNode())) {
+									validateNode(child, model.getNode(name), entry.getKeyNode(), entry.getValueNode());
+								}
+							} else if (key != null) {
+								addWarning(entry.getKeyNode(), String.format("Unknown option '%s' for '%s'", key, name));
+							}
+						}
 					}
 				}
 			}
@@ -243,15 +364,18 @@ public class YamlDslDiagnosticService extends DiagnosticService {
 		/**
 		 * Reports the steps that the Camel version of the catalog does not know, and the deprecated ones. The catalog
 		 * finds the names of its version only, the models of the other names are the ones of the bundled catalog.
+		 *
+		 * @return whether the Camel version of the catalog knows the step
 		 */
-		private void validateStepName(String name, Node keyNode, Child child) {
-			boolean known = model.isOwnModel() && child != null || catalog.findModelNames().contains(name);
+		private boolean validateStepName(String name, Node keyNode, Child child) {
+			boolean known = model.isOwnModel() ? child != null : catalog.findModelNames().contains(name);
 			EipModel eipModel = known ? catalog.eipModel(name) : null;
 			if (!known) {
-				addDiagnostic(getRange(keyNode), String.format("Unknown Camel EIP or step: '%s'", name), DiagnosticSeverity.Warning, null);
+				addWarning(keyNode, String.format("Unknown Camel EIP or step: '%s'", name));
 			} else if (eipModel != null && eipModel.isDeprecated()) {
-				addDiagnostic(getRange(keyNode), String.format("'%s' is deprecated", name), DiagnosticSeverity.Hint, null);
+				addDeprecation(keyNode, name);
 			}
+			return known;
 		}
 
 		private void validatePipe(Node spec) {
@@ -404,9 +528,36 @@ public class YamlDslDiagnosticService extends DiagnosticService {
 			return end >= 0 ? end : uri.length();
 		}
 
-		private void addDiagnostic(Range range, String message, DiagnosticSeverity severity, String code) {
-			diagnostics.add(new Diagnostic(range, message, severity, APACHE_CAMEL_VALIDATION, code));
+		private void addWarning(Node node, String message) {
+			addDiagnostic(getRange(node), message, DiagnosticSeverity.Warning, null);
 		}
+
+		private void addDeprecation(Node keyNode, String name) {
+			addDiagnostic(getRange(keyNode), String.format("'%s' is deprecated", name), DiagnosticSeverity.Hint, null).setTags(List.of(DiagnosticTag.Deprecated));
+		}
+
+		private Diagnostic addDiagnostic(Range range, String message, DiagnosticSeverity severity, String code) {
+			Diagnostic diagnostic = new Diagnostic(range, message, severity, APACHE_CAMEL_VALIDATION, code);
+			diagnostics.add(diagnostic);
+			return diagnostic;
+		}
+	}
+
+	private static EipOptionModel findOption(EipModel eipModel, String name) {
+		if (eipModel == null) {
+			return null;
+		}
+		return eipModel.getOptions().stream().filter(option -> name.equals(option.getName())).findFirst().orElse(null);
+	}
+
+	/**
+	 * @return the first key of a mapping, else the node
+	 */
+	private static Node getFirstKey(Node item) {
+		if (item instanceof MappingNode && !((MappingNode) item).getValue().isEmpty()) {
+			return ((MappingNode) item).getValue().get(0).getKeyNode();
+		}
+		return item;
 	}
 
 	/**

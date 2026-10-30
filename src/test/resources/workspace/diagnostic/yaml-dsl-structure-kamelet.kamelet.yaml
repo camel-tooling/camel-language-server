@@ -1,0 +1,12 @@
+apiVersion: camel.apache.org/v1
+kind: Kamelet
+metadata:
+  name: my-sink
+spec:
+  template:
+    from:
+      uri: kamelet:source
+      steps:
+        - setBody:
+            constant: "{{message}}"
+        - lgo: "${body}"

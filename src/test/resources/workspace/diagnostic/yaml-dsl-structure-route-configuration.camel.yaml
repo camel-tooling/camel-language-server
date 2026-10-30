@@ -1,0 +1,18 @@
+- routeConfiguration:
+    id: config
+    onException:
+      - onException:
+          exception:
+            - java.lang.Exception
+          handled:
+            constant: true
+          steps:
+            - log: failed
+      - onExceptionn:
+          exception:
+            - java.lang.IllegalStateException
+- from:
+    uri: timer:tick
+    steps:
+      - setBody:
+          ognl: request.body

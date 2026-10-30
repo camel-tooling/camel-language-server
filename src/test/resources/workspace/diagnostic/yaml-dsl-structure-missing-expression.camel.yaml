@@ -1,0 +1,11 @@
+- from:
+    uri: timer:tick
+    steps:
+      - setBody:
+          id: body
+      - setHeader:
+          name: foo
+          simpel: "${body}"
+      - setProperty:
+          name: bar
+          exchange-property: foo

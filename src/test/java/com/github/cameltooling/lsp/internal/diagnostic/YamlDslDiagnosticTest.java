@@ -22,6 +22,7 @@ import java.util.List;
 
 import org.eclipse.lsp4j.Diagnostic;
 import org.eclipse.lsp4j.DiagnosticSeverity;
+import org.eclipse.lsp4j.DiagnosticTag;
 import org.junit.jupiter.api.Test;
 
 class YamlDslDiagnosticTest extends AbstractDiagnosticTest {
@@ -111,5 +112,85 @@ class YamlDslDiagnosticTest extends AbstractDiagnosticTest {
 	@Test
 	void testInvalidYamlSyntax() throws Exception {
 		testDiagnostic("yaml-dsl-invalid-syntax", 0, CAMEL_YAML);
+	}
+
+	@Test
+	void testValidStructure() throws Exception {
+		testDiagnostic("yaml-dsl-structure-valid", 0, CAMEL_YAML);
+	}
+
+	@Test
+	void testUnknownAndMissingOptionsOfEip() throws Exception {
+		testDiagnostic("yaml-dsl-structure-unknown-option", 2, CAMEL_YAML);
+		List<Diagnostic> diagnostics = lastPublishedDiagnostics.getDiagnostics();
+		assertThat(getDiagnosticMessage(diagnostics.get(0))).isEqualTo("Unknown option 'mesage' for 'log'");
+		assertThat(diagnostics.get(0).getSeverity()).isEqualTo(DiagnosticSeverity.Warning);
+		checkRange(diagnostics.get(0).getRange(), 4, 10, 4, 16);
+		assertThat(getDiagnosticMessage(diagnostics.get(1))).isEqualTo("Missing required option 'message' for 'log'");
+		checkRange(diagnostics.get(1).getRange(), 3, 8, 3, 11);
+	}
+
+	@Test
+	void testInvalidEnumValueOfEip() throws Exception {
+		testDiagnostic("yaml-dsl-structure-invalid-enum", 1, CAMEL_YAML);
+		Diagnostic diagnostic = lastPublishedDiagnostics.getDiagnostics().get(0);
+		assertThat(getDiagnosticMessage(diagnostic)).startsWith("Invalid value 'VERBOSE' for 'loggingLevel'");
+		checkRange(diagnostic.getRange(), 5, 24, 5, 31);
+	}
+
+	@Test
+	void testMissingExpression() throws Exception {
+		testDiagnostic("yaml-dsl-structure-missing-expression", 2, CAMEL_YAML);
+		List<Diagnostic> diagnostics = lastPublishedDiagnostics.getDiagnostics();
+		assertThat(getDiagnosticMessage(diagnostics.get(0))).isEqualTo("Missing required option 'expression' for 'setBody'");
+		checkRange(diagnostics.get(0).getRange(), 3, 8, 3, 15);
+		// a misspelled language is reported instead of the missing expression
+		assertThat(getDiagnosticMessage(diagnostics.get(1))).isEqualTo("Unknown option 'simpel' for 'setHeader'");
+		checkRange(diagnostics.get(1).getRange(), 7, 10, 7, 16);
+	}
+
+	@Test
+	void testMisplacedElements() throws Exception {
+		testDiagnostic("yaml-dsl-structure-misplaced", 3, CAMEL_YAML);
+		List<Diagnostic> diagnostics = lastPublishedDiagnostics.getDiagnostics();
+		assertThat(getDiagnosticMessage(diagnostics.get(0))).isEqualTo("Unknown Camel YAML DSL element: 'steps'");
+		checkRange(diagnostics.get(0).getRange(), 2, 2, 2, 7);
+		assertThat(getDiagnosticMessage(diagnostics.get(1))).isEqualTo("Unknown option 'stps' for 'otherwise'");
+		checkRange(diagnostics.get(1).getRange(), 14, 14, 14, 18);
+		// unlike the options, the steps cannot be written in kebab case
+		assertThat(getDiagnosticMessage(diagnostics.get(2))).isEqualTo("Unknown Camel EIP or step: 'set-body'");
+		checkRange(diagnostics.get(2).getRange(), 16, 10, 16, 18);
+	}
+
+	@Test
+	void testRouteConfigurationAndDeprecatedLanguage() throws Exception {
+		testDiagnostic("yaml-dsl-structure-route-configuration", 2, CAMEL_YAML);
+		List<Diagnostic> diagnostics = lastPublishedDiagnostics.getDiagnostics();
+		assertThat(getDiagnosticMessage(diagnostics.get(0))).isEqualTo("Unknown option 'onExceptionn' for 'onException'");
+		checkRange(diagnostics.get(0).getRange(), 10, 8, 10, 20);
+		Diagnostic deprecated = diagnostics.get(1);
+		assertThat(getDiagnosticMessage(deprecated)).isEqualTo("'ognl' is deprecated");
+		assertThat(deprecated.getSeverity()).isEqualTo(DiagnosticSeverity.Hint);
+		assertThat(deprecated.getTags()).containsExactly(DiagnosticTag.Deprecated);
+		checkRange(deprecated.getRange(), 17, 10, 17, 14);
+	}
+
+	@Test
+	void testStructureOfKameletTemplate() throws Exception {
+		testDiagnostic("yaml-dsl-structure-kamelet", 1, ".kamelet.yaml");
+		Diagnostic diagnostic = lastPublishedDiagnostics.getDiagnostics().get(0);
+		assertThat(getDiagnosticMessage(diagnostic)).isEqualTo("Unknown Camel EIP or step: 'lgo'");
+		checkRange(diagnostic.getRange(), 11, 10, 11, 13);
+	}
+
+	@Test
+	void testRemovedElementsWithBundledCatalog() throws Exception {
+		testDiagnostic("yaml-dsl-structure-older-version", 5, CAMEL_YAML);
+		assertThat(lastPublishedDiagnostics.getDiagnostics()).extracting(this::getDiagnosticMessage).containsExactly(
+				"Unknown option 'pattern' for 'wireTap'",
+				"Unknown Camel EIP or step: 'serviceCall'",
+				"Unknown option 'csimple' for 'setBody'",
+				"Unknown Camel EIP or step: 'setBdy'",
+				"Unknown option 'toType' for 'transform'");
 	}
 }

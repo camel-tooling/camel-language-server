@@ -1,0 +1,6 @@
+- from:
+    uri: timer:tick
+    steps:
+      - log:
+          mesage: hello
+          logging-level: INFO
