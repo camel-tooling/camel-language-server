@@ -42,7 +42,18 @@ class CamelPropertiesTopLevelCompletionTest extends AbstractCamelLanguageServerT
 		
 		MainModel mainModel = loadMainModel(camelLanguageServer);
 		
-		assertThat(completions.get().getLeft()).hasSize(mainModel.getGroups().size() + 1);
+		// the groups of the Camel Main options, component, and jbang for the Camel JBang options
+		assertThat(completions.get().getLeft()).hasSize(mainModel.getGroups().size() + 2);
+	}
+	
+	@Test
+	void testProvideDocumentationForEachGroup() throws Exception {
+		List<CompletionItem> completions = retrieveCompletion(new Position(0, 6)).get().getLeft();
+		
+		assertThat(completions).allSatisfy(item -> {
+			assertThat(item.getDocumentation()).as(item.getLabel()).isNotNull();
+			assertThat(item.getDocumentation().getLeft()).as(item.getLabel()).isNotBlank();
+		});
 	}
 	
 	@Test
@@ -54,7 +65,8 @@ class CamelPropertiesTopLevelCompletionTest extends AbstractCamelLanguageServerT
 		
 		MainModel mainModel = loadMainModel(camelLanguageServer);
 		
-		assertThat(completions.get().getLeft()).hasSize(mainModel.getGroups().size() + 1);
+		// the groups of the Camel Main options, component, and jbang for the Camel JBang options
+		assertThat(completions.get().getLeft()).hasSize(mainModel.getGroups().size() + 2);
 	}
 
 	private MainModel loadMainModel(CamelLanguageServer camelLanguageServer) throws InterruptedException, ExecutionException {

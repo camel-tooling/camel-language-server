@@ -1,0 +1,21 @@
+{
+  "elements": {
+    "org.apache.camel.quarkus.core.CamelConfig.BootstrapConfig.enabled": {
+      "description": "When set to true, the {@link CamelRuntime} will be started automatically.",
+      "format": "ASCIIDOC"
+    },
+    "org.apache.camel.quarkus.core.CamelConfig.CSimpleConfig.onBuildTimeAnalysisFailure": {
+      "description": "What to do if it is not possible to extract CSimple expressions from a route definition at build time.",
+      "format": "ASCIIDOC"
+    },
+    "org.apache.camel.quarkus.core.CamelConfig.ServiceDiscoveryConfig.includePatterns": {
+      "description": "Ant-path style patterns, as described in link:https://example.org/patterns[the patterns guide]:\n\n[source,properties]\n----\nquarkus.camel.service.discovery.include-patterns = META-INF/services/org/apache/camel/foo/++*++\n----",
+      "format": "ASCIIDOC"
+    }
+  },
+  "extension": {
+    "groupId": "org.apache.camel.quarkus",
+    "artifactId": "camel-quarkus-core",
+    "name": "Camel Core"
+  }
+}

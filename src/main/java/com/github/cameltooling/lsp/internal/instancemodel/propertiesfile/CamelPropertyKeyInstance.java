@@ -19,8 +19,11 @@ package com.github.cameltooling.lsp.internal.instancemodel.propertiesfile;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
@@ -30,6 +33,7 @@ import java.util.stream.Collectors;
 import org.apache.camel.catalog.CamelCatalog;
 import org.apache.camel.tooling.model.MainModel;
 import org.eclipse.lsp4j.CompletionItem;
+import org.eclipse.lsp4j.CompletionItemKind;
 import org.eclipse.lsp4j.Diagnostic;
 import org.eclipse.lsp4j.DiagnosticSeverity;
 import org.eclipse.lsp4j.Hover;
@@ -38,7 +42,11 @@ import org.eclipse.lsp4j.Range;
 import org.eclipse.lsp4j.TextEdit;
 import org.eclipse.lsp4j.jsonrpc.messages.Either;
 
+import com.github.cameltooling.lsp.internal.catalog.runtimeprovider.RuntimeConfigurationProperties;
+import com.github.cameltooling.lsp.internal.catalog.runtimeprovider.RuntimeConfigurationProperty;
+import com.github.cameltooling.lsp.internal.catalog.util.ModelDocumentationHelper;
 import com.github.cameltooling.lsp.internal.catalog.util.StringUtils;
+import com.github.cameltooling.lsp.internal.completion.CompletionResolverUtils;
 import com.github.cameltooling.lsp.internal.completion.FilterPredicateUtils;
 import com.github.cameltooling.lsp.internal.diagnostic.DiagnosticService;
 import com.github.cameltooling.lsp.internal.instancemodel.ILineRangeDefineable;
@@ -74,7 +82,22 @@ public class CamelPropertyKeyInstance implements ILineRangeDefineable {
 		return camelPropertyEntryInstance.getStartPositionInLine() + camelPropertyKey.length();
 	}
 
-	public CompletableFuture<List<CompletionItem>> getCompletions(Position position, CompletableFuture<CamelCatalog> camelCatalog) {
+	public CompletableFuture<List<CompletionItem>> getCompletions(Position position, CompletableFuture<CamelCatalog> camelCatalog, boolean markdown) {
+		return getCatalogCompletions(position, camelCatalog).thenCombine(camelCatalog, (completions, catalog) -> {
+			Set<String> catalogLabels = completions.stream().map(CompletionItem::getLabel).collect(Collectors.toSet());
+			List<CompletionItem> runtimeCompletions = getRuntimeCompletions(position, RuntimeConfigurationProperties.of(catalog), markdown).stream()
+					.filter(completionItem -> !catalogLabels.contains(completionItem.getLabel()))
+					.collect(Collectors.toList());
+			if (runtimeCompletions.isEmpty()) {
+				return completions;
+			}
+			List<CompletionItem> allCompletions = new ArrayList<>(completions);
+			allCompletions.addAll(runtimeCompletions);
+			return allCompletions;
+		});
+	}
+
+	private CompletableFuture<List<CompletionItem>> getCatalogCompletions(Position position, CompletableFuture<CamelCatalog> camelCatalog) {
 		int indexOfFirstDot = camelPropertyKey.indexOf('.');
 		int indexOfSecondDot = indexOfFirstDot != -1 ? camelPropertyKey.indexOf('.', indexOfFirstDot + 1) : -1;
 		if(isBeforeFirstDot(position, indexOfFirstDot)) {
@@ -91,6 +114,79 @@ public class CamelPropertyKeyInstance implements ILineRangeDefineable {
 			return propertyGroup.getCompletions(position, camelCatalog);
 		}
 		return CompletableFuture.completedFuture(Collections.emptyList());
+	}
+
+	/**
+	 * @return the segment following the part of the key before the position, in the keys of the configuration properties
+	 * that Camel JBang and the runtime add: a property, or a group of properties when more segments follow, as the
+	 * Camel Main options are proposed after their group
+	 */
+	private List<CompletionItem> getRuntimeCompletions(Position position, RuntimeConfigurationProperties runtimeProperties, boolean markdown) {
+		String key = camelPropertyKey.stripLeading();
+		int keyStart = getEndPositionInLine() - key.length();
+		int positionInKey = position.getCharacter() - keyStart;
+		if (runtimeProperties.isEmpty() || positionInKey < 0 || positionInKey > key.length() || key.startsWith("#") || key.startsWith("!")) {
+			return Collections.emptyList();
+		}
+		String writtenKey = key.substring(0, positionInKey);
+		long writtenDots = writtenKey.chars().filter(c -> c == '.').count();
+		Position segmentStart = new Position(getLine(), keyStart + writtenKey.lastIndexOf('.') + 1);
+		Range propertyRange = new Range(segmentStart, new Position(getLine(), Math.max(position.getCharacter(), keyStart + key.stripTrailing().length())));
+		int nextDot = key.indexOf('.', positionInKey);
+		// a group replaces the segment at the position only, the segments after it stay
+		Range groupRange = nextDot != -1 ? new Range(segmentStart, new Position(getLine(), keyStart + nextDot)) : propertyRange;
+		boolean hasValue = camelPropertyEntryInstance.hasValue();
+		Map<String, CompletionItem> completions = new LinkedHashMap<>();
+		Map<String, Set<String>> groupRuntimes = new HashMap<>();
+		for (RuntimeConfigurationProperty property : runtimeProperties.findStartingWith(writtenKey)) {
+			String name = property.getName();
+			int segmentIndex = indexAfterDots(name, writtenDots);
+			int segmentEnd = name.indexOf('.', segmentIndex);
+			if (segmentEnd == -1) {
+				String segment = name.substring(segmentIndex);
+				completions.putIfAbsent(segment, createPropertyCompletion(property, segment, new TextEdit(propertyRange, hasValue ? segment : segment + "="), markdown));
+			} else {
+				String group = name.substring(segmentIndex, segmentEnd);
+				completions.computeIfAbsent(group + ".", groupKey -> createGroupCompletion(group, runtimeProperties.getGroupDescription(name.substring(0, segmentEnd)),
+						new TextEdit(groupRange, nextDot != -1 ? group : group + ".")));
+				groupRuntimes.computeIfAbsent(group + ".", groupKey -> new HashSet<>()).add(property.getRuntime());
+			}
+		}
+		// the group of the properties of a single runtime tells which one
+		groupRuntimes.forEach((groupKey, runtimes) -> {
+			if (runtimes.size() == 1) {
+				completions.get(groupKey).setDetail(runtimes.iterator().next());
+			}
+		});
+		return new ArrayList<>(completions.values());
+	}
+
+	private CompletionItem createPropertyCompletion(RuntimeConfigurationProperty property, String segment, TextEdit textEdit, boolean markdown) {
+		CompletionItem completionItem = new CompletionItem(segment);
+		completionItem.setKind(CompletionItemKind.Property);
+		completionItem.setDetail(property.getRuntime());
+		completionItem.setDocumentation(ModelDocumentationHelper.getConfigurationPropertyDocumentation(property, markdown));
+		CompletionResolverUtils.applyDeprecation(completionItem, property.isDeprecated());
+		completionItem.setTextEdit(Either.forLeft(textEdit));
+		return completionItem;
+	}
+
+	private CompletionItem createGroupCompletion(String group, String description, TextEdit textEdit) {
+		CompletionItem completionItem = new CompletionItem(group);
+		completionItem.setKind(CompletionItemKind.Module);
+		if (description != null) {
+			completionItem.setDocumentation(description);
+		}
+		completionItem.setTextEdit(Either.forLeft(textEdit));
+		return completionItem;
+	}
+
+	private static int indexAfterDots(String key, long dots) {
+		int index = 0;
+		for (long i = 0; i < dots; i++) {
+			index = key.indexOf('.', index) + 1;
+		}
+		return index;
 	}
 
 	private boolean isBetweenFirstAndSecondDotOfCamelPropertyKey(Position position, int indexOfSecondDot) {
@@ -116,6 +212,7 @@ public class CamelPropertyKeyInstance implements ILineRangeDefineable {
 
 	private CompletionItem createCompletionItemForCamelComponent(int indexOfSecondDot) {
 		CompletionItem completionItem = new CompletionItem("component");
+		completionItem.setDocumentation("Camel Component configurations");
 		String insertText = indexOfSecondDot != -1 ? "component" : "component.";
 		completionItem.setInsertText(insertText);
 		Position start = new Position(getLine(), getStartPositionInLine() + CAMEL_KEY_PREFIX.length());
@@ -167,7 +264,22 @@ public class CamelPropertyKeyInstance implements ILineRangeDefineable {
 		return getStartPositionInLine() + camelPropertyKey.length();
 	}
 
-	public CompletableFuture<Hover> getHover(Position position, CompletableFuture<CamelCatalog> camelCatalog) {
+	public CompletableFuture<Hover> getHover(Position position, CompletableFuture<CamelCatalog> camelCatalog, boolean markdown) {
+		return getCatalogHover(position, camelCatalog).thenCombine(camelCatalog,
+				(hover, catalog) -> hover != null ? hover : getRuntimeHover(RuntimeConfigurationProperties.of(catalog), markdown));
+	}
+
+	private Hover getRuntimeHover(RuntimeConfigurationProperties runtimeProperties, boolean markdown) {
+		String key = camelPropertyKey.trim();
+		return runtimeProperties.find(key).map(property -> {
+			Hover hover = new Hover(ModelDocumentationHelper.getConfigurationPropertyDocumentation(property, markdown));
+			int keyStart = getEndPositionInLine() - camelPropertyKey.stripLeading().length();
+			hover.setRange(new Range(new Position(getLine(), keyStart), new Position(getLine(), keyStart + key.length())));
+			return hover;
+		}).orElse(null);
+	}
+
+	private CompletableFuture<Hover> getCatalogHover(Position position, CompletableFuture<CamelCatalog> camelCatalog) {
 		if(camelComponentPropertyKey != null && camelComponentPropertyKey.isInRange(position.getCharacter())) {
 			return camelComponentPropertyKey.getHover(position, camelCatalog);
 		} else if(propertyGroup != null && propertyGroup.isInRange(position.getCharacter())) {

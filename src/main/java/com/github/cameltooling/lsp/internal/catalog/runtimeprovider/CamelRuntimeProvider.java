@@ -24,18 +24,26 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public enum CamelRuntimeProvider {
-	DEFAULT(null, null),
-	SPRINGBOOT("org.apache.camel.springboot", "camel-catalog-provider-springboot"),
-	QUARKUS("org.apache.camel.quarkus", "camel-quarkus-catalog");
+	DEFAULT("Camel", null, null, null),
+	SPRINGBOOT("Camel Spring Boot", "org.apache.camel.springboot", "camel-catalog-provider-springboot", "camel-spring-boot"),
+	QUARKUS("Camel Quarkus", "org.apache.camel.quarkus", "camel-quarkus-catalog", "camel-quarkus-core");
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(CamelRuntimeProvider.class);
 
+	private final String title;
 	private final String catalogGroupId;
 	private final String catalogArtifactId;
+	private final String configurationArtifactId;
 
-	CamelRuntimeProvider(String catalogGroupId, String catalogArtifactId) {
+	CamelRuntimeProvider(String title, String catalogGroupId, String catalogArtifactId, String configurationArtifactId) {
+		this.title = title;
 		this.catalogGroupId = catalogGroupId;
 		this.catalogArtifactId = catalogArtifactId;
+		this.configurationArtifactId = configurationArtifactId;
+	}
+
+	public String getTitle() {
+		return title;
 	}
 
 	/**
@@ -50,6 +58,14 @@ public enum CamelRuntimeProvider {
 	 */
 	public String getCatalogArtifactId() {
 		return catalogArtifactId;
+	}
+
+	/**
+	 * @return the id of the Maven artifact, in the group of the catalog, providing the metadata of the configuration properties
+	 * that the runtime adds to the ones of Camel Main, or null when the runtime adds none
+	 */
+	public String getConfigurationArtifactId() {
+		return configurationArtifactId;
 	}
 
 	public static RuntimeProvider getProvider(String runtimeProvider){

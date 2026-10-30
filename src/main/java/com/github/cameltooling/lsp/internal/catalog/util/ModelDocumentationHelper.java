@@ -23,8 +23,11 @@ import org.apache.camel.tooling.model.EipModel.EipOptionModel;
 import org.eclipse.lsp4j.MarkupContent;
 import org.eclipse.lsp4j.MarkupKind;
 
+import com.github.cameltooling.lsp.internal.catalog.runtimeprovider.RuntimeConfigurationProperty;
+
 /**
- * Builds the documentation of Camel catalog models (EIPs, expression languages, data formats) and of their options.
+ * Builds the documentation of Camel catalog models (EIPs, expression languages, data formats) and of their options,
+ * and of the configuration properties of the runtimes.
  */
 public final class ModelDocumentationHelper {
 
@@ -69,6 +72,24 @@ public final class ModelDocumentationHelper {
 		if (details.length() > 0) {
 			doc.append("\n\n").append(details);
 		}
+		return new MarkupContent(markdown ? MarkupKind.MARKDOWN : MarkupKind.PLAINTEXT, doc.toString().trim());
+	}
+
+	public static MarkupContent getConfigurationPropertyDocumentation(RuntimeConfigurationProperty property, boolean markdown) {
+		StringBuilder doc = new StringBuilder();
+		doc.append(markdown ? bold(property.getName()) : property.getName());
+		appendDescription(doc, property.getDescription());
+		StringBuilder details = new StringBuilder();
+		appendDetail(details, "Type", property.getType(), markdown);
+		appendDetail(details, "Default value", property.getDefaultValue(), markdown);
+		if (!property.getEnumValues().isEmpty()) {
+			appendDetail(details, "Possible values", String.join(", ", property.getEnumValues()), markdown);
+		}
+		if (property.isDeprecated()) {
+			appendDetail(details, "Deprecated", property.getDeprecationNote().isEmpty() ? "true" : property.getDeprecationNote(), markdown);
+		}
+		appendDetail(details, "Runtime", property.getRuntime(), markdown);
+		doc.append("\n\n").append(details);
 		return new MarkupContent(markdown ? MarkupKind.MARKDOWN : MarkupKind.PLAINTEXT, doc.toString().trim());
 	}
 
