@@ -414,7 +414,9 @@ public class YamlDslDiagnosticService extends DiagnosticService {
 				return;
 			}
 			if (catalog.componentJSonSchema(scheme) == null) {
-				addDiagnostic(getRange(uriScalar), new UnknownComponentErrorMsg().getErrorMessage(scheme), DiagnosticSeverity.Error, null);
+				// a warning, as for the Camel catalog: Camel also resolves the components of the registry, such as custom
+				// components or a component bound under another name
+				addWarning(uriScalar, new UnknownComponentErrorMsg().getErrorMessage(scheme));
 				return;
 			}
 			Map<String, NodeTuple> parameters = getScalarParameters(getValue(endpoint, parametersKey));
