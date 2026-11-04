@@ -561,7 +561,8 @@ public class YamlDslDiagnosticService extends DiagnosticService {
 	}
 
 	/**
-	 * @return the parameters with a scalar value, by name
+	 * @return the parameters with a scalar value, by name in camel case: like the Camel YAML DSL, which camel cases the
+	 * keys of the parameters, {@code repeat-count} sets the {@code repeatCount} option
 	 */
 	private static Map<String, NodeTuple> getScalarParameters(Node parameters) {
 		Map<String, NodeTuple> scalarParameters = new LinkedHashMap<>();
@@ -569,7 +570,7 @@ public class YamlDslDiagnosticService extends DiagnosticService {
 			for (NodeTuple parameter : ((MappingNode) parameters).getValue()) {
 				String name = getScalarValue(parameter.getKeyNode());
 				if (name != null && parameter.getValueNode() instanceof ScalarNode && !isNull(parameter.getValueNode())) {
-					scalarParameters.put(name, parameter);
+					scalarParameters.put(StringHelper.dashToCamelCase(name), parameter);
 				}
 			}
 		}

@@ -1,0 +1,13 @@
+apiVersion: camel.apache.org/v1
+kind: Pipe
+metadata:
+  name: my-pipe
+spec:
+  source:
+    uri: timer:tick
+    properties:
+      repeat-count: 1
+  sink:
+    uri: log:info
+    properties:
+      show-all: true

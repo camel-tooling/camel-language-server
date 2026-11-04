@@ -29,6 +29,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.apache.camel.catalog.CamelCatalog;
+import org.apache.camel.util.StringHelper;
 import org.apache.camel.v1.kameletspec.Definition;
 import org.apache.camel.v1.kameletspec.definition.Properties;
 import org.eclipse.lsp4j.CompletionItem;
@@ -84,6 +85,8 @@ public class CamelYamlParametersCompletionProcessor {
 				.filter(line -> line != position.getLine())
 				.map(lines::key)
 				.filter(Objects::nonNull)
+				// fixed-rate defines the fixedRate option
+				.flatMap(key -> Stream.of(key, StringHelper.dashToCamelCase(key)))
 				.collect(Collectors.toSet());
 		return camelCatalog.thenApply(catalog -> {
 			ComponentModel componentModel = getComponentModel(catalog, endpoint);
@@ -115,7 +118,8 @@ public class CamelYamlParametersCompletionProcessor {
 						: new MarkupContent(MarkupKind.PLAINTEXT, CamelOptionNamesCompletionsFuture.getDocumentation(option.get()));
 				return new Hover(documentation, range);
 			}
-			Properties kameletProperty = getKameletProperties(getComponentModel(catalog, endpoint), endpoint).get(key);
+			Map<String, Properties> kameletProperties = getKameletProperties(getComponentModel(catalog, endpoint), endpoint);
+			Properties kameletProperty = kameletProperties.getOrDefault(key, kameletProperties.get(StringHelper.dashToCamelCase(key)));
 			if (kameletProperty != null && kameletProperty.getDescription() != null) {
 				return new Hover(new MarkupContent(MarkupKind.PLAINTEXT, kameletProperty.getDescription()), range);
 			}
@@ -169,7 +173,7 @@ public class CamelYamlParametersCompletionProcessor {
 
 	private String findParameterValue(int parametersLine, String parameter) {
 		return lines.children(parametersLine).stream()
-				.filter(line -> parameter.equals(lines.key(line)))
+				.filter(line -> parameter.equals(StringHelper.dashToCamelCase(lines.key(line))))
 				.map(line -> YamlDslLines.unquote(lines.value(line)))
 				.findFirst()
 				.orElse(null);
@@ -247,10 +251,14 @@ public class CamelYamlParametersCompletionProcessor {
 		return CamelYamlDslKeywordProcessor.createValueItems(values, defaultValue != null ? defaultValue.toString() : null);
 	}
 
-	private Optional<EndpointOptionModel> findOption(ComponentModel componentModel, String name) {
+	/**
+	 * @param key the key of the option in the parameters, which the Camel YAML DSL camel cases
+	 */
+	private Optional<EndpointOptionModel> findOption(ComponentModel componentModel, String key) {
 		if (componentModel == null) {
 			return Optional.empty();
 		}
+		String name = StringHelper.dashToCamelCase(key);
 		return componentModel.getEndpointOptions().stream().filter(option -> name.equals(option.getName())).findFirst();
 	}
 

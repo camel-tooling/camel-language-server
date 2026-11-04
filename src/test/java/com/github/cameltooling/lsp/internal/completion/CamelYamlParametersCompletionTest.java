@@ -74,6 +74,42 @@ class CamelYamlParametersCompletionTest extends AbstractCursorTest {
 	}
 
 	@Test
+	void testDefinedKebabCaseParametersAreNotProposedAgain() throws Exception {
+		assertThat(getCompletionLabels("""
+				- from:
+				    uri: timer:tick
+				    parameters:
+				      repeat-count: 5
+				      §""", CAMEL_YAML))
+			.contains("delay")
+			.doesNotContain("repeatCount");
+	}
+
+	@Test
+	void testBooleanValuesOfKebabCaseParameter() throws Exception {
+		assertThat(getCompletionLabels("""
+				- from:
+				    uri: timer:tick
+				    parameters:
+				      fixed-rate: §""", CAMEL_YAML))
+			.containsExactlyInAnyOrder("true", "false");
+	}
+
+	@Test
+	void testKameletPropertiesForKebabCaseTemplateIdOfKameletComponent() throws Exception {
+		assertThat(getCompletionLabels("""
+				- from:
+				    uri: timer:tick
+				    steps:
+				      - to:
+				          uri: kamelet
+				          parameters:
+				            template-id: log-sink
+				            showH§""", CAMEL_YAML))
+			.contains("showHeaders");
+	}
+
+	@Test
 	void testParametersWrittenBeforeTheUri() throws Exception {
 		assertThat(getCompletionLabels("""
 				- from:

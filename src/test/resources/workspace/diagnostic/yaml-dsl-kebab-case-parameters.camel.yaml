@@ -1,0 +1,11 @@
+- from:
+    uri: timer:tick
+    parameters:
+      fixed-rate: true
+      repeat-count: five
+    steps:
+      - to:
+          uri: log:out
+          parameters:
+            show-all: true
+            group-sise: 10
