@@ -78,6 +78,17 @@ class CamelYamlDslHoverTest extends AbstractCursorTest {
 	}
 
 	@Test
+	void testHoverOnKebabCaseParameter() throws Exception {
+		assertThat(getHoverContent("""
+				- from:
+				    uri: timer:tick
+				    parameters:
+				      repeat-co§unt: 5
+				""", CAMEL_YAML))
+			.contains("Specifies a maximum limit for the number of fires");
+	}
+
+	@Test
 	void testHoverOnOptionOfUriKeepsEndpointDocumentation() throws Exception {
 		assertThat(getHoverContent("""
 				- from:

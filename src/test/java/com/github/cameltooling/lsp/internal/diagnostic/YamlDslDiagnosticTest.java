@@ -54,6 +54,17 @@ class YamlDslDiagnosticTest extends AbstractDiagnosticTest {
 	}
 
 	@Test
+	void testKebabCaseParameters() throws Exception {
+		// fixed-rate and show-all are options, as the YAML DSL camel cases the keys of the parameters
+		testDiagnostic("yaml-dsl-kebab-case-parameters", 2, CAMEL_YAML);
+		List<Diagnostic> diagnostics = lastPublishedDiagnostics.getDiagnostics();
+		checkRange(diagnostics.get(0).getRange(), 4, 20, 4, 24);
+		assertThat(getDiagnosticMessage(diagnostics.get(0))).isEqualTo("Invalid integer value: five");
+		checkRange(diagnostics.get(1).getRange(), 10, 12, 10, 22);
+		assertThat(diagnostics.get(1).getCode().getLeft()).isEqualTo(DiagnosticService.ERROR_CODE_UNKNOWN_PROPERTIES);
+	}
+
+	@Test
 	void testUnknownOptionInUri() throws Exception {
 		testDiagnostic("yaml-dsl-error-in-uri", 1, CAMEL_YAML);
 		checkRange(lastPublishedDiagnostics.getDiagnostics().get(0).getRange(), 3, 21, 3, 27);
@@ -102,6 +113,11 @@ class YamlDslDiagnosticTest extends AbstractDiagnosticTest {
 	void testEndpointOfPipe() throws Exception {
 		testDiagnostic("yaml-dsl-pipe", 1, ".pipe.yaml");
 		checkRange(lastPublishedDiagnostics.getDiagnostics().get(0).getRange(), 15, 6, 15, 12);
+	}
+
+	@Test
+	void testKebabCasePropertiesOfPipe() throws Exception {
+		testDiagnostic("yaml-dsl-pipe-kebab-case", 0, ".pipe.yaml");
 	}
 
 	@Test
