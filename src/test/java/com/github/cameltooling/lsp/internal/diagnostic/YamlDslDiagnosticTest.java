@@ -76,6 +76,8 @@ class YamlDslDiagnosticTest extends AbstractDiagnosticTest {
 		Diagnostic diagnostic = lastPublishedDiagnostics.getDiagnostics().get(0);
 		checkRange(diagnostic.getRange(), 1, 9, 1, 18);
 		assertThat(getDiagnosticMessage(diagnostic)).contains("tmer");
+		// Camel can find the component in the registry
+		assertThat(diagnostic.getSeverity()).isEqualTo(DiagnosticSeverity.Warning);
 	}
 
 	@Test
