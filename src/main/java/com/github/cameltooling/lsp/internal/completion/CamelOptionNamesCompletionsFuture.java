@@ -127,7 +127,7 @@ public class CamelOptionNamesCompletionsFuture implements Function<CamelCatalog,
 					.map(PathParamURIInstance::getValue)
 					.findAny();
 			if(kameletTemplateId.isPresent()) {
-				Definition kameletDefinition = kameletsCatalogManager.getCatalog().getKameletDefinition(kameletTemplateId.get());
+				Definition kameletDefinition = kameletsCatalogManager.getKameletDefinition(kameletTemplateId.get());
 				if(kameletDefinition != null) {
 					kameletProperties = kameletDefinition.getProperties().entrySet().stream().map(this::createCompletionItem);
 				}
