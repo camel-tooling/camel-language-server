@@ -60,7 +60,7 @@ public abstract class AbstractQuickfix {
 			if(diagnostic.getCode()!= null && getDiagnosticId().equals(diagnostic.getCode().getLeft())) {
 				CharSequence currentValueInError = retrieveCurrentErrorValue(openedDocument, diagnostic);
 				if(currentValueInError != null) {
-					List<String> possibleProperties = retrievePossibleValues(openedDocument, camelTextDocumentService.getCamelCatalog(), diagnostic.getRange().getStart(), camelTextDocumentService.getSettingsManager(), camelTextDocumentService.getKameletsCatalogManager());
+					List<String> possibleProperties = retrievePossibleValues(openedDocument, camelTextDocumentService.getCamelCatalog(), diagnostic.getRange().getStart(), camelTextDocumentService.getSettingsManager(), camelTextDocumentService.getKameletsCatalogManager().forDocument(params.getTextDocument().getUri()));
 					int distanceThreshold = Math.round(currentValueInError.length() * 0.4f);
 					LevenshteinDistance levenshteinDistance = new LevenshteinDistance(distanceThreshold);
 					List<String> mostProbableProperties = possibleProperties.stream()

@@ -35,6 +35,8 @@ public class SettingsManager {
 	public static final String CATALOG_RUNTIME_PROVIDER = "Camel catalog runtime provider";
 	public static final String CATALOG_RUNTIME_PROVIDER_VERSION = "Camel catalog runtime provider version";
 	public static final String KAKFA_CONNECTION_URL = "Kafka Connection URL";
+	/** The directories of the local Kamelets; a relative directory is resolved against the directory of the document. */
+	public static final String LOCAL_KAMELET_DIRECTORIES = "local-kamelet-directories";
 	
 	private CamelTextDocumentService textDocumentService;
 	private String kafkaConnectionUrl;
@@ -65,6 +67,9 @@ public class SettingsManager {
 		String camelCatalogRuntimeProviderVersion = getSetting(camelSetting, CATALOG_RUNTIME_PROVIDER_VERSION, String.class);
 		textDocumentService.updateCatalog(camelCatalogVersion, camelCatalogRuntimeProvider, camelCatalogRuntimeProviderVersion, (List<Map<?, ?>>) extraComponents);
 		kafkaConnectionUrl = getSetting(camelSetting, KAKFA_CONNECTION_URL, String.class);
+		List<?> localKameletDirectories = getSetting(camelSetting, LOCAL_KAMELET_DIRECTORIES, List.class);
+		textDocumentService.getKameletsCatalogManager().setLocalKameletDirectories(localKameletDirectories == null ? null
+				: localKameletDirectories.stream().filter(String.class::isInstance).map(String.class::cast).toList());
 	}
 
 	private Map<?, ?> getSettings(Object settings) {

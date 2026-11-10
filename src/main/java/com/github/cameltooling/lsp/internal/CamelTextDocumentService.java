@@ -18,10 +18,10 @@ package com.github.cameltooling.lsp.internal;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentHashMap;
 
 import com.github.cameltooling.lsp.internal.completion.modeline.CamelKModelineInsertionProcessor;
 import com.github.cameltooling.lsp.internal.parser.CamelKModelineInsertionParser;
@@ -109,10 +109,11 @@ import com.google.gson.Gson;
 public class CamelTextDocumentService implements TextDocumentService {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(CamelTextDocumentService.class);
-	protected Map<String, TextDocumentItem> openedDocuments = new HashMap<>();
+	// read from the threads of the requests too, such as the local Kamelets for the completion
+	protected Map<String, TextDocumentItem> openedDocuments = new ConcurrentHashMap<>();
 	private CompletableFuture<CamelCatalog> camelCatalog;
 	private CamelLanguageServer camelLanguageServer;
-	private KameletsCatalogManager kameletsCatalogManager = new KameletsCatalogManager();
+	private KameletsCatalogManager kameletsCatalogManager = new KameletsCatalogManager(this::getAllOpenedDocuments);
 
 	public CamelTextDocumentService(CamelLanguageServer camelLanguageServer) {
 		this.camelLanguageServer = camelLanguageServer;
@@ -254,7 +255,7 @@ public class CamelTextDocumentService implements TextDocumentService {
 	private CompletableFuture<List<CompletionItem>> getYamlDslCompletions(TextDocumentItem textDocumentItem, Position position) {
 		YamlDslLines lines = new YamlDslLines(textDocumentItem.getText());
 		boolean markdown = getSettingsManager().isMardownSupport();
-		CamelYamlParametersCompletionProcessor parametersProcessor = new CamelYamlParametersCompletionProcessor(lines, getCamelCatalog(), getKameletsCatalogManager(), markdown);
+		CamelYamlParametersCompletionProcessor parametersProcessor = new CamelYamlParametersCompletionProcessor(lines, getCamelCatalog(), getKameletsCatalogManager().forDocument(textDocumentItem.getUri()), markdown);
 		if (parametersProcessor.isInParametersBlock(position)) {
 			return parametersProcessor.getCompletions(position);
 		}
@@ -264,7 +265,7 @@ public class CamelTextDocumentService implements TextDocumentService {
 	private CompletableFuture<Hover> getYamlDslHover(TextDocumentItem textDocumentItem, Position position) {
 		YamlDslLines lines = new YamlDslLines(textDocumentItem.getText());
 		boolean markdown = getSettingsManager().isMardownSupport();
-		CamelYamlParametersCompletionProcessor parametersProcessor = new CamelYamlParametersCompletionProcessor(lines, getCamelCatalog(), getKameletsCatalogManager(), markdown);
+		CamelYamlParametersCompletionProcessor parametersProcessor = new CamelYamlParametersCompletionProcessor(lines, getCamelCatalog(), getKameletsCatalogManager().forDocument(textDocumentItem.getUri()), markdown);
 		if (parametersProcessor.isInParametersBlock(position)) {
 			return parametersProcessor.getHover(position);
 		}
@@ -297,7 +298,7 @@ public class CamelTextDocumentService implements TextDocumentService {
 
 		if (textDocumentItem != null) {
 			if (uri.endsWith(".properties")){
-				return new CamelPropertiesCompletionProcessor(textDocumentItem, getCamelCatalog()).getCompletions(completionParams.getPosition(), getSettingsManager(), getKameletsCatalogManager()).thenApply(Either::forLeft);
+				return new CamelPropertiesCompletionProcessor(textDocumentItem, getCamelCatalog()).getCompletions(completionParams.getPosition(), getSettingsManager(), getKameletsCatalogManager().forDocument(uri)).thenApply(Either::forLeft);
 			} else if (new CamelKModelineInsertionParser(textDocumentItem).canPutCamelKModeline(completionParams.getPosition())){
 				return new CamelKModelineInsertionProcessor(textDocumentItem).getCompletions().thenApply(Either::forLeft);
 			} else if (new CamelKModelineParser().isOnCamelKModeline(completionParams.getPosition().getLine(), textDocumentItem)){
@@ -309,7 +310,7 @@ public class CamelTextDocumentService implements TextDocumentService {
 			} else if (isCamelYamlDslKey(textDocumentItem, completionParams.getPosition())) {
 				return getYamlDslCompletions(textDocumentItem, completionParams.getPosition()).thenApply(Either::forLeft);
 			} else {
-				return new CamelEndpointCompletionProcessor(textDocumentItem, getCamelCatalog(), getKameletsCatalogManager()).getCompletions(completionParams.getPosition(), getSettingsManager()).thenApply(Either::forLeft);
+				return new CamelEndpointCompletionProcessor(textDocumentItem, getCamelCatalog(), getKameletsCatalogManager().forDocument(uri)).getCompletions(completionParams.getPosition(), getSettingsManager()).thenApply(Either::forLeft);
 			}
 		} else {
 			LOGGER.warn("The document with uri {} has not been found in opened documents. Cannot provide completion.", uri);
@@ -329,7 +330,7 @@ public class CamelTextDocumentService implements TextDocumentService {
 		String uri = hoverParams.getTextDocument().getUri();
 		TextDocumentItem textDocumentItem = openedDocuments.get(uri);
 		if (uri.endsWith(".properties")){
-			return new CamelPropertiesFileHoverProcessor(textDocumentItem, getSettingsManager().isMardownSupport()).getHover(hoverParams.getPosition(), getCamelCatalog(), getKameletsCatalogManager());
+			return new CamelPropertiesFileHoverProcessor(textDocumentItem, getSettingsManager().isMardownSupport()).getHover(hoverParams.getPosition(), getCamelCatalog(), getKameletsCatalogManager().forDocument(uri));
 		} else if(new CamelKModelineParser().isOnCamelKModeline(hoverParams.getPosition().getLine(), textDocumentItem)) {
 			return new CamelKModelineHoverProcessor(textDocumentItem).getHover(hoverParams.getPosition(), getCamelCatalog());
 		} else if (textDocumentItem != null && isCamelYamlDslKey(textDocumentItem, hoverParams.getPosition())) {
@@ -341,7 +342,7 @@ public class CamelTextDocumentService implements TextDocumentService {
 					return eipHover;
 				}
 			}
-			return new CamelURIHoverProcessor(textDocumentItem, getCamelCatalog(), getKameletsCatalogManager()).getHover(hoverParams.getPosition());
+			return new CamelURIHoverProcessor(textDocumentItem, getCamelCatalog(), getKameletsCatalogManager().forDocument(uri)).getHover(hoverParams.getPosition());
 		}
 	}
 

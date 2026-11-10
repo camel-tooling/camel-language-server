@@ -124,6 +124,20 @@ It is possible to specify a list of additional Camel components. This can be pro
 
 ```
 
+## Local Kamelets
+
+Besides the Kamelets of the Kamelets catalog, the completion and the hover can use the Kamelets of the application, the `*.kamelet.yaml` files of local Kamelet directories, as Camel JBang loads them with `--local-kamelet-dir`. A relative directory is resolved against the directory of the edited document. A local Kamelet is named after its file, like Camel resolves it, and wins over a Kamelet of the catalog with the same name. The unsaved content of an opened Kamelet is used. This can be provided as Initialization Option or Workspace Configuration. The format is the same for both:
+
+```
+{
+	"camel": {
+		"local-kamelet-directories" : [
+			"./kamelets"
+		]
+	}
+}
+```
+
 ## Document symbol support
 
 There is document symbol for Camel Contexts and routes, on XML and Java DSL. In UI, for instance with VS Code, it means there are an outline, a breadcrumb and a Go To Document Symbol command.
