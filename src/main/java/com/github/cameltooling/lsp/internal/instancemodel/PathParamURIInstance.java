@@ -191,7 +191,7 @@ public class PathParamURIInstance extends CamelUriElementInstance {
 	@Override
 	public String getDescription(ComponentModel componentModel, KameletsCatalogManager kameletCatalogManager) {
 		if(pathParamIndex == 0 && ComponentNameConstants.COMPONENT_NAME_KAMELET.equals(getComponentName())) {
-			Definition kamelet = kameletCatalogManager.getCatalog().getKameletDefinition(getValue());
+			Definition kamelet = kameletCatalogManager.getKameletDefinition(getValue());
 			if(kamelet != null) {
 				return kamelet.getDescription();
 			}

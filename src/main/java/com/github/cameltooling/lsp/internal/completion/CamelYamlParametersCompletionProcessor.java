@@ -211,7 +211,7 @@ public class CamelYamlParametersCompletionProcessor {
 	private Map<String, Properties> getKameletProperties(ComponentModel componentModel, Endpoint endpoint) {
 		String kameletTemplateId = getKameletTemplateId(componentModel, endpoint);
 		if (kameletTemplateId != null) {
-			Definition definition = kameletsCatalogManager.getCatalog().getKameletDefinition(kameletTemplateId);
+			Definition definition = kameletsCatalogManager.getKameletDefinition(kameletTemplateId);
 			if (definition != null && definition.getProperties() != null) {
 				return definition.getProperties();
 			}

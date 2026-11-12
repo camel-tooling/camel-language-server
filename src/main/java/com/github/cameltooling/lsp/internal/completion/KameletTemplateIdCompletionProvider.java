@@ -16,20 +16,17 @@
  */
 package com.github.cameltooling.lsp.internal.completion;
 
-import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
-import org.apache.camel.kamelets.catalog.KameletsCatalog;
 import org.apache.camel.kamelets.catalog.model.KameletTypeEnum;
+import org.apache.camel.v1.Kamelet;
 import org.eclipse.lsp4j.CompletionItem;
 
 import com.github.cameltooling.lsp.internal.catalog.util.KameletsCatalogManager;
 import com.github.cameltooling.lsp.internal.instancemodel.PathParamURIInstance;
-
-import org.apache.camel.v1.Kamelet;
 
 public class KameletTemplateIdCompletionProvider {
 	
@@ -40,30 +37,26 @@ public class KameletTemplateIdCompletionProvider {
 	}
 
 	public CompletableFuture<List<CompletionItem>> get(PathParamURIInstance pathParamURIInstance) {
-		Collection<Kamelet> kamelets = retrievePotentialKamelets(pathParamURIInstance);
+		Map<String, Kamelet> kamelets = retrievePotentialKamelets(pathParamURIInstance);
 			
-		List<CompletionItem> completionItems = kamelets
+		List<CompletionItem> completionItems = kamelets.entrySet()
 			.stream()
 				.map(kamelet -> {
-					CompletionItem completionItem = new CompletionItem(kamelet.getMetadata().getName());
+					// the name of the Kamelet is the one Camel resolves, from the name of its file
+					CompletionItem completionItem = new CompletionItem(kamelet.getKey());
 					CompletionResolverUtils.applyTextEditToCompletionItem(pathParamURIInstance, completionItem);
-					completionItem.setDocumentation(kamelet.getSpec().getDefinition().getDescription());
+					completionItem.setDocumentation(kamelet.getValue().getSpec().getDefinition().getDescription());
 					return completionItem;
 				})
 				.collect(Collectors.toList());
 		return CompletableFuture.completedFuture(completionItems);
 	}
 
-	private List<Kamelet> retrievePotentialKamelets(PathParamURIInstance pathParamURIInstance) {
-		KameletsCatalog kameletsCatalog = kameletsCatalogManager.getCatalog();
-		if(kameletsCatalog != null) {
-			if (pathParamURIInstance.getCamelUriInstance().isProducer()) {
-				return kameletsCatalog.getKameletsByType(KameletTypeEnum.SINK.type());
-			} else {
-				return kameletsCatalog.getKameletsByType(KameletTypeEnum.SOURCE.type());
-			}
+	private Map<String, Kamelet> retrievePotentialKamelets(PathParamURIInstance pathParamURIInstance) {
+		if (pathParamURIInstance.getCamelUriInstance().isProducer()) {
+			return kameletsCatalogManager.getKameletsByType(KameletTypeEnum.SINK.type());
 		} else {
-			return Collections.emptyList();
+			return kameletsCatalogManager.getKameletsByType(KameletTypeEnum.SOURCE.type());
 		}
 	}
 

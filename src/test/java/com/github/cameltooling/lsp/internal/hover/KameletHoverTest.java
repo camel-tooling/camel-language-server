@@ -56,7 +56,9 @@ class KameletHoverTest extends AbstractCamelLanguageServerTest {
 	      Arguments.of("Provide generic documentation on hover on unknown kamelet",
 	    		  "kamelet:unknown", 8, "kamelet:templateId/routeId"),
 	      Arguments.of("Provide documentation on hover on known kamelet property name",
-	    		  "kamelet:aws-ddb-streams-source?secretKey=", 39, "The secret key obtained from AWS.")
+	    		  "kamelet:aws-ddb-streams-source?secretKey=", 39, "The secret key obtained from AWS."),
+	      Arguments.of("Provide documentation of the property of the kamelet with the exact name, not of sftp-source",
+	    		  "kamelet:ftp-source?connectionHost=", 22, "The hostname of the FTP server.")
 	    );
 	}
 }

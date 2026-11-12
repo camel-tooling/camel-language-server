@@ -30,7 +30,7 @@ import com.github.cameltooling.lsp.internal.catalog.model.EndpointOptionModel;
 import com.github.cameltooling.lsp.internal.catalog.util.KameletsCatalogManager;
 import com.github.cameltooling.lsp.internal.settings.SettingsManager;
 
-import org.apache.camel.v1.Kamelet;
+import org.apache.camel.v1.kameletspec.Definition;
 import org.apache.camel.v1.kameletspec.definition.Properties;
 
 /**
@@ -118,10 +118,9 @@ public class OptionParamURIInstance extends CamelUriElementInstance {
 				.filter(pathParam -> pathParam.getPathParamIndex() == 0)
 				.map(PathParamURIInstance::getValue).findAny();
 		if(kameletTemplateId.isPresent()) {
-			List<Kamelet> kamelets = kameletCatalogManager.getCatalog().getKameletsByName(kameletTemplateId.get());
-			if (!kamelets.isEmpty()) {
-				Kamelet kamelet = kamelets.get(0);
-				return kamelet.getSpec().getDefinition().getProperties().get(keyName);
+			Definition definition = kameletCatalogManager.getKameletDefinition(kameletTemplateId.get());
+			if (definition != null && definition.getProperties() != null) {
+				return definition.getProperties().get(keyName);
 			}
 		}
 		return null;
