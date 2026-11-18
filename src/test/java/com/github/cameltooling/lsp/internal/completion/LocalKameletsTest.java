@@ -168,6 +168,47 @@ class LocalKameletsTest extends AbstractCursorTest {
 	}
 
 	@Test
+	void testLocalSinkIsProposedForTemplateIdOfTo() throws Exception {
+		writeKamelet("kamelets", "my-sink", MY_SINK);
+		writeKamelet("kamelets", "my-source", MY_SOURCE);
+		setLocalKameletDirectories("./kamelets");
+
+		List<CompletionItem> completions = complete("""
+				- route:
+				    from:
+				      uri: timer:tick
+				      steps:
+				        - to:
+				            uri: kamelet
+				            parameters:
+				              templateId: my§""");
+
+		assertThat(labels(completions)).contains("my-sink", "log-sink").doesNotContain("my-source");
+		assertThat(completions.stream().filter(item -> "my-sink".equals(item.getLabel())).findFirst().get().getDocumentation().getLeft())
+			.isEqualTo("Send the events to my system");
+	}
+
+	@Test
+	void testHoverOnLocalKameletOfKameletEip() throws Exception {
+		writeKamelet("kamelets", "my-sink", MY_SINK);
+		setLocalKameletDirectories("./kamelets");
+
+		String text = """
+				- route:
+				    from:
+				      uri: timer:tick
+				      steps:
+				        - kamelet:
+				            name: my-s§ink
+				""";
+		CamelLanguageServer languageServer = open("route.camel.yaml", text);
+		Hover hover = languageServer.getTextDocumentService()
+				.hover(new HoverParams(new TextDocumentIdentifier(workspace.resolve("route.camel.yaml").toUri().toString()), getCursorPosition(text))).get();
+
+		assertThat(hover.getContents().getRight().getValue()).isEqualTo("Send the events to my system");
+	}
+
+	@Test
 	void testPropertiesOfLocalKameletInKameletUri() throws Exception {
 		writeKamelet("kamelets", "my-sink", MY_SINK);
 		setLocalKameletDirectories("./kamelets");

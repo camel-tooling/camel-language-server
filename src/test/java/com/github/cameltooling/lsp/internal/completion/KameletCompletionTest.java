@@ -63,6 +63,28 @@ class KameletCompletionTest extends AbstractCamelLanguageServerTest {
 	}
 	
 	@Test
+	void testKameletTemplateIdCompletionProposesActionKameletsForProducer() throws Exception {
+		CamelLanguageServer languageServer = initLanguageServer("<to   uri=\"kamelet:\" xmlns=\"http://camel.apache.org/schema/blueprint\"></to>\n");
+		
+		List<CompletionItem> completions = getCompletionFor(languageServer, new Position(0, 19)).get().getLeft();
+		
+		assertThat(completions).extracting(CompletionItem::getLabel)
+			.contains("delay-action", "aws-kinesis-sink")
+			.doesNotContain("aws-ddb-streams-source");
+	}
+	
+	@Test
+	void testKameletTemplateIdCompletionProposesNoActionKameletForConsumer() throws Exception {
+		CamelLanguageServer languageServer = initLanguageServer(createXMLBlueprintRoute("kamelet:"));
+		
+		List<CompletionItem> completions = getCompletionFor(languageServer, new Position(0, 19)).get().getLeft();
+		
+		assertThat(completions).extracting(CompletionItem::getLabel)
+			.contains("aws-ddb-streams-source")
+			.doesNotContain("delay-action");
+	}
+	
+	@Test
 	void testKameletPropertyCompletionForSource() throws Exception {
 		CamelLanguageServer languageServer = initLanguageServer(createXMLBlueprintRoute("kamelet:aws-ddb-streams-source?"));
 		
