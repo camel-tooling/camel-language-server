@@ -81,6 +81,7 @@ import com.github.cameltooling.lsp.internal.codeactions.CodeActionProcessor;
 import com.github.cameltooling.lsp.internal.completion.CamelEndpointCompletionProcessor;
 import com.github.cameltooling.lsp.internal.completion.CamelPropertiesCompletionProcessor;
 import com.github.cameltooling.lsp.internal.completion.CamelYamlDslKeywordProcessor;
+import com.github.cameltooling.lsp.internal.completion.CamelYamlKameletNameProcessor;
 import com.github.cameltooling.lsp.internal.completion.CamelYamlParametersCompletionProcessor;
 import com.github.cameltooling.lsp.internal.completion.PomCompletionProcessor;
 import com.github.cameltooling.lsp.internal.completion.VSCodeTasksCompletionProcessor;
@@ -255,7 +256,12 @@ public class CamelTextDocumentService implements TextDocumentService {
 	private CompletableFuture<List<CompletionItem>> getYamlDslCompletions(TextDocumentItem textDocumentItem, Position position) {
 		YamlDslLines lines = new YamlDslLines(textDocumentItem.getText());
 		boolean markdown = getSettingsManager().isMardownSupport();
-		CamelYamlParametersCompletionProcessor parametersProcessor = new CamelYamlParametersCompletionProcessor(lines, getCamelCatalog(), getKameletsCatalogManager().forDocument(textDocumentItem.getUri()), markdown);
+		KameletsCatalogManager kameletsCatalogManager = getKameletsCatalogManager().forDocument(textDocumentItem.getUri());
+		CamelYamlKameletNameProcessor kameletNameProcessor = new CamelYamlKameletNameProcessor(lines, kameletsCatalogManager);
+		if (kameletNameProcessor.isOnKameletName(position)) {
+			return kameletNameProcessor.getCompletions(position);
+		}
+		CamelYamlParametersCompletionProcessor parametersProcessor = new CamelYamlParametersCompletionProcessor(lines, getCamelCatalog(), kameletsCatalogManager, markdown);
 		if (parametersProcessor.isInParametersBlock(position)) {
 			return parametersProcessor.getCompletions(position);
 		}
@@ -265,7 +271,12 @@ public class CamelTextDocumentService implements TextDocumentService {
 	private CompletableFuture<Hover> getYamlDslHover(TextDocumentItem textDocumentItem, Position position) {
 		YamlDslLines lines = new YamlDslLines(textDocumentItem.getText());
 		boolean markdown = getSettingsManager().isMardownSupport();
-		CamelYamlParametersCompletionProcessor parametersProcessor = new CamelYamlParametersCompletionProcessor(lines, getCamelCatalog(), getKameletsCatalogManager().forDocument(textDocumentItem.getUri()), markdown);
+		KameletsCatalogManager kameletsCatalogManager = getKameletsCatalogManager().forDocument(textDocumentItem.getUri());
+		CamelYamlKameletNameProcessor kameletNameProcessor = new CamelYamlKameletNameProcessor(lines, kameletsCatalogManager);
+		if (kameletNameProcessor.isOnKameletName(position)) {
+			return kameletNameProcessor.getHover(position);
+		}
+		CamelYamlParametersCompletionProcessor parametersProcessor = new CamelYamlParametersCompletionProcessor(lines, getCamelCatalog(), kameletsCatalogManager, markdown);
 		if (parametersProcessor.isInParametersBlock(position)) {
 			return parametersProcessor.getHover(position);
 		}
