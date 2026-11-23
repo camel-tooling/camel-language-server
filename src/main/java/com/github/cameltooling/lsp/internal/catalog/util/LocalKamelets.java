@@ -58,6 +58,8 @@ public class LocalKamelets {
 
 	private static final String KAMELET_FILE_SUFFIX = ".kamelet.yaml";
 	private static final Pattern WINDOWS_ABSOLUTE_PATH = Pattern.compile("^[a-zA-Z]:[\\\\/].*");
+	/** The scheme of a URI: a letter, then letters, digits, +, - or ., and a colon. */
+	private static final Pattern URI_SCHEME = Pattern.compile("[a-zA-Z][a-zA-Z0-9+.-]*:");
 	private static final Logger LOGGER = LoggerFactory.getLogger(LocalKamelets.class);
 	private static final ObjectMapper MAPPER = new ObjectMapper(new YAMLFactory()).configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
@@ -193,8 +195,9 @@ public class LocalKamelets {
 			if (location.startsWith("file:")) {
 				return Optional.of(Paths.get(URI.create(location)));
 			}
-			if (location.contains(":") && !WINDOWS_ABSOLUTE_PATH.matcher(location).matches()) {
-				// another URI scheme, such as untitled: or vscode-remote:, or a document URI without file system path
+			if (URI_SCHEME.matcher(location).lookingAt() && !WINDOWS_ABSOLUTE_PATH.matcher(location).matches()) {
+				// another URI scheme, such as untitled: or vscode-remote:, or a document URI without file system path; a path
+				// may have a colon further on, such as /Users/me/Client:Foo/kamelets
 				return Optional.empty();
 			}
 			return Optional.of(Paths.get(location));

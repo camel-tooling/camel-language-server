@@ -35,6 +35,7 @@ import org.eclipse.lsp4j.Position;
 import org.eclipse.lsp4j.TextDocumentIdentifier;
 import org.eclipse.lsp4j.TextDocumentItem;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.DisabledOnOs;
 import org.junit.jupiter.api.condition.EnabledOnOs;
 import org.junit.jupiter.api.condition.OS;
 import org.junit.jupiter.api.io.TempDir;
@@ -432,6 +433,34 @@ class LocalKameletsTest extends AbstractCursorTest {
 		setLocalKameletDirectories("./kamelets");
 
 		assertThat(labels(complete(TO_KAMELET_WITH_TEMPLATE_ID, "my integrations/route.camel.yaml"))).contains("endpoint", "batchSize");
+	}
+
+	@Test
+	@DisabledOnOs(value = OS.WINDOWS, disabledReason = "a Windows file name cannot have a colon")
+	void testAbsoluteDirectoryWithColon() throws Exception {
+		// a folder named Client/Foo in the macOS Finder
+		Path kamelets = Files.createDirectories(workspace.resolve("Client:Foo/kamelets"));
+		Files.writeString(kamelets.resolve("my-sink.kamelet.yaml"), MY_SINK);
+		setLocalKameletDirectories(kamelets.toString());
+
+		assertThat(labels(complete(TO_KAMELET_WITH_TEMPLATE_ID, "integrations/route.camel.yaml"))).contains("endpoint", "batchSize");
+	}
+
+	@Test
+	@DisabledOnOs(value = OS.WINDOWS, disabledReason = "a Windows file name cannot have a colon")
+	void testRelativeDirectoryWithColon() throws Exception {
+		writeKamelet("my: kamelets", "my-sink", MY_SINK);
+		setLocalKameletDirectories("./my: kamelets");
+
+		assertThat(labels(complete(TO_KAMELET_WITH_TEMPLATE_ID))).contains("endpoint", "batchSize");
+	}
+
+	@Test
+	void testDirectoryOfAnotherUriSchemeIsIgnored() throws Exception {
+		writeKamelet("kamelets", "my-sink", MY_SINK);
+		setLocalKameletDirectories("untitled:kamelets");
+
+		assertThat(labels(complete(TO_KAMELET_WITH_TEMPLATE_ID))).doesNotContain("endpoint", "batchSize");
 	}
 
 	@Test
