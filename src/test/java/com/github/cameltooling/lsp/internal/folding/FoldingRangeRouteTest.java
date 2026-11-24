@@ -25,6 +25,8 @@ import org.eclipse.lsp4j.DidCloseTextDocumentParams;
 import org.eclipse.lsp4j.FoldingRange;
 import org.eclipse.lsp4j.TextDocumentIdentifier;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import com.github.cameltooling.lsp.internal.AbstractCamelLanguageServerTest;
 import com.github.cameltooling.lsp.internal.CamelLanguageServer;
@@ -60,7 +62,7 @@ class FoldingRangeRouteTest extends AbstractCamelLanguageServerTest {
 		
 		List<FoldingRange> foldingRanges = getFoldingRanges(file, languageServer).get();
 		
-		assertThat(foldingRanges).isEmpty();
+		assertThat(foldingRanges).isNull();
 	}
 	
 	@Test
@@ -70,7 +72,7 @@ class FoldingRangeRouteTest extends AbstractCamelLanguageServerTest {
 		
 		List<FoldingRange> foldingRanges = getFoldingRanges(file, languageServer).get();
 		
-		assertThat(foldingRanges).isEmpty();
+		assertThat(foldingRanges).isNull();
 	}
 	
 	@Test
@@ -83,7 +85,18 @@ class FoldingRangeRouteTest extends AbstractCamelLanguageServerTest {
 		
 		List<FoldingRange> foldingRanges = getFoldingRanges(file, languageServer).get();
 		
-		assertThat(foldingRanges).isEmpty();
+		assertThat(foldingRanges).isNull();
+	}
+	
+	@ParameterizedTest
+	@ValueSource(strings = { "plain.camel.yaml", "direct-endpoint-test.xml", "application.properties" })
+	void testNoFoldingRangeOnFileThatIsNotJava(String fileName) throws Exception {
+		File file = new File("src/test/resources/workspace/" + fileName);
+		CamelLanguageServer languageServer = initializeLanguageServer(file);
+		
+		List<FoldingRange> foldingRanges = getFoldingRanges(file, languageServer).get();
+		
+		assertThat(foldingRanges).isNull();
 	}
 	
 }

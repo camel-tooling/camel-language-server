@@ -441,7 +441,8 @@ public class CamelTextDocumentService implements TextDocumentService {
 			// We support providing folding rages only when the document are opened. It doesn't make sense anyway when it is closed
 			return new FoldingRangeProcessor().computeFoldingRanges(textDocumentItem);
 		} else {
-			return CompletableFuture.completedFuture(Collections.emptyList());
+			// no result, as for an opened document without folding ranges
+			return CompletableFuture.completedFuture(null);
 		}
 	}
 

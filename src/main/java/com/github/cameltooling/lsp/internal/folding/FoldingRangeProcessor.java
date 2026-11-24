@@ -20,7 +20,6 @@ import java.io.File;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
@@ -43,6 +42,11 @@ public class FoldingRangeProcessor {
 	private static final String CHOICE_EIP_NAME = "choice";
 	private static final Logger LOGGER = LoggerFactory.getLogger(FoldingRangeProcessor.class);
 
+	/**
+	 * @return the folding ranges of the Camel routes of a Java file and of their choices, or {@code null} when there is
+	 *         none, such as in the files that are not Java: a client takes an empty list as the answer and does not fold
+	 *         the document, whereas with no result, it folds the document in its own way, by indentation for instance
+	 */
 	public CompletableFuture<List<FoldingRange>> computeFoldingRanges(TextDocumentItem textDocumentItem) {
 		String uri = textDocumentItem.getUri();
 		if (uri.endsWith(".java")) {
@@ -54,13 +58,13 @@ public class FoldingRangeProcessor {
 					List<CamelNodeDetails> camelNodes = RouteBuilderParser.parseRouteBuilderTree(clazz, absolutePathOfCamelFile, true);
 					List<FoldingRange> foldingRanges = computeRouteFoldingRanges(textDocumentItem, camelNodes);
 					foldingRanges.addAll(computeChoiceFoldingRanges(textDocumentItem, camelNodes));
-					return CompletableFuture.completedFuture(foldingRanges);
+					return CompletableFuture.completedFuture(foldingRanges.isEmpty() ? null : foldingRanges);
 				}
 			} catch (Exception ex) {
 				LOGGER.warn("Error while computing Folding ranges for " + textDocumentItem.getUri(), ex);
 			}
 		}
-		return CompletableFuture.completedFuture(Collections.emptyList());
+		return CompletableFuture.completedFuture(null);
 	}
 
 	private Collection<FoldingRange> computeChoiceFoldingRanges(TextDocumentItem textDocumentItem, List<CamelNodeDetails> camelNodes) {
