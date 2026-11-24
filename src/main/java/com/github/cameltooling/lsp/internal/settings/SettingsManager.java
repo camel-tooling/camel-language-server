@@ -17,6 +17,7 @@
 package com.github.cameltooling.lsp.internal.settings;
 
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -37,6 +38,11 @@ public class SettingsManager {
 	public static final String KAKFA_CONNECTION_URL = "Kafka Connection URL";
 	/** The directories of the local Kamelets; a relative directory is resolved against the directory of the document. */
 	public static final String LOCAL_KAMELET_DIRECTORIES = "local-kamelet-directories";
+	/**
+	 * The local Kamelet directories of each workspace folder, by the URI of the folder: a document of one of these folders reads
+	 * the directories of the innermost folder that contains it instead of {@link #LOCAL_KAMELET_DIRECTORIES}.
+	 */
+	public static final String WORKSPACE_FOLDER_LOCAL_KAMELET_DIRECTORIES = "workspace-folder-local-kamelet-directories";
 	
 	private CamelTextDocumentService textDocumentService;
 	private String kafkaConnectionUrl;
@@ -69,7 +75,29 @@ public class SettingsManager {
 		kafkaConnectionUrl = getSetting(camelSetting, KAKFA_CONNECTION_URL, String.class);
 		List<?> localKameletDirectories = getSetting(camelSetting, LOCAL_KAMELET_DIRECTORIES, List.class);
 		textDocumentService.getKameletsCatalogManager().setLocalKameletDirectories(localKameletDirectories == null ? null
-				: localKameletDirectories.stream().filter(String.class::isInstance).map(String.class::cast).toList());
+				: toStrings(localKameletDirectories));
+		Map<?, ?> workspaceFolderLocalKameletDirectories = getSetting(camelSetting, WORKSPACE_FOLDER_LOCAL_KAMELET_DIRECTORIES, Map.class);
+		textDocumentService.getKameletsCatalogManager().setWorkspaceFolderLocalKameletDirectories(
+				toDirectoriesByFolder(workspaceFolderLocalKameletDirectories));
+	}
+
+	/**
+	 * @return the directories of each folder, without the entries whose folder is not a string or whose directories are not a list
+	 */
+	private static Map<String, List<String>> toDirectoriesByFolder(Map<?, ?> directoriesByFolder) {
+		Map<String, List<String>> result = new LinkedHashMap<>();
+		if (directoriesByFolder != null) {
+			directoriesByFolder.forEach((folder, directories) -> {
+				if (folder instanceof String folderUri && directories instanceof List<?> list) {
+					result.put(folderUri, toStrings(list));
+				}
+			});
+		}
+		return result;
+	}
+
+	private static List<String> toStrings(List<?> values) {
+		return values.stream().filter(String.class::isInstance).map(String.class::cast).toList();
 	}
 
 	private Map<?, ?> getSettings(Object settings) {

@@ -51,8 +51,10 @@ import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 
 /**
  * The Kamelets of the application: the <code>*.kamelet.yaml</code> files of the local Kamelet directories, which
- * Camel finds by name like the <code>--local-kamelet-dir</code> of Camel JBang. A relative directory is resolved
- * against the directory of the document being edited. The unsaved content of an opened Kamelet wins over its file.
+ * Camel finds by name like the <code>--local-kamelet-dir</code> of Camel JBang. A document of a workspace folder that has
+ * directories of its own reads the directories of the innermost such folder, and any other document reads the
+ * directories of the application. A relative directory is resolved against the directory of the document being
+ * edited. The unsaved content of an opened Kamelet wins over its file.
  */
 public class LocalKamelets {
 
@@ -66,6 +68,7 @@ public class LocalKamelets {
 	private final Supplier<Collection<TextDocumentItem>> openedDocuments;
 	private final Map<Path, CachedKamelet> cache = new ConcurrentHashMap<>();
 	private volatile List<String> directories = Collections.emptyList();
+	private volatile Map<Path, List<String>> workspaceFolderDirectories = Collections.emptyMap();
 
 	public LocalKamelets(Supplier<Collection<TextDocumentItem>> openedDocuments) {
 		this.openedDocuments = openedDocuments;
@@ -73,6 +76,21 @@ public class LocalKamelets {
 
 	public void setDirectories(List<String> directories) {
 		this.directories = directories != null ? List.copyOf(directories) : Collections.emptyList();
+	}
+
+	/**
+	 * @param directoriesByFolder the directories of the documents of each workspace folder, by the URI or the absolute path of
+	 * the folder; a folder that is not a file system path is ignored
+	 */
+	public void setWorkspaceFolderDirectories(Map<String, List<String>> directoriesByFolder) {
+		Map<Path, List<String>> folders = new LinkedHashMap<>();
+		if (directoriesByFolder != null) {
+			directoriesByFolder.forEach((folder, folderDirectories) -> toPath(folder)
+				.filter(Path::isAbsolute)
+				.map(Path::normalize)
+				.ifPresent(path -> folders.put(path, folderDirectories != null ? List.copyOf(folderDirectories) : Collections.emptyList())));
+		}
+		this.workspaceFolderDirectories = Collections.unmodifiableMap(folders);
 	}
 
 	/**
@@ -94,9 +112,10 @@ public class LocalKamelets {
 	}
 
 	private List<Path> resolveDirectories(String documentUri) {
-		Path documentDirectory = toPath(documentUri).map(Path::getParent).orElse(null);
+		Path document = toPath(documentUri).map(Path::normalize).orElse(null);
+		Path documentDirectory = document != null ? document.getParent() : null;
 		List<Path> resolved = new ArrayList<>();
-		for (String directory : directories) {
+		for (String directory : getDirectories(document)) {
 			toPath(directory)
 				.map(path -> path.isAbsolute() ? path : documentDirectory != null ? documentDirectory.resolve(path) : null)
 				.map(Path::normalize)
@@ -104,6 +123,23 @@ public class LocalKamelets {
 				.ifPresent(resolved::add);
 		}
 		return resolved;
+	}
+
+	/**
+	 * @return the directories of the innermost workspace folder that contains the document, else the directories of the application
+	 */
+	private List<String> getDirectories(Path document) {
+		Map<Path, List<String>> folders = workspaceFolderDirectories;
+		Path innermost = null;
+		if (document != null && document.isAbsolute()) {
+			for (Path folder : folders.keySet()) {
+				// startsWith compares whole names: /ws/app does not contain /ws/app-routes/route.camel.yaml
+				if (document.startsWith(folder) && (innermost == null || folder.getNameCount() > innermost.getNameCount())) {
+					innermost = folder;
+				}
+			}
+		}
+		return innermost != null ? folders.get(innermost) : directories;
 	}
 
 	private Map<String, Kamelet> readDirectory(Path directory, Map<Path, String> openedKamelets) {
