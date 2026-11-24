@@ -72,6 +72,13 @@ public class KameletsCatalogManager {
 	}
 
 	/**
+	 * @param directoriesByFolder the local Kamelet directories of each workspace folder, by the URI of the folder
+	 */
+	public void setWorkspaceFolderLocalKameletDirectories(Map<String, List<String>> directoriesByFolder) {
+		localKamelets.setWorkspaceFolderDirectories(directoriesByFolder);
+	}
+
+	/**
 	 * @return the Kamelets by name: the local Kamelets, then the ones of the catalog
 	 */
 	public Map<String, Kamelet> getKamelets() {

@@ -22,6 +22,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.attribute.FileTime;
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -44,7 +45,8 @@ import com.github.cameltooling.lsp.internal.AbstractCursorTest;
 import com.github.cameltooling.lsp.internal.CamelLanguageServer;
 
 /**
- * The local Kamelets: the <code>*.kamelet.yaml</code> files of the directories of the <code>local-kamelet-directories</code> setting.
+ * The local Kamelets: the <code>*.kamelet.yaml</code> files of the directories of the <code>local-kamelet-directories</code> setting,
+ * or of the <code>workspace-folder-local-kamelet-directories</code> setting for the documents of a workspace folder.
  */
 class LocalKameletsTest extends AbstractCursorTest {
 
@@ -502,6 +504,109 @@ class LocalKameletsTest extends AbstractCursorTest {
 		assertThat(labels(complete(TO_KAMELET_WITH_TEMPLATE_ID))).contains("endpoint").doesNotContain("retries");
 	}
 
+	@Test
+	void testDirectoriesOfTheWorkspaceFolderOfTheDocument() throws Exception {
+		writeKamelet("service/kamelets", "my-sink", MY_SINK);
+		writeKamelet("routes/kamelets", "my-sink", MY_SINK.replace("      batchSize:", WITH_RETRIES));
+		String service = workspace.resolve("service/kamelets").toString();
+		String routes = workspace.resolve("routes/kamelets").toString();
+		// the directories of both folders for the other documents, where the Kamelet of the first folder wins
+		setLocalKameletDirectories(Map.of(folderUri("service"), List.of(service), folderUri("routes"), List.of(routes)), service, routes);
+
+		assertThat(labels(complete(TO_KAMELET_WITH_TEMPLATE_ID, "routes/route.camel.yaml"))).contains("endpoint", "retries");
+		assertThat(labels(complete(TO_KAMELET_WITH_TEMPLATE_ID, "service/route.camel.yaml"))).contains("endpoint").doesNotContain("retries");
+	}
+
+	@Test
+	void testDocumentOutsideTheWorkspaceFoldersReadsTheDirectoriesOfTheApplication() throws Exception {
+		writeKamelet("kamelets", "my-sink", MY_SINK);
+		writeKamelet("routes/kamelets", "my-sink", MY_SINK.replace("      batchSize:", WITH_RETRIES));
+		setLocalKameletDirectories(Map.of(folderUri("routes"), List.of(workspace.resolve("routes/kamelets").toString())),
+				workspace.resolve("kamelets").toString());
+
+		assertThat(labels(complete(TO_KAMELET_WITH_TEMPLATE_ID, "integrations/route.camel.yaml"))).contains("endpoint").doesNotContain("retries");
+	}
+
+	@Test
+	void testInnermostWorkspaceFolderWins() throws Exception {
+		writeKamelet("outer-kamelets", "my-sink", MY_SINK);
+		writeKamelet("inner-kamelets", "my-sink", MY_SINK.replace("      batchSize:", WITH_RETRIES));
+		Map<String, List<String>> directoriesByFolder = new LinkedHashMap<>();
+		directoriesByFolder.put(folderUri(""), List.of(workspace.resolve("outer-kamelets").toString()));
+		directoriesByFolder.put(folderUri("nested"), List.of(workspace.resolve("inner-kamelets").toString()));
+		setLocalKameletDirectories(directoriesByFolder);
+
+		assertThat(labels(complete(TO_KAMELET_WITH_TEMPLATE_ID, "nested/routes/route.camel.yaml"))).contains("endpoint", "retries");
+		assertThat(labels(complete(TO_KAMELET_WITH_TEMPLATE_ID, "routes/route.camel.yaml"))).contains("endpoint").doesNotContain("retries");
+	}
+
+	@Test
+	void testWorkspaceFolderWhosePathStartsLikeTheDocumentFolder() throws Exception {
+		writeKamelet("app-routes/kamelets", "my-sink", MY_SINK);
+		setLocalKameletDirectories(Map.of(folderUri("app"), List.of(workspace.resolve("app/kamelets").toString())),
+				workspace.resolve("app-routes/kamelets").toString());
+
+		// app does not contain app-routes/route.camel.yaml, which reads the directories of the application
+		assertThat(labels(complete(TO_KAMELET_WITH_TEMPLATE_ID, "app-routes/route.camel.yaml"))).contains("endpoint");
+	}
+
+	@Test
+	void testRelativeDirectoryOfWorkspaceFolderIsResolvedAgainstTheDocument() throws Exception {
+		writeKamelet("routes/integrations/kamelets", "my-sink", MY_SINK);
+		setLocalKameletDirectories(Map.of(folderUri("routes"), List.of("./kamelets")));
+
+		assertThat(labels(complete(TO_KAMELET_WITH_TEMPLATE_ID, "routes/integrations/route.camel.yaml"))).contains("endpoint");
+	}
+
+	@Test
+	void testWorkspaceFolderWithoutDirectories() throws Exception {
+		writeKamelet("kamelets", "my-sink", MY_SINK);
+		setLocalKameletDirectories(Map.of(folderUri("routes"), List.of()), workspace.resolve("kamelets").toString());
+
+		assertThat(labels(complete(TO_KAMELET_WITH_TEMPLATE_ID, "routes/route.camel.yaml"))).doesNotContain("endpoint");
+	}
+
+	@Test
+	void testWorkspaceFolderSettingChange() throws Exception {
+		writeKamelet("routes/kamelets", "my-sink", MY_SINK);
+		CamelLanguageServer languageServer = open("routes/route.camel.yaml", TO_KAMELET_WITH_TEMPLATE_ID);
+		assertThat(labels(completeOpened(languageServer, "routes/route.camel.yaml", TO_KAMELET_WITH_TEMPLATE_ID))).doesNotContain("endpoint");
+
+		languageServer.getWorkspaceService().didChangeConfiguration(new DidChangeConfigurationParams(Map.of("camel",
+				Map.of("workspace-folder-local-kamelet-directories", Map.of(folderUri("routes"), List.of("./kamelets"))))));
+		assertThat(labels(completeOpened(languageServer, "routes/route.camel.yaml", TO_KAMELET_WITH_TEMPLATE_ID))).contains("endpoint");
+
+		languageServer.getWorkspaceService().didChangeConfiguration(new DidChangeConfigurationParams(Map.of("camel", Map.of())));
+		assertThat(labels(completeOpened(languageServer, "routes/route.camel.yaml", TO_KAMELET_WITH_TEMPLATE_ID))).doesNotContain("endpoint");
+	}
+
+	@Test
+	void testMalformedWorkspaceFolderEntriesAreIgnored() throws Exception {
+		writeKamelet("routes/kamelets", "my-sink", MY_SINK);
+		Map<Object, Object> directoriesByFolder = new LinkedHashMap<>();
+		directoriesByFolder.put(folderUri("routes"), List.of(42, "./kamelets"));
+		directoriesByFolder.put(folderUri("service"), "./kamelets");
+		directoriesByFolder.put("untitled:folder", List.of("./kamelets"));
+		initializationOptions = Map.of("camel", Map.of("workspace-folder-local-kamelet-directories", directoriesByFolder));
+
+		assertThat(labels(complete(TO_KAMELET_WITH_TEMPLATE_ID, "routes/route.camel.yaml"))).contains("endpoint");
+	}
+
+	@Test
+	@EnabledOnOs(OS.WINDOWS)
+	void testWorkspaceFolderUriOfVSCodeOnWindows() throws Exception {
+		writeKamelet("routes/kamelets", "my-sink", MY_SINK);
+		setLocalKameletDirectories(Map.of(toVSCodeUri(workspace.resolve("routes")), List.of("./kamelets")));
+		String routeUri = toVSCodeUri(workspace.resolve("routes/route.camel.yaml"));
+		String text = TO_KAMELET_WITH_TEMPLATE_ID.replace(CURSOR, "");
+		Files.writeString(workspace.resolve("routes/route.camel.yaml"), text);
+		CamelLanguageServer languageServer = initializeLanguageServer(".camel.yaml",
+				new TextDocumentItem(routeUri, CamelLanguageServer.LANGUAGE_ID, 0, text));
+
+		assertThat(labels(getCompletionFor(languageServer, getCursorPosition(TO_KAMELET_WITH_TEMPLATE_ID), routeUri).get().getLeft()))
+			.contains("endpoint");
+	}
+
 	private static String toVSCodeUri(Path path) {
 		String uri = path.toUri().toString();
 		// file:///C:/... -> file:///c%3A/...
@@ -510,6 +615,15 @@ class LocalKameletsTest extends AbstractCursorTest {
 
 	private void setLocalKameletDirectories(String... directories) {
 		initializationOptions = Map.of("camel", Map.of("local-kamelet-directories", List.of(directories)));
+	}
+
+	private void setLocalKameletDirectories(Map<String, List<String>> directoriesByFolder, String... directories) {
+		initializationOptions = Map.of("camel", Map.of("local-kamelet-directories", List.of(directories),
+				"workspace-folder-local-kamelet-directories", directoriesByFolder));
+	}
+
+	private String folderUri(String folder) {
+		return workspace.resolve(folder).toUri().toString();
 	}
 
 	private Path writeKamelet(String directory, String name, String content) throws Exception {

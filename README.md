@@ -138,6 +138,26 @@ Besides the Kamelets of the Kamelets catalog, the completion and the hover can u
 }
 ```
 
+A client that resolves the directories for each workspace folder, such as with a `${workspaceFolder}` variable, can send the directories of each workspace folder, by the URI of the folder. A document of one of these folders reads the directories of the innermost folder that contains it, and any other document reads `local-kamelet-directories`:
+
+```
+{
+	"camel": {
+		"local-kamelet-directories" : [
+			"./kamelets"
+		],
+		"workspace-folder-local-kamelet-directories" : {
+			"file:///ws/service" : [
+				"/ws/service/kamelets"
+			],
+			"file:///ws/routes" : [
+				"/ws/routes/kamelets"
+			]
+		}
+	}
+}
+```
+
 ## Document symbol support
 
 There is document symbol for Camel Contexts and routes, on XML and Java DSL. In UI, for instance with VS Code, it means there are an outline, a breadcrumb and a Go To Document Symbol command.
